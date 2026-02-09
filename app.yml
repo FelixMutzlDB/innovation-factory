@@ -1,0 +1,1 @@
+command: ["uvicorn", "innovation_factory.backend.app:app", "--workers", "2"]
