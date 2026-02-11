@@ -21,6 +21,11 @@ async def lifespan(app: FastAPI):
     runtime.validate_db()
     runtime.initialize_models()
 
+    # Auto-seed in local dev mode (right after table creation, same connection works)
+    if runtime._dev_db_port:
+        from .seed import check_and_seed_if_empty
+        check_and_seed_if_empty(runtime)
+
     # Store in app.state for access via dependencies
     app.state.config = config
     app.state.runtime = runtime

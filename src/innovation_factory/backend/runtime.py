@@ -4,6 +4,7 @@ from functools import cached_property
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.errors import NotFound
 from sqlalchemy import Engine, create_engine, event
+from sqlalchemy.pool import NullPool
 from sqlmodel import SQLModel, Session, text
 
 from .config import AppConfig
@@ -68,8 +69,7 @@ class Runtime:
         if self._dev_db_port:
             engine = create_engine(
                 self.engine_url,
-                pool_recycle=10,
-                pool_size=4,
+                poolclass=NullPool,
             )
         else:
             engine = create_engine(

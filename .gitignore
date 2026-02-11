@@ -37,4 +37,4 @@ node_modules/
 .apx/
 
 # UI dist folder
-src/innovation_factory/__dist__/
+src/innovation_factory/__dist__/.mcp.json

@@ -35,3 +35,5 @@ targets:
   dev:
     mode: development
     default: true
+    workspace:
+      profile: e2-demo-field-eng

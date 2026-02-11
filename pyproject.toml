@@ -11,11 +11,13 @@ dependencies = [
     "databricks-sdk>=0.74.0",
     "sqlmodel>=0.0.27",
     "psycopg[binary,pool]>=3.2.11",
+    "python-multipart>=0.0.20",
+    "sse-starlette>=2.2.1",
 ]
 
 [dependency-groups]
 dev = [
-    "ty>=0.0.12",
+    "ty>=0.0.12", "apx==0.2.6",
 ]
 
 [tool.apx.metadata]
@@ -43,6 +45,17 @@ source = "uv-dynamic-versioning"
 [tool.uv-dynamic-versioning]
 vcs = "git"
 fallback-version = "0.0.0"
+
+[tool.uv]
+
+[[tool.uv.index]]
+name = "apx-index"
+url = "https://databricks-solutions.github.io/apx/simple"
+
+[tool.uv.sources]
+
+[tool.uv.sources.apx]
+index = "apx-index"
 
 [tool.hatch.build.hooks.version]
 path = "src/innovation_factory/_version.py"

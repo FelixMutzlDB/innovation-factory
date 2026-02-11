@@ -18,7 +18,7 @@ function SidebarUserFooterSkeleton() {
 }
 
 function SidebarUserFooterContent() {
-  const { data: user } = useCurrentUserSuspense(selector());
+  const { data: user } = useCurrentUserSuspense(selector()) as { data: any };
 
   const firstLetters = useMemo(() => {
     const userName = user.user_name ?? "";

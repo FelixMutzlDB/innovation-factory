@@ -4,6 +4,9 @@ import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 import { useCurrentUserSuspense } from "@/lib/api";
 import selector from "@/lib/selector";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type UserData = any;
 import {
   Card,
   CardContent,
@@ -26,12 +29,12 @@ import {
   XCircle,
 } from "lucide-react";
 
-export const Route = createFileRoute("/_sidebar/profile")({
+export const Route = createFileRoute("/projects/vi-home-one/profile")({
   component: () => <Profile />,
 });
 
 function ProfileContent() {
-  const { data: user } = useCurrentUserSuspense(selector());
+  const { data: user } = useCurrentUserSuspense(selector()) as { data: UserData };
 
   const getInitials = () => {
     if (user.name?.given_name && user.name?.family_name) {
@@ -158,7 +161,7 @@ function ProfileContent() {
           </CardHeader>
           <CardContent className="space-y-4">
             {user.emails && user.emails.length > 0 ? (
-              user.emails.map((email, index) => (
+              user.emails.map((email: any, index: number) => (
                 <div key={index}>
                   {index > 0 && <Separator className="mb-4" />}
                   <div className="flex items-center gap-2">
@@ -198,7 +201,7 @@ function ProfileContent() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {user.roles.map((role, index) => (
+                {user.roles.map((role: any, index: number) => (
                   <Badge key={index} variant="outline">
                     {role.value}
                   </Badge>
@@ -222,7 +225,7 @@ function ProfileContent() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {user.groups.map((group, index) => (
+                {user.groups.map((group: any, index: number) => (
                   <Badge key={index} variant="outline">
                     {group.display || group.value}
                   </Badge>
@@ -246,7 +249,7 @@ function ProfileContent() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {user.entitlements.map((entitlement, index) => (
+                {user.entitlements.map((entitlement: any, index: number) => (
                   <Badge key={index} variant="secondary">
                     {entitlement.value}
                   </Badge>

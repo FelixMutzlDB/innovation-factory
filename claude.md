@@ -1,9 +1,86 @@
-the innovation-factory is a collection of interactive apps. The landing page is a gallery of tiles of existing projects and a tile to "build a new idea". The apps need to run locally before being deployed to a Databricks App. Running locally it should use a suitable postgres database. Deployed on Databricks, it should use the autoscaling Lakebase postgres database "innovation-factory" (find it in the specified workspace profile via APX. In the database a suitable layout to have multiple projects exist side by side (incl. all components like mock up data, users, etc).
+# Do's and Don'ts
+- OpenAPI client auto-regenerates on code changes when dev servers are running - don't manually regenerate.
+- Prefer running apx related commands via MCP server if it's available.
+- Use the apx MCP `search_registry_components` and `add_component` tools to find and add shadcn/ui components.
+- When using the API calls on the frontend, use error boundaries to handle errors.
+- Run `apx dev check` command (via CLI or MCP) to check for errors in the project code after making changes.
+- If agent has access to native browser tool, use it to verify changes on the frontend. If such tool is not present or is not working, use playwright MCP to automate browser actions (e.g. screenshots, clicks, etc.).
+- **Databricks SDK:** Use the apx MCP `docs` tool to search Databricks SDK documentation instead of guessing or hallucinating API signatures.
 
-Take the code for the vi-home-one and bsh-home-connect app located in @/Users/felix.mutzl/Databricks Git/vi-home-one and @/Users/felix.mutzl/Databricks Git/bsh-home-connect and integrate it into the innovation-factory. Copy over the code artefacts of frontend and backend that are required and integrate it into the innovation-factory. 
+## Package Management
+- **Frontend:** Bun might not be present on user's $PATH. It's recommended to use prebundled bun (e.g., `uv run apx bun install` or `uv run apx bun add <dependency>`), unless user explicitly stated otherwise.
+- **Python:** Always use `uv` (never `pip`)
 
-The "build a new idea" exposes a chat interface with a chatbot behind that asks the user the following questions and then compiles the initial prompt for a coding agent: 1) what's the name of the company? It can also be made up. 2) Describe what you'd like to build next.
+## Component Management
+- **Finding components:** Use MCP `search_registry_components` to search for available shadcn/ui components
+- **Adding components:** Use MCP `add_component` or CLI `uv run apx components add <component> --yes` to add components
+- **Component location:** If component was added to a wrong location (e.g. stored into `src/components` instead of `src/innovation-factory/ui/components`), move it to the proper folder
+- **Component organization:** Prefer grouping components by functionality rather than by file type (e.g. `src/innovation-factory/ui/components/chat/`)
 
-leverage databricks ai-dev-kit to build with deployment on Databricks in mind (esp. as a Databricks app w APX)
+## Project Structure
+Full-stack app: `src/innovation-factory/ui/` (React + Vite) and `src/innovation-factory/backend/` (FastAPI). Backend serves frontend at `/` and API at `/api`. API client auto-generated from OpenAPI schema.
 
-create a new repo in the link git account called innovation-factory and commit + push changes there onto the main branch for now
+## Models & API
+- **3-model pattern:** `Entity` (DB), `EntityIn` (input), `EntityOut` (output)
+- **API routes must have:** `response_model` and `operation_id` for client generation
+
+## Frontend Rules
+- **Routing:** `@tanstack/react-router` (routes in `src/innovation-factory/ui/routes/`)
+- **Data fetching:** Always use `useXSuspense` hooks with `Suspense` and `Skeleton` components
+- **Pattern:** Render static elements immediately, fetch API data with suspense
+- **Components:** Use shadcn/ui, add to `src/innovation-factory/ui/components/`
+- **Data access:** Use `selector()` function for clean destructuring (e.g., `const {data: profile} = useProfileSuspense(selector())`)
+
+## Development Commands
+
+**Start dev servers** (backend, frontend, OpenAPI watcher):
+```bash
+uv run apx dev start
+```
+
+**Check status** (shows running servers and ports):
+```bash
+uv run apx dev status
+```
+
+**Check for errors** (TypeScript, Python linting):
+```bash
+uv run apx dev check
+```
+
+**View logs:**
+```bash
+uv run apx dev logs              # Recent logs (default: last 10m)
+uv run apx dev logs -d 1h        # Logs from last hour
+uv run apx dev logs -f           # Follow/stream logs live
+```
+
+**Stop servers:**
+```bash
+uv run apx dev stop
+```
+
+**Build for production:**
+```bash
+uv run apx build
+```
+
+**Note:** OpenAPI client is automatically regenerated on every code change when dev servers are running. No manual regeneration needed.
+
+## MCP Tools Reference
+
+When the apx MCP server is available, use these tools:
+
+| Tool | Description |
+|------|-------------|
+| `start` | Start development server and return the URL |
+| `stop` | Stop the development server |
+| `restart` | Restart the development server (preserves port if possible) |
+| `logs` | Fetch recent dev server logs |
+| `check` | Check project code for errors (runs tsc and ty checks in parallel) |
+| `refresh_openapi` | Regenerate OpenAPI schema and API client |
+| `search_registry_components` | Search shadcn registry components using semantic search |
+| `add_component` | Add a component to the project |
+| `docs` | Search Databricks SDK documentation for code examples and API references |
+| `databricks_apps_logs` | Fetch logs from deployed Databricks app using Databricks CLI |
+| `get_route_info` | Get code example for using a specific API route |
