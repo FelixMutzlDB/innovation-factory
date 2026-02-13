@@ -21,10 +21,12 @@ async def lifespan(app: FastAPI):
     runtime.validate_db()
     runtime.initialize_models()
 
-    # Auto-seed in local dev mode (right after table creation, same connection works)
-    if runtime._dev_db_port:
-        from .seed import check_and_seed_if_empty
+    # Auto-seed if database is empty (works in dev and production)
+    from .seed import check_and_seed_if_empty
+    try:
         check_and_seed_if_empty(runtime)
+    except Exception as e:
+        logger.warning(f"Seeding skipped (likely concurrent worker race): {e}")
 
     # Store in app.state for access via dependencies
     app.state.config = config

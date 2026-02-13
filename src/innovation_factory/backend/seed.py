@@ -25,6 +25,10 @@ def check_and_seed_if_empty(runtime: Runtime):
         seed_vh_data(session)
         seed_bsh_data(session)
 
+        # Ensure everything is committed (sub-seed functions may return early
+        # if their data already exists, skipping their own commit calls)
+        session.commit()
+
         print("\nDatabase seeding completed successfully!\n")
 
 

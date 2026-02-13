@@ -58,7 +58,7 @@ class VhNeighborhood(SQLModel, table=True):
     __tablename__ = "vh_neighborhoods"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     name: str
     location: str
     total_households: int
@@ -72,7 +72,7 @@ class VhHousehold(SQLModel, table=True):
     __tablename__ = "vh_households"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     neighborhood_id: int = Field(foreign_key="vh_neighborhoods.id", index=True)
     owner_name: str
     address: str
@@ -95,7 +95,7 @@ class VhEnergyDevice(SQLModel, table=True):
     __tablename__ = "vh_energy_devices"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     household_id: int = Field(foreign_key="vh_households.id", index=True)
     device_type: DeviceType
     brand: str
@@ -117,7 +117,7 @@ class VhEnergyReading(SQLModel, table=True):
     __tablename__ = "vh_energy_readings"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     household_id: int = Field(foreign_key="vh_households.id", index=True)
     timestamp: datetime = Field(index=True)
 
@@ -148,7 +148,7 @@ class VhConsumptionBreakdown(SQLModel, table=True):
     __tablename__ = "vh_consumption_breakdown"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     reading_id: int = Field(foreign_key="vh_energy_readings.id", index=True)
     category: ConsumptionCategory
     value_kwh: float
@@ -161,7 +161,7 @@ class VhEnergyProvider(SQLModel, table=True):
     __tablename__ = "vh_energy_providers"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     name: str
     base_rate_eur: float
     kwh_rate_eur: float
@@ -176,7 +176,7 @@ class VhMaintenanceAlert(SQLModel, table=True):
     __tablename__ = "vh_maintenance_alerts"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     device_id: int = Field(foreign_key="vh_energy_devices.id", index=True)
     alert_type: str
     severity: AlertSeverity
@@ -194,7 +194,7 @@ class VhTicket(SQLModel, table=True):
     __tablename__ = "vh_tickets"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     household_id: int = Field(foreign_key="vh_households.id", index=True)
     device_id: Optional[int] = Field(default=None, foreign_key="vh_energy_devices.id", index=True)
 
@@ -220,7 +220,7 @@ class VhTicketMedia(SQLModel, table=True):
     __tablename__ = "vh_ticket_media"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     ticket_id: int = Field(foreign_key="vh_tickets.id", index=True)
 
     media_type: str
@@ -238,7 +238,7 @@ class VhChatSession(SQLModel, table=True):
     __tablename__ = "vh_chat_sessions"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     ticket_id: int = Field(foreign_key="vh_tickets.id", index=True)
 
     session_type: str = Field(default="support")
@@ -254,7 +254,7 @@ class VhChatMessage(SQLModel, table=True):
     __tablename__ = "vh_chat_messages"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     session_id: int = Field(foreign_key="vh_chat_sessions.id", index=True)
 
     role: VhChatRole
@@ -271,7 +271,7 @@ class VhKnowledgeArticle(SQLModel, table=True):
     __tablename__ = "vh_knowledge_articles"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    project_id: Optional[int] = Field(default=None, foreign_key="projects.id", index=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="if_projects.id", index=True)
     device_type: Optional[DeviceType] = Field(default=None, index=True)
 
     title: str

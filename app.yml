@@ -1,1 +1,15 @@
 command: ["uvicorn", "innovation_factory.backend.app:app", "--workers", "2"]
+
+env:
+  - name: PGHOST
+    value: ep-solitary-morning-d1fm39qw.database.us-west-2.cloud.databricks.com
+  - name: PGDATABASE
+    value: databricks_postgres
+  - name: PGUSER
+    value: fe8519c1-c112-4e9f-abaf-b635329a7080
+  - name: PGPORT
+    value: 5432
+  - name: PGSSLMODE
+    value: require
+  - name: ENDPOINT_NAME
+    value: projects/ff37da7a-d6dc-4703-94e9-0201881be663/branches/br-tiny-hall-d1o2yr5i/endpoints/ep-solitary-morning-d1fm39qw

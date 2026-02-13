@@ -20,14 +20,34 @@ class DatabaseConfig(BaseSettings):
     model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
         extra="ignore",
     )
+    host: str | None = Field(
+        description="The hostname of the Lakebase Autoscaling endpoint",
+        default=None,
+        validation_alias="PGHOST",
+    )
     port: int = Field(
         description="The port of the database", default=5432, validation_alias="PGPORT"
     )
     database_name: str = Field(
-        description="The name of the database", default="databricks_postgres"
+        description="The name of the database",
+        default="databricks_postgres",
+        validation_alias="PGDATABASE",
     )
-    instance_name: str = Field(
-        description="The name of the database instance", validation_alias="PGAPPNAME"
+    user: str | None = Field(
+        description="The database user (email for local dev, service principal client ID for production)",
+        default=None,
+        validation_alias="PGUSER",
+    )
+    sslmode: str = Field(
+        description="SSL mode for the database connection",
+        default="require",
+        validation_alias="PGSSLMODE",
+    )
+    endpoint_name: str | None = Field(
+        description="Lakebase Autoscaling endpoint name for credential generation "
+        "(format: projects/<id>/branches/<id>/endpoints/<id>)",
+        default=None,
+        validation_alias="ENDPOINT_NAME",
     )
 
 

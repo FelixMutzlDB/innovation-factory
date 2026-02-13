@@ -11,7 +11,7 @@ from .. import __version__
 # ============================================================================
 
 class Project(SQLModel, table=True):
-    __tablename__ = "projects"
+    __tablename__ = "if_projects"
 
     id: Optional[int] = Field(default=None, primary_key=True)
     slug: str = Field(unique=True, index=True)

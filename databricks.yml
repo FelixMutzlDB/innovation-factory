@@ -10,26 +10,27 @@ artifacts:
     build: uv run apx build
 
 resources:
-  database_instances:
-    innovation-factory-db:
-      name: "innovation-factory"
-      capacity: "CU_1"
   apps:
     innovation-factory-app:
       name: "innovation-factory"
-      description: "innovation-factory created with apx"
+      description: "rapid prototyping on an unified data & ai vision along an enterprise value chain"
       source_code_path: ./.build
-      resources:
-        - name: "db"
-          database:
-            database_name: "databricks_postgres"
-            instance_name: ${resources.database_instances.innovation-factory-db.name}
-            permission: "CAN_CONNECT_AND_CREATE"
-
-
-
-
-
+      budget_policy_id: "45e016d4-ace8-407d-870f-3f06123daee1"
+      config:
+        command: ["uvicorn", "innovation-factory.backend.app:app", "--workers", "2"]
+        env:
+          - name: PGHOST
+            value: ep-solitary-morning-d1fm39qw.database.us-west-2.cloud.databricks.com
+          - name: PGDATABASE
+            value: databricks_postgres
+          - name: PGUSER
+            value: fe8519c1-c112-4e9f-abaf-b635329a7080
+          - name: PGPORT
+            value: "5432"
+          - name: PGSSLMODE
+            value: require
+          - name: ENDPOINT_NAME
+            value: projects/ff37da7a-d6dc-4703-94e9-0201881be663/branches/br-tiny-hall-d1o2yr5i/endpoints/ep-solitary-morning-d1fm39qw
 
 targets:
   dev:
