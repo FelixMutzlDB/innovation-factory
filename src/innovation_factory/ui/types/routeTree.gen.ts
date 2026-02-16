@@ -15,22 +15,29 @@ import { Route as BuildIdeaIndexRouteImport } from './../routes/build-idea/index
 import { Route as SidebarProfileRouteImport } from './../routes/_sidebar/profile'
 import { Route as ProjectsViHomeOneRouteRouteImport } from './../routes/projects/vi-home-one/route'
 import { Route as ProjectsBshHomeConnectRouteRouteImport } from './../routes/projects/bsh-home-connect/route'
+import { Route as ProjectsAdtechIntelligenceRouteRouteImport } from './../routes/projects/adtech-intelligence/route'
 import { Route as ProjectsViHomeOneIndexRouteImport } from './../routes/projects/vi-home-one/index'
 import { Route as ProjectsBshHomeConnectIndexRouteImport } from './../routes/projects/bsh-home-connect/index'
+import { Route as ProjectsAdtechIntelligenceIndexRouteImport } from './../routes/projects/adtech-intelligence/index'
 import { Route as ProjectsViHomeOneProfileRouteImport } from './../routes/projects/vi-home-one/profile'
 import { Route as ProjectsBshHomeConnectSupportRouteImport } from './../routes/projects/bsh-home-connect/support'
 import { Route as ProjectsBshHomeConnectProfileRouteImport } from './../routes/projects/bsh-home-connect/profile'
 import { Route as ProjectsBshHomeConnectDashboardRouteImport } from './../routes/projects/bsh-home-connect/dashboard'
+import { Route as ProjectsAdtechIntelligenceProfileRouteImport } from './../routes/projects/adtech-intelligence/profile'
+import { Route as ProjectsAdtechIntelligenceIssuesRouteImport } from './../routes/projects/adtech-intelligence/issues'
+import { Route as ProjectsAdtechIntelligenceDashboardRouteImport } from './../routes/projects/adtech-intelligence/dashboard'
 import { Route as ProjectsViHomeOneSupportIndexRouteImport } from './../routes/projects/vi-home-one/support/index'
 import { Route as ProjectsViHomeOneNeighborhoodIndexRouteImport } from './../routes/projects/vi-home-one/neighborhood/index'
 import { Route as ProjectsViHomeOneHouseholdsIndexRouteImport } from './../routes/projects/vi-home-one/households/index'
 import { Route as ProjectsBshHomeConnectTicketsIndexRouteImport } from './../routes/projects/bsh-home-connect/tickets/index'
 import { Route as ProjectsBshHomeConnectDevicesIndexRouteImport } from './../routes/projects/bsh-home-connect/devices/index'
+import { Route as ProjectsAdtechIntelligenceAnomaliesIndexRouteImport } from './../routes/projects/adtech-intelligence/anomalies/index'
 import { Route as ProjectsViHomeOneSupportNewRouteImport } from './../routes/projects/vi-home-one/support/new'
 import { Route as ProjectsViHomeOneSupportTicketIdRouteImport } from './../routes/projects/vi-home-one/support/$ticketId'
 import { Route as ProjectsViHomeOneHouseholdsHouseholdIdRouteImport } from './../routes/projects/vi-home-one/households/$householdId'
 import { Route as ProjectsBshHomeConnectTicketsTicketIdRouteImport } from './../routes/projects/bsh-home-connect/tickets/$ticketId'
 import { Route as ProjectsBshHomeConnectDevicesRegisterRouteImport } from './../routes/projects/bsh-home-connect/devices/register'
+import { Route as ProjectsAdtechIntelligenceAnomaliesAnomalyIdRouteImport } from './../routes/projects/adtech-intelligence/anomalies/$anomalyId'
 import { Route as ProjectsViHomeOneHouseholdsHouseholdIdHistoryRouteImport } from './../routes/projects/vi-home-one/households/$householdId.history'
 
 const SidebarRouteRoute = SidebarRouteRouteImport.update({
@@ -63,6 +70,12 @@ const ProjectsBshHomeConnectRouteRoute =
     path: '/projects/bsh-home-connect',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProjectsAdtechIntelligenceRouteRoute =
+  ProjectsAdtechIntelligenceRouteRouteImport.update({
+    id: '/projects/adtech-intelligence',
+    path: '/projects/adtech-intelligence',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProjectsViHomeOneIndexRoute = ProjectsViHomeOneIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -73,6 +86,12 @@ const ProjectsBshHomeConnectIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => ProjectsBshHomeConnectRouteRoute,
+  } as any)
+const ProjectsAdtechIntelligenceIndexRoute =
+  ProjectsAdtechIntelligenceIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProjectsAdtechIntelligenceRouteRoute,
   } as any)
 const ProjectsViHomeOneProfileRoute =
   ProjectsViHomeOneProfileRouteImport.update({
@@ -97,6 +116,24 @@ const ProjectsBshHomeConnectDashboardRoute =
     id: '/dashboard',
     path: '/dashboard',
     getParentRoute: () => ProjectsBshHomeConnectRouteRoute,
+  } as any)
+const ProjectsAdtechIntelligenceProfileRoute =
+  ProjectsAdtechIntelligenceProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => ProjectsAdtechIntelligenceRouteRoute,
+  } as any)
+const ProjectsAdtechIntelligenceIssuesRoute =
+  ProjectsAdtechIntelligenceIssuesRouteImport.update({
+    id: '/issues',
+    path: '/issues',
+    getParentRoute: () => ProjectsAdtechIntelligenceRouteRoute,
+  } as any)
+const ProjectsAdtechIntelligenceDashboardRoute =
+  ProjectsAdtechIntelligenceDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => ProjectsAdtechIntelligenceRouteRoute,
   } as any)
 const ProjectsViHomeOneSupportIndexRoute =
   ProjectsViHomeOneSupportIndexRouteImport.update({
@@ -128,6 +165,12 @@ const ProjectsBshHomeConnectDevicesIndexRoute =
     path: '/devices/',
     getParentRoute: () => ProjectsBshHomeConnectRouteRoute,
   } as any)
+const ProjectsAdtechIntelligenceAnomaliesIndexRoute =
+  ProjectsAdtechIntelligenceAnomaliesIndexRouteImport.update({
+    id: '/anomalies/',
+    path: '/anomalies/',
+    getParentRoute: () => ProjectsAdtechIntelligenceRouteRoute,
+  } as any)
 const ProjectsViHomeOneSupportNewRoute =
   ProjectsViHomeOneSupportNewRouteImport.update({
     id: '/support/new',
@@ -158,6 +201,12 @@ const ProjectsBshHomeConnectDevicesRegisterRoute =
     path: '/devices/register',
     getParentRoute: () => ProjectsBshHomeConnectRouteRoute,
   } as any)
+const ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute =
+  ProjectsAdtechIntelligenceAnomaliesAnomalyIdRouteImport.update({
+    id: '/anomalies/$anomalyId',
+    path: '/anomalies/$anomalyId',
+    getParentRoute: () => ProjectsAdtechIntelligenceRouteRoute,
+  } as any)
 const ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute =
   ProjectsViHomeOneHouseholdsHouseholdIdHistoryRouteImport.update({
     id: '/history',
@@ -167,21 +216,28 @@ const ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectRouteRouteWithChildren
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
   '/profile': typeof SidebarProfileRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
+  '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
+  '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
+  '/projects/adtech-intelligence/profile': typeof ProjectsAdtechIntelligenceProfileRoute
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
+  '/projects/adtech-intelligence/': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/bsh-home-connect/': typeof ProjectsBshHomeConnectIndexRoute
   '/projects/vi-home-one/': typeof ProjectsViHomeOneIndexRoute
+  '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
   '/projects/vi-home-one/households/$householdId': typeof ProjectsViHomeOneHouseholdsHouseholdIdRouteWithChildren
   '/projects/vi-home-one/support/$ticketId': typeof ProjectsViHomeOneSupportTicketIdRoute
   '/projects/vi-home-one/support/new': typeof ProjectsViHomeOneSupportNewRoute
+  '/projects/adtech-intelligence/anomalies/': typeof ProjectsAdtechIntelligenceAnomaliesIndexRoute
   '/projects/bsh-home-connect/devices/': typeof ProjectsBshHomeConnectDevicesIndexRoute
   '/projects/bsh-home-connect/tickets/': typeof ProjectsBshHomeConnectTicketsIndexRoute
   '/projects/vi-home-one/households/': typeof ProjectsViHomeOneHouseholdsIndexRoute
@@ -193,17 +249,23 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/profile': typeof SidebarProfileRoute
   '/build-idea': typeof BuildIdeaIndexRoute
+  '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
+  '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
+  '/projects/adtech-intelligence/profile': typeof ProjectsAdtechIntelligenceProfileRoute
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
+  '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectIndexRoute
   '/projects/vi-home-one': typeof ProjectsViHomeOneIndexRoute
+  '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
   '/projects/vi-home-one/households/$householdId': typeof ProjectsViHomeOneHouseholdsHouseholdIdRouteWithChildren
   '/projects/vi-home-one/support/$ticketId': typeof ProjectsViHomeOneSupportTicketIdRoute
   '/projects/vi-home-one/support/new': typeof ProjectsViHomeOneSupportNewRoute
+  '/projects/adtech-intelligence/anomalies': typeof ProjectsAdtechIntelligenceAnomaliesIndexRoute
   '/projects/bsh-home-connect/devices': typeof ProjectsBshHomeConnectDevicesIndexRoute
   '/projects/bsh-home-connect/tickets': typeof ProjectsBshHomeConnectTicketsIndexRoute
   '/projects/vi-home-one/households': typeof ProjectsViHomeOneHouseholdsIndexRoute
@@ -215,21 +277,28 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_sidebar': typeof SidebarRouteRouteWithChildren
+  '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectRouteRouteWithChildren
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
   '/_sidebar/profile': typeof SidebarProfileRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
+  '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
+  '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
+  '/projects/adtech-intelligence/profile': typeof ProjectsAdtechIntelligenceProfileRoute
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
+  '/projects/adtech-intelligence/': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/bsh-home-connect/': typeof ProjectsBshHomeConnectIndexRoute
   '/projects/vi-home-one/': typeof ProjectsViHomeOneIndexRoute
+  '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
   '/projects/vi-home-one/households/$householdId': typeof ProjectsViHomeOneHouseholdsHouseholdIdRouteWithChildren
   '/projects/vi-home-one/support/$ticketId': typeof ProjectsViHomeOneSupportTicketIdRoute
   '/projects/vi-home-one/support/new': typeof ProjectsViHomeOneSupportNewRoute
+  '/projects/adtech-intelligence/anomalies/': typeof ProjectsAdtechIntelligenceAnomaliesIndexRoute
   '/projects/bsh-home-connect/devices/': typeof ProjectsBshHomeConnectDevicesIndexRoute
   '/projects/bsh-home-connect/tickets/': typeof ProjectsBshHomeConnectTicketsIndexRoute
   '/projects/vi-home-one/households/': typeof ProjectsViHomeOneHouseholdsIndexRoute
@@ -241,21 +310,28 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/projects/adtech-intelligence'
     | '/projects/bsh-home-connect'
     | '/projects/vi-home-one'
     | '/profile'
     | '/build-idea/'
+    | '/projects/adtech-intelligence/dashboard'
+    | '/projects/adtech-intelligence/issues'
+    | '/projects/adtech-intelligence/profile'
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
     | '/projects/vi-home-one/profile'
+    | '/projects/adtech-intelligence/'
     | '/projects/bsh-home-connect/'
     | '/projects/vi-home-one/'
+    | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
     | '/projects/vi-home-one/households/$householdId'
     | '/projects/vi-home-one/support/$ticketId'
     | '/projects/vi-home-one/support/new'
+    | '/projects/adtech-intelligence/anomalies/'
     | '/projects/bsh-home-connect/devices/'
     | '/projects/bsh-home-connect/tickets/'
     | '/projects/vi-home-one/households/'
@@ -267,17 +343,23 @@ export interface FileRouteTypes {
     | '/'
     | '/profile'
     | '/build-idea'
+    | '/projects/adtech-intelligence/dashboard'
+    | '/projects/adtech-intelligence/issues'
+    | '/projects/adtech-intelligence/profile'
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
     | '/projects/vi-home-one/profile'
+    | '/projects/adtech-intelligence'
     | '/projects/bsh-home-connect'
     | '/projects/vi-home-one'
+    | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
     | '/projects/vi-home-one/households/$householdId'
     | '/projects/vi-home-one/support/$ticketId'
     | '/projects/vi-home-one/support/new'
+    | '/projects/adtech-intelligence/anomalies'
     | '/projects/bsh-home-connect/devices'
     | '/projects/bsh-home-connect/tickets'
     | '/projects/vi-home-one/households'
@@ -288,21 +370,28 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_sidebar'
+    | '/projects/adtech-intelligence'
     | '/projects/bsh-home-connect'
     | '/projects/vi-home-one'
     | '/_sidebar/profile'
     | '/build-idea/'
+    | '/projects/adtech-intelligence/dashboard'
+    | '/projects/adtech-intelligence/issues'
+    | '/projects/adtech-intelligence/profile'
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
     | '/projects/vi-home-one/profile'
+    | '/projects/adtech-intelligence/'
     | '/projects/bsh-home-connect/'
     | '/projects/vi-home-one/'
+    | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
     | '/projects/vi-home-one/households/$householdId'
     | '/projects/vi-home-one/support/$ticketId'
     | '/projects/vi-home-one/support/new'
+    | '/projects/adtech-intelligence/anomalies/'
     | '/projects/bsh-home-connect/devices/'
     | '/projects/bsh-home-connect/tickets/'
     | '/projects/vi-home-one/households/'
@@ -314,6 +403,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SidebarRouteRoute: typeof SidebarRouteRouteWithChildren
+  ProjectsAdtechIntelligenceRouteRoute: typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
   ProjectsBshHomeConnectRouteRoute: typeof ProjectsBshHomeConnectRouteRouteWithChildren
   ProjectsViHomeOneRouteRoute: typeof ProjectsViHomeOneRouteRouteWithChildren
   BuildIdeaIndexRoute: typeof BuildIdeaIndexRoute
@@ -363,6 +453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsBshHomeConnectRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/adtech-intelligence': {
+      id: '/projects/adtech-intelligence'
+      path: '/projects/adtech-intelligence'
+      fullPath: '/projects/adtech-intelligence'
+      preLoaderRoute: typeof ProjectsAdtechIntelligenceRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/vi-home-one/': {
       id: '/projects/vi-home-one/'
       path: '/'
@@ -376,6 +473,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/bsh-home-connect/'
       preLoaderRoute: typeof ProjectsBshHomeConnectIndexRouteImport
       parentRoute: typeof ProjectsBshHomeConnectRouteRoute
+    }
+    '/projects/adtech-intelligence/': {
+      id: '/projects/adtech-intelligence/'
+      path: '/'
+      fullPath: '/projects/adtech-intelligence/'
+      preLoaderRoute: typeof ProjectsAdtechIntelligenceIndexRouteImport
+      parentRoute: typeof ProjectsAdtechIntelligenceRouteRoute
     }
     '/projects/vi-home-one/profile': {
       id: '/projects/vi-home-one/profile'
@@ -404,6 +508,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/bsh-home-connect/dashboard'
       preLoaderRoute: typeof ProjectsBshHomeConnectDashboardRouteImport
       parentRoute: typeof ProjectsBshHomeConnectRouteRoute
+    }
+    '/projects/adtech-intelligence/profile': {
+      id: '/projects/adtech-intelligence/profile'
+      path: '/profile'
+      fullPath: '/projects/adtech-intelligence/profile'
+      preLoaderRoute: typeof ProjectsAdtechIntelligenceProfileRouteImport
+      parentRoute: typeof ProjectsAdtechIntelligenceRouteRoute
+    }
+    '/projects/adtech-intelligence/issues': {
+      id: '/projects/adtech-intelligence/issues'
+      path: '/issues'
+      fullPath: '/projects/adtech-intelligence/issues'
+      preLoaderRoute: typeof ProjectsAdtechIntelligenceIssuesRouteImport
+      parentRoute: typeof ProjectsAdtechIntelligenceRouteRoute
+    }
+    '/projects/adtech-intelligence/dashboard': {
+      id: '/projects/adtech-intelligence/dashboard'
+      path: '/dashboard'
+      fullPath: '/projects/adtech-intelligence/dashboard'
+      preLoaderRoute: typeof ProjectsAdtechIntelligenceDashboardRouteImport
+      parentRoute: typeof ProjectsAdtechIntelligenceRouteRoute
     }
     '/projects/vi-home-one/support/': {
       id: '/projects/vi-home-one/support/'
@@ -440,6 +565,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsBshHomeConnectDevicesIndexRouteImport
       parentRoute: typeof ProjectsBshHomeConnectRouteRoute
     }
+    '/projects/adtech-intelligence/anomalies/': {
+      id: '/projects/adtech-intelligence/anomalies/'
+      path: '/anomalies'
+      fullPath: '/projects/adtech-intelligence/anomalies/'
+      preLoaderRoute: typeof ProjectsAdtechIntelligenceAnomaliesIndexRouteImport
+      parentRoute: typeof ProjectsAdtechIntelligenceRouteRoute
+    }
     '/projects/vi-home-one/support/new': {
       id: '/projects/vi-home-one/support/new'
       path: '/support/new'
@@ -475,6 +607,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsBshHomeConnectDevicesRegisterRouteImport
       parentRoute: typeof ProjectsBshHomeConnectRouteRoute
     }
+    '/projects/adtech-intelligence/anomalies/$anomalyId': {
+      id: '/projects/adtech-intelligence/anomalies/$anomalyId'
+      path: '/anomalies/$anomalyId'
+      fullPath: '/projects/adtech-intelligence/anomalies/$anomalyId'
+      preLoaderRoute: typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRouteImport
+      parentRoute: typeof ProjectsAdtechIntelligenceRouteRoute
+    }
     '/projects/vi-home-one/households/$householdId/history': {
       id: '/projects/vi-home-one/households/$householdId/history'
       path: '/history'
@@ -496,6 +635,35 @@ const SidebarRouteRouteChildren: SidebarRouteRouteChildren = {
 const SidebarRouteRouteWithChildren = SidebarRouteRoute._addFileChildren(
   SidebarRouteRouteChildren,
 )
+
+interface ProjectsAdtechIntelligenceRouteRouteChildren {
+  ProjectsAdtechIntelligenceDashboardRoute: typeof ProjectsAdtechIntelligenceDashboardRoute
+  ProjectsAdtechIntelligenceIssuesRoute: typeof ProjectsAdtechIntelligenceIssuesRoute
+  ProjectsAdtechIntelligenceProfileRoute: typeof ProjectsAdtechIntelligenceProfileRoute
+  ProjectsAdtechIntelligenceIndexRoute: typeof ProjectsAdtechIntelligenceIndexRoute
+  ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute: typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
+  ProjectsAdtechIntelligenceAnomaliesIndexRoute: typeof ProjectsAdtechIntelligenceAnomaliesIndexRoute
+}
+
+const ProjectsAdtechIntelligenceRouteRouteChildren: ProjectsAdtechIntelligenceRouteRouteChildren =
+  {
+    ProjectsAdtechIntelligenceDashboardRoute:
+      ProjectsAdtechIntelligenceDashboardRoute,
+    ProjectsAdtechIntelligenceIssuesRoute:
+      ProjectsAdtechIntelligenceIssuesRoute,
+    ProjectsAdtechIntelligenceProfileRoute:
+      ProjectsAdtechIntelligenceProfileRoute,
+    ProjectsAdtechIntelligenceIndexRoute: ProjectsAdtechIntelligenceIndexRoute,
+    ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute:
+      ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute,
+    ProjectsAdtechIntelligenceAnomaliesIndexRoute:
+      ProjectsAdtechIntelligenceAnomaliesIndexRoute,
+  }
+
+const ProjectsAdtechIntelligenceRouteRouteWithChildren =
+  ProjectsAdtechIntelligenceRouteRoute._addFileChildren(
+    ProjectsAdtechIntelligenceRouteRouteChildren,
+  )
 
 interface ProjectsBshHomeConnectRouteRouteChildren {
   ProjectsBshHomeConnectDashboardRoute: typeof ProjectsBshHomeConnectDashboardRoute
@@ -579,6 +747,8 @@ const ProjectsViHomeOneRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SidebarRouteRoute: SidebarRouteRouteWithChildren,
+  ProjectsAdtechIntelligenceRouteRoute:
+    ProjectsAdtechIntelligenceRouteRouteWithChildren,
   ProjectsBshHomeConnectRouteRoute:
     ProjectsBshHomeConnectRouteRouteWithChildren,
   ProjectsViHomeOneRouteRoute: ProjectsViHomeOneRouteRouteWithChildren,

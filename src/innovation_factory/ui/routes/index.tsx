@@ -24,6 +24,7 @@ import {
   Box,
   Layers,
   Grid,
+  Radio,
   type LucideIcon,
 } from "lucide-react";
 
@@ -46,6 +47,7 @@ const iconMap: Record<string, LucideIcon> = {
   Layers,
   Grid,
   Plus,
+  Radio,
 };
 
 function GalleryContent() {
