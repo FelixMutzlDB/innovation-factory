@@ -1,0 +1,67 @@
+BAKERY PRODUCT ORDERING GUIDE
+ASM Cockpit Service Station Network
+Document Version: 1.4 | Based on 2024 Demand Analysis
+
+OVERVIEW
+Bakery products contribute 8-12% of Fresh Corner revenue but have short shelf life (1-3 days typical). Over-ordering causes waste; under-ordering loses sales. This guide provides demand-based ordering parameters for ASM stations.
+
+DEMAND PATTERNS BY PRODUCT CATEGORY
+
+Croissants and Pastries
+- Peak demand: Morning 06:00-10:00 (70% of daily volume)
+- Daily volume factor: Base = 1.0; Monday 0.9, Friday 1.1, Weekend 1.2
+- Shelf life: 2 days
+- Ordering: Order for next day based on today's sell-through; if sold out before 10:00, increase next order by 20%
+
+Sandwiches and Wraps
+- Steady demand: 10:00-18:00
+- Daily volume factor: Weekday 1.0, Weekend 0.8
+- Shelf life: 1 day (chilled)
+- Ordering: Match previous day sales; reduce 15% for Monday (weekend leftover effect)
+
+Bread and Rolls
+- Morning and evening peaks
+- Daily volume factor: Consistent
+- Shelf life: 2-3 days
+- Ordering: More stable; weekly pattern; increase Friday for weekend
+
+Cakes and Sweet Items
+- Afternoon peak: 14:00-17:00
+- Weekend: +30% vs weekday
+- Shelf life: 2-3 days
+- Ordering: Lower base, spike for weekend
+
+STATION-SPECIFIC ADJUSTMENTS
+
+By Station Type
+- Highway: Higher croissant volume (travelers); lower afternoon cakes
+- Urban: More consistent throughout day; lunch sandwich peak
+- Truck stop: Large format items; bulk rolls; 24-hour demand
+- Tourist route: Seasonal; summer +25%; local specialties
+
+By Size
+- Small shop (less than 80 sqm): Focus on top 15 SKUs; avoid long tail
+- Medium: Full range; optimize mix
+- Large: Include premium and experimental items
+
+ORDERING CALENDAR
+- Monday: Lower order (weekend leftover)
+- Tuesday-Thursday: Standard
+- Friday: +15% for weekend
+- Saturday-Sunday: Per supplier delivery schedule; some suppliers no Sunday delivery
+
+SUPPLIER LEAD TIME
+- Primary supplier: Order by 14:00 for next day delivery
+- Backup: 48-hour lead time
+- Plan for supplier holidays - advance order
+
+WASTE REDUCTION
+- Target waste: Below 6% of bakery cost
+- End-of-day: Markdown at 18:00 (20% off) for items expiring next day
+- Donation: Partner with local charity for unsold product (where permitted)
+- Track: Log waste by SKU; identify consistent over-order items
+
+ASM COCKPIT INTEGRATION
+- Historical sales by product available in Cockpit
+- Recommended order quantities generated from algorithm (pilot at 10 stations)
+- Manual override always available for local knowledge

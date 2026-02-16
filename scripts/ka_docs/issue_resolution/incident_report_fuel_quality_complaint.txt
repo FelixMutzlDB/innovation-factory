@@ -1,0 +1,61 @@
+INCIDENT REPORT: CUSTOMER FUEL QUALITY COMPLAINT INVESTIGATION
+Station: HU-BP-001 (referenced); Complaint originated from fleet customer
+Date: 28 January 2025
+Incident ID: INC-2025-00201
+Classification: Product Quality / Customer Relations
+
+SUMMARY
+Fleet customer Pannonia Freight reported fuel quality concerns following a delivery to 12 vehicles at station HU-BP-001 on 26 January 2025. Customer reported rough engine performance and check engine lights on 3 vehicles. Investigation was initiated per standard procedure.
+
+COMPLAINT DETAILS
+- Reporter: Pannonia Freight fleet manager
+- Vehicles affected: 3 of 12 fueled
+- Product: Diesel
+- Approximate volume: 180L total across 3 vehicles
+- Symptoms: Rough idle, reduced power, check engine light
+- Vehicle types: 2x MAN TGX, 1x Scania R450
+
+INVESTIGATION PROCEDURE
+
+Step 1: Tank and Product Verification (27 January)
+- Tank 2 (Diesel) at HU-BP-001: Sample drawn from tank sump
+- Visual inspection: Clear, no water separation, no sediment
+- Lab analysis ordered: Water content, particulate, lubricity, cetane number
+- Result: All parameters within specification
+
+Step 2: Delivery History Review
+- Last delivery to Tank 2: 24 January 2025, 18,000L from approved supplier
+- Delivery acceptance: All checks passed, documentation complete
+- No delivery between 24 January and 26 January
+
+Step 3: Dispenser Verification
+- Pumps 2, 4, 6 (Diesel) inspected
+- Filters: Replaced 15 January (per schedule)
+- No water in filter bowls
+- Sample from dispenser: Within specification
+
+Step 4: Cross-Reference
+- Other customers fueled same pumps 26 January: No complaints
+- Station HR-C-002 (same fuel supply chain): No complaints
+- Supplier batch tracking: Batch from same refinery load delivered to 8 stations - no other reports
+
+FINDINGS
+- Station fuel quality: Within specification
+- No evidence of contamination at HU-BP-001
+- Possible causes for customer vehicles: Pre-existing condition, fuel from other source, cold weather fuel gelling (temperature was -5C on 26 January), or coincidental timing
+
+RESOLUTION
+- Customer informed of investigation results 30 January
+- Offered: Fuel system flush for 3 vehicles at ASM expense (goodwill gesture)
+- Customer accepted; vehicles serviced 5 February
+- No recurrence reported
+- Customer relationship maintained
+
+DOCUMENTATION
+- Full investigation report in ASM Cockpit
+- Tank sample retained 90 days
+- Supplier notified for their records
+- Procedure updated: Add cold weather fuel advisory for fleet customers
+
+REFERENCE
+See fuel_delivery_procedures.txt for quality check procedures. See customer_complaint_resolution.txt for complaint handling process.

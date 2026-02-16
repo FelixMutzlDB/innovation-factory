@@ -1,0 +1,41 @@
+FUEL PUMP MAINTENANCE GUIDE
+ASM Cockpit Service Station Network
+Document Version: 2.4 | Last Updated: January 2025
+
+OVERVIEW
+Regular maintenance of fuel dispensing equipment is critical for operational continuity and compliance with safety regulations. This guide covers preventive maintenance procedures, common error codes, and troubleshooting protocols for Wayne, Gilbarco, and Tokheim dispensers deployed across the ASM network.
+
+PREVENTIVE MAINTENANCE SCHEDULE
+- Daily: Visual inspection of nozzles, hoses, and display screens; verify receipt printer paper levels
+- Weekly: Nozzle boot cleaning; check for fuel leaks at connections; verify price display accuracy
+- Monthly: Filter inspection and replacement if pressure drop exceeds 15 psi; dispenser cabinet interior cleaning
+- Quarterly: Full dispenser calibration verification; vapor recovery system inspection; hose replacement if wear detected
+- Annually: Certified technician inspection; flow meter accuracy certification; electrical safety test
+
+COMMON ERROR CODES AND RESOLUTION
+
+E-15: Flow Meter Communication Fault
+Indicates loss of communication between dispenser controller and flow meter. Causes include loose wiring, corroded connectors, or failed flow meter. Resolution: Power cycle the dispenser. If error persists, check wiring harness at flow meter connection (typically located in dispenser base). Replace flow meter if continuity test fails. Document in maintenance log and report to technical support if unresolved after 30 minutes.
+
+E-24: Printer Paper Out / Jam
+Most frequent dispenser fault. Resolution: Open receipt door, remove any jammed paper, load new thermal paper roll (80mm width, ensure paper is loaded with thermal side facing print head). Clear error via keypad sequence 99-ENTER. If printer continues to jam, inspect paper path for debris and replace printer mechanism if damaged.
+
+E-42: Solenoid Valve Failure
+Critical fault indicating fuel flow cannot be stopped at nozzle. IMMEDIATE ACTION: Place dispenser out of service, lock nozzle in holster, post "Out of Order" signage. Do not attempt to dispense fuel. Solenoid valve replacement required. Contact maintenance within 15 minutes. Document pump number, dispenser ID, and time of fault. Reference incident_report_pump3_failure_2025.txt for detailed resolution procedure.
+
+ADDITIONAL ERROR CODES
+- E-08: Keyboard fault - clean keypad, replace if keys unresponsive
+- E-12: Display fault - check ribbon cable connection
+- E-33: Card reader fault - clean chip reader slot, verify network connection for card transactions
+- E-51: Tank probe communication - verify probe connection in tank sump
+
+TROUBLESHOOTING STEPS (GENERAL)
+1. Document exact error code and any secondary messages on display
+2. Power cycle dispenser (main breaker, wait 30 seconds, restore power)
+3. Verify no fuel spill or safety hazard before any work
+4. Check station network connectivity if transaction-related
+5. Escalate to regional technical support if fault recurs within 24 hours
+6. Update ASM Cockpit incident log with resolution details
+
+SAFETY REMINDERS
+Never bypass safety interlocks. All maintenance must be performed with dispenser powered off and fuel flow isolated. Use intrinsically safe tools in hazardous areas. Report any fuel odor immediately.

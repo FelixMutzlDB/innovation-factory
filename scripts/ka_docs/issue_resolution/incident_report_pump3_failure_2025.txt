@@ -1,0 +1,41 @@
+INCIDENT REPORT: PUMP 3 SOLENOID FAILURE
+Station: HU-BP-001 (Budapest, Arpad utca)
+Date: 15 January 2025
+Incident ID: INC-2025-00147
+Classification: Equipment Failure / Safety Critical
+
+SUMMARY
+Pump 3 (Diesel) at station HU-BP-001 experienced E-42 solenoid valve failure at 14:23. The solenoid valve, which controls fuel flow at the dispenser, failed to close properly after a customer transaction. Staff responded correctly by taking the pump out of service immediately. No fuel spill or safety incident occurred.
+
+TIMELINE
+14:23 - Customer completed 45L diesel transaction at Pump 3
+14:23 - Nozzle returned to holster; pump display showed E-42 error
+14:24 - Staff observed fuel dripping from nozzle
+14:24 - Staff placed pump out of service, applied absorbent to minor drip
+14:25 - Station manager notified
+14:35 - Maintenance contractor dispatched
+16:45 - Technician arrived, confirmed solenoid failure
+17:30 - Solenoid valve replaced, pump tested and returned to service
+
+ROOT CAUSE
+Post-incident inspection found the solenoid valve coil had failed. Age of component: 4 years (within typical lifespan). Possible contributing factors: electrical surge during recent storm (10 January), or normal wear. No pattern of similar failures at this station in prior 12 months.
+
+ACTIONS TAKEN
+- Pump 3 taken out of service within 2 minutes of fault detection
+- Absorbent used for approximately 200ml drip - contained, no environmental impact
+- Customer transaction completed successfully before fault - no customer impact
+- Solenoid replaced with OEM part
+- All pumps at HU-BP-001 inspected for similar wear - no issues found
+
+LESSONS LEARNED
+- Staff training on E-42 response was effective - immediate out-of-service placement prevented potential spill
+- Recommendation: Add solenoid age to preventive maintenance tracking
+- Consider surge protection audit for station electrical systems
+
+FOLLOW-UP
+- Station HU-BP-001: No further issues with Pump 3 as of 30 January 2025
+- Maintenance contractor updated spare parts inventory at regional depot
+- Incident summary shared in regional operations bulletin for staff awareness
+
+REFERENCE
+See pump_maintenance_guide.txt for E-42 error code procedures.

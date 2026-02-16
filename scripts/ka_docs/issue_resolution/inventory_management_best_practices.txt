@@ -1,0 +1,64 @@
+INVENTORY MANAGEMENT BEST PRACTICES
+ASM Cockpit Service Station Network
+Document Version: 1.7 | Last Updated: January 2025
+
+OVERVIEW
+Effective inventory management balances availability with capital efficiency. Overstocking ties up capital and increases spoilage risk; understocking loses sales and damages customer satisfaction. This guide covers fuel and shop inventory optimization.
+
+FUEL INVENTORY
+
+Tank Level Optimization
+- Minimum level: Maintain 20% of tank capacity to avoid runout and allow delivery acceptance
+- Reorder point: Trigger delivery request when tank reaches 25-30% (allows lead time)
+- Maximum level: Do not exceed 95% - allows for expansion, delivery variance
+- High-volume tanks: More frequent smaller deliveries vs. large infrequent - reduces capital
+
+Delivery Scheduling
+- Predict demand: Use historical data, seasonal factors, local events
+- Avoid weekend delivery when possible (premium charges)
+- Coordinate with supplier - consolidated deliveries reduce cost
+- Document: All deliveries reconciled in ASM Cockpit within 24 hours
+
+Variance Investigation
+- Fuel variance over 0.3%: Investigate within 48 hours
+- Causes: Calibration drift, leak, delivery discrepancy, theft
+- Tank chart verification: Annual calibration per tank_calibration_procedures.txt
+
+SHOP INVENTORY
+
+Stock Level Optimization
+- Fast movers: Maintain 5-7 days stock (beverages, tobacco, snacks)
+- Medium movers: 3-5 days stock
+- Slow movers: 1-2 weeks or consider delisting
+- Fresh Corner: Per bakery_ordering_optimization.txt and hot_dog_planner_guide.txt
+
+Replenishment
+- Order frequency: Match supplier delivery schedule
+- Lead time: Factor into reorder point
+- Minimum order: Optimize to avoid excess; some suppliers have MOQ
+- Seasonal: Build ahead for peak (summer, holidays) - see seasonal_operations_guide.txt
+
+SPOILAGE REDUCTION
+- FIFO: First in, first out - always
+- Date checks: Daily for short-life items
+- Storage: Correct temperature, dry goods protected from moisture
+- Damaged goods: Remove immediately, document, claim if supplier responsibility
+- Target: Shop spoilage below 1.5% of cost of goods sold
+
+INVENTORY COUNT
+- Full count: Quarterly minimum; monthly for high-value stations
+- Cycle count: Weekly count of subset; rotate through categories
+- Variance: Investigate over 1% by value
+- Fuel: Continuous via ATG; physical dip if ATG variance
+
+SHRINKAGE CONTROL
+- Theft: Security measures, staff awareness
+- Administrative: Accurate receiving, correct pricing
+- Damage: Proper handling, storage
+- Document: All shrinkage in ASM Cockpit; trend analysis
+
+ASM COCKPIT UTILIZATION
+- Demand forecasting: Use Cockpit analytics for order recommendations
+- Variance reporting: Automated alerts for out-of-range
+- Supplier performance: Track delivery accuracy, lead time
+- Benchmark: Compare to peer stations for improvement ideas

@@ -42,7 +42,8 @@ def list_my_devices(
     for cd in customer_devices:
         device = db.get(BshDevice, cd.device_id)
         result.append(BshCustomerDeviceOut(
-            id=cd.id, customer_id=cd.customer_id, device_id=cd.device_id,
+            id=cd.id,  # type: ignore[invalid-argument-type]
+            customer_id=cd.customer_id, device_id=cd.device_id,
             serial_number=cd.serial_number, purchase_date=cd.purchase_date,
             warranty_expiry_date=cd.warranty_expiry_date, batch_number=cd.batch_number,
             registered_at=cd.registered_at,
@@ -82,7 +83,8 @@ def register_device(
 
     device_fresh = db.get(BshDevice, device_data.device_id)
     return BshCustomerDeviceOut(
-        id=customer_device.id, customer_id=customer_device.customer_id,
+        id=customer_device.id,  # type: ignore[invalid-argument-type]
+        customer_id=customer_device.customer_id,
         device_id=customer_device.device_id, serial_number=customer_device.serial_number,
         purchase_date=customer_device.purchase_date,
         warranty_expiry_date=customer_device.warranty_expiry_date,
@@ -107,7 +109,8 @@ def get_my_device(
 
     device = db.get(BshDevice, customer_device.device_id)
     return BshCustomerDeviceOut(
-        id=customer_device.id, customer_id=customer_device.customer_id,
+        id=customer_device.id,  # type: ignore[invalid-argument-type]
+        customer_id=customer_device.customer_id,
         device_id=customer_device.device_id, serial_number=customer_device.serial_number,
         purchase_date=customer_device.purchase_date,
         warranty_expiry_date=customer_device.warranty_expiry_date,

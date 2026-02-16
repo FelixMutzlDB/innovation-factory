@@ -59,7 +59,7 @@ class AppConfig(BaseSettings):
         env_nested_delimiter="__",
     )
     app_name: str = Field(default=app_name)
-    db: DatabaseConfig = DatabaseConfig()  # type: ignore
+    db: DatabaseConfig = DatabaseConfig()
 
     @property
     def static_assets_path(self) -> Path:

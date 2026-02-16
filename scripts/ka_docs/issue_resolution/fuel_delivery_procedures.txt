@@ -1,0 +1,59 @@
+FUEL DELIVERY ACCEPTANCE AND MONITORING PROCEDURES
+ASM Cockpit Service Station Network
+Document Version: 2.3 | Last Updated: January 2025
+
+OVERVIEW
+Proper fuel delivery procedures ensure product quality, accurate inventory, and regulatory compliance. All deliveries must be verified before acceptance. Incorrect procedures have led to contamination incidents and inventory discrepancies.
+
+PRE-DELIVERY CHECKLIST
+- Verify delivery scheduled in ASM Cockpit
+- Ensure receiving tank has sufficient ullage (minimum 10% headspace for expansion)
+- Check tank level via ATG - record pre-delivery reading
+- Clear access to tank fill point; no vehicles blocking
+- Spill kit and absorbent materials available
+- Delivery driver has valid credentials and delivery documentation
+
+DELIVERY ACCEPTANCE PROCEDURE
+
+Step 1: Driver Identification
+- Verify driver matches delivery order
+- Check tanker placards match product (diesel, gasoline, premium)
+- Confirm tanker is from approved supplier (ASM approved list in Cockpit)
+
+Step 2: Documentation Review
+- Delivery note: Product type, volume, temperature (if applicable)
+- Certificate of quality: Within validity period
+- Previous compartment: Ensure tanker was last used for same product type (or properly cleaned)
+
+Step 3: Visual Inspection
+- Tanker exterior: No obvious damage or leaks
+- Hose and connections: Clean, no contamination
+- Sample draw: Driver should provide sample from compartment - check for water, sediment, unusual odor
+
+Step 4: Connection and Delivery
+- Attach hose to correct fill point - VERIFY TANK ID
+- Common error: Delivery to wrong tank - double-check before opening valve
+- Monitor throughout delivery - staff must remain present
+- Observe for leaks, overflow, unusual sounds
+
+Step 5: Post-Delivery Verification
+- Record final tank level via ATG
+- Calculate received volume: Post-reading minus pre-reading
+- Compare to delivery note - variance up to 0.5% acceptable
+- If variance exceeds 0.5%: Do not sign delivery note; contact supplier and regional office
+- Sign delivery note only after verification complete
+
+QUALITY CHECKS
+- Diesel: Visual check for water (hazy appearance); sample in clear container - water settles at bottom
+- Gasoline: Check for phase separation if ethanol blend; unusual odor may indicate contamination
+- Document any quality concerns; reject delivery if contamination suspected
+- Retain sample for 7 days in case of dispute - label with date, product, delivery note number
+
+TANK MONITORING POST-DELIVERY
+- ATG reading should stabilize within 2 hours
+- Run leak test if required by local regulation (typically within 4 hours)
+- Reconcile delivery in ASM Cockpit within 24 hours
+- Report any anomaly to inventory control
+
+INCIDENT: WRONG TANK DELIVERY
+If delivery made to wrong tank: Immediately stop delivery. Do not dispense from affected tank. Isolate product. Contact regional office and supplier. Professional assessment required before tank can be used. Document fully. Reference incident_report_fuel_quality_complaint.txt for investigation procedure.

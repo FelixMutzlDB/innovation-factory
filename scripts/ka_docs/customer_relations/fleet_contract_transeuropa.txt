@@ -1,0 +1,50 @@
+FLEET CONTRACT: TRANS EUROPA LOGISTICS
+ASM Cockpit Customer Relations
+Contract ID: FLT-2019-0042 | Effective: 1 March 2019 | Renewal: 1 March 2026
+
+ACCOUNT OVERVIEW
+TransEuropa Logistics is a major fleet customer operating long-haul trucking across Central and Eastern Europe. The company fuels primarily at ASM stations along the M1, M3, M5, and M7 corridors in Hungary, plus designated stations in Austria, Slovakia, and Romania.
+
+CONTRACT TERMS
+
+Fleet Size
+- Registered vehicles: 120 trucks
+- Primary fuel: Diesel
+- Average monthly volume: 180,000 liters (commitment)
+- Actual volume (2024): 192,000 liters monthly average
+
+Pricing Tier
+- Tier: Platinum
+- Discount: 8.5% off pump price (excluding taxes)
+- Applies to: Diesel, AdBlue
+- Shop: 5% discount on Fresh Corner and selected merchandise (max 500 EUR/month)
+
+Volume Commitment
+- Minimum: 180,000 liters per month
+- Shortfall: If volume below 90% of commitment for 2 consecutive months, discount may be reviewed
+- Overage: No penalty; volume above commitment strengthens renewal position
+
+Payment Terms
+- Invoice: Weekly (every Monday for prior week)
+- Payment due: 14 days from invoice date
+- Method: Bank transfer
+- Currency: EUR for cross-border; HUF for Hungary-only stations
+
+ADDITIONAL BENEFITS
+- Dedicated account manager: Maria Kovacs (maria.kovacs@asm-retail.com)
+- Priority support: 24/7 fleet hotline for fueling issues
+- Station network: Access to all ASM stations; preferred pricing at 45 designated truck-stop locations
+- Reporting: Monthly volume and spend report; quarterly business review
+- Loyalty points: Accumulated at 1.5x rate (platinum multiplier)
+
+KEY CONTACTS
+- TransEuropa Fleet Manager: Peter Novak, peter.novak@transeuropa-logistics.hu
+- TransEuropa Finance: Anna Szabo, anna.szabo@transeuropa-logistics.hu
+- ASM Account Manager: Maria Kovacs
+
+RENEWAL NOTES
+- Contract renewed March 2023 for 3-year term
+- Next renewal: March 2026
+- Relationship: Strong; NPS 72 in Q4 2024 survey
+- Risk: Low; consider early renewal discussion Q3 2025
+- Reference: customer_complaint_transeuropa_jan2025.txt for January 2025 loyalty points issue (resolved)

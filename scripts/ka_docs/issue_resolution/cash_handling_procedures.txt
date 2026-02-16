@@ -1,0 +1,71 @@
+CASH HANDLING PROCEDURES
+ASM Cockpit Service Station Network
+Document Version: 2.2 | Security Classification: Confidential
+
+OVERVIEW
+Proper cash management protects assets and ensures reconciliation. Cash handling vulnerabilities are a primary loss source at retail fuel sites. These procedures apply to all staff handling cash.
+
+CASH DRAWER PROCEDURES
+
+Opening Float
+- Standard float: 200 EUR (50 EUR in change, 150 EUR in notes)
+- Count and verify at shift start
+- Document in till log
+- Report discrepancies to manager
+
+During Shift
+- Large notes (100 EUR, 200 EUR): Drop to safe when drawer exceeds 500 EUR
+- Never leave till unattended with drawer open
+- Cash in drawer: Maximum 800 EUR at any time
+- Customer view: Position till to minimize visibility of cash
+
+Closing and Reconciliation
+- Count cash in presence of second person when possible
+- Reconcile to POS report - variance must be explained
+- Variance over 20 EUR: Document and report to manager
+- Drop all cash to safe at shift end except opening float for next shift
+
+SAFE PROCEDURES
+
+Safe Access
+- Combination known only to authorized staff (per station roster)
+- Change combination when staff with access leaves
+- Never share combination
+- Safe room: Lock when unoccupied
+
+Cash Drops
+- Frequency: Per station risk assessment (typically every 2-4 hours or when drawer exceeds 500 EUR)
+- Drop envelope: Seal, date, initial
+- Log drop in ASM Cockpit or station log
+- Do not transport large amounts alone - two-person rule for bank deposits
+
+Safe Count
+- Daily: Manager or designated staff
+- Document count, compare to expected
+- Investigate variances immediately
+- Safe should reconcile to: Opening balance + drops - withdrawals
+
+BANK DEPOSITS
+- Schedule: Per station (typically 2-3 times weekly)
+- Preparation: Count and verify, prepare deposit slip
+- Transport: Two persons, varied route and time
+- Armored car: For high-cash stations per contract
+- Document: Deposit slip copy retained, logged in system
+
+RECONCILIATION
+- Daily: Till reconciliation, safe count
+- Weekly: Full cash audit by manager
+- Discrepancy: Investigate within 48 hours
+- Theft suspicion: Report to regional security; do not accuse staff without evidence
+
+SECURITY MEASURES
+- CCTV coverage of till and safe area
+- No personal bags in cash handling area
+- Staff screening per policy
+- Surprise cash counts by manager
+
+RED FLAGS - REPORT IMMEDIATELY
+- Unexplained repeated variances
+- Refusal to take leave (potential cover-up)
+- Lifestyle inconsistent with salary
+- Manipulation of refunds or voids

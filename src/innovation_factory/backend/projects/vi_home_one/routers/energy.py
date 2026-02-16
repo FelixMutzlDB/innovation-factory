@@ -21,13 +21,14 @@ def get_energy_readings(
     statement = select(VhEnergyReading).where(
         VhEnergyReading.household_id == household_id,
         VhEnergyReading.timestamp >= start_time
-    ).order_by(VhEnergyReading.timestamp.desc())
+    ).order_by(VhEnergyReading.timestamp.desc())  # type: ignore[unresolved-attribute]
 
     readings = db.exec(statement).all()
 
     return [
         VhEnergyReadingOut(
-            id=r.id, household_id=r.household_id, timestamp=r.timestamp,
+            id=r.id,  # type: ignore[invalid-argument-type]
+            household_id=r.household_id, timestamp=r.timestamp,
             pv_generation_kwh=r.pv_generation_kwh, battery_charge_kwh=r.battery_charge_kwh,
             battery_discharge_kwh=r.battery_discharge_kwh, battery_level_kwh=r.battery_level_kwh,
             grid_import_kwh=r.grid_import_kwh, grid_export_kwh=r.grid_export_kwh,
@@ -43,7 +44,7 @@ def get_current_reading(household_id: int, db: SessionDep):
     """Get the most recent energy reading for a household."""
     statement = select(VhEnergyReading).where(
         VhEnergyReading.household_id == household_id
-    ).order_by(VhEnergyReading.timestamp.desc()).limit(1)
+    ).order_by(VhEnergyReading.timestamp.desc()).limit(1)  # type: ignore[unresolved-attribute]
 
     reading = db.exec(statement).first()
 
@@ -51,7 +52,8 @@ def get_current_reading(household_id: int, db: SessionDep):
         raise HTTPException(status_code=404, detail="No readings found for this household")
 
     return VhEnergyReadingOut(
-        id=reading.id, household_id=reading.household_id, timestamp=reading.timestamp,
+        id=reading.id,  # type: ignore[invalid-argument-type]
+        household_id=reading.household_id, timestamp=reading.timestamp,
         pv_generation_kwh=reading.pv_generation_kwh, battery_charge_kwh=reading.battery_charge_kwh,
         battery_discharge_kwh=reading.battery_discharge_kwh, battery_level_kwh=reading.battery_level_kwh,
         grid_import_kwh=reading.grid_import_kwh, grid_export_kwh=reading.grid_export_kwh,

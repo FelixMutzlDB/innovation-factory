@@ -27,8 +27,8 @@ def search_knowledge(
     if category:
         statement = statement.where(BshKnowledgeArticle.category == category)
     statement = statement.where(
-        (BshKnowledgeArticle.title.contains(query)) |
-        (BshKnowledgeArticle.content.contains(query))
+        (BshKnowledgeArticle.title.contains(query)) |  # type: ignore[unresolved-attribute]
+        (BshKnowledgeArticle.content.contains(query))  # type: ignore[unresolved-attribute]
     )
     statement = statement.limit(limit)
     articles = db.exec(statement).all()

@@ -1,0 +1,85 @@
+MONTHLY STATION QUALITY AUDIT PROCEDURES
+ASM Cockpit Service Station Network
+Document Version: 2.0 | Conducted by Station Manager or Regional Auditor
+
+OVERVIEW
+Monthly quality audits ensure consistent standards across the ASM network. Audits identify issues before they impact customers or compliance. Results feed into station performance scoring and manager evaluation. This checklist covers all audit areas.
+
+AUDIT SCHEDULE
+- Frequency: Monthly, within first 10 days of month
+- Conducted by: Station manager (self-audit) or regional auditor (independent)
+- Rotation: Regional auditor visits each station at least quarterly
+- Duration: 45-90 minutes depending on station size
+- Documentation: Complete audit in ASM Cockpit Quality module
+
+AUDIT CHECKLIST
+
+1. FORECOURT AND FUEL OPERATIONS
+- Pump islands: Clean, no debris, no fuel spills
+- Dispensers: All operational; no out-of-service without signage
+- Price displays: Accurate, legible
+- Lighting: All functional
+- Drainage: Clear, no standing fuel or water
+- EV chargers: Operational if equipped
+- LPG: Per lpg_safety_procedures.txt compliance
+
+2. SHOP APPEARANCE
+- Entrance: Clean, welcoming
+- Shelving: Stocked, faced, no gaps
+- Floors: Clean, no hazards
+- Lighting: All functional
+- Temperature: Comfortable
+- Signage: Current, accurate pricing
+
+3. FRESH CORNER
+- Display: Appealing, FIFO evident
+- Temperature: Coolers at 2-5C, hot hold at 63C+
+- Date labels: Present, within date
+- Cleanliness: Surfaces clean, no debris
+- Staff: Proper attire, hygiene
+- Reference: fresh_corner_food_safety.txt
+
+4. EQUIPMENT
+- POS: All terminals operational
+- Coffee machines: Clean, functional
+- Car wash: Operational if equipped
+- Back office: Organized, secure
+
+5. SAFETY AND COMPLIANCE
+- Spill kit: Present, stocked, accessible
+- Fire extinguishers: In place, current inspection
+- Emergency exits: Clear, signed
+- First aid: Kit present, stocked
+- CCTV: Recording, coverage adequate
+- Reference: emergency_procedures.txt, environmental_compliance.txt
+
+6. DOCUMENTATION
+- Temperature logs: Complete, within range
+- Delivery records: Reconciled
+- Incident reports: Filed for any incidents
+- Training records: Current
+- Cash procedures: Per cash_handling_procedures.txt
+
+7. CUSTOMER SERVICE
+- Staff greeting: Observed or mystery shop result
+- Queue management: Acceptable wait times
+- Complaint log: Reviewed, resolved
+- Cleanliness: Customer areas
+
+SCORING
+- Each section: Pass/Fail or 1-5 scale per regional standard
+- Critical fails: Safety, food safety, compliance - require immediate corrective action
+- Overall score: Weighted average; target 4.0+ (on 5-point scale)
+- Trend: Compare to prior months; declining score triggers intervention
+
+CORRECTIVE ACTION
+- Failures: Document corrective action, responsible party, due date
+- Follow-up: Verify correction at next audit
+- Pattern: Repeated failures in same area - root cause analysis, training
+- Escalation: Critical or persistent issues to regional manager
+
+REPORTING
+- Submit in ASM Cockpit within 48 hours of audit
+- Manager review: Within 1 week
+- Regional dashboard: Aggregated for network view
+- Action items: Track to completion

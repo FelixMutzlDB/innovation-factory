@@ -81,7 +81,7 @@ def get_obo_ws(
     In local development mode, returns a mock client.
     """
     if is_local_dev():
-        return MockWorkspaceClient()
+        return MockWorkspaceClient()  # type: ignore[invalid-return-type]
 
     if not token:
         raise ValueError(

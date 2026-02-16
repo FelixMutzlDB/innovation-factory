@@ -1,0 +1,61 @@
+POS SYSTEM TROUBLESHOOTING GUIDE
+ASM Cockpit Service Station Network
+Document Version: 3.1 | Last Updated: February 2025
+
+SYSTEM OVERVIEW
+The ASM network uses Verifone Commander and NCR Radiant POS terminals integrated with the central back-office system. Terminals process fuel, shop, and car wash transactions. Payment processing runs through Ingenico payment terminals with PCI-DSS compliant encryption.
+
+TERMINAL CRASH RECOVERY
+
+Immediate Response (Terminal Unresponsive)
+1. Do not power cycle immediately - wait 60 seconds for automatic recovery
+2. If frozen on transaction screen: Note transaction amount and customer details
+3. Power cycle: Unplug power cable, wait 15 seconds, reconnect
+4. Boot sequence typically takes 2-3 minutes
+5. Upon restart: Check if transaction was completed (review pending transactions in back-office)
+6. If transaction incomplete: Process manually or advise customer to retry
+
+Forced Restart Procedure
+- Hold power button 10 seconds for soft reset
+- If no response: Physical power disconnect required
+- After restart: Verify network connectivity (green status on terminal)
+- Run diagnostic: Menu > System > Diagnostics > Connection Test
+
+PAYMENT PROCESSING ISSUES
+
+Card Declined - Customer Insists Card Valid
+1. Verify card is inserted correctly (chip) or swiped fully
+2. Try alternate payment terminal if station has multiple
+3. Check terminal for specific decline code: 05 (Do not honor), 51 (Insufficient funds), 54 (Expired card)
+4. For fleet cards: Verify station is in network; check card status with fleet provider
+5. Never advise customer of specific decline reason - refer to "contact your bank"
+
+Transaction Timeout
+- Typically caused by network latency or gateway congestion
+- Wait 2 minutes - transaction may complete asynchronously
+- Do NOT run duplicate transaction without verifying first transaction failed
+- Check ASM Cockpit for pending authorization before retry
+
+Receipt Printer Failure
+- Open printer door, remove jammed paper
+- Verify paper roll is thermal type, correct orientation
+- Clean print head with dry cloth (no solvents)
+- If printer hardware fault: Use manual receipt book, log transaction number
+
+COMMON POS ERRORS
+ERR-204: Database sync failure - terminal will retry automatically; if persistent, contact IT support
+ERR-311: Price update failed - verify price file was received; manual price entry may be required
+ERR-402: Fuel authorization timeout - pump may have dispensed; reconcile with tank readings
+
+BACK-OFFICE RECONCILIATION
+End-of-day reconciliation must balance. If POS crash occurred during shift:
+1. Export transaction log from terminal
+2. Cross-reference with pump totals
+3. Document variance in shift report
+4. Escalate discrepancies over 50 EUR to regional office
+
+PREVENTIVE MEASURES
+- Daily: Verify all terminals communicating before shift start
+- Weekly: Clear transaction log archive (retain 90 days minimum)
+- Monthly: Update terminal software per IT schedule
+- Ensure adequate ventilation - POS terminals overheated in 3 incidents during summer 2025

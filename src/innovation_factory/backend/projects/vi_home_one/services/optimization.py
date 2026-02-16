@@ -22,7 +22,7 @@ def generate_optimization_suggestions(
     readings_query = select(VhEnergyReading).where(
         VhEnergyReading.household_id == household.id,
         VhEnergyReading.timestamp >= one_day_ago
-    ).order_by(VhEnergyReading.timestamp.desc())
+    ).order_by(VhEnergyReading.timestamp.desc())  # type: ignore[unresolved-attribute]
     readings = session.exec(readings_query).all()
 
     if not readings:

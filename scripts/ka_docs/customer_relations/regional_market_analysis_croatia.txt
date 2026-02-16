@@ -1,0 +1,55 @@
+REGIONAL MARKET ANALYSIS: CROATIA
+ASM Cockpit Customer Relations
+Analysis Period: 2024 | Report Date: January 2025
+
+OVERVIEW
+Croatia represents a growth market for ASM with 28 stations primarily along the coast (tourist routes) and in Zagreb. Tourism drives significant seasonal variation. Market is more fragmented than Hungary with stronger independent presence.
+
+MARKET SHARE (2024 Estimate)
+- Total fuel market: Approximately 2.1 billion liters annually (retail)
+- ASM share: 6.8% (up from 6.2% in 2023)
+- Market rank: 5th
+- Trend: ASM gaining; expansion in progress
+
+COMPETITIVE LANDSCAPE
+
+INA (Market Leader)
+- Strengths: National champion, refinery, largest network
+- Weaknesses: Service perception, older stations
+- ASM opportunity: Premium experience, cleanliness
+
+Petrol (Slovenian)
+- Strengths: Regional brand, highway presence
+- Weaknesses: Limited Croatian footprint
+- ASM opportunity: Coastal and Zagreb expansion
+
+Crodux, Tifon, independents
+- Significant share; price-focused
+- ASM opportunity: Quality and consistency
+
+ASM POSITIONING
+- Stations: 28; concentration on A1 (Zagreb-Split), coast, Zagreb
+- Fresh Corner: 22 stations; key differentiator
+- Fleet: Growing; cross-border with Hungary fleet contracts
+- Tourism: Summer volume 40% higher than winter
+- Reference: HR-C-002, HR-ZG-003 in incident reports
+
+SEASONAL DYNAMICS
+- Peak: June-August (tourist season)
+- Shoulder: April-May, September-October
+- Low: November-March
+- Implication: Staffing, inventory, promotions must align
+- Reference: seasonal_operations_guide.txt
+
+KEY TRENDS
+- Tourism recovery: 2024 above 2019 levels
+- EV: Growing; coastal routes need chargers
+- Fleet: Hungarian and Austrian fleets fueling in Croatia
+- Price: Euro adoption (2023) simplified; competitive
+
+STRATEGIC IMPLICATIONS
+- Summer preparation: Critical for this market
+- Coastal expansion: Evaluate additional locations
+- Zagreb: Strengthen urban presence
+- Cross-border: Leverage Danubia, Starline for Croatia volume
+- Quality: NPS 38 - focus on cleanliness, availability per customer_satisfaction_survey_q4.txt

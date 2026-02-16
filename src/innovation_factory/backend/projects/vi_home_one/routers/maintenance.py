@@ -25,12 +25,12 @@ def list_maintenance_alerts(household_id: int, db: SessionDep, include_acknowled
     if not device_ids:
         return []
 
-    query = select(VhMaintenanceAlert).where(VhMaintenanceAlert.device_id.in_(device_ids))
+    query = select(VhMaintenanceAlert).where(VhMaintenanceAlert.device_id.in_(device_ids))  # type: ignore[unresolved-attribute]
 
     if not include_acknowledged:
         query = query.where(VhMaintenanceAlert.is_acknowledged == False)
 
-    query = query.order_by(VhMaintenanceAlert.severity.desc(), VhMaintenanceAlert.created_at.desc())
+    query = query.order_by(VhMaintenanceAlert.severity.desc(), VhMaintenanceAlert.created_at.desc())  # type: ignore[unresolved-attribute]
     alerts = db.exec(query).all()
 
     result = []
@@ -38,7 +38,7 @@ def list_maintenance_alerts(household_id: int, db: SessionDep, include_acknowled
         device = db.get(VhEnergyDevice, alert.device_id)
         if device:
             result.append(VhMaintenanceAlertOut(
-                id=alert.id, device_id=alert.device_id,
+                id=alert.id, device_id=alert.device_id,  # type: ignore[invalid-argument-type]
                 device_type=device.device_type, device_model=device.model,
                 alert_type=alert.alert_type, severity=alert.severity,
                 message=alert.message, predicted_date=alert.predicted_date,
@@ -66,7 +66,7 @@ def acknowledge_alert(alert_id: int, acknowledge: VhMaintenanceAlertAcknowledge,
 
     device = db.get(VhEnergyDevice, alert.device_id)
     return VhMaintenanceAlertOut(
-        id=alert.id, device_id=alert.device_id,
+        id=alert.id, device_id=alert.device_id,  # type: ignore[invalid-argument-type]
         device_type=device.device_type if device else DeviceType.heat_pump,
         device_model=device.model if device else "Unknown",
         alert_type=alert.alert_type, severity=alert.severity,

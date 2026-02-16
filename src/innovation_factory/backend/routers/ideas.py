@@ -60,7 +60,7 @@ def get_idea_messages(session_id: int, db: SessionDep):
     statement = (
         select(IdeaMessage)
         .where(IdeaMessage.session_id == session_id)
-        .order_by(IdeaMessage.created_at.asc())
+        .order_by(IdeaMessage.created_at.asc())  # type: ignore[unresolved-attribute]
     )
     messages = db.exec(statement).all()
     return list(messages)

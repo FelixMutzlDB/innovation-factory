@@ -56,7 +56,7 @@ def get_household_cockpit(household_id: int, db: SessionDep):
 
     latest_reading_query = select(VhEnergyReading).where(
         VhEnergyReading.household_id == household_id
-    ).order_by(VhEnergyReading.timestamp.desc()).limit(1)
+    ).order_by(VhEnergyReading.timestamp.desc()).limit(1)  # type: ignore[unresolved-attribute]
     latest_reading = db.exec(latest_reading_query).first()
 
     current_consumption_kw = latest_reading.total_consumption_kwh if latest_reading else 0.0
@@ -95,12 +95,13 @@ def get_household_cockpit(household_id: int, db: SessionDep):
     recent_readings_query = select(VhEnergyReading).where(
         VhEnergyReading.household_id == household_id,
         VhEnergyReading.timestamp >= one_day_ago
-    ).order_by(VhEnergyReading.timestamp.desc()).limit(24)
+    ).order_by(VhEnergyReading.timestamp.desc()).limit(24)  # type: ignore[unresolved-attribute]
     recent_readings_raw = db.exec(recent_readings_query).all()
 
     recent_readings = [
         VhEnergyReadingOut(
-            id=r.id, household_id=r.household_id, timestamp=r.timestamp,
+            id=r.id,  # type: ignore[invalid-argument-type]
+            household_id=r.household_id, timestamp=r.timestamp,
             pv_generation_kwh=r.pv_generation_kwh, battery_charge_kwh=r.battery_charge_kwh,
             battery_discharge_kwh=r.battery_discharge_kwh, battery_level_kwh=r.battery_level_kwh,
             grid_import_kwh=r.grid_import_kwh, grid_export_kwh=r.grid_export_kwh,
@@ -139,7 +140,8 @@ def get_household_cockpit(household_id: int, db: SessionDep):
 
     devices = [
         VhEnergyDeviceOut(
-            id=d.id, household_id=d.household_id, device_type=d.device_type,
+            id=d.id,  # type: ignore[invalid-argument-type]
+            household_id=d.household_id, device_type=d.device_type,
             brand=d.brand, model=d.model, capacity_kw=d.capacity_kw,
             installation_date=d.installation_date, last_maintenance_date=d.last_maintenance_date,
             next_maintenance_date=d.next_maintenance_date, serial_number=d.serial_number,
@@ -150,7 +152,8 @@ def get_household_cockpit(household_id: int, db: SessionDep):
 
     return VhHouseholdCockpitOut(
         household=VhHouseholdOut(
-            id=household.id, neighborhood_id=household.neighborhood_id,
+            id=household.id,  # type: ignore[invalid-argument-type]
+            neighborhood_id=household.neighborhood_id,
             owner_name=household.owner_name, address=household.address,
             optimization_mode=household.optimization_mode,
             has_pv=household.has_pv, has_battery=household.has_battery,

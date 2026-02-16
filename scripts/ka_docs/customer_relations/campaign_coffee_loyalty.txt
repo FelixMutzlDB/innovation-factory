@@ -1,0 +1,56 @@
+CAMPAIGN: BUY 5 GET 1 FREE COFFEE PROGRAM
+ASM Cockpit Customer Relations
+Campaign ID: CMP-2024-COF | Status: Ongoing | Launched: March 2024
+
+OVERVIEW
+The coffee loyalty program drives repeat visits and increases coffee attachment to fuel and shop transactions. Coffee has high margin and creates habit. Program is permanent (no end date) and operates across all ASM stations with coffee service.
+
+MECHANICS
+
+Earning
+- Purchase: 5 qualifying coffee drinks
+- Qualifying: Any size, any type (espresso, cappuccino, americano, etc.)
+- Tracking: Digital via ASM app or stamp card (for customers without app)
+- Reward: 6th coffee free (equivalent to lowest-priced standard coffee, typically 2.50 EUR)
+
+Redemption
+- Present: App or stamp card at purchase
+- Free coffee: Any size, any type - same as lowest qualifying
+- Upgrade: Customer may pay difference for larger or premium option
+- No cash value: Unused stamps/credits have no monetary value
+
+OPERATIONAL DETAILS
+
+Stamp Card (Physical)
+- Available: At all stations, at till
+- Design: 6 circles; staff marks or punches each purchase
+- When full: Redeem for free coffee; card retained or discarded
+- Replacement: Lost cards not replaced; digital recommended
+
+Digital (App)
+- Enrollment: Customer links loyalty account in ASM app
+- Tracking: Automatic when loyalty card/app presented at coffee purchase
+- Notification: Push when 5th coffee reached - "Your free coffee is ready"
+- Redemption: Automatic at next coffee purchase when 6th is free
+
+STAFF PROCEDURES
+- Stamp card: Mark each coffee purchase; on 6th visit, provide free coffee and collect/discard card
+- Digital: No action - system handles
+- Fraud prevention: One stamp per transaction; do not stamp without purchase
+- Training: Included in barista training module
+
+ELIGIBILITY
+- All customers: No loyalty membership required for stamp card
+- App: Requires ASM Rewards account (free)
+- Exclusions: Fleet cards - fleet contracts may have separate arrangements
+- Stations: All stations with Fresh Corner coffee service
+
+PERFORMANCE (2024)
+- Attachment rate: Coffee as % of transactions - increased from 18% to 24%
+- Repeat visits: Customers in program visit 2.3x per week vs. 1.4x non-participants
+- Cost: Approximately 0.35 EUR per free coffee (cost of goods)
+- ROI: Positive - incremental visit frequency drives fuel and shop
+
+REFERENCE
+- loyalty_program_terms.txt
+- loyalty_program_campaigns_2025.txt

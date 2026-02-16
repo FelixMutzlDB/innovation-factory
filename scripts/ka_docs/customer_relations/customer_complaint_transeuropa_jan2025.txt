@@ -1,0 +1,38 @@
+CUSTOMER COMPLAINT: TRANS EUROPA - MISSING LOYALTY POINTS
+Complaint ID: CMP-2025-00124
+Date Received: 14 January 2025
+Account: TransEuropa Logistics (FLT-2019-0042)
+Status: Resolved
+
+COMPLAINT SUMMARY
+TransEuropa fleet manager reported that loyalty points had not been credited to the fleet account for the months of October, November, and December 2024. Total estimated points at risk: approximately 28,000 points (equivalent to 560 EUR at platinum redemption rate).
+
+COMPLAINT DETAILS
+- Reporter: Peter Novak, Fleet Manager, TransEuropa Logistics
+- Contact: peter.novak@transeuropa-logistics.hu
+- Date range affected: October 1 - December 31, 2024
+- Volume during period: Approximately 576,000 liters (192,000/month average)
+- Expected points: Platinum tier, 2x multiplier - approximately 9,600 points per month
+
+INVESTIGATION
+- Loyalty system review: Identified integration fault between fleet card processor and ASM loyalty engine
+- Root cause: Software update in September 2024 introduced bug; fleet card transactions not fully syncing to loyalty system
+- Scope: Affected all fleet customers using specific card processor batch - 8 fleet accounts total
+- TransEuropa: Largest affected account
+
+RESOLUTION
+- Points credited: 28,400 points manually credited to TransEuropa account 17 January 2025
+- Communication: Personal call from account manager Maria Kovacs to Peter Novak
+- Apology: Formal apology letter from B2B director
+- System fix: IT deployed patch 16 January; verified for all fleet accounts
+- Prevention: Additional monitoring added for loyalty-fleet integration
+
+CUSTOMER RESPONSE
+- Peter Novak: Satisfied with resolution
+- Relationship: Maintained; no threat to contract
+- Feedback: Requested earlier notification when system issues occur - under consideration for process improvement
+
+FOLLOW-UP
+- All 8 affected fleet accounts: Points credited by 20 January
+- Process: Implement alert for loyalty-fleet sync variance
+- Reference: loyalty_program_terms.txt for points crediting policy

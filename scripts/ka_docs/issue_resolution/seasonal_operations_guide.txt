@@ -1,0 +1,73 @@
+SEASONAL OPERATIONS GUIDE
+ASM Cockpit Service Station Network
+Document Version: 1.5 | Last Updated: January 2025
+
+OVERVIEW
+Service station demand varies significantly by season. This guide outlines operational adjustments for summer and winter periods, plus preparation for peak travel periods. Proper seasonal planning prevents stockouts, reduces waste, and optimizes staffing.
+
+SUMMER OPERATIONS (June - August)
+
+Demand Characteristics
+- Fuel: +15-25% vs. annual average; holiday travel, tourism
+- Shop: Higher beverage, ice cream, snack volume
+- Fresh Corner: Salads, cold sandwiches, chilled drinks peak
+- Car wash: Increased frequency (road trip preparation, dust)
+- EV charging: Higher utilization (holiday travel)
+
+Preparation (Complete by May 15)
+- Fuel: Increase tank delivery frequency; consider temporary tank if high-volume station
+- Beverages: Build cold drink inventory; verify cooler capacity
+- Ice: Ensure ice machine capacity adequate; backup supplier identified
+- Staffing: Additional shifts for peak weekends; holiday coverage confirmed
+- HVAC: Service air conditioning before heat season
+- Outdoor: Check canopy, forecourt for heat damage
+
+Operational Adjustments
+- Hot food: Reduce hot dog batches in peak heat; increase cold options
+- Coffee: Slightly lower volume; iced coffee promotion
+- Extended hours: Consider for tourist route stations
+- Queue management: Peak hours may require additional till
+
+WINTER OPERATIONS (December - February)
+
+Demand Characteristics
+- Fuel: Slightly lower overall; diesel may increase (heating oil substitute in some regions)
+- Shop: Hot beverages, comfort food, warm snacks
+- Fresh Corner: Hot dogs, soup, warm sandwiches peak
+- Car wash: Reduced; salt and road grime may increase demand after storms
+- Cold weather: Equipment challenges, fuel gelling risk
+
+Preparation (Complete by November 15)
+- Fuel: Winter-grade diesel verified; fuel additives if required
+- Heating: Forecourt heaters, building HVAC serviced
+- Snow removal: Contract confirmed; salt/sand stocked
+- Pumps: Verify heating elements; nozzle boot heaters
+- Water: Protect pipes from freeze; car wash bay heating
+- Staffing: Holiday coverage; weather-related absence planning
+
+Operational Adjustments
+- Hot food: Increase production; longer hold acceptable in cold
+- Cold chain: Monitor cooler performance; cold weather can affect refrigeration
+- Safety: Ice removal from forecourt; slip hazard prevention
+- EV: Cold reduces range; ensure chargers operational for winter travelers
+
+PEAK PERIOD PREPARATION
+
+Holiday Periods (Easter, Summer, Christmas/New Year)
+- 6 weeks prior: Demand forecast, inventory build
+- 4 weeks prior: Staffing confirmed, float pool alerted
+- 2 weeks prior: Final inventory order, supplier delivery schedule
+- 1 week prior: Equipment check, backup plans confirmed
+- Reference: incident_report_staffing_crisis.txt for holiday staffing lessons
+
+Local Events
+- Concerts, sports, festivals: Coordinate with event organizers for traffic estimate
+- Temporary inventory increase for event duration
+- Staffing: Additional coverage for event days
+- Communication: Regional office for multi-station events
+
+WEATHER EXTREMES
+- Heat wave: Hydration for staff, cooler monitoring, reduce hot food
+- Cold snap: Fuel additives, equipment heating, staff warmth
+- Storm: Secure loose items, communication plan, post-storm assessment
+- Reference: emergency_procedures.txt for severe weather

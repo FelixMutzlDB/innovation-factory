@@ -1,0 +1,74 @@
+ASM LOYALTY PROGRAM - FULL TERMS AND CONDITIONS
+Document Version: 3.2 | Effective: 1 January 2025
+
+OVERVIEW
+The ASM Rewards loyalty program rewards customers for fuel and shop purchases at ASM service stations. Members earn points on qualifying purchases, which can be redeemed for discounts, free products, and partner benefits. Program operates across all ASM stations in Hungary, Croatia, Austria, and Slovakia.
+
+TIER STRUCTURE
+
+Bronze (Entry Level)
+- Enrollment: Automatic upon first registered transaction
+- Earning rate: 1 point per 1 EUR spent (fuel and shop)
+- Redemption: 100 points = 1 EUR discount
+- Benefits: Standard earning, basic redemption
+- Threshold: No minimum spend
+
+Silver
+- Requirement: 500 EUR spend in rolling 12 months
+- Earning rate: 1.25 points per 1 EUR
+- Redemption: 100 points = 1.25 EUR discount
+- Benefits: 25% bonus on points, birthday reward
+- Threshold: 500 EUR
+
+Gold
+- Requirement: 2,000 EUR spend in rolling 12 months
+- Earning rate: 1.5 points per 1 EUR
+- Redemption: 100 points = 1.5 EUR discount
+- Benefits: 50% bonus, birthday reward, priority customer service
+- Threshold: 2,000 EUR
+
+Platinum
+- Requirement: 5,000 EUR spend in rolling 12 months
+- Earning rate: 2 points per 1 EUR
+- Redemption: 100 points = 2 EUR discount
+- Benefits: 100% bonus, birthday reward, exclusive promotions, dedicated support for fleet
+- Threshold: 5,000 EUR
+
+POINTS SYSTEM
+- Earning: Points credited within 48 hours of transaction
+- Validity: Points expire 24 months from earning date
+- Minimum redemption: 500 points (5 EUR equivalent at Bronze)
+- Maximum redemption: 50% of transaction value per visit
+- Exclusions: Tobacco, lottery, certain regulated products may be excluded or limited
+
+FLEET CUSTOMER MULTIPLIERS
+- Fleet accounts have tier-specific multipliers applied to base earning
+- Bronze fleet: 1x
+- Silver fleet: 1.25x
+- Gold fleet: 1.5x
+- Platinum fleet: 2x
+- Premium fleet: 2.5x
+- Points credited to fleet account; allocated per vehicle or driver per contract terms
+
+BENEFITS BY TIER
+- Birthday reward: Free coffee or equivalent (Silver and above)
+- Exclusive promotions: Early access, bonus point events (Gold and above)
+- Partner benefits: Car wash discount, roadside assistance (Platinum)
+- Priority support: Dedicated line for Platinum fleet (per contract)
+
+ENROLLMENT
+- Individual: Register at station, online, or via ASM app
+- Fleet: Automatic with fleet contract; driver cards linked to account
+- Identification: Loyalty card, app, or fleet card at payment
+
+DISPUTES
+- Points not credited: Contact within 90 days of transaction
+- Provide: Receipt, date, station, transaction amount
+- Resolution: Typically 5-10 business days
+- Reference: customer_complaint_transeuropa_jan2025.txt for fleet points dispute resolution
+
+TERMS
+- Program terms subject to change with 30 days notice
+- ASM reserves right to modify earning rates, redemption values, tier thresholds
+- Fraudulent activity: Points forfeited, membership may be terminated
+- Full terms: asm-rewards.com/terms

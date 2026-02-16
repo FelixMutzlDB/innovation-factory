@@ -1,0 +1,47 @@
+UNDERGROUND FUEL TANK CALIBRATION AND INSPECTION PROCEDURES
+ASM Cockpit Service Station Network
+Document Version: 1.8 | Effective: January 2025
+
+REGULATORY CONTEXT
+Underground storage tanks (USTs) must comply with national environmental regulations and ASM internal standards. Calibration ensures inventory accuracy, leak detection reliability, and reconciliation with fuel delivery records. Non-compliance may result in regulatory penalties and operational disruptions.
+
+CALIBRATION FREQUENCY
+- Full calibration: Annually, or after tank modification, or when variance exceeds 0.5%
+- Partial verification: Quarterly for high-volume tanks (greater than 50,000L monthly throughput)
+- Post-delivery verification: Within 4 hours of each fuel delivery
+
+PRE-CALIBRATION REQUIREMENTS
+1. Schedule during low-traffic period (recommended: 02:00-05:00)
+2. Ensure tank has been static (no dispensing or delivery) for minimum 2 hours
+3. Verify tank probe is functional and communicating
+4. Have calibration chart from tank manufacturer available
+5. Notify station manager and document in shift log
+
+CALIBRATION PROCEDURE (WATER DROP METHOD)
+Step 1: Measure tank contents using automatic tank gauge (ATG) - record reading
+Step 2: Add known volume of water (typically 100L) to tank via designated fill point
+Step 3: Wait 15 minutes for stabilization
+Step 4: Record new ATG reading
+Step 5: Calculate variance: (Expected increase - Actual increase) / Expected increase x 100
+Step 6: If variance exceeds 0.3%, recalibration of probe required
+Step 7: Document all readings on Tank Calibration Form TC-001
+
+INSPECTION CHECKLIST
+- Tank sump: Check for water accumulation, fuel sheen, debris
+- Spill bucket: Verify empty, no cracks, gasket integrity
+- Overfill prevention: Test alarm at 90% capacity
+- Cathodic protection: Annual test for steel tanks (if applicable)
+- Piping: Visual inspection for corrosion, loose fittings
+- Manway: Verify secure, gasket intact
+
+COMMON CALIBRATION ISSUES
+Variance consistently high: Probe may be damaged, bent, or coated with debris. Professional cleaning or replacement required.
+Erratic readings: Check for water in tank (phase separation), verify probe cable integrity.
+Delivery reconciliation failure: Verify delivery ticket volume matches ATG increase; check for line leak or wrong tank delivery.
+
+STATION-SPECIFIC NOTES
+Station HU-BP-001: Tank 2 (Diesel) requires quarterly calibration due to 85,000L monthly volume. Tank 3 (Premium) has historical variance - monitor closely.
+Station HR-C-002: All tanks upgraded 2024 - new calibration baseline established November 2024.
+
+DOCUMENTATION
+All calibration results must be uploaded to ASM Cockpit within 48 hours. Retain paper records for 7 years per regulatory requirement.

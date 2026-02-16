@@ -1,0 +1,39 @@
+CUSTOMER COMPLAINT: CENTRAL TAXI - INVOICING DISCREPANCY
+Complaint ID: CMP-2025-00131
+Date Received: 22 January 2025
+Account: Central Taxi Group (FLT-2021-0156)
+Status: Resolved
+
+COMPLAINT SUMMARY
+Central Taxi Group reported discrepancies between driver fueling records and ASM invoices. Specifically, 12 drivers disputed charges on the January 6-12 invoice, claiming they did not fuel at the stated stations or on the stated dates. Total disputed amount: 847 EUR.
+
+COMPLAINT DETAILS
+- Reporter: Miklos Balogh, Operations Manager, Central Taxi
+- Contact: miklos.balogh@centraltaxi.hu
+- Invoice: INV-2025-001456 (January 6-12, 2025)
+- Disputed transactions: 12 line items across 8 drivers
+- Pattern: All disputes related to HU-BP-007 and HU-BP-015 stations
+
+INVESTIGATION
+- Transaction review: Pulled pump and POS data for disputed transactions
+- Fleet card logs: Cross-referenced with station transaction records
+- Finding: 10 of 12 transactions correctly attributed - driver identification confirmed via fleet card + vehicle ID at pump
+- 2 transactions: Found to be duplicate billing - same transaction appeared on two driver allocations due to system error
+- Root cause: Allocation algorithm error when driver used backup card; duplicate allocation occurred
+
+RESOLUTION
+- Credit issued: 142 EUR for 2 duplicate transactions (credit note CN-2025-0089)
+- 10 transactions: Evidence provided to Central Taxi - driver education on fleet card use
+- Process fix: Allocation logic updated to prevent duplicate allocation
+- Timeline: Credit issued 28 January; evidence for 10 transactions provided 29 January
+
+CUSTOMER RESPONSE
+- Miklos Balogh: Accepted resolution
+- Request: Improved invoice detail - vehicle number more prominently displayed
+- ASM action: Invoice format update in development; expected Q2 2025
+
+PREVENTIVE MEASURES
+- Duplicate allocation: System fix deployed
+- Invoice clarity: Format improvement planned
+- Driver training: Central Taxi to reinforce one card per driver policy
+- Reference: fleet_contract_central_taxi.txt for 24/7 invoicing requirements; billing_procedures_b2b.txt

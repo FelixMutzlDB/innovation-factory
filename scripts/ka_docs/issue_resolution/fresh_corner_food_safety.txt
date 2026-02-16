@@ -1,0 +1,62 @@
+FRESH CORNER FOOD SAFETY PROTOCOLS
+ASM Cockpit Service Station Network
+Document Version: 2.2 | Compliance: EU Regulation 852/2004
+
+SCOPE
+Fresh Corner is the branded convenience food offering at ASM service stations, comprising hot food (grill, hot dogs, baked goods), bakery items, and cold chain products (sandwiches, dairy, chilled beverages). All stations with Fresh Corner must comply with HACCP principles and local food safety authority requirements.
+
+HOT FOOD SAFETY
+
+Temperature Requirements
+- Hot holding: Minimum 63 degrees Celsius (145 F) - verify every 2 hours
+- Cooking temperatures: Poultry 75C internal, pork 71C, beef 63C
+- Reheating: Must reach 75C within 2 hours; do not reheat more than once
+- Discard hot food held below 63C for more than 2 hours
+
+Hot Dog Production
+- Pre-cooked sausages: Heat to minimum 75C internal before serving
+- Hot dog roller: Clean daily; replace water every 4 hours during service
+- Maximum hold time on roller: 4 hours from first placement
+- Document batch start times on Hot Dog Production Log HD-001
+
+Grill Station
+- Clean grill surface between product types to prevent cross-contamination
+- No raw and cooked product on same surface simultaneously
+- Sanitize utensils every 30 minutes during service
+
+BAKERY ITEMS
+- Shelf life: Date label all items; discard after printed expiry
+- Ambient display: Maximum 24 hours for cream-filled items
+- Storage: Dry, cool area; protect from direct sunlight
+- Supplier delivery: Verify temperature of chilled dough products (max 5C on receipt)
+
+COLD CHAIN MANAGEMENT
+
+Receiving Procedures
+- Check delivery temperature: Chilled products max 5C, frozen max -18C
+- Reject delivery if temperature breach; document on delivery note
+- Move to refrigeration within 15 minutes of receipt
+
+Storage Temperatures
+- Chilled: 0-5C (refrigerator), verify twice daily
+- Frozen: -18C or below, verify daily
+- Walk-in cooler: Continuous monitoring; alarm at 7C - see incident_report_cooler_malfunction_2025.txt
+
+Display Coolers
+- Maintain 2-5C; do not overstock (blocks airflow)
+- FIFO strictly enforced - oldest product at front
+- Door seals: Check weekly for damage
+
+CLEANING AND SANITATION
+- Food contact surfaces: Clean and sanitize every 4 hours minimum
+- Hand washing: Mandatory before handling food, after breaks, after touching face/money
+- Glove use: Single-use gloves for ready-to-eat food; change between tasks
+- Pest control: Report any sightings immediately; no food storage in non-designated areas
+
+ALLERGEN MANAGEMENT
+- Allergen information available at point of sale
+- Separate preparation areas for gluten-free where offered
+- Cross-contamination prevention: Dedicated utensils, cleaning between allergen-containing products
+
+TEMPERATURE LOGGING
+All temperature checks must be recorded in ASM Cockpit or station logbook. Retain records for minimum 6 months. Non-compliance must be reported to station manager and regional food safety coordinator within 24 hours.

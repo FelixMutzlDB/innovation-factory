@@ -1,0 +1,58 @@
+INCIDENT REPORT: ISP OUTAGE - MULTI-STATION IMPACT
+Date: 8 February 2025
+Incident ID: INC-2025-00234
+Classification: Infrastructure / Business Continuity
+
+SUMMARY
+A fiber cut affecting the primary ISP (Magyar Telekom) caused connectivity loss at 12 ASM stations in the Budapest and Pest region between 09:15 and 14:45. Stations failed over to 4G backup connectivity. POS and fuel operations continued with degraded functionality. No station was forced to close.
+
+AFFECTED STATIONS
+HU-BP-001, HU-BP-003, HU-BP-007, HU-BP-012, HU-PE-002, HU-PE-005, HU-PE-008, HU-PE-011, HU-PE-014, HU-PE-017, HU-PE-019, HU-PE-022
+
+TIMELINE
+09:15 - First station (HU-BP-001) reported connectivity loss
+09:18 - Second station reported; pattern identified
+09:25 - Regional IT confirmed ISP outage, initiated failover procedures
+09:30-10:45 - Stations manually switched to 4G backup (varies by station)
+10:00 - ISP confirmed fiber cut, estimated repair 4-6 hours
+14:45 - Primary connectivity restored to all stations
+15:30 - Stations switched back to primary; 4G confirmed as standby
+
+IMPACT ASSESSMENT
+
+Fuel Operations
+- Card payments: Intermittent during failover - some transactions required retry
+- Fleet cards: Delayed authorization on 4G - average 8 second delay vs 2 second normal
+- Cash payments: Unaffected
+- Tank monitoring: ATG continued via 4G; no data loss
+
+POS and Shop
+- Card transactions: 15-20 second processing time on 4G vs 3-5 second normal
+- Some transactions timed out - manual entry required
+- Back-office sync: Delayed; reconciled after restoration
+- No transaction data loss
+
+CCTV and Security
+- Recording continued on local storage
+- Remote viewing unavailable during outage
+- No security incidents reported
+
+FAILOVER PROCEDURE (Documented for Future Reference)
+1. Confirm primary connectivity lost (ping test to gateway)
+2. Activate 4G router - typically automatic failover at most stations
+3. For manual stations: Switch network cable from primary to 4G router
+4. Verify POS can process test transaction
+5. Verify pump authorization working
+6. Log failover time in ASM Cockpit
+7. Monitor 4G data usage - alert if approaching limit
+
+LESSONS LEARNED
+- 4G backup adequate for continued operations
+- Failover time varied: Stations with automatic failover recovered in 2-5 minutes; manual stations 15-45 minutes
+- Recommendation: Upgrade remaining 4 manual-failover stations to automatic
+- 4G data caps: One station (HU-PE-022) approached monthly limit; consider higher tier
+
+COST IMPACT
+- Lost sales: Estimated 2,400 EUR across 12 stations (customers left due to slow transactions)
+- Overtime: 180 EUR (IT support)
+- No equipment damage

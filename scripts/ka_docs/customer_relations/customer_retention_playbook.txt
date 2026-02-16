@@ -1,0 +1,84 @@
+CUSTOMER RETENTION PLAYBOOK - FLEET ACCOUNTS
+ASM Cockpit Customer Relations
+Document Version: 1.5 | Last Updated: January 2025
+
+OVERVIEW
+Fleet customer retention is more cost-effective than acquisition. Contract renewals require proactive management. This playbook outlines strategies for retaining fleet customers at renewal and reducing churn risk throughout the contract term.
+
+RENEWAL TIMELINE
+
+12 Months Before Renewal
+- Account review: Volume trend, satisfaction, issues
+- Risk assessment: Red, yellow, green
+- Competitive intelligence: Are they shopping?
+- Relationship: Ensure regular contact; no surprises
+
+6 Months Before Renewal
+- Formal review: Quarterly business review format
+- Value demonstration: Volume, savings, service metrics
+- Early discussion: Gauge satisfaction; any concerns?
+- Proposal: Begin internal pricing discussion
+
+3 Months Before Renewal
+- Proposal: Present renewal terms
+- Negotiation: Per b2b_pricing_framework.txt
+- Address concerns: Any issues from contract period
+- Decision makers: Ensure we are talking to right people
+
+1 Month Before Renewal
+- Final terms: Confirm in writing
+- Contract: Legal review, signature
+- Transition: If any changes, plan implementation
+- Celebration: Renewal confirmed - thank customer
+
+RETENTION STRATEGIES
+
+1. Proactive Issue Resolution
+- Don't wait for customer to complain
+- Monitor: Invoicing disputes, quality issues, station problems
+- Resolve quickly: Within 24-48 hours for fleet
+- Reference: customer_complaint_transeuropa_jan2025.txt - quick resolution maintained relationship
+
+2. Value Beyond Price
+- Reporting: Useful, timely, accurate
+- Account management: Responsive, knowledgeable
+- Station network: Right locations for their routes
+- Service: 24/7 support where contract requires
+- Loyalty: Ensure points credited; fleet values this
+
+3. Relationship Depth
+- Multiple contacts: Don't rely on single relationship
+- Executive engagement: For key accounts, periodic senior contact
+- Personal touch: Know their business, their challenges
+- Reference: fleet_contract_danubia.txt - executive relationship
+
+4. Competitive Defense
+- Know the competition: What are they offering?
+- Our advantages: Document and communicate
+- Price: Competitive but not always lowest
+- Walk-away: Know our minimum acceptable terms
+
+5. Contract Structure
+- Term: Longer term for better pricing - locks in commitment
+- Volume flexibility: Some flexibility for economic cycles
+- Auto-renewal: Consider for low-risk accounts
+- Notice period: Adequate time to address before exit
+
+RISK INDICATORS
+- Volume decline: Below commitment for 2+ months
+- Payment delay: Pattern of late payment
+- Complaint escalation: Multiple or unresolved
+- Contact reduction: Harder to reach, fewer meetings
+- Competitive mention: "We're evaluating options"
+
+INTERVENTION
+- Red account: Escalate to regional B2B director
+- Action plan: Specific steps, owner, timeline
+- Executive involvement: For strategic accounts
+- Concession: What can we offer to retain? (Discount, terms, service)
+
+SUCCESS METRICS
+- Renewal rate: Target 92% of contracts up for renewal
+- Early renewal: Bonus - secure before competitive pressure
+- Churn: Understand reasons for lost accounts
+- Reference: fleet_contract_pannonia.txt - volume below commitment, fuel quality complaint - retention actions in progress

@@ -1,0 +1,72 @@
+PARTNERSHIP PROGRAM GUIDE
+ASM Cockpit Customer Relations
+Document Version: 1.4 | Last Updated: January 2025
+
+OVERVIEW
+ASM maintains partnerships with third-party providers to enhance the customer offering and generate additional revenue. Key partnerships include car wash providers, roadside assistance, and select retail brands. This guide outlines partnership structure, management, and customer-facing benefits.
+
+CAR WASH PARTNERSHIPS
+
+Structure
+- Equipment: WashTec, Istobal, Otto Christ - equipment supplied and maintained by provider
+- Revenue share: ASM receives percentage of car wash revenue (typically 40-60%)
+- Station responsibility: Bay maintenance, customer service, payment collection
+- Reference: car_wash_equipment_guide.txt for operational details
+
+Customer Benefits
+- Loyalty integration: Car wash discount for Platinum members
+- Fuel bundle: "Fill up and wash" promotions
+- Quality: Partner maintains equipment; ASM ensures customer experience
+
+Management
+- Contract review: Annual
+- Performance: Revenue, utilization, customer satisfaction
+- Issues: Escalate to partner account manager
+- Expansion: New stations - evaluate partner vs. alternative
+
+ROADSIDE ASSISTANCE PARTNERSHIP
+
+Partner: National roadside assistance provider (name per region)
+- Structure: ASM stations as preferred service locations
+- Customer benefit: Members receive discounted or priority roadside service
+- ASM benefit: Service vehicles fuel at ASM; fleet contract
+- Promotion: Co-branded marketing; "ASM Preferred" for members
+
+Management
+- Fleet volume: Track roadside partner fueling
+- Customer referrals: Customers directed to ASM stations when possible
+- Contract: Multi-year; review at renewal
+
+RETAIL BRAND PARTNERSHIPS
+
+Fresh Corner Suppliers
+- Bakery, sandwiches, snacks: Branded and white-label
+- Structure: Supply agreement; ASM retails
+- Quality: Partner responsibility for product; ASM for storage, display
+- Reference: bakery_ordering_optimization.txt, fresh_corner_food_safety.txt
+
+Beverage Partnerships
+- Coffee: Lavazza, local roasters
+- Cold drinks: Coca-Cola, Pepsi, regional brands
+- Structure: Supply + marketing support
+- Promotions: Co-funded campaigns (e.g., summer cold drink)
+- Reference: campaign_summer_promo_2025.txt
+
+EV CHARGING PARTNERSHIPS
+- Charger operators: Some stations have third-party charger (e.g., Ionity, local provider)
+- Structure: Land lease or revenue share
+- ASM role: Host site; may have shop/Fresh Corner benefit from EV customers
+- Reference: ev_charger_troubleshooting.txt for operational support
+
+PARTNERSHIP GOVERNANCE
+- Contract owner: Commercial or Operations per partnership type
+- Review cycle: Annual minimum
+- Performance: KPIs per contract
+- Exit: Notice period, transition plan
+- New partnerships: Business case, legal review, pilot where appropriate
+
+CUSTOMER COMMUNICATION
+- Partnerships should enhance experience
+- Clear attribution: "In partnership with X" where relevant
+- Complaints: ASM handles customer contact; escalate to partner for resolution
+- Transparency: Terms of partner offers (e.g., roadside) clearly stated

@@ -1,0 +1,74 @@
+EMERGENCY PROCEDURES
+ASM Cockpit Service Station Network
+Document Version: 2.0 | All Staff Must Be Trained
+
+OVERVIEW
+Service stations present unique hazards: fuel, electricity, machinery, and public access. This document outlines response procedures for critical emergencies. All staff must complete annual emergency procedure training.
+
+FIRE EMERGENCY
+
+Fuel Fire (Pump, Dispenser, Forecourt)
+1. Activate fire alarm if available
+2. Call emergency services: 112 (EU) - state "fuel fire at service station"
+3. Evacuate customers and staff to safe distance (minimum 50 meters)
+4. Do not attempt to extinguish fuel fire with water
+5. If trained and safe: Use foam or dry chemical extinguisher (Class B) - only if fire is small and contained
+6. Shut off fuel supply if safe to access (emergency shut-off typically at tank or forecourt)
+7. Do not re-enter until emergency services advise
+8. Document: Time, location, cause if known, injuries
+
+Building Fire (Shop, Office)
+1. Activate alarm, call 112
+2. Evacuate all persons - use nearest exit
+3. Do not use elevators
+4. Assemble at designated meeting point
+5. Account for all staff and known customers
+6. Do not re-enter until cleared
+
+GAS LEAK (LPG or Natural Gas)
+1. Do not operate electrical switches - risk of ignition
+2. Evacuate immediately - upwind direction
+3. Call 112 and gas supplier emergency number
+4. Prevent ignition sources: No vehicles starting, no smoking
+5. Cordon off area - prevent entry
+6. Ventilation: Do not attempt to open doors/windows if gas present - leave to professionals
+7. Document: Location of suspected leak, odor description, time
+
+MEDICAL EMERGENCY
+
+Customer or Staff Injury
+1. Assess scene - ensure safe to approach
+2. Call 112 for serious injury, bleeding, unconsciousness, chest pain, difficulty breathing
+3. Do not move injured person unless in immediate danger
+4. First aid: Apply only if trained - bleeding control, CPR if qualified
+5. AED: If available and person unresponsive - follow AED instructions
+6. Comfort: Stay with person until help arrives
+7. Document: Name, injury, actions taken, witnesses
+
+ROBBERY
+1. Comply with perpetrator - no resistance
+2. Activate silent alarm if available
+3. Observe: Description, vehicle, direction of travel
+4. Do not pursue
+5. Call police after perpetrator leaves
+6. Preserve scene - do not touch evidence
+7. Support staff - offer counseling per policy
+8. Document: Full report for police and ASM security
+
+SEVERE WEATHER
+- Lightning: Evacuate forecourt; customers may shelter in shop
+- Flood: Shut off fuel supply if water approaching tanks; evacuate
+- High wind: Secure loose items; consider forecourt closure if debris risk
+- Document: Per incident reporting procedure
+
+EMERGENCY CONTACTS (Update per station)
+- Emergency services: 112
+- Regional on-call: [Per station]
+- Fuel supplier emergency: [Per contract]
+- Gas supplier: [If LPG on site]
+
+POST-INCIDENT
+- Debrief staff within 48 hours
+- Incident report in ASM Cockpit
+- Review procedures if gaps identified
+- Support: EAP available for staff after traumatic incident

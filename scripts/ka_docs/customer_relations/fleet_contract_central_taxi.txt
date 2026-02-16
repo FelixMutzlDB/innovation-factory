@@ -1,0 +1,50 @@
+FLEET CONTRACT: CENTRAL TAXI GROUP
+ASM Cockpit Customer Relations
+Contract ID: FLT-2021-0156 | Effective: 1 September 2021 | Renewal: 1 September 2026
+
+ACCOUNT OVERVIEW
+Central Taxi Group operates the largest taxi fleet in Budapest and surrounding areas. 350 vehicles fuel primarily at urban ASM stations. High-frequency, lower-volume transactions. 24/7 operations require 24/7 station access and invoicing support.
+
+CONTRACT TERMS
+
+Fleet Size
+- Registered vehicles: 350 taxis
+- Primary fuel: Gasoline (petrol), LPG (approximately 40% of fleet)
+- Average monthly volume: 95,000 liters equivalent
+- Transaction pattern: 8-12 refuels per vehicle per month; average 25L per transaction
+
+Pricing Tier
+- Tier: Gold (elevated from Silver in 2023 renewal)
+- Discount: 5.5% off pump price
+- Applies to: Gasoline, LPG
+- Shop: 2% discount (limited use - drivers typically quick stop)
+
+Volume Commitment
+- Minimum: 90,000 liters per month
+- Consistently meets or exceeds
+- Urban stations: HU-BP-001, HU-BP-003, HU-BP-007, HU-BP-012, HU-BP-015, HU-BP-018 (primary)
+
+Payment Terms
+- Invoice: Weekly, detailed by vehicle
+- Payment due: 14 days
+- Method: Bank transfer
+- 24/7 invoicing: Required - drivers fuel at all hours; invoice must support shift reconciliation
+- Statement: Monthly summary for accounting
+
+ADDITIONAL BENEFITS
+- Account manager: Gabor Nemeth
+- Support: Extended hours to match operations
+- Station access: All Budapest and Pest urban stations
+- Invoicing: Vehicle-level detail for driver cost allocation
+- Loyalty: Gold tier points
+
+KEY CONTACTS
+- Central Taxi Operations: Miklos Balogh, miklos.balogh@centraltaxi.hu
+- Central Taxi Finance: Zsuzsa Kiss
+- ASM Account Manager: Gabor Nemeth, gabor.nemeth@asm-retail.com
+
+SPECIAL REQUIREMENTS
+- Invoicing accuracy: Critical - drivers dispute charges; must be precise
+- Reference: customer_complaint_taxi_invoicing.txt for January 2025 discrepancy (resolved)
+- Station preference: Drivers have preferred stations; ensure adequate capacity at peak (shift change 06:00, 14:00, 22:00)
+- LPG: 12 stations with LPG in Budapest - ensure availability

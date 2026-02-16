@@ -1,0 +1,81 @@
+CAR WASH EQUIPMENT MAINTENANCE AND TROUBLESHOOTING
+ASM Cockpit Service Station Network
+Document Version: 1.6 | Equipment: WashTec, Istobal, Otto Christ
+
+OVERVIEW
+Car wash services provide incremental revenue and drive fuel volume. Equipment downtime results in lost sales and customer dissatisfaction. This guide covers maintenance and troubleshooting for rollover and tunnel systems deployed at ASM stations.
+
+PREVENTIVE MAINTENANCE SCHEDULE
+
+Daily
+- Visual inspection: Brush condition, hose connections, bay cleanliness
+- Check chemical levels: Pre-soak, wax, tire cleaner
+- Verify payment terminal operational
+- Clear debris from bay floor
+
+Weekly
+- Brush cleaning: Remove debris, check for damage
+- Nozzle inspection: Clear clogged jets
+- Chain/belt tension: Per manufacturer specification
+- Lubrication: Guide rails, moving parts per manual
+
+Monthly
+- Chemical system: Flush lines, check pump operation
+- Water pressure: Verify within specification (typically 100-150 psi)
+- Electrical: Check connections, safety switches
+- Full brush inspection: Replace if worn beyond 50%
+
+Quarterly
+- Professional service: Certified technician
+- Water reclaim system: If equipped - service per regulation
+- Structural: Bay door, frame integrity
+
+CHEMICAL HANDLING
+- Storage: Designated area, secondary containment
+- PPE: Gloves, goggles when handling concentrates
+- Dilution: Per manufacturer ratio - never use concentrate undiluted in system
+- Spills: Contain, absorb, dispose per environmental_compliance.txt
+- SDS: Available for all chemicals; staff trained
+
+COMMON ISSUES AND RESOLUTION
+
+Brush Not Making Contact
+- Cause: Brush wear, incorrect height setting, vehicle positioning
+- Action: Adjust height per vehicle type; replace brush if worn
+- Check: Brush pressure setting
+
+Streaking or Poor Dry
+- Cause: Drying agent low, air knife fault, water spots
+- Action: Refill drying agent; check air knife operation; verify rinse cycle complete
+- Water quality: Hard water may cause spotting - consider softener
+
+Payment Terminal Not Accepting
+- Cause: Network, card reader fault, pricing error
+- Action: Verify network; clean card reader; check price configuration
+- Bypass: Manual payment with code - document
+
+Machine Stops Mid-Cycle
+- Cause: Obstruction, safety sensor, overload
+- Action: Check for obstacle; reset safety; verify no vehicle contact with structure
+- Emergency stop: Release, power cycle, retry
+
+Water Not Dispensing
+- Cause: Frozen line (winter), clogged filter, pump fault
+- Action: Check for freeze; replace filter; verify pump operation
+- Winter: Heat trace and insulation critical
+
+Noise or Vibration
+- Cause: Loose components, bearing wear, misalignment
+- Action: Tighten mounts; schedule bearing replacement; technician for alignment
+
+WINTER OPERATIONS
+- Bay heating: Maintain above freezing
+- Chemical: Some products have cold-weather variants
+- Hose: Drain when not in use in extreme cold
+- Ice: Clear bay entrance; salt per local procedure
+
+SAFETY
+- Never enter bay when machine operating
+- Emergency stop: Clearly marked, tested weekly
+- Vehicle secure: Ensure vehicle in park, brake applied
+- Customer communication: Clear instructions at entrance
