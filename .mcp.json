@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "databricks": {
+      "command": "/Users/felix.mutzl/.ai-dev-kit/.venv/bin/python",
+      "args": ["/Users/felix.mutzl/.ai-dev-kit/repo/databricks-mcp-server/run_server.py"],
+      "env": {"DATABRICKS_CONFIG_PROFILE": "e2-demo-field-eng"}
+    },
+    "apx": {
+      "command": "uv",
+      "args": ["run", "apx", "mcp"]
+    },
+    "playwright": {
+      "command": "uv",
+      "args": ["run", "apx", "bun", "x", "--bun", "@playwright/mcp@latest"]
+    }
+  }
+}
