@@ -80,7 +80,7 @@ class IssueStatus(str, Enum):
     closed = "closed"
 
 
-class IssueCategory(str, Enum):
+class MacIssueCategory(str, Enum):
     equipment = "equipment"
     supply_chain = "supply_chain"
     quality = "quality"
@@ -241,7 +241,7 @@ class MacIssue(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     station_id: int = Field(foreign_key="mac_stations.id", index=True)
-    category: IssueCategory
+    category: MacIssueCategory
     title: str
     description: str = Field(sa_column=Column(Text))
     resolution: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))
@@ -433,7 +433,7 @@ class MacAnomalyAlertUpdate(BaseModel):
 class MacIssueOut(BaseModel):
     id: int
     station_id: int
-    category: IssueCategory
+    category: MacIssueCategory
     title: str
     description: str
     resolution: Optional[str] = None

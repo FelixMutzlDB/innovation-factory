@@ -29,7 +29,7 @@ from .models import (
     AlertStatus,
     MacIssue,
     IssueStatus,
-    IssueCategory,
+    MacIssueCategory,
     MacCustomerProfile,
     MacCustomerContract,
     LoyaltyTier,
@@ -384,17 +384,17 @@ def _seed_anomaly_alerts(session: Session, stations: list[MacStation]):
 def _seed_issues(session: Session, stations: list[MacStation]):
     """Generate historical operational issues."""
     issue_templates = [
-        (IssueCategory.equipment, "Pump #{n} malfunction", "Fuel pump #{n} showing error code E-42. Intermittent dispensing failures reported by customers.", "Replaced faulty solenoid valve. Pump back in service after 4h downtime."),
-        (IssueCategory.equipment, "POS terminal crash", "Point-of-sale terminal freezing during card payments. Reboot cycle every 30 minutes.", "Software update applied. Root cause: memory leak in payment module v3.2.1."),
-        (IssueCategory.supply_chain, "Diesel delivery delayed", "Scheduled diesel delivery 12h overdue. Tank level at 15% capacity.", "Rerouted tanker from regional depot. Delivery completed with 6h additional delay."),
-        (IssueCategory.supply_chain, "Coffee bean supply disruption", "Regular supplier out of stock on Arabica blend. Alternative sourcing needed.", "Temporary switch to secondary supplier. Quality acceptable. Permanent fix in 2 weeks."),
-        (IssueCategory.quality, "Fresh Corner temperature alarm", "Walk-in cooler temperature rose to 8°C (threshold 4°C). Food safety risk.", "Compressor filter cleaned. Temperature restored in 45 min. No product loss."),
-        (IssueCategory.quality, "Fuel quality complaint", "Customer reports engine knocking after refueling premium 98. Sample sent to lab.", "Lab results normal. Customer vehicle had pre-existing injector issue."),
-        (IssueCategory.customer_complaint, "Long queue complaint", "Multiple Google reviews citing 10+ minute wait times during morning rush.", "Added express lane for coffee-only purchases. Staff scheduling adjusted for 7-9am peak."),
-        (IssueCategory.customer_complaint, "Loyalty points not credited", "B2B fleet customer reports 3 months of missing loyalty points on account.", "System sync issue identified. Points manually credited. Backend fix deployed."),
-        (IssueCategory.staffing, "Night shift no-show", "Night shift employee called in sick with no replacement available.", "Manager covered shift. Added 2 backup staff to on-call roster."),
-        (IssueCategory.safety, "Fuel spill near pump 3", "Minor diesel spill (~5L) during customer refueling. Wet surface around pump area.", "Spill kit deployed. Area cleaned and dried. Pump inspection passed."),
-        (IssueCategory.it_system, "Network outage", "Internet connectivity lost. Card payments and loyalty system offline.", "ISP issue resolved after 2h. Switched to backup 4G during downtime."),
+        (MacIssueCategory.equipment, "Pump #{n} malfunction", "Fuel pump #{n} showing error code E-42. Intermittent dispensing failures reported by customers.", "Replaced faulty solenoid valve. Pump back in service after 4h downtime."),
+        (MacIssueCategory.equipment, "POS terminal crash", "Point-of-sale terminal freezing during card payments. Reboot cycle every 30 minutes.", "Software update applied. Root cause: memory leak in payment module v3.2.1."),
+        (MacIssueCategory.supply_chain, "Diesel delivery delayed", "Scheduled diesel delivery 12h overdue. Tank level at 15% capacity.", "Rerouted tanker from regional depot. Delivery completed with 6h additional delay."),
+        (MacIssueCategory.supply_chain, "Coffee bean supply disruption", "Regular supplier out of stock on Arabica blend. Alternative sourcing needed.", "Temporary switch to secondary supplier. Quality acceptable. Permanent fix in 2 weeks."),
+        (MacIssueCategory.quality, "Fresh Corner temperature alarm", "Walk-in cooler temperature rose to 8°C (threshold 4°C). Food safety risk.", "Compressor filter cleaned. Temperature restored in 45 min. No product loss."),
+        (MacIssueCategory.quality, "Fuel quality complaint", "Customer reports engine knocking after refueling premium 98. Sample sent to lab.", "Lab results normal. Customer vehicle had pre-existing injector issue."),
+        (MacIssueCategory.customer_complaint, "Long queue complaint", "Multiple Google reviews citing 10+ minute wait times during morning rush.", "Added express lane for coffee-only purchases. Staff scheduling adjusted for 7-9am peak."),
+        (MacIssueCategory.customer_complaint, "Loyalty points not credited", "B2B fleet customer reports 3 months of missing loyalty points on account.", "System sync issue identified. Points manually credited. Backend fix deployed."),
+        (MacIssueCategory.staffing, "Night shift no-show", "Night shift employee called in sick with no replacement available.", "Manager covered shift. Added 2 backup staff to on-call roster."),
+        (MacIssueCategory.safety, "Fuel spill near pump 3", "Minor diesel spill (~5L) during customer refueling. Wet surface around pump area.", "Spill kit deployed. Area cleaned and dried. Pump inspection passed."),
+        (MacIssueCategory.it_system, "Network outage", "Internet connectivity lost. Card payments and loyalty system offline.", "ISP issue resolved after 2h. Switched to backup 4G during downtime."),
     ]
 
     for _ in range(80):
