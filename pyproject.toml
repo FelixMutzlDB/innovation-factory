@@ -36,7 +36,7 @@ root = "src/innovation_factory/ui"
 "@svgl" = "https://svgl.app/r/{name}.json"
 
 [tool.ty.src]
-exclude = ["scripts/"]
+exclude = ["scripts/", "**/seed_uc_tables.py", "**/create_dashboard.py"]
 
 [tool.ty.rules]
 deprecated = "ignore"

@@ -1,4 +1,12 @@
-"""Seed Unity Catalog tables with mock retail station data for Genie/Dashboard."""
+"""Seed Unity Catalog tables with mock retail station data for Genie/Dashboard.
+
+Run on a Databricks cluster (requires PySpark). Example:
+    %run /Workspace/.../mol_asm_cockpit/seed_uc_tables
+
+Or set the catalog/schema via environment variables:
+    MAC_UC_CATALOG, MAC_UC_SCHEMA
+"""
+import os
 import random
 from datetime import date, timedelta
 from pyspark.sql import SparkSession  # type: ignore[unresolved-import]
@@ -7,8 +15,8 @@ from pyspark.sql.types import *  # type: ignore[unresolved-import]
 random.seed(42)
 spark = SparkSession.builder.getOrCreate()
 
-CATALOG = "home_felix_mutzl"
-SCHEMA = "mac"
+CATALOG = os.getenv("MAC_UC_CATALOG", "home_felix_mutzl")
+SCHEMA = os.getenv("MAC_UC_SCHEMA", "mac")
 
 # --- Regions and Stations ---
 REGIONS = [

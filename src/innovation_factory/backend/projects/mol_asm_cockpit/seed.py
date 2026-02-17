@@ -1,6 +1,6 @@
-"""Seed script for the ASM Cockpit project.
+"""Seed script for the ASM Cockpit project (local PGlite dev database).
 
-Generates ~50 stations across CEE with 12 months of daily fact data for fuel
+Generates 10 stations across CEE with 14 days of daily fact data for fuel
 sales, non-fuel sales, loyalty, workforce, inventory, competitor prices,
 price history, anomaly alerts, issues, and customer profiles.
 """

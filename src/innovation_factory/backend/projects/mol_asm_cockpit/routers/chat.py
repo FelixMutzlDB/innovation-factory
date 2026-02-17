@@ -9,6 +9,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from sqlmodel import select
 
 from ....dependencies import SessionDep
+from ..databricks_config import MAS_ENDPOINT_NAME
 from ..models import (
     MacChatSession,
     MacChatMessage,
@@ -19,9 +20,6 @@ from ..models import (
 )
 
 router = APIRouter(prefix="/chat", tags=["mac-chat"])
-
-# Agent Bricks Multi-Agent Supervisor endpoint
-MAS_ENDPOINT_NAME: Optional[str] = "mas-25c4ab04-endpoint"
 
 
 @router.post("/send", response_model=MacChatMessageOut, operation_id="mac_sendChatMessage")
