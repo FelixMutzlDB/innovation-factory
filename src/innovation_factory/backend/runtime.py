@@ -50,7 +50,7 @@ class Runtime:
                 # Fall back to current user if PGUSER is not set
                 user = self.ws.current_user.me().user_name
             # URL-encode the username (e.g. email addresses contain @)
-            encoded_user = quote(user, safe="")
+            encoded_user = quote(user, safe="")  # type: ignore[no-matching-overload]
             host = self.config.db.host
             port = self.config.db.port
             database = self.config.db.database_name

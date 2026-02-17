@@ -1,0 +1,82 @@
+CUSTOMER SATISFACTION SURVEY - Q4 2025 RESULTS
+ASM Cockpit Customer Relations
+Survey Period: October - December 2025 | Report Date: January 2026
+
+OVERVIEW
+Quarterly NPS (Net Promoter Score) and satisfaction survey conducted across ASM station network. Sample: 2,400 respondents (800 per month). Mix: 60% fuel-only, 25% fuel+shop, 15% shop-only. Fleet customers surveyed separately (see fleet NPS report).
+
+NPS RESULTS BY REGION
+
+Hungary
+- Overall NPS: 42 (up from 38 in Q3)
+- Fuel: 45
+- Shop: 39
+- Fresh Corner: 41
+- Car Wash: 35
+- Key driver: Price perception improved following Q3 campaign
+- Weakness: Wait times at peak (lunch, Friday evening)
+
+Croatia
+- Overall NPS: 38 (stable)
+- Fuel: 41
+- Shop: 36
+- Fresh Corner: 40
+- Car Wash: 32
+- Key driver: Station cleanliness, staff friendliness
+- Weakness: Product availability (some stockouts reported)
+
+Austria
+- Overall NPS: 45 (up from 42)
+- Fuel: 48
+- Shop: 42
+- Fresh Corner: 44
+- Key driver: EV charger availability, premium positioning
+- Weakness: Price (higher than Hungary - expected)
+
+Slovakia
+- Overall NPS: 40 (new to survey in Q4)
+- Fuel: 43
+- Shop: 38
+- Fresh Corner: 39
+- Baseline established; compare to Q1 2026
+
+KEY IMPROVEMENT AREAS (Open Response Analysis)
+
+1. Wait Times (mentioned by 28% of detractors)
+- Peak periods: Lunch 11:00-13:00, Friday 16:00-19:00
+- Recommendation: Additional till during peak; queue management
+- Stations: HU-BP-001, HU-BP-007, HR-ZG-003 specifically mentioned
+
+2. Cleanliness (18%)
+- Forecourt: Debris, spill residue
+- Restrooms: Most frequent complaint
+- Recommendation: Increase restroom cleaning frequency; forecourt sweep schedule
+
+3. Product Availability (15%)
+- Specific items: Preferred beverage brands, bakery items
+- Recommendation: Improve demand forecasting; safety stock for top SKUs
+- Reference: inventory_management_best_practices.txt
+
+4. Price (12%)
+- Fuel: Always cited; competitive market
+- Shop: Some items perceived expensive
+- Recommendation: Value messaging; bundle promotions
+
+5. Staff (8% - positive and negative)
+- Positive: Friendly, helpful
+- Negative: Rushed, unfriendly at busy times
+- Recommendation: Staffing during peak; customer service training
+
+FLEET NPS (Separate Survey)
+- Overall: 58 (strong)
+- TransEuropa: 72
+- Pannonia: 51 (recovered from Q3 fuel quality concern)
+- Danubia: 65
+- Central Taxi: 48 (invoicing issues in Q1 - see complaint)
+- Starline: 62
+
+ACTION ITEMS
+- Q1 2026: Pilot peak staffing at 5 high-volume stations
+- Q1 2026: Restroom cleaning frequency increase at 12 stations
+- Ongoing: Product availability review with operations
+- Q2 2026: Customer service training refresh

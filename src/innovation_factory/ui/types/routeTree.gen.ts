@@ -14,12 +14,17 @@ import { Route as IndexRouteImport } from './../routes/index'
 import { Route as BuildIdeaIndexRouteImport } from './../routes/build-idea/index'
 import { Route as SidebarProfileRouteImport } from './../routes/_sidebar/profile'
 import { Route as ProjectsViHomeOneRouteRouteImport } from './../routes/projects/vi-home-one/route'
+import { Route as ProjectsMolAsmCockpitRouteRouteImport } from './../routes/projects/mol-asm-cockpit/route'
 import { Route as ProjectsBshHomeConnectRouteRouteImport } from './../routes/projects/bsh-home-connect/route'
 import { Route as ProjectsAdtechIntelligenceRouteRouteImport } from './../routes/projects/adtech-intelligence/route'
 import { Route as ProjectsViHomeOneIndexRouteImport } from './../routes/projects/vi-home-one/index'
+import { Route as ProjectsMolAsmCockpitIndexRouteImport } from './../routes/projects/mol-asm-cockpit/index'
 import { Route as ProjectsBshHomeConnectIndexRouteImport } from './../routes/projects/bsh-home-connect/index'
 import { Route as ProjectsAdtechIntelligenceIndexRouteImport } from './../routes/projects/adtech-intelligence/index'
 import { Route as ProjectsViHomeOneProfileRouteImport } from './../routes/projects/vi-home-one/profile'
+import { Route as ProjectsMolAsmCockpitHomeRouteImport } from './../routes/projects/mol-asm-cockpit/home'
+import { Route as ProjectsMolAsmCockpitExplorerRouteImport } from './../routes/projects/mol-asm-cockpit/explorer'
+import { Route as ProjectsMolAsmCockpitAgentRouteImport } from './../routes/projects/mol-asm-cockpit/agent'
 import { Route as ProjectsBshHomeConnectSupportRouteImport } from './../routes/projects/bsh-home-connect/support'
 import { Route as ProjectsBshHomeConnectProfileRouteImport } from './../routes/projects/bsh-home-connect/profile'
 import { Route as ProjectsBshHomeConnectDashboardRouteImport } from './../routes/projects/bsh-home-connect/dashboard'
@@ -29,12 +34,15 @@ import { Route as ProjectsAdtechIntelligenceDashboardRouteImport } from './../ro
 import { Route as ProjectsViHomeOneSupportIndexRouteImport } from './../routes/projects/vi-home-one/support/index'
 import { Route as ProjectsViHomeOneNeighborhoodIndexRouteImport } from './../routes/projects/vi-home-one/neighborhood/index'
 import { Route as ProjectsViHomeOneHouseholdsIndexRouteImport } from './../routes/projects/vi-home-one/households/index'
+import { Route as ProjectsMolAsmCockpitStationsIndexRouteImport } from './../routes/projects/mol-asm-cockpit/stations/index'
+import { Route as ProjectsMolAsmCockpitAnomaliesIndexRouteImport } from './../routes/projects/mol-asm-cockpit/anomalies/index'
 import { Route as ProjectsBshHomeConnectTicketsIndexRouteImport } from './../routes/projects/bsh-home-connect/tickets/index'
 import { Route as ProjectsBshHomeConnectDevicesIndexRouteImport } from './../routes/projects/bsh-home-connect/devices/index'
 import { Route as ProjectsAdtechIntelligenceAnomaliesIndexRouteImport } from './../routes/projects/adtech-intelligence/anomalies/index'
 import { Route as ProjectsViHomeOneSupportNewRouteImport } from './../routes/projects/vi-home-one/support/new'
 import { Route as ProjectsViHomeOneSupportTicketIdRouteImport } from './../routes/projects/vi-home-one/support/$ticketId'
 import { Route as ProjectsViHomeOneHouseholdsHouseholdIdRouteImport } from './../routes/projects/vi-home-one/households/$householdId'
+import { Route as ProjectsMolAsmCockpitStationsStationCodeRouteImport } from './../routes/projects/mol-asm-cockpit/stations/$stationCode'
 import { Route as ProjectsBshHomeConnectTicketsTicketIdRouteImport } from './../routes/projects/bsh-home-connect/tickets/$ticketId'
 import { Route as ProjectsBshHomeConnectDevicesRegisterRouteImport } from './../routes/projects/bsh-home-connect/devices/register'
 import { Route as ProjectsAdtechIntelligenceAnomaliesAnomalyIdRouteImport } from './../routes/projects/adtech-intelligence/anomalies/$anomalyId'
@@ -64,6 +72,12 @@ const ProjectsViHomeOneRouteRoute = ProjectsViHomeOneRouteRouteImport.update({
   path: '/projects/vi-home-one',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectsMolAsmCockpitRouteRoute =
+  ProjectsMolAsmCockpitRouteRouteImport.update({
+    id: '/projects/mol-asm-cockpit',
+    path: '/projects/mol-asm-cockpit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProjectsBshHomeConnectRouteRoute =
   ProjectsBshHomeConnectRouteRouteImport.update({
     id: '/projects/bsh-home-connect',
@@ -81,6 +95,12 @@ const ProjectsViHomeOneIndexRoute = ProjectsViHomeOneIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ProjectsViHomeOneRouteRoute,
 } as any)
+const ProjectsMolAsmCockpitIndexRoute =
+  ProjectsMolAsmCockpitIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
+  } as any)
 const ProjectsBshHomeConnectIndexRoute =
   ProjectsBshHomeConnectIndexRouteImport.update({
     id: '/',
@@ -98,6 +118,24 @@ const ProjectsViHomeOneProfileRoute =
     id: '/profile',
     path: '/profile',
     getParentRoute: () => ProjectsViHomeOneRouteRoute,
+  } as any)
+const ProjectsMolAsmCockpitHomeRoute =
+  ProjectsMolAsmCockpitHomeRouteImport.update({
+    id: '/home',
+    path: '/home',
+    getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
+  } as any)
+const ProjectsMolAsmCockpitExplorerRoute =
+  ProjectsMolAsmCockpitExplorerRouteImport.update({
+    id: '/explorer',
+    path: '/explorer',
+    getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
+  } as any)
+const ProjectsMolAsmCockpitAgentRoute =
+  ProjectsMolAsmCockpitAgentRouteImport.update({
+    id: '/agent',
+    path: '/agent',
+    getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
   } as any)
 const ProjectsBshHomeConnectSupportRoute =
   ProjectsBshHomeConnectSupportRouteImport.update({
@@ -153,6 +191,18 @@ const ProjectsViHomeOneHouseholdsIndexRoute =
     path: '/households/',
     getParentRoute: () => ProjectsViHomeOneRouteRoute,
   } as any)
+const ProjectsMolAsmCockpitStationsIndexRoute =
+  ProjectsMolAsmCockpitStationsIndexRouteImport.update({
+    id: '/stations/',
+    path: '/stations/',
+    getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
+  } as any)
+const ProjectsMolAsmCockpitAnomaliesIndexRoute =
+  ProjectsMolAsmCockpitAnomaliesIndexRouteImport.update({
+    id: '/anomalies/',
+    path: '/anomalies/',
+    getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
+  } as any)
 const ProjectsBshHomeConnectTicketsIndexRoute =
   ProjectsBshHomeConnectTicketsIndexRouteImport.update({
     id: '/tickets/',
@@ -189,6 +239,12 @@ const ProjectsViHomeOneHouseholdsHouseholdIdRoute =
     path: '/households/$householdId',
     getParentRoute: () => ProjectsViHomeOneRouteRoute,
   } as any)
+const ProjectsMolAsmCockpitStationsStationCodeRoute =
+  ProjectsMolAsmCockpitStationsStationCodeRouteImport.update({
+    id: '/stations/$stationCode',
+    path: '/stations/$stationCode',
+    getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
+  } as any)
 const ProjectsBshHomeConnectTicketsTicketIdRoute =
   ProjectsBshHomeConnectTicketsTicketIdRouteImport.update({
     id: '/tickets/$ticketId',
@@ -218,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectRouteRouteWithChildren
+  '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
   '/profile': typeof SidebarProfileRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
@@ -227,19 +284,26 @@ export interface FileRoutesByFullPath {
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
+  '/projects/mol-asm-cockpit/agent': typeof ProjectsMolAsmCockpitAgentRoute
+  '/projects/mol-asm-cockpit/explorer': typeof ProjectsMolAsmCockpitExplorerRoute
+  '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
   '/projects/adtech-intelligence/': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/bsh-home-connect/': typeof ProjectsBshHomeConnectIndexRoute
+  '/projects/mol-asm-cockpit/': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one/': typeof ProjectsViHomeOneIndexRoute
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
+  '/projects/mol-asm-cockpit/stations/$stationCode': typeof ProjectsMolAsmCockpitStationsStationCodeRoute
   '/projects/vi-home-one/households/$householdId': typeof ProjectsViHomeOneHouseholdsHouseholdIdRouteWithChildren
   '/projects/vi-home-one/support/$ticketId': typeof ProjectsViHomeOneSupportTicketIdRoute
   '/projects/vi-home-one/support/new': typeof ProjectsViHomeOneSupportNewRoute
   '/projects/adtech-intelligence/anomalies/': typeof ProjectsAdtechIntelligenceAnomaliesIndexRoute
   '/projects/bsh-home-connect/devices/': typeof ProjectsBshHomeConnectDevicesIndexRoute
   '/projects/bsh-home-connect/tickets/': typeof ProjectsBshHomeConnectTicketsIndexRoute
+  '/projects/mol-asm-cockpit/anomalies/': typeof ProjectsMolAsmCockpitAnomaliesIndexRoute
+  '/projects/mol-asm-cockpit/stations/': typeof ProjectsMolAsmCockpitStationsIndexRoute
   '/projects/vi-home-one/households/': typeof ProjectsViHomeOneHouseholdsIndexRoute
   '/projects/vi-home-one/neighborhood/': typeof ProjectsViHomeOneNeighborhoodIndexRoute
   '/projects/vi-home-one/support/': typeof ProjectsViHomeOneSupportIndexRoute
@@ -255,19 +319,26 @@ export interface FileRoutesByTo {
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
+  '/projects/mol-asm-cockpit/agent': typeof ProjectsMolAsmCockpitAgentRoute
+  '/projects/mol-asm-cockpit/explorer': typeof ProjectsMolAsmCockpitExplorerRoute
+  '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
   '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectIndexRoute
+  '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one': typeof ProjectsViHomeOneIndexRoute
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
+  '/projects/mol-asm-cockpit/stations/$stationCode': typeof ProjectsMolAsmCockpitStationsStationCodeRoute
   '/projects/vi-home-one/households/$householdId': typeof ProjectsViHomeOneHouseholdsHouseholdIdRouteWithChildren
   '/projects/vi-home-one/support/$ticketId': typeof ProjectsViHomeOneSupportTicketIdRoute
   '/projects/vi-home-one/support/new': typeof ProjectsViHomeOneSupportNewRoute
   '/projects/adtech-intelligence/anomalies': typeof ProjectsAdtechIntelligenceAnomaliesIndexRoute
   '/projects/bsh-home-connect/devices': typeof ProjectsBshHomeConnectDevicesIndexRoute
   '/projects/bsh-home-connect/tickets': typeof ProjectsBshHomeConnectTicketsIndexRoute
+  '/projects/mol-asm-cockpit/anomalies': typeof ProjectsMolAsmCockpitAnomaliesIndexRoute
+  '/projects/mol-asm-cockpit/stations': typeof ProjectsMolAsmCockpitStationsIndexRoute
   '/projects/vi-home-one/households': typeof ProjectsViHomeOneHouseholdsIndexRoute
   '/projects/vi-home-one/neighborhood': typeof ProjectsViHomeOneNeighborhoodIndexRoute
   '/projects/vi-home-one/support': typeof ProjectsViHomeOneSupportIndexRoute
@@ -279,6 +350,7 @@ export interface FileRoutesById {
   '/_sidebar': typeof SidebarRouteRouteWithChildren
   '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectRouteRouteWithChildren
+  '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
   '/_sidebar/profile': typeof SidebarProfileRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
@@ -288,19 +360,26 @@ export interface FileRoutesById {
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
+  '/projects/mol-asm-cockpit/agent': typeof ProjectsMolAsmCockpitAgentRoute
+  '/projects/mol-asm-cockpit/explorer': typeof ProjectsMolAsmCockpitExplorerRoute
+  '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
   '/projects/adtech-intelligence/': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/bsh-home-connect/': typeof ProjectsBshHomeConnectIndexRoute
+  '/projects/mol-asm-cockpit/': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one/': typeof ProjectsViHomeOneIndexRoute
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
+  '/projects/mol-asm-cockpit/stations/$stationCode': typeof ProjectsMolAsmCockpitStationsStationCodeRoute
   '/projects/vi-home-one/households/$householdId': typeof ProjectsViHomeOneHouseholdsHouseholdIdRouteWithChildren
   '/projects/vi-home-one/support/$ticketId': typeof ProjectsViHomeOneSupportTicketIdRoute
   '/projects/vi-home-one/support/new': typeof ProjectsViHomeOneSupportNewRoute
   '/projects/adtech-intelligence/anomalies/': typeof ProjectsAdtechIntelligenceAnomaliesIndexRoute
   '/projects/bsh-home-connect/devices/': typeof ProjectsBshHomeConnectDevicesIndexRoute
   '/projects/bsh-home-connect/tickets/': typeof ProjectsBshHomeConnectTicketsIndexRoute
+  '/projects/mol-asm-cockpit/anomalies/': typeof ProjectsMolAsmCockpitAnomaliesIndexRoute
+  '/projects/mol-asm-cockpit/stations/': typeof ProjectsMolAsmCockpitStationsIndexRoute
   '/projects/vi-home-one/households/': typeof ProjectsViHomeOneHouseholdsIndexRoute
   '/projects/vi-home-one/neighborhood/': typeof ProjectsViHomeOneNeighborhoodIndexRoute
   '/projects/vi-home-one/support/': typeof ProjectsViHomeOneSupportIndexRoute
@@ -312,6 +391,7 @@ export interface FileRouteTypes {
     | '/'
     | '/projects/adtech-intelligence'
     | '/projects/bsh-home-connect'
+    | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
     | '/profile'
     | '/build-idea/'
@@ -321,19 +401,26 @@ export interface FileRouteTypes {
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
+    | '/projects/mol-asm-cockpit/agent'
+    | '/projects/mol-asm-cockpit/explorer'
+    | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
     | '/projects/adtech-intelligence/'
     | '/projects/bsh-home-connect/'
+    | '/projects/mol-asm-cockpit/'
     | '/projects/vi-home-one/'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
+    | '/projects/mol-asm-cockpit/stations/$stationCode'
     | '/projects/vi-home-one/households/$householdId'
     | '/projects/vi-home-one/support/$ticketId'
     | '/projects/vi-home-one/support/new'
     | '/projects/adtech-intelligence/anomalies/'
     | '/projects/bsh-home-connect/devices/'
     | '/projects/bsh-home-connect/tickets/'
+    | '/projects/mol-asm-cockpit/anomalies/'
+    | '/projects/mol-asm-cockpit/stations/'
     | '/projects/vi-home-one/households/'
     | '/projects/vi-home-one/neighborhood/'
     | '/projects/vi-home-one/support/'
@@ -349,19 +436,26 @@ export interface FileRouteTypes {
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
+    | '/projects/mol-asm-cockpit/agent'
+    | '/projects/mol-asm-cockpit/explorer'
+    | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
     | '/projects/adtech-intelligence'
     | '/projects/bsh-home-connect'
+    | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
+    | '/projects/mol-asm-cockpit/stations/$stationCode'
     | '/projects/vi-home-one/households/$householdId'
     | '/projects/vi-home-one/support/$ticketId'
     | '/projects/vi-home-one/support/new'
     | '/projects/adtech-intelligence/anomalies'
     | '/projects/bsh-home-connect/devices'
     | '/projects/bsh-home-connect/tickets'
+    | '/projects/mol-asm-cockpit/anomalies'
+    | '/projects/mol-asm-cockpit/stations'
     | '/projects/vi-home-one/households'
     | '/projects/vi-home-one/neighborhood'
     | '/projects/vi-home-one/support'
@@ -372,6 +466,7 @@ export interface FileRouteTypes {
     | '/_sidebar'
     | '/projects/adtech-intelligence'
     | '/projects/bsh-home-connect'
+    | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
     | '/_sidebar/profile'
     | '/build-idea/'
@@ -381,19 +476,26 @@ export interface FileRouteTypes {
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
+    | '/projects/mol-asm-cockpit/agent'
+    | '/projects/mol-asm-cockpit/explorer'
+    | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
     | '/projects/adtech-intelligence/'
     | '/projects/bsh-home-connect/'
+    | '/projects/mol-asm-cockpit/'
     | '/projects/vi-home-one/'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
+    | '/projects/mol-asm-cockpit/stations/$stationCode'
     | '/projects/vi-home-one/households/$householdId'
     | '/projects/vi-home-one/support/$ticketId'
     | '/projects/vi-home-one/support/new'
     | '/projects/adtech-intelligence/anomalies/'
     | '/projects/bsh-home-connect/devices/'
     | '/projects/bsh-home-connect/tickets/'
+    | '/projects/mol-asm-cockpit/anomalies/'
+    | '/projects/mol-asm-cockpit/stations/'
     | '/projects/vi-home-one/households/'
     | '/projects/vi-home-one/neighborhood/'
     | '/projects/vi-home-one/support/'
@@ -405,6 +507,7 @@ export interface RootRouteChildren {
   SidebarRouteRoute: typeof SidebarRouteRouteWithChildren
   ProjectsAdtechIntelligenceRouteRoute: typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
   ProjectsBshHomeConnectRouteRoute: typeof ProjectsBshHomeConnectRouteRouteWithChildren
+  ProjectsMolAsmCockpitRouteRoute: typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   ProjectsViHomeOneRouteRoute: typeof ProjectsViHomeOneRouteRouteWithChildren
   BuildIdeaIndexRoute: typeof BuildIdeaIndexRoute
 }
@@ -446,6 +549,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsViHomeOneRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/mol-asm-cockpit': {
+      id: '/projects/mol-asm-cockpit'
+      path: '/projects/mol-asm-cockpit'
+      fullPath: '/projects/mol-asm-cockpit'
+      preLoaderRoute: typeof ProjectsMolAsmCockpitRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/bsh-home-connect': {
       id: '/projects/bsh-home-connect'
       path: '/projects/bsh-home-connect'
@@ -467,6 +577,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsViHomeOneIndexRouteImport
       parentRoute: typeof ProjectsViHomeOneRouteRoute
     }
+    '/projects/mol-asm-cockpit/': {
+      id: '/projects/mol-asm-cockpit/'
+      path: '/'
+      fullPath: '/projects/mol-asm-cockpit/'
+      preLoaderRoute: typeof ProjectsMolAsmCockpitIndexRouteImport
+      parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
+    }
     '/projects/bsh-home-connect/': {
       id: '/projects/bsh-home-connect/'
       path: '/'
@@ -487,6 +604,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/vi-home-one/profile'
       preLoaderRoute: typeof ProjectsViHomeOneProfileRouteImport
       parentRoute: typeof ProjectsViHomeOneRouteRoute
+    }
+    '/projects/mol-asm-cockpit/home': {
+      id: '/projects/mol-asm-cockpit/home'
+      path: '/home'
+      fullPath: '/projects/mol-asm-cockpit/home'
+      preLoaderRoute: typeof ProjectsMolAsmCockpitHomeRouteImport
+      parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
+    }
+    '/projects/mol-asm-cockpit/explorer': {
+      id: '/projects/mol-asm-cockpit/explorer'
+      path: '/explorer'
+      fullPath: '/projects/mol-asm-cockpit/explorer'
+      preLoaderRoute: typeof ProjectsMolAsmCockpitExplorerRouteImport
+      parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
+    }
+    '/projects/mol-asm-cockpit/agent': {
+      id: '/projects/mol-asm-cockpit/agent'
+      path: '/agent'
+      fullPath: '/projects/mol-asm-cockpit/agent'
+      preLoaderRoute: typeof ProjectsMolAsmCockpitAgentRouteImport
+      parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
     }
     '/projects/bsh-home-connect/support': {
       id: '/projects/bsh-home-connect/support'
@@ -551,6 +689,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsViHomeOneHouseholdsIndexRouteImport
       parentRoute: typeof ProjectsViHomeOneRouteRoute
     }
+    '/projects/mol-asm-cockpit/stations/': {
+      id: '/projects/mol-asm-cockpit/stations/'
+      path: '/stations'
+      fullPath: '/projects/mol-asm-cockpit/stations/'
+      preLoaderRoute: typeof ProjectsMolAsmCockpitStationsIndexRouteImport
+      parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
+    }
+    '/projects/mol-asm-cockpit/anomalies/': {
+      id: '/projects/mol-asm-cockpit/anomalies/'
+      path: '/anomalies'
+      fullPath: '/projects/mol-asm-cockpit/anomalies/'
+      preLoaderRoute: typeof ProjectsMolAsmCockpitAnomaliesIndexRouteImport
+      parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
+    }
     '/projects/bsh-home-connect/tickets/': {
       id: '/projects/bsh-home-connect/tickets/'
       path: '/tickets'
@@ -592,6 +744,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/vi-home-one/households/$householdId'
       preLoaderRoute: typeof ProjectsViHomeOneHouseholdsHouseholdIdRouteImport
       parentRoute: typeof ProjectsViHomeOneRouteRoute
+    }
+    '/projects/mol-asm-cockpit/stations/$stationCode': {
+      id: '/projects/mol-asm-cockpit/stations/$stationCode'
+      path: '/stations/$stationCode'
+      fullPath: '/projects/mol-asm-cockpit/stations/$stationCode'
+      preLoaderRoute: typeof ProjectsMolAsmCockpitStationsStationCodeRouteImport
+      parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
     }
     '/projects/bsh-home-connect/tickets/$ticketId': {
       id: '/projects/bsh-home-connect/tickets/$ticketId'
@@ -697,6 +856,35 @@ const ProjectsBshHomeConnectRouteRouteWithChildren =
     ProjectsBshHomeConnectRouteRouteChildren,
   )
 
+interface ProjectsMolAsmCockpitRouteRouteChildren {
+  ProjectsMolAsmCockpitAgentRoute: typeof ProjectsMolAsmCockpitAgentRoute
+  ProjectsMolAsmCockpitExplorerRoute: typeof ProjectsMolAsmCockpitExplorerRoute
+  ProjectsMolAsmCockpitHomeRoute: typeof ProjectsMolAsmCockpitHomeRoute
+  ProjectsMolAsmCockpitIndexRoute: typeof ProjectsMolAsmCockpitIndexRoute
+  ProjectsMolAsmCockpitStationsStationCodeRoute: typeof ProjectsMolAsmCockpitStationsStationCodeRoute
+  ProjectsMolAsmCockpitAnomaliesIndexRoute: typeof ProjectsMolAsmCockpitAnomaliesIndexRoute
+  ProjectsMolAsmCockpitStationsIndexRoute: typeof ProjectsMolAsmCockpitStationsIndexRoute
+}
+
+const ProjectsMolAsmCockpitRouteRouteChildren: ProjectsMolAsmCockpitRouteRouteChildren =
+  {
+    ProjectsMolAsmCockpitAgentRoute: ProjectsMolAsmCockpitAgentRoute,
+    ProjectsMolAsmCockpitExplorerRoute: ProjectsMolAsmCockpitExplorerRoute,
+    ProjectsMolAsmCockpitHomeRoute: ProjectsMolAsmCockpitHomeRoute,
+    ProjectsMolAsmCockpitIndexRoute: ProjectsMolAsmCockpitIndexRoute,
+    ProjectsMolAsmCockpitStationsStationCodeRoute:
+      ProjectsMolAsmCockpitStationsStationCodeRoute,
+    ProjectsMolAsmCockpitAnomaliesIndexRoute:
+      ProjectsMolAsmCockpitAnomaliesIndexRoute,
+    ProjectsMolAsmCockpitStationsIndexRoute:
+      ProjectsMolAsmCockpitStationsIndexRoute,
+  }
+
+const ProjectsMolAsmCockpitRouteRouteWithChildren =
+  ProjectsMolAsmCockpitRouteRoute._addFileChildren(
+    ProjectsMolAsmCockpitRouteRouteChildren,
+  )
+
 interface ProjectsViHomeOneHouseholdsHouseholdIdRouteChildren {
   ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute: typeof ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute
 }
@@ -751,6 +939,7 @@ const rootRouteChildren: RootRouteChildren = {
     ProjectsAdtechIntelligenceRouteRouteWithChildren,
   ProjectsBshHomeConnectRouteRoute:
     ProjectsBshHomeConnectRouteRouteWithChildren,
+  ProjectsMolAsmCockpitRouteRoute: ProjectsMolAsmCockpitRouteRouteWithChildren,
   ProjectsViHomeOneRouteRoute: ProjectsViHomeOneRouteRouteWithChildren,
   BuildIdeaIndexRoute: BuildIdeaIndexRoute,
 }

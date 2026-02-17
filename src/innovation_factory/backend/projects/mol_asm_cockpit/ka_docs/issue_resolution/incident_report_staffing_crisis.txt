@@ -1,0 +1,54 @@
+INCIDENT REPORT: STAFFING CRISIS - HOLIDAY PERIOD NO-SHOWS
+Date: 2 January 2025
+Incident ID: INC-2025-00152
+Classification: Operations / Human Resources
+
+SUMMARY
+During the period 28 December 2024 - 1 January 2025, multiple stations experienced staffing shortages due to unplanned absences (no-shows). Peak holiday travel period coincided with minimum staffing. Three stations required emergency measures to maintain operations.
+
+AFFECTED STATIONS AND IMPACT
+
+Station HU-BP-001 (Budapest)
+- 28 Dec: 2 no-shows (evening shift); manager covered, closed Fresh Corner 2 hours early
+- 29 Dec: 1 no-show (night shift); remaining staff worked extended shift; overtime 85 EUR
+- 31 Dec: 3 no-shows (day shift); regional sent 2 float staff; car wash closed
+
+Station HR-ZG-003 (Zagreb area)
+- 30 Dec: 2 no-shows (day shift); manager and assistant manager covered
+- 1 Jan: 2 no-shows (morning); delayed opening by 45 minutes
+
+Station HU-PE-008 (Pest county)
+- 29 Dec: 1 no-show
+- 31 Dec: 2 no-shows; closed Fresh Corner entire day; fuel only
+
+ROOT CAUSE ANALYSIS
+- Holiday period: Staff requested time off; not all requests could be accommodated
+- No-show pattern: Several staff had history of reliability issues
+- Backup pool: Regional float pool understaffed during holidays
+- Communication: Some staff did not notify of absence; others notified same-day
+
+IMMEDIATE ACTIONS TAKEN
+- Manager coverage: All affected stations had manager on-site
+- Float staff: Deployed from regional pool where available
+- Service reduction: Fresh Corner, car wash closed at some stations rather than compromise safety
+- Overtime: Approved for staff willing to extend
+- No station closed entirely - fuel availability maintained
+
+FOLLOW-UP ACTIONS
+- Disciplinary: No-show staff subject to performance review
+- Scheduling: Holiday 2025 - require confirmation 48 hours before shift
+- Float pool: Recruit additional float staff for peak periods
+- Incentive: Holiday shift premium under review for 2025
+- Cross-training: Ensure more staff trained on Fresh Corner to enable flexible coverage
+
+LESSONS LEARNED
+- Holiday scheduling: Build in 15% buffer for no-shows during peak periods
+- Communication protocol: Mandatory check-in 24 hours before holiday shift
+- Escalation: Clear criteria for when to reduce services vs. seek emergency coverage
+- Documentation: All no-shows logged for pattern analysis
+
+COST IMPACT
+- Overtime: 340 EUR
+- Lost sales (reduced services): Estimated 1,200 EUR
+- Float staff travel: 120 EUR
+- No customer complaints regarding fuel availability

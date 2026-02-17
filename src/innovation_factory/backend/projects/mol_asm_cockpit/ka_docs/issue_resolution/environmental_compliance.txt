@@ -1,0 +1,76 @@
+ENVIRONMENTAL COMPLIANCE PROCEDURES
+ASM Cockpit Service Station Network
+Document Version: 1.9 | Regulatory: EU and National Requirements
+
+OVERVIEW
+Service stations handle hazardous materials (fuel, oils, cleaning chemicals) and must comply with environmental regulations. Non-compliance results in fines, operational restrictions, and reputational damage. This document covers spill response, waste management, and reporting obligations.
+
+FUEL SPILL CLEANUP
+
+Minor Spill (less than 5 liters, contained)
+1. Stop source of spill immediately
+2. Prevent spread: Use absorbent materials, do not flush with water
+3. Absorbents: Use fuel-specific pads or granules; avoid sawdust (not effective for fuel)
+4. Place used absorbents in designated hazardous waste container
+5. Clean affected surface with detergent; collect wash water - do not allow to enter drainage
+6. Document: Spill log, volume, cause, corrective action
+7. Report to station manager; no regulatory report typically required for minor contained spills
+
+Major Spill (greater than 5 liters, or entering drainage/environment)
+1. Stop source - isolate tank, close valves
+2. Evacuate area if vapor concentration high
+3. Call emergency services: 112 (EU emergency number)
+4. Notify environmental authority per local requirement (typically within 1-2 hours)
+5. Prevent entry to drainage: Block drains, use absorbent booms
+6. Do not attempt full cleanup - professional remediation required
+7. Document everything: Photos, timeline, actions taken
+8. Preserve area for investigation
+
+Spill Kit Requirements
+- Each station: Minimum 50L capacity spill kit at forecourt
+- Contents: Absorbent pads, granules, booms, PPE (gloves, goggles), containment barriers
+- Location: Clearly marked, accessible
+- Restock after any use
+
+WASTE DISPOSAL
+
+Hazardous Waste Categories
+- Used oil and filters: Designated container, licensed collector
+- Fuel-contaminated absorbents: Hazardous waste stream
+- Cleaning chemicals: Per SDS; some hazardous
+- Fluorescent tubes, batteries: Separate collection
+
+Waste Storage
+- Labeled containers with waste type
+- Secondary containment for liquid waste
+- Secure area - not accessible to public
+- Inventory log: Waste out = waste in minus sold/used
+
+Disposal Procedure
+- Use only licensed waste contractors (approved list in ASM Cockpit)
+- Waste transfer note required for each collection
+- Retain documentation 3 years minimum (5 years in some jurisdictions)
+
+Non-Hazardous Waste
+- General waste: Municipal collection
+- Recyclables: Separate streams per local program
+- Food waste: Composting or organic waste collection where available
+
+ENVIRONMENTAL REPORTING
+
+Mandatory Reports
+- Spill report: Per local regulation - typically any spill to environment
+- Annual waste report: Quantities by category
+- Tank integrity: Per UST regulation
+- Discharge permits: If applicable to station
+
+ASM Internal Reporting
+- All spills logged in ASM Cockpit within 24 hours
+- Environmental incidents: Notify regional EHS manager
+- Audit findings: Corrective action within 30 days
+
+INSPECTION READINESS
+- Spill kit accessible and stocked
+- Waste storage area organized and labeled
+- Records available for last 3 years
+- Staff trained on procedures - document training dates

@@ -4,6 +4,7 @@ from .runtime import Runtime
 from .models import Project
 from .projects.vi_home_one.seed import seed_vh_data
 from .projects.bsh_home_connect.seed import seed_bsh_data
+from .projects.mol_asm_cockpit.seed import seed_mac_data
 from .projects.adtech_intelligence.seed import seed_at_data
 from .logger import logger
 
@@ -25,6 +26,7 @@ def check_and_seed_if_empty(runtime: Runtime):
         _seed_projects(session)
         seed_vh_data(session)
         seed_bsh_data(session)
+        seed_mac_data(session)
         seed_at_data(session)
 
         # Ensure everything is committed (sub-seed functions may return early
@@ -54,6 +56,14 @@ def _seed_projects(session: Session):
             "color": "#3b82f6",
         },
         {
+            "slug": "mol-asm-cockpit",
+            "name": "ASM Cockpit",
+            "description": "Interactive cockpit for Area Sales Managers to explore retail station performance, get AI-powered issue resolution, and monitor anomalies across fuel, non-fuel, loyalty, supply, and workforce operations.",
+            "company": "Retail Network",
+            "icon": "Layers",
+            "color": "#f59e0b",
+         },
+         {
             "slug": "adtech-intelligence",
             "name": "AdTech Intelligence",
             "description": "AI-powered advertising operations platform. Explore demand and inventory across online and outdoor channels, resolve issues with an intelligent agent, and monitor anomalies in campaign performance.",

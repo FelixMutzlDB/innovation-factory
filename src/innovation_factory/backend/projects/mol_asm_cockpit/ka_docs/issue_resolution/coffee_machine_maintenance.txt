@@ -1,0 +1,75 @@
+COFFEE MACHINE MAINTENANCE GUIDE
+ASM Cockpit Service Station Network
+Document Version: 2.0 | Equipment: WMF, Franke, Lavazza systems
+
+OVERVIEW
+Coffee is a key margin driver in the shop. Machine downtime directly impacts revenue and customer satisfaction. Proper maintenance prevents failures and ensures consistent product quality. This guide covers the primary systems deployed across ASM stations.
+
+DAILY CLEANING PROCEDURES
+
+External Surfaces
+- Wipe group heads and steam wands after each use (staff) or every 2 hours (self-service)
+- Clean drip trays; empty and rinse - full drip tray causes overflow and machine shutdown
+- Wipe exterior with damp cloth; no harsh chemicals on touchscreens
+
+Milk System (if applicable)
+- Purge milk lines at end of day
+- Remove and rinse milk frother attachment
+- Cold water flush through milk circuit
+- Store milk container refrigerated when not in use
+
+DESCALING PROCEDURE
+
+Frequency
+- Soft water areas: Every 3 months or 15,000 cups
+- Hard water areas: Every 6 weeks or 8,000 cups
+- Check water hardness with test strip; adjust schedule accordingly
+
+Descaling Steps (WMF/Franke typical)
+1. Schedule during low-traffic period
+2. Empty drip tray and place container under group head
+3. Enter service mode: Hold power + menu 5 seconds (varies by model - check manual)
+4. Select descaling program
+5. Add descaling solution per manufacturer specification (typically 1:10 dilution)
+6. Run full cycle - approximately 25-30 minutes
+7. Rinse cycle: Run 3-5 tank volumes of clean water through system
+8. Reset service counter
+9. Pull 5 test shots and discard before serving to customers
+
+COMMON ISSUES AND RESOLUTION
+
+Machine Not Dispensing / Low Pressure
+- Cause: Scale buildup, clogged group head, pump fault
+- Action: Run descaling; if no improvement, backflush group head; escalate to technician
+
+Water Leak
+- Identify source: Group head gasket, steam wand, water tank connection
+- Temporary: Place drip tray, reduce use of affected component
+- Permanent: Gasket replacement or technician call
+
+Grinder Issues (beans not feeding)
+- Check bean hopper - ensure not empty or blocked
+- Clean grinder burrs - build-up causes inconsistent grind
+- Adjust grind setting if shots too fast (under-extracted) or too slow (over-extracted)
+
+Error Codes (Lavazza Blue)
+- E01: Water tank empty - refill, check float
+- E02: No coffee - refill bean hopper
+- E05: Heating fault - power cycle; if persists, technician
+- E10: Descaling required - run descaling program
+
+Error Codes (WMF)
+- 0.1.0: Water supply - check connection, filter
+- 0.2.0: Waste container full - empty
+- 0.5.0: Brew group - run cleaning cycle
+
+QUALITY CHECKS
+- Taste test: First shot of day and after any maintenance
+- Temperature: Espresso 65-70C at cup
+- Crema: Should be present and persistent
+- Report quality issues to supplier - may indicate need for machine service
+
+SUPPLIER CONTACTS
+- WMF service: +36 1 234 5678
+- Lavazza technical: support@lavazza-professional.com
+- Franke: Regional service partner per station contract

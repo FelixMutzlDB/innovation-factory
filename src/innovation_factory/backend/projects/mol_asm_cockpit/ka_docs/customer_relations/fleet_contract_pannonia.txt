@@ -1,0 +1,51 @@
+FLEET CONTRACT: PANNONIA FREIGHT
+ASM Cockpit Customer Relations
+Contract ID: FLT-2020-0089 | Effective: 1 June 2020 | Renewal: 1 June 2026
+
+ACCOUNT OVERVIEW
+Pannonia Freight operates regional freight and distribution services in Hungary, Croatia, and Serbia. Fleet consists primarily of medium-duty trucks and vans. Fuels at ASM stations in Budapest, Debrecen, Szeged, and along the M6/M60 corridor to Croatia.
+
+CONTRACT TERMS
+
+Fleet Size
+- Registered vehicles: 85
+- Mix: 60 trucks, 25 vans
+- Primary fuel: Diesel
+- Average monthly volume: 52,000 liters (commitment)
+- Actual volume (2024): 48,500 liters monthly average
+
+Pricing Tier
+- Tier: Gold
+- Discount: 6% off pump price (excluding taxes)
+- Applies to: Diesel, gasoline (vans), AdBlue
+- Shop: 3% discount on merchandise (max 200 EUR/month)
+
+Volume Commitment
+- Minimum: 52,000 liters per month
+- Status: Slightly below commitment in 2024 - discuss in Q1 2025 review
+- Shortfall clause: Discount review if below 85% for 3 consecutive months
+
+Payment Terms
+- Invoice: Bi-weekly
+- Payment due: 21 days from invoice date
+- Method: Bank transfer
+- Currency: HUF (primary), EUR for Croatia stations
+
+ADDITIONAL BENEFITS
+- Account manager: Laszlo Toth
+- Support: Business hours + emergency hotline
+- Station access: All ASM Hungary and Croatia stations
+- Reporting: Monthly volume report
+- Loyalty: Standard gold tier points
+
+KEY CONTACTS
+- Pannonia Fleet Manager: Istvan Horvath, istvan.horvath@pannonia-freight.hu
+- Pannonia Finance: Katalin Varga
+- ASM Account Manager: Laszlo Toth, laszlo.toth@asm-retail.com
+
+NOTES
+- Fuel quality complaint January 2025 - see customer_complaint_quality_pannonia.txt
+- Complaint resolved; relationship maintained
+- Volume trend: Slight decline 2024 - competitive pressure in regional segment
+- Renewal: June 2026; consider volume incentive to secure commitment
+- Reference: customer_retention_playbook.txt for renewal strategy

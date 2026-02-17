@@ -1,0 +1,64 @@
+EV CHARGING STATION TROUBLESHOOTING
+ASM Cockpit Service Station Network
+Document Version: 1.7 | Equipment: ABB Terra, Alpitronic Hypercharger, Kempower
+
+OVERVIEW
+EV charging stations are deployed at 45 ASM stations as of Q1 2025. Chargers require different troubleshooting than fuel dispensers. Most issues can be resolved by station staff; complex faults require certified EV technician.
+
+COMMON ERROR CODES AND MEANINGS
+
+ABB Terra AC/DC Chargers
+- E001: Communication error - charger cannot reach backend; check network connection
+- E002: Ground fault - safety shutdown; do not attempt reset; contact technician
+- E003: Overcurrent - cable or connector fault; inspect for damage
+- E004: Temperature fault - charger overheated; allow 30 min cooldown, then retry
+- E005: Payment terminal fault - customer cannot complete transaction; process payment manually if possible
+
+Alpitronic Hypercharger
+- F0: General fault - power cycle required
+- F1: DC contactor fault - technician required
+- F2: Insulation fault - do not use; cordon off; technician required
+- F3: Emergency stop activated - release E-stop button, power cycle
+- F4: Cable fault - inspect cable and connector for damage
+
+Kempower
+- 0x1001: Charging cable not connected properly - reseat connector
+- 0x1002: Vehicle communication error - try different cable or vehicle
+- 0x2001: Grid fault - utility issue; report to network operator
+- 0x3001: Internal error - power cycle; if persists, technician
+
+RESET PROCEDURES
+
+Standard Power Cycle
+1. Ensure no vehicle connected
+2. Open charger cabinet (if staff access) or use emergency stop to interrupt
+3. Locate main circuit breaker - switch off
+4. Wait 2 minutes (allows capacitor discharge)
+5. Switch breaker on
+6. Charger will boot - typically 3-5 minutes
+7. Verify status LED shows ready/available
+
+Remote Reset (if available)
+- ASM Cockpit: Charger management > Select unit > Remote reset
+- Only use when no physical fault visible
+- Do not remote reset if error indicates ground fault or cable damage
+
+CUSTOMER SUPPORT PROTOCOL
+1. Verify customer has compatible vehicle (CCS, CHAdeMO, or Type 2 per charger type)
+2. Ensure customer has activated payment method (app or RFID)
+3. Guide through connection: Plug in before initiating charge (most units)
+4. If charge does not start: Try alternate charger at station
+5. Document charger ID, error code, vehicle make/model for support ticket
+6. Provide customer with 24/7 EV support number: +36 800 123 456
+
+SAFETY REMINDERS
+- Never touch charging cable or connector during active charging
+- Do not use charger if cable appears damaged, cracked, or has exposed wiring
+- In case of smoke or unusual odor: Activate E-stop, evacuate area, call emergency services
+- EV fires: Use Class D extinguisher if available; otherwise maintain distance, let fire services handle
+
+MAINTENANCE SCHEDULE
+- Weekly: Visual inspection of cables, connectors, display screens
+- Monthly: Clean connector contacts with approved contact cleaner
+- Quarterly: Certified technician inspection
+- Cable replacement: Per manufacturer schedule or when wear detected

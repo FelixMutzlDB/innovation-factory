@@ -10,6 +10,13 @@ export const AlertSeverity = {
 
 export type AlertSeverity = (typeof AlertSeverity)[keyof typeof AlertSeverity];
 
+export const AlertStatus = {
+  active: "active",
+  acknowledged: "acknowledged",
+} as const;
+
+export type AlertStatus = (typeof AlertStatus)[keyof typeof AlertStatus];
+
 export const AnomalySeverity = {
   low: "low",
   medium: "medium",
@@ -459,6 +466,12 @@ export const ConsumptionCategory = {
 
 export type ConsumptionCategory = (typeof ConsumptionCategory)[keyof typeof ConsumptionCategory];
 
+export interface DashboardEmbedOut {
+  configured?: boolean;
+  dashboard_id?: string | null;
+  embed_url?: string | null;
+} as const;
+
 export const ContractStatus = {
   active: "active",
   expired: "expired",
@@ -503,6 +516,16 @@ export const DeviceType = {
 
 export type DeviceType = (typeof DeviceType)[keyof typeof DeviceType];
 
+export const FuelType = {
+  diesel: "diesel",
+  premium_diesel: "premium_diesel",
+  regular_95: "regular_95",
+  premium_98: "premium_98",
+  lpg: "lpg",
+} as const;
+
+export type FuelType = (typeof FuelType)[keyof typeof FuelType];
+
 export interface HTTPValidationError {
   detail?: ValidationError[];
 }
@@ -536,6 +559,18 @@ export const IdeaSessionStatus = {
 } as const;
 
 export type IdeaSessionStatus = (typeof IdeaSessionStatus)[keyof typeof IdeaSessionStatus];
+
+export const MacIssueCategory = {
+  equipment: "equipment",
+  supply_chain: "supply_chain",
+  quality: "quality",
+  customer_complaint: "customer_complaint",
+  staffing: "staffing",
+  safety: "safety",
+  it_system: "it_system",
+} as const;
+
+export type MacIssueCategory = (typeof MacIssueCategory)[keyof typeof MacIssueCategory];
 
 export const InventoryStatus = {
   available: "available",
@@ -591,6 +626,217 @@ export const IssueStatus = {
 
 export type IssueStatus = (typeof IssueStatus)[keyof typeof IssueStatus];
 
+export const LoyaltyTier = {
+  bronze: "bronze",
+  silver: "silver",
+  gold: "gold",
+  platinum: "platinum",
+} as const;
+
+export type LoyaltyTier = (typeof LoyaltyTier)[keyof typeof LoyaltyTier];
+
+export interface MacAnomalyAlertOut {
+  description: string;
+  detected_at: string;
+  id: number;
+  metric_type: string;
+  resolved_at?: string | null;
+  severity: AlertSeverity;
+  station_id: number;
+  status: AlertStatus;
+  suggested_action: string;
+  title: string;
+}
+
+export interface MacAnomalyAlertUpdate {
+  resolved_at?: string | null;
+  status?: AlertStatus | null;
+}
+
+export interface MacChatHistoryOut {
+  ended_at?: string | null;
+  messages: MacChatMessageOut[];
+  session_id: number;
+  session_type: string;
+  started_at: string;
+}
+
+export interface MacChatMessageIn {
+  message: string;
+  session_type?: string;
+}
+
+export interface MacChatMessageOut {
+  content: string;
+  created_at: string;
+  id: number;
+  role: MacChatRole;
+  session_id: number;
+  sources?: Record<string, unknown>[] | null;
+}
+
+export const MacChatRole = {
+  user: "user",
+  assistant: "assistant",
+  system: "system",
+} as const;
+
+export type MacChatRole = (typeof MacChatRole)[keyof typeof MacChatRole];
+
+export interface MacCompetitorPriceOut {
+  competitor_name: string;
+  fuel_type: FuelType;
+  id: number;
+  price_date: string;
+  price_per_liter: number;
+  station_id: number;
+}
+
+export interface MacCustomerContractOut {
+  contract_type: string;
+  customer_id: number;
+  discount_pct: number;
+  end_date?: string | null;
+  id: number;
+  monthly_volume_commitment: number;
+  notes?: string | null;
+  start_date: string;
+}
+
+export interface MacCustomerProfileOut {
+  company_name: string;
+  contact_email: string;
+  contact_name: string;
+  contract_type?: string | null;
+  fleet_size: number;
+  id: number;
+  loyalty_tier: LoyaltyTier;
+  phone?: string | null;
+}
+
+export interface MacFuelSaleOut {
+  fuel_type: FuelType;
+  id: number;
+  margin: number;
+  revenue: number;
+  sale_date: string;
+  station_id: number;
+  unit_price: number;
+  volume_liters: number;
+}
+
+export interface MacInventoryOut {
+  delivery_scheduled: boolean;
+  id: number;
+  product_category: ProductCategory;
+  record_date: string;
+  reorder_point: number;
+  spoilage_count: number;
+  station_id: number;
+  stock_level: number;
+  stock_out_events: number;
+}
+
+export interface MacIssueOut {
+  category: MacIssueCategory;
+  created_at: string;
+  description: string;
+  id: number;
+  priority: number;
+  resolution?: string | null;
+  resolved_at?: string | null;
+  station_id: number;
+  status: IssueStatus;
+  title: string;
+}
+
+export interface MacLoyaltyMetricOut {
+  active_members: number;
+  id: number;
+  loyalty_revenue_share: number;
+  month: string;
+  new_signups: number;
+  points_redeemed: number;
+  station_id: number;
+}
+
+export interface MacNonfuelSaleOut {
+  category: NonfuelCategory;
+  id: number;
+  margin: number;
+  quantity: number;
+  revenue: number;
+  sale_date: string;
+  station_id: number;
+}
+
+export interface MacPriceHistoryOut {
+  cost_per_liter: number;
+  fuel_type: FuelType;
+  id: number;
+  price_date: string;
+  price_per_liter: number;
+  station_id: number;
+}
+
+export interface MacRegionOut {
+  country: string;
+  id: number;
+  name: string;
+}
+
+export interface MacStationKPI {
+  active_alerts: number;
+  city: string;
+  region_name: string;
+  station_code: string;
+  station_id: number;
+  station_name: string;
+  total_fuel_margin: number;
+  total_fuel_revenue: number;
+  total_fuel_volume: number;
+  total_nonfuel_margin: number;
+  total_nonfuel_revenue: number;
+}
+
+export interface MacStationOut {
+  city: string;
+  has_ev_charging: boolean;
+  has_fresh_corner: boolean;
+  id: number;
+  latitude: number;
+  longitude: number;
+  name: string;
+  num_pumps: number;
+  opened_date?: string | null;
+  region_id: number;
+  shop_area_sqm: number;
+  station_code: string;
+  station_type: StationType;
+}
+
+export interface MacWorkforceShiftOut {
+  actual_headcount: number;
+  id: number;
+  overtime_hours: number;
+  planned_headcount: number;
+  shift_date: string;
+  shift_type: ShiftType;
+  station_id: number;
+}
+
+export const NonfuelCategory = {
+  coffee: "coffee",
+  hot_food: "hot_food",
+  cold_food: "cold_food",
+  bakery: "bakery",
+  beverages: "beverages",
+  tobacco: "tobacco",
+  car_care: "car_care",
+  convenience: "convenience",
+} as const;
+
+export type NonfuelCategory = (typeof NonfuelCategory)[keyof typeof NonfuelCategory];
 export const LocationType = {
   online: "online",
   train_station: "train_station",
@@ -610,6 +856,20 @@ export const OptimizationMode = {
 } as const;
 
 export type OptimizationMode = (typeof OptimizationMode)[keyof typeof OptimizationMode];
+
+export const ProductCategory = {
+  fuel: "fuel",
+  coffee: "coffee",
+  hot_food: "hot_food",
+  cold_food: "cold_food",
+  bakery: "bakery",
+  beverages: "beverages",
+  tobacco: "tobacco",
+  car_care: "car_care",
+  convenience: "convenience",
+} as const;
+
+export type ProductCategory = (typeof ProductCategory)[keyof typeof ProductCategory];
 
 export const PlacementStatus = {
   scheduled: "scheduled",
@@ -631,6 +891,21 @@ export interface ProjectOut {
   slug: string;
 }
 
+export const ShiftType = {
+  morning: "morning",
+  afternoon: "afternoon",
+  night: "night",
+} as const;
+
+export type ShiftType = (typeof ShiftType)[keyof typeof ShiftType];
+
+export const StationType = {
+  highway: "highway",
+  urban: "urban",
+  suburban: "suburban",
+} as const;
+
+export type StationType = (typeof StationType)[keyof typeof StationType];
 export const RuleConditionType = {
   threshold: "threshold",
   trend: "trend",
@@ -1060,6 +1335,98 @@ export interface Bsh_addTicketNoteParams {
 export interface Bsh_generateShippingLabelParams {
   ticket_id: number;
   "X-Forwarded-Access-Token"?: string | null;
+}
+
+export interface Mac_listAnomalyAlertsParams {
+  station_id?: number | null;
+  status?: string | null;
+  severity?: string | null;
+  limit?: number;
+}
+
+export interface Mac_getAnomalyAlertParams {
+  alert_id: number;
+}
+
+export interface Mac_updateAnomalyAlertParams {
+  alert_id: number;
+}
+
+export interface Mac_getChatHistoryParams {
+  session_id: number;
+}
+
+export interface Mac_sendChatMessageParams {
+  session_id?: number | null;
+}
+
+export interface Mac_listInventoryParams {
+  station_id?: number | null;
+  product_category?: string | null;
+  days?: number;
+  limit?: number;
+}
+
+export interface Mac_listCompetitorPricesParams {
+  station_id?: number | null;
+  days?: number;
+  limit?: number;
+}
+
+export interface Mac_listPriceHistoryParams {
+  station_id?: number | null;
+  fuel_type?: string | null;
+  days?: number;
+  limit?: number;
+}
+
+export interface Mac_listFuelSalesParams {
+  station_id?: number | null;
+  fuel_type?: string | null;
+  days?: number;
+  limit?: number;
+}
+
+export interface Mac_listLoyaltyMetricsParams {
+  station_id?: number | null;
+  limit?: number;
+}
+
+export interface Mac_listNonfuelSalesParams {
+  station_id?: number | null;
+  category?: string | null;
+  days?: number;
+  limit?: number;
+}
+
+export interface Mac_listStationsParams {
+  region_id?: number | null;
+  station_type?: string | null;
+}
+
+export interface Mac_stationKPIsParams {
+  days?: number;
+}
+
+export interface Mac_getStationParams {
+  station_id: number;
+}
+
+export interface Mac_listCustomerContractsParams {
+  customer_id: number;
+}
+
+export interface Mac_listIssuesParams {
+  station_id?: number | null;
+  status?: string | null;
+  category?: string | null;
+  limit?: number;
+}
+
+export interface Mac_listWorkforceShiftsParams {
+  station_id?: number | null;
+  days?: number;
+  limit?: number;
 }
 
 export interface Vh_send_chat_messageParams {
@@ -2238,6 +2605,522 @@ export const bsh_generateShippingLabel = async (params: Bsh_generateShippingLabe
 
 export function useBsh_generateShippingLabel(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: Bsh_generateShippingLabelParams }> }) {
   return useMutation({ mutationFn: (vars) => bsh_generateShippingLabel(vars.params), ...options?.mutation });
+}
+
+export const mac_listAnomalyAlerts = async (params?: Mac_listAnomalyAlertsParams, options?: RequestInit): Promise<{ data: MacAnomalyAlertOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.station_id != null) searchParams.set("station_id", String(params?.station_id));
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.severity != null) searchParams.set("severity", String(params?.severity));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/anomalies?${queryString}` : `/api/projects/mol-asm-cockpit/anomalies`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listAnomalyAlertsKey = (params?: Mac_listAnomalyAlertsParams) => {
+  return ["/api/projects/mol-asm-cockpit/anomalies", params] as const;
+};
+
+export function useMac_listAnomalyAlerts<TData = { data: MacAnomalyAlertOut[] }>(options?: { params?: Mac_listAnomalyAlertsParams; query?: Omit<UseQueryOptions<{ data: MacAnomalyAlertOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listAnomalyAlertsKey(options?.params), queryFn: () => mac_listAnomalyAlerts(options?.params), ...options?.query });
+}
+
+export function useMac_listAnomalyAlertsSuspense<TData = { data: MacAnomalyAlertOut[] }>(options?: { params?: Mac_listAnomalyAlertsParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacAnomalyAlertOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listAnomalyAlertsKey(options?.params), queryFn: () => mac_listAnomalyAlerts(options?.params), ...options?.query });
+}
+
+export const mac_getAnomalyAlert = async (params: Mac_getAnomalyAlertParams, options?: RequestInit): Promise<{ data: MacAnomalyAlertOut }> => {
+  const res = await fetch(`/api/projects/mol-asm-cockpit/anomalies/${params.alert_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_getAnomalyAlertKey = (params?: Mac_getAnomalyAlertParams) => {
+  return ["/api/projects/mol-asm-cockpit/anomalies/{alert_id}", params] as const;
+};
+
+export function useMac_getAnomalyAlert<TData = { data: MacAnomalyAlertOut }>(options: { params: Mac_getAnomalyAlertParams; query?: Omit<UseQueryOptions<{ data: MacAnomalyAlertOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_getAnomalyAlertKey(options.params), queryFn: () => mac_getAnomalyAlert(options.params), ...options?.query });
+}
+
+export function useMac_getAnomalyAlertSuspense<TData = { data: MacAnomalyAlertOut }>(options: { params: Mac_getAnomalyAlertParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacAnomalyAlertOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_getAnomalyAlertKey(options.params), queryFn: () => mac_getAnomalyAlert(options.params), ...options?.query });
+}
+
+export const mac_updateAnomalyAlert = async (params: Mac_updateAnomalyAlertParams, data: MacAnomalyAlertUpdate, options?: RequestInit): Promise<{ data: MacAnomalyAlertOut }> => {
+  const res = await fetch(`/api/projects/mol-asm-cockpit/anomalies/${params.alert_id}`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useMac_updateAnomalyAlert(options?: { mutation?: UseMutationOptions<{ data: MacAnomalyAlertOut }, ApiError, { params: Mac_updateAnomalyAlertParams; data: MacAnomalyAlertUpdate }> }) {
+  return useMutation({ mutationFn: (vars) => mac_updateAnomalyAlert(vars.params, vars.data), ...options?.mutation });
+}
+
+export const mac_getChatHistory = async (params: Mac_getChatHistoryParams, options?: RequestInit): Promise<{ data: MacChatHistoryOut }> => {
+  const res = await fetch(`/api/projects/mol-asm-cockpit/chat/history/${params.session_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_getChatHistoryKey = (params?: Mac_getChatHistoryParams) => {
+  return ["/api/projects/mol-asm-cockpit/chat/history/{session_id}", params] as const;
+};
+
+export function useMac_getChatHistory<TData = { data: MacChatHistoryOut }>(options: { params: Mac_getChatHistoryParams; query?: Omit<UseQueryOptions<{ data: MacChatHistoryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_getChatHistoryKey(options.params), queryFn: () => mac_getChatHistory(options.params), ...options?.query });
+}
+
+export function useMac_getChatHistorySuspense<TData = { data: MacChatHistoryOut }>(options: { params: Mac_getChatHistoryParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacChatHistoryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_getChatHistoryKey(options.params), queryFn: () => mac_getChatHistory(options.params), ...options?.query });
+}
+
+export const mac_sendChatMessage = async (data: MacChatMessageIn, params?: Mac_sendChatMessageParams, options?: RequestInit): Promise<{ data: MacChatMessageOut }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.session_id != null) searchParams.set("session_id", String(params?.session_id));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/chat/send?${queryString}` : `/api/projects/mol-asm-cockpit/chat/send`;
+  const res = await fetch(url, { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useMac_sendChatMessage(options?: { mutation?: UseMutationOptions<{ data: MacChatMessageOut }, ApiError, { params: Mac_sendChatMessageParams; data: MacChatMessageIn }> }) {
+  return useMutation({ mutationFn: (vars) => mac_sendChatMessage(vars.data, vars.params), ...options?.mutation });
+}
+
+export const mac_getDashboardEmbed = async (options?: RequestInit): Promise<{ data: DashboardEmbedOut }> => {
+  const res = await fetch("/api/projects/mol-asm-cockpit/dashboard/embed", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_getDashboardEmbedKey = () => {
+  return ["/api/projects/mol-asm-cockpit/dashboard/embed"] as const;
+};
+
+export function useMac_getDashboardEmbed<TData = { data: DashboardEmbedOut }>(options?: { query?: Omit<UseQueryOptions<{ data: DashboardEmbedOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_getDashboardEmbedKey(), queryFn: () => mac_getDashboardEmbed(), ...options?.query });
+}
+
+export function useMac_getDashboardEmbedSuspense<TData = { data: DashboardEmbedOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: DashboardEmbedOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_getDashboardEmbedKey(), queryFn: () => mac_getDashboardEmbed(), ...options?.query });
+}
+
+export const mac_listInventory = async (params?: Mac_listInventoryParams, options?: RequestInit): Promise<{ data: MacInventoryOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.station_id != null) searchParams.set("station_id", String(params?.station_id));
+  if (params?.product_category != null) searchParams.set("product_category", String(params?.product_category));
+  if (params?.days != null) searchParams.set("days", String(params?.days));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/inventory?${queryString}` : `/api/projects/mol-asm-cockpit/inventory`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listInventoryKey = (params?: Mac_listInventoryParams) => {
+  return ["/api/projects/mol-asm-cockpit/inventory", params] as const;
+};
+
+export function useMac_listInventory<TData = { data: MacInventoryOut[] }>(options?: { params?: Mac_listInventoryParams; query?: Omit<UseQueryOptions<{ data: MacInventoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listInventoryKey(options?.params), queryFn: () => mac_listInventory(options?.params), ...options?.query });
+}
+
+export function useMac_listInventorySuspense<TData = { data: MacInventoryOut[] }>(options?: { params?: Mac_listInventoryParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacInventoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listInventoryKey(options?.params), queryFn: () => mac_listInventory(options?.params), ...options?.query });
+}
+
+export const mac_listCompetitorPrices = async (params?: Mac_listCompetitorPricesParams, options?: RequestInit): Promise<{ data: MacCompetitorPriceOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.station_id != null) searchParams.set("station_id", String(params?.station_id));
+  if (params?.days != null) searchParams.set("days", String(params?.days));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/inventory/competitor-prices?${queryString}` : `/api/projects/mol-asm-cockpit/inventory/competitor-prices`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listCompetitorPricesKey = (params?: Mac_listCompetitorPricesParams) => {
+  return ["/api/projects/mol-asm-cockpit/inventory/competitor-prices", params] as const;
+};
+
+export function useMac_listCompetitorPrices<TData = { data: MacCompetitorPriceOut[] }>(options?: { params?: Mac_listCompetitorPricesParams; query?: Omit<UseQueryOptions<{ data: MacCompetitorPriceOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listCompetitorPricesKey(options?.params), queryFn: () => mac_listCompetitorPrices(options?.params), ...options?.query });
+}
+
+export function useMac_listCompetitorPricesSuspense<TData = { data: MacCompetitorPriceOut[] }>(options?: { params?: Mac_listCompetitorPricesParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacCompetitorPriceOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listCompetitorPricesKey(options?.params), queryFn: () => mac_listCompetitorPrices(options?.params), ...options?.query });
+}
+
+export const mac_listPriceHistory = async (params?: Mac_listPriceHistoryParams, options?: RequestInit): Promise<{ data: MacPriceHistoryOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.station_id != null) searchParams.set("station_id", String(params?.station_id));
+  if (params?.fuel_type != null) searchParams.set("fuel_type", String(params?.fuel_type));
+  if (params?.days != null) searchParams.set("days", String(params?.days));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/inventory/price-history?${queryString}` : `/api/projects/mol-asm-cockpit/inventory/price-history`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listPriceHistoryKey = (params?: Mac_listPriceHistoryParams) => {
+  return ["/api/projects/mol-asm-cockpit/inventory/price-history", params] as const;
+};
+
+export function useMac_listPriceHistory<TData = { data: MacPriceHistoryOut[] }>(options?: { params?: Mac_listPriceHistoryParams; query?: Omit<UseQueryOptions<{ data: MacPriceHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listPriceHistoryKey(options?.params), queryFn: () => mac_listPriceHistory(options?.params), ...options?.query });
+}
+
+export function useMac_listPriceHistorySuspense<TData = { data: MacPriceHistoryOut[] }>(options?: { params?: Mac_listPriceHistoryParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacPriceHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listPriceHistoryKey(options?.params), queryFn: () => mac_listPriceHistory(options?.params), ...options?.query });
+}
+
+export const mac_listFuelSales = async (params?: Mac_listFuelSalesParams, options?: RequestInit): Promise<{ data: MacFuelSaleOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.station_id != null) searchParams.set("station_id", String(params?.station_id));
+  if (params?.fuel_type != null) searchParams.set("fuel_type", String(params?.fuel_type));
+  if (params?.days != null) searchParams.set("days", String(params?.days));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/sales/fuel?${queryString}` : `/api/projects/mol-asm-cockpit/sales/fuel`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listFuelSalesKey = (params?: Mac_listFuelSalesParams) => {
+  return ["/api/projects/mol-asm-cockpit/sales/fuel", params] as const;
+};
+
+export function useMac_listFuelSales<TData = { data: MacFuelSaleOut[] }>(options?: { params?: Mac_listFuelSalesParams; query?: Omit<UseQueryOptions<{ data: MacFuelSaleOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listFuelSalesKey(options?.params), queryFn: () => mac_listFuelSales(options?.params), ...options?.query });
+}
+
+export function useMac_listFuelSalesSuspense<TData = { data: MacFuelSaleOut[] }>(options?: { params?: Mac_listFuelSalesParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacFuelSaleOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listFuelSalesKey(options?.params), queryFn: () => mac_listFuelSales(options?.params), ...options?.query });
+}
+
+export const mac_listLoyaltyMetrics = async (params?: Mac_listLoyaltyMetricsParams, options?: RequestInit): Promise<{ data: MacLoyaltyMetricOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.station_id != null) searchParams.set("station_id", String(params?.station_id));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/sales/loyalty?${queryString}` : `/api/projects/mol-asm-cockpit/sales/loyalty`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listLoyaltyMetricsKey = (params?: Mac_listLoyaltyMetricsParams) => {
+  return ["/api/projects/mol-asm-cockpit/sales/loyalty", params] as const;
+};
+
+export function useMac_listLoyaltyMetrics<TData = { data: MacLoyaltyMetricOut[] }>(options?: { params?: Mac_listLoyaltyMetricsParams; query?: Omit<UseQueryOptions<{ data: MacLoyaltyMetricOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listLoyaltyMetricsKey(options?.params), queryFn: () => mac_listLoyaltyMetrics(options?.params), ...options?.query });
+}
+
+export function useMac_listLoyaltyMetricsSuspense<TData = { data: MacLoyaltyMetricOut[] }>(options?: { params?: Mac_listLoyaltyMetricsParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacLoyaltyMetricOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listLoyaltyMetricsKey(options?.params), queryFn: () => mac_listLoyaltyMetrics(options?.params), ...options?.query });
+}
+
+export const mac_listNonfuelSales = async (params?: Mac_listNonfuelSalesParams, options?: RequestInit): Promise<{ data: MacNonfuelSaleOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.station_id != null) searchParams.set("station_id", String(params?.station_id));
+  if (params?.category != null) searchParams.set("category", String(params?.category));
+  if (params?.days != null) searchParams.set("days", String(params?.days));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/sales/nonfuel?${queryString}` : `/api/projects/mol-asm-cockpit/sales/nonfuel`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listNonfuelSalesKey = (params?: Mac_listNonfuelSalesParams) => {
+  return ["/api/projects/mol-asm-cockpit/sales/nonfuel", params] as const;
+};
+
+export function useMac_listNonfuelSales<TData = { data: MacNonfuelSaleOut[] }>(options?: { params?: Mac_listNonfuelSalesParams; query?: Omit<UseQueryOptions<{ data: MacNonfuelSaleOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listNonfuelSalesKey(options?.params), queryFn: () => mac_listNonfuelSales(options?.params), ...options?.query });
+}
+
+export function useMac_listNonfuelSalesSuspense<TData = { data: MacNonfuelSaleOut[] }>(options?: { params?: Mac_listNonfuelSalesParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacNonfuelSaleOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listNonfuelSalesKey(options?.params), queryFn: () => mac_listNonfuelSales(options?.params), ...options?.query });
+}
+
+export const mac_listStations = async (params?: Mac_listStationsParams, options?: RequestInit): Promise<{ data: MacStationOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.region_id != null) searchParams.set("region_id", String(params?.region_id));
+  if (params?.station_type != null) searchParams.set("station_type", String(params?.station_type));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/stations?${queryString}` : `/api/projects/mol-asm-cockpit/stations`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listStationsKey = (params?: Mac_listStationsParams) => {
+  return ["/api/projects/mol-asm-cockpit/stations", params] as const;
+};
+
+export function useMac_listStations<TData = { data: MacStationOut[] }>(options?: { params?: Mac_listStationsParams; query?: Omit<UseQueryOptions<{ data: MacStationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listStationsKey(options?.params), queryFn: () => mac_listStations(options?.params), ...options?.query });
+}
+
+export function useMac_listStationsSuspense<TData = { data: MacStationOut[] }>(options?: { params?: Mac_listStationsParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacStationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listStationsKey(options?.params), queryFn: () => mac_listStations(options?.params), ...options?.query });
+}
+
+export const mac_stationKPIs = async (params?: Mac_stationKPIsParams, options?: RequestInit): Promise<{ data: MacStationKPI[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.days != null) searchParams.set("days", String(params?.days));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/stations/kpis?${queryString}` : `/api/projects/mol-asm-cockpit/stations/kpis`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_stationKPIsKey = (params?: Mac_stationKPIsParams) => {
+  return ["/api/projects/mol-asm-cockpit/stations/kpis", params] as const;
+};
+
+export function useMac_stationKPIs<TData = { data: MacStationKPI[] }>(options?: { params?: Mac_stationKPIsParams; query?: Omit<UseQueryOptions<{ data: MacStationKPI[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_stationKPIsKey(options?.params), queryFn: () => mac_stationKPIs(options?.params), ...options?.query });
+}
+
+export function useMac_stationKPIsSuspense<TData = { data: MacStationKPI[] }>(options?: { params?: Mac_stationKPIsParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacStationKPI[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_stationKPIsKey(options?.params), queryFn: () => mac_stationKPIs(options?.params), ...options?.query });
+}
+
+export const mac_listRegions = async (options?: RequestInit): Promise<{ data: MacRegionOut[] }> => {
+  const res = await fetch("/api/projects/mol-asm-cockpit/stations/regions", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listRegionsKey = () => {
+  return ["/api/projects/mol-asm-cockpit/stations/regions"] as const;
+};
+
+export function useMac_listRegions<TData = { data: MacRegionOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: MacRegionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listRegionsKey(), queryFn: () => mac_listRegions(), ...options?.query });
+}
+
+export function useMac_listRegionsSuspense<TData = { data: MacRegionOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: MacRegionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listRegionsKey(), queryFn: () => mac_listRegions(), ...options?.query });
+}
+
+export const mac_getStation = async (params: Mac_getStationParams, options?: RequestInit): Promise<{ data: MacStationOut }> => {
+  const res = await fetch(`/api/projects/mol-asm-cockpit/stations/${params.station_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_getStationKey = (params?: Mac_getStationParams) => {
+  return ["/api/projects/mol-asm-cockpit/stations/{station_id}", params] as const;
+};
+
+export function useMac_getStation<TData = { data: MacStationOut }>(options: { params: Mac_getStationParams; query?: Omit<UseQueryOptions<{ data: MacStationOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_getStationKey(options.params), queryFn: () => mac_getStation(options.params), ...options?.query });
+}
+
+export function useMac_getStationSuspense<TData = { data: MacStationOut }>(options: { params: Mac_getStationParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacStationOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_getStationKey(options.params), queryFn: () => mac_getStation(options.params), ...options?.query });
+}
+
+export const mac_listCustomerProfiles = async (options?: RequestInit): Promise<{ data: MacCustomerProfileOut[] }> => {
+  const res = await fetch("/api/projects/mol-asm-cockpit/workforce/customers", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listCustomerProfilesKey = () => {
+  return ["/api/projects/mol-asm-cockpit/workforce/customers"] as const;
+};
+
+export function useMac_listCustomerProfiles<TData = { data: MacCustomerProfileOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: MacCustomerProfileOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listCustomerProfilesKey(), queryFn: () => mac_listCustomerProfiles(), ...options?.query });
+}
+
+export function useMac_listCustomerProfilesSuspense<TData = { data: MacCustomerProfileOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: MacCustomerProfileOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listCustomerProfilesKey(), queryFn: () => mac_listCustomerProfiles(), ...options?.query });
+}
+
+export const mac_listCustomerContracts = async (params: Mac_listCustomerContractsParams, options?: RequestInit): Promise<{ data: MacCustomerContractOut[] }> => {
+  const res = await fetch(`/api/projects/mol-asm-cockpit/workforce/customers/${params.customer_id}/contracts`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listCustomerContractsKey = (params?: Mac_listCustomerContractsParams) => {
+  return ["/api/projects/mol-asm-cockpit/workforce/customers/{customer_id}/contracts", params] as const;
+};
+
+export function useMac_listCustomerContracts<TData = { data: MacCustomerContractOut[] }>(options: { params: Mac_listCustomerContractsParams; query?: Omit<UseQueryOptions<{ data: MacCustomerContractOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listCustomerContractsKey(options.params), queryFn: () => mac_listCustomerContracts(options.params), ...options?.query });
+}
+
+export function useMac_listCustomerContractsSuspense<TData = { data: MacCustomerContractOut[] }>(options: { params: Mac_listCustomerContractsParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacCustomerContractOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listCustomerContractsKey(options.params), queryFn: () => mac_listCustomerContracts(options.params), ...options?.query });
+}
+
+export const mac_listIssues = async (params?: Mac_listIssuesParams, options?: RequestInit): Promise<{ data: MacIssueOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.station_id != null) searchParams.set("station_id", String(params?.station_id));
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.category != null) searchParams.set("category", String(params?.category));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/workforce/issues?${queryString}` : `/api/projects/mol-asm-cockpit/workforce/issues`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listIssuesKey = (params?: Mac_listIssuesParams) => {
+  return ["/api/projects/mol-asm-cockpit/workforce/issues", params] as const;
+};
+
+export function useMac_listIssues<TData = { data: MacIssueOut[] }>(options?: { params?: Mac_listIssuesParams; query?: Omit<UseQueryOptions<{ data: MacIssueOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listIssuesKey(options?.params), queryFn: () => mac_listIssues(options?.params), ...options?.query });
+}
+
+export function useMac_listIssuesSuspense<TData = { data: MacIssueOut[] }>(options?: { params?: Mac_listIssuesParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacIssueOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listIssuesKey(options?.params), queryFn: () => mac_listIssues(options?.params), ...options?.query });
+}
+
+export const mac_listWorkforceShifts = async (params?: Mac_listWorkforceShiftsParams, options?: RequestInit): Promise<{ data: MacWorkforceShiftOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.station_id != null) searchParams.set("station_id", String(params?.station_id));
+  if (params?.days != null) searchParams.set("days", String(params?.days));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/mol-asm-cockpit/workforce/shifts?${queryString}` : `/api/projects/mol-asm-cockpit/workforce/shifts`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const mac_listWorkforceShiftsKey = (params?: Mac_listWorkforceShiftsParams) => {
+  return ["/api/projects/mol-asm-cockpit/workforce/shifts", params] as const;
+};
+
+export function useMac_listWorkforceShifts<TData = { data: MacWorkforceShiftOut[] }>(options?: { params?: Mac_listWorkforceShiftsParams; query?: Omit<UseQueryOptions<{ data: MacWorkforceShiftOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: mac_listWorkforceShiftsKey(options?.params), queryFn: () => mac_listWorkforceShifts(options?.params), ...options?.query });
+}
+
+export function useMac_listWorkforceShiftsSuspense<TData = { data: MacWorkforceShiftOut[] }>(options?: { params?: Mac_listWorkforceShiftsParams; query?: Omit<UseSuspenseQueryOptions<{ data: MacWorkforceShiftOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: mac_listWorkforceShiftsKey(options?.params), queryFn: () => mac_listWorkforceShifts(options?.params), ...options?.query });
 }
 
 export const vh_send_chat_message = async (params: Vh_send_chat_messageParams, data: VhChatMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {

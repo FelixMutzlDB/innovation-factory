@@ -29,7 +29,7 @@ async def send_chat_message(ticket_id: int, message: VhChatMessageIn, db: Sessio
 
     session_query = select(VhChatSession).where(
         VhChatSession.ticket_id == ticket_id,
-        VhChatSession.ended_at.is_(None)
+        VhChatSession.ended_at.is_(None)  # type: ignore[unresolved-attribute]
     )
     chat_session = db.exec(session_query).first()
 
@@ -82,15 +82,16 @@ def get_chat_history(ticket_id: int, db: SessionDep):
 
     messages_query = select(VhChatMessage).where(
         VhChatMessage.session_id == chat_session.id
-    ).order_by(VhChatMessage.created_at)
+    ).order_by(VhChatMessage.created_at)  # type: ignore[invalid-argument-type]
     messages = db.exec(messages_query).all()
 
     message_outs = [
         VhChatMessageOut(
-            id=msg.id, role=msg.role, content=msg.content,
+            id=msg.id,  # type: ignore[invalid-argument-type]
+            role=msg.role, content=msg.content,
             sources=msg.sources, created_at=msg.created_at,
         )
         for msg in messages
     ]
 
-    return VhChatHistoryOut(session_id=chat_session.id, messages=message_outs)
+    return VhChatHistoryOut(session_id=chat_session.id, messages=message_outs)  # type: ignore[invalid-argument-type]

@@ -46,7 +46,7 @@ def get_neighborhood_summary(neighborhood_id: int, db: SessionDep):
     for household in households:
         latest_reading_query = select(VhEnergyReading).where(
             VhEnergyReading.household_id == household.id
-        ).order_by(VhEnergyReading.timestamp.desc()).limit(1)
+        ).order_by(VhEnergyReading.timestamp.desc()).limit(1)  # type: ignore[unresolved-attribute]
         latest_reading = db.exec(latest_reading_query).first()
 
         battery_query = select(VhEnergyDevice).where(
@@ -56,8 +56,8 @@ def get_neighborhood_summary(neighborhood_id: int, db: SessionDep):
         battery = db.exec(battery_query).first()
         battery_capacity = battery.capacity_kw if battery else 0.0
 
-        if battery_capacity > 0:
-            total_storage_capacity += battery_capacity
+        if battery_capacity > 0:  # type: ignore[unsupported-operator]
+            total_storage_capacity += battery_capacity  # type: ignore[unsupported-operator]
 
         readings_24h_query = select(VhEnergyReading).where(
             VhEnergyReading.household_id == household.id,
@@ -74,11 +74,11 @@ def get_neighborhood_summary(neighborhood_id: int, db: SessionDep):
         current_consumption_kw = latest_reading.total_consumption_kwh if latest_reading else 0.0
         current_generation_kw = latest_reading.pv_generation_kwh if latest_reading else 0.0
         battery_level_percent = 0.0
-        if latest_reading and battery_capacity > 0:
-            battery_level_percent = (latest_reading.battery_level_kwh / battery_capacity) * 100
+        if latest_reading and battery_capacity > 0:  # type: ignore[unsupported-operator]
+            battery_level_percent = (latest_reading.battery_level_kwh / battery_capacity) * 100  # type: ignore[unsupported-operator]
 
         household_summaries.append(VhHouseholdSummaryOut(
-            id=household.id,
+            id=household.id,  # type: ignore[invalid-argument-type]
             owner_name=household.owner_name,
             address=household.address,
             optimization_mode=household.optimization_mode,
@@ -88,7 +88,7 @@ def get_neighborhood_summary(neighborhood_id: int, db: SessionDep):
         ))
 
     return VhNeighborhoodSummaryOut(
-        id=neighborhood.id,
+        id=neighborhood.id,  # type: ignore[invalid-argument-type]
         name=neighborhood.name,
         location=neighborhood.location,
         total_households=neighborhood.total_households,

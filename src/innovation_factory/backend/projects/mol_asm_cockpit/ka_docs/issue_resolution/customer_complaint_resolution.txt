@@ -1,0 +1,79 @@
+CUSTOMER COMPLAINT RESOLUTION PROCEDURE
+ASM Cockpit Service Station Network
+Document Version: 2.1 | Last Updated: February 2025
+
+OVERVIEW
+Effective complaint handling protects customer relationships and provides operational feedback. Unresolved complaints escalate to regional office, fleet account managers, or social media - with greater cost and reputational impact. This procedure ensures consistent, professional response.
+
+STANDARD COMPLAINT HANDLING PROCESS
+
+Step 1: Listen and Acknowledge
+- Allow customer to explain fully without interruption
+- Show empathy: "I understand your frustration"
+- Do not become defensive or blame other staff/systems
+- Take notes: Key facts, customer name, contact, transaction details if applicable
+
+Step 2: Apologize and Take Responsibility
+- Apologize for the inconvenience - even if cause unclear
+- "I'm sorry you experienced this" - not necessarily admitting fault
+- Avoid: "I'm sorry you feel that way" (dismissive)
+- Use: "Thank you for bringing this to our attention"
+
+Step 3: Clarify and Investigate
+- Ask clarifying questions to understand fully
+- For product issues: Retain product if possible, note batch/lot
+- For service issues: Note time, staff involved, specific failure
+- For billing: Gather receipt, transaction reference, account details
+- Do not promise resolution before investigation when cause unclear
+
+Step 4: Resolve
+- Resolve at lowest level possible - station staff for most issues
+- Options: Refund, replacement, discount, goodwill gesture
+- Authority limits: Staff 50 EUR, Supervisor 100 EUR, Manager 250 EUR
+- Document: Resolution offered and accepted
+- Follow up: If promised callback, do it within committed timeframe
+
+Step 5: Document and Report
+- Log in ASM Cockpit: Customer Complaints module
+- Include: Date, customer, issue, resolution, staff
+- Retain for 2 years minimum
+- Trend analysis: Regional office reviews for patterns
+
+ESCALATION PATHS
+
+Station Level (Staff/Manager)
+- Fuel quality, pump malfunction, shop product, service attitude
+- Resolution within 24 hours when possible
+- Escalate if: Customer requests, exceeds authority, legal threat, repeat complaint
+
+Regional Office
+- Unresolved at station, fleet customer, high value
+- Response: Within 4 business hours
+- Regional manager or customer service team
+- May involve: Technical support, fleet account manager, quality team
+
+Head Office / Specialist
+- Legal threat, regulatory concern, media/social media
+- Escalate immediately
+- Corporate communications if public
+- Legal if formal complaint or claim
+
+Fleet Customer Complaints
+- Route to fleet account manager
+- Priority: Fleet contracts have dedicated support
+- Reference: customer_complaint_transeuropa_jan2025.txt, customer_complaint_quality_pannonia.txt
+- Resolution may require: Credit, contract adjustment, formal response
+
+DIFFICULT CUSTOMERS
+- Remain calm and professional
+- Do not argue or match tone
+- Offer to continue in private if causing scene
+- If abusive or threatening: Involve manager, security if needed
+- Document: Behavior, witnesses
+- Right to refuse service: Per company policy for abusive behavior
+
+METRICS
+- Resolution rate: Target 95% at station level
+- Response time: Acknowledge within 15 minutes, resolve within 24 hours when possible
+- Escalation rate: Monitor - high rate may indicate training need
+- Repeat complaints: Investigate root cause

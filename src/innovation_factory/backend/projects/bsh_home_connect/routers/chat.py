@@ -71,6 +71,6 @@ def get_chat_history(
         session_id=session_id,
         ticket_id=ticket_id,
         session_type=session_type,
-        started_at=messages[0].created_at if messages else None,
+        started_at=messages[0].created_at if messages else None,  # type: ignore[invalid-argument-type]
         messages=[BshChatMessageOut.model_validate(msg) for msg in messages],
     )

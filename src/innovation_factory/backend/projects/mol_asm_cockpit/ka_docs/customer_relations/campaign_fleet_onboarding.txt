@@ -1,0 +1,60 @@
+CAMPAIGN: FLEET CUSTOMER ONBOARDING PROCESS
+ASM Cockpit Customer Relations
+Process Document | Ongoing Program
+
+OVERVIEW
+New fleet customer onboarding ensures a smooth transition to ASM fueling, maximizes early volume, and establishes the foundation for a long-term relationship. Poor onboarding correlates with early churn and volume shortfall. This process applies to all new fleet contracts.
+
+ONBOARDING BONUS
+- Mechanic: 500 bonus loyalty points credited to new fleet account in first month
+- Eligibility: New fleet contracts signed from 1 January 2025
+- Timing: Points credited upon first 1,000 liters dispensed
+- Purpose: Incentivize rapid activation; reward early adoption
+- Budget: Approximately 50 EUR equivalent per new account
+
+ONBOARDING PROCESS - TIMELINE
+
+Week 0 (Contract Signed)
+- Welcome call: Account manager within 48 hours
+- Welcome pack: Email with contract summary, station list, contact details, invoicing guide
+- Fleet cards: Order placed; delivery 5-10 business days
+- System setup: Account created in ASM Cockpit, loyalty linked, invoicing configured
+
+Week 1
+- Card delivery: Track and confirm receipt
+- Training: Offer webinar or call on card use, station network, reporting
+- First fuel: Encourage first transaction; resolve any issues immediately
+
+Week 2-4
+- Check-in call: Account manager at 2-week mark
+- Volume tracking: Are they on pace for commitment?
+- Issue resolution: Any problems with cards, stations, invoicing?
+- Bonus: Confirm 500 points credited when threshold met
+
+Month 2-3
+- Review: First invoice cycle complete; any disputes?
+- Optimization: Station network fit; any stations to add/remove?
+- Feedback: What is working; what could improve?
+
+KEY SUCCESS FACTORS
+- Speed: Rapid card delivery and activation
+- Communication: Proactive outreach; don't wait for customer to call
+- Problem resolution: First 90 days critical - resolve issues within 24 hours
+- Relationship: Establish rapport with fleet manager and drivers (if applicable)
+
+COMMON ONBOARDING ISSUES
+- Card delivery delay: Escalate to card provider; consider temporary workaround
+- Station access: Ensure stations in fleet's operating area
+- Invoicing: First invoice often has questions - proactive explanation
+- Driver adoption: Fleet manager must communicate to drivers; provide materials
+
+METRICS
+- Time to first fuel: Target under 7 days from contract
+- Month 1 volume: As % of prorated commitment
+- Month 3 volume: On track for full commitment
+- Early churn: Contracts terminated in first 6 months - target under 2%
+
+REFERENCE
+- b2b_pricing_framework.txt
+- billing_procedures_b2b.txt
+- loyalty_program_terms.txt

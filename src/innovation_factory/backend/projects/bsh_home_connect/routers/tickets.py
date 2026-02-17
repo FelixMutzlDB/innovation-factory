@@ -38,7 +38,8 @@ def _build_ticket_out(ticket: BshTicket, db: Session) -> BshTicketOut:
     device = db.get(BshDevice, customer_device.device_id) if customer_device else None
 
     return BshTicketOut(
-        id=ticket.id, customer_id=ticket.customer_id,
+        id=ticket.id,  # type: ignore[invalid-argument-type]
+        customer_id=ticket.customer_id,
         customer_device_id=ticket.customer_device_id,
         technician_id=ticket.technician_id,
         title=ticket.title, description=ticket.description,
@@ -50,7 +51,8 @@ def _build_ticket_out(ticket: BshTicket, db: Session) -> BshTicketOut:
         created_at=ticket.created_at, updated_at=ticket.updated_at,
         assigned_at=ticket.assigned_at, completed_at=ticket.completed_at,
         customer_device=BshCustomerDeviceOut(
-            id=customer_device.id, customer_id=customer_device.customer_id,
+            id=customer_device.id,  # type: ignore[invalid-argument-type]
+            customer_id=customer_device.customer_id,
             device_id=customer_device.device_id,
             serial_number=customer_device.serial_number,
             purchase_date=customer_device.purchase_date,
@@ -114,7 +116,7 @@ def list_tickets(
 
     if status:
         statement = statement.where(BshTicket.status == status)
-    statement = statement.order_by(BshTicket.created_at.desc())
+    statement = statement.order_by(BshTicket.created_at.desc())  # type: ignore[unresolved-attribute]
     tickets = db.exec(statement).all()
     return [_build_ticket_out(t, db) for t in tickets]
 
@@ -212,7 +214,7 @@ def list_ticket_notes(
     statement = select(BshTicketNote).where(BshTicketNote.ticket_id == ticket_id)
     if is_customer:
         statement = statement.where(BshTicketNote.is_internal == False)
-    statement = statement.order_by(BshTicketNote.created_at.asc())
+    statement = statement.order_by(BshTicketNote.created_at.asc())  # type: ignore[unresolved-attribute]
     return list(db.exec(statement).all())
 
 
@@ -221,8 +223,8 @@ async def upload_ticket_media(
     ticket_id: int,
     file: UploadFile = File(...),
     media_type: str = Form(...),
-    obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)] = None,
-    db: Annotated[Session, Depends(get_session)] = None,
+    obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)] = None,  # type: ignore[invalid-parameter-default]
+    db: Annotated[Session, Depends(get_session)] = None,  # type: ignore[invalid-parameter-default]
 ):
     """Upload media to a ticket."""
     ticket = db.get(BshTicket, ticket_id)

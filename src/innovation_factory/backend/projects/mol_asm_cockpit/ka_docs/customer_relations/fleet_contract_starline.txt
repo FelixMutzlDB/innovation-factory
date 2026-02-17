@@ -1,0 +1,54 @@
+FLEET CONTRACT: STARLINE RENTAL CARS
+ASM Cockpit Customer Relations
+Contract ID: FLT-2022-0098 | Effective: 1 April 2022 | Renewal: 1 April 2027
+
+ACCOUNT OVERVIEW
+Starline Rental Cars operates a large vehicle rental fleet across Hungary, Austria, Croatia, and Slovakia. 500 vehicles (mix of cars, SUVs, vans) fuel at ASM stations throughout the region. Premium tier contract reflecting volume and multi-country scope. Vehicles are customer-driven; fueling patterns vary by location and season.
+
+CONTRACT TERMS
+
+Fleet Size
+- Registered vehicles: 500
+- Mix: 350 cars, 100 SUVs, 50 vans
+- Primary fuel: Gasoline (70%), Diesel (30%)
+- Average monthly volume: 85,000 liters
+- Geographic spread: Hungary 45%, Austria 25%, Croatia 20%, Slovakia 10%
+
+Pricing Tier
+- Tier: Premium (above Platinum)
+- Discount: 10% off pump price
+- Multi-country: Single contract, consolidated billing
+- Applies to: Gasoline, diesel
+- Shop: 7% discount (rental customers often purchase at station)
+
+Volume Commitment
+- Minimum: 80,000 liters per month
+- Actual: Consistently 85,000-95,000
+- Seasonal: Higher in summer (tourism); lower in winter
+
+Payment Terms
+- Invoice: Monthly, consolidated multi-country
+- Payment due: 30 days
+- Method: Bank transfer
+- Currency: EUR (primary for multi-country)
+- Detail: By country, by station; vehicle-level available on request
+
+ADDITIONAL BENEFITS
+- Dedicated account manager: Sofia Richter
+- Premium support: Priority response, dedicated email
+- Station network: All ASM stations in contract countries
+- Reporting: Monthly volume, spend by country; quarterly trends
+- Loyalty: 2.5x points (premium multiplier)
+- Co-marketing: Rental discount promotion at ASM stations (under discussion)
+
+KEY CONTACTS
+- Starline Procurement: Hans Mueller, hans.mueller@starline-rental.com
+- Starline Operations: Regional managers per country
+- ASM Account Manager: Sofia Richter, sofia.richter@asm-retail.com
+
+STRATEGIC NOTES
+- Premium tier: Reflects strategic importance
+- Multi-country: Complex billing; ensure accuracy
+- Tourism link: ASM stations at airports, tourist routes - natural fit
+- Renewal: April 2027; long term reflects mutual commitment
+- Expansion: Potential for Slovenia, Czech Republic inclusion in future

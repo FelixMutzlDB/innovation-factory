@@ -1,0 +1,74 @@
+HOT DOG PRODUCTION PLANNING GUIDE
+ASM Cockpit Service Station Network
+Document Version: 1.5 | Last Updated: January 2025
+
+PURPOSE
+Optimize hot dog production to meet customer demand while minimizing waste. Hot dogs are a high-margin Fresh Corner product but have limited hold time (4 hours on roller). Over-production leads to waste; under-production loses sales and customer satisfaction.
+
+BATCH SIZES BY TIME OF DAY
+
+Early Morning (05:00-08:00)
+- Initial batch: 6-8 units (depending on station size)
+- Replenishment: Add 2-3 every 45 minutes
+- Rationale: Commuter traffic building; avoid large batch that may exceed hold time before lunch peak
+
+Morning (08:00-11:00)
+- Batch size: 4-6 units per replenishment
+- Frequency: Every 30-40 minutes
+- Rationale: Steady demand; smaller batches ensure freshness
+
+Lunch Peak (11:00-14:00)
+- Batch size: 10-15 units per replenishment
+- Frequency: Every 20-25 minutes
+- High-volume stations (HU-BP-001, HR-ZG-003): Consider 15-20 unit batches
+- Rationale: Maximum demand period; larger batches reduce replenishment frequency during rush
+
+Afternoon (14:00-17:00)
+- Batch size: 4-6 units
+- Frequency: Every 45 minutes
+- Rationale: Demand decline; avoid excess inventory
+
+Evening (17:00-20:00)
+- Batch size: 6-10 units
+- Frequency: Every 30 minutes
+- Rationale: Second smaller peak; commuter and traveler traffic
+
+Late Night (20:00-05:00)
+- Batch size: 2-4 units
+- Frequency: Every 60-90 minutes
+- 24-hour stations only; reduce or discontinue at stations closing before midnight
+
+STATION-SPECIFIC ADJUSTMENTS
+- Highway stations: Increase lunch and evening batches by 20-30%
+- Urban stations: More consistent demand; smaller variance between periods
+- Truck stop stations: Larger batches throughout; truck drivers often buy 2-3 units
+- Tourist route stations: Seasonal adjustment; summer +25% to all batches
+
+WASTE REDUCTION STRATEGIES
+
+1. Demand Tracking
+- Log actual sales vs. production daily in ASM Cockpit
+- Review weekly waste reports; adjust batch sizes for next week
+- Target waste rate: Below 5% of production
+
+2. Promotional Alignment
+- When running hot dog promotion: Increase batches by 40% for promoted hours only
+- Post-promotion: Return to standard for 2 days to clear any overstock
+
+3. End-of-Day Procedure
+- Stop production 2 hours before closing
+- Final batch: Size for expected remaining customers only
+- Document unsold units; discard per food safety protocol
+
+4. Weather and Events
+- Rainy days: Reduce batches 15-20% (fewer customers)
+- Local events: Increase if station near event venue
+- Holiday periods: Reference seasonal_operations_guide.txt
+
+PRODUCT SPECIFICATIONS
+- Standard sausage: 100g unit
+- Jumbo option: 150g unit - produce 30% fewer units, same batch timing
+- Vegetarian option: Separate roller; batch size 50% of meat equivalent
+
+REPORTING
+Daily waste and production data feeds ASM Cockpit analytics. Station managers review monthly to refine station-specific parameters.

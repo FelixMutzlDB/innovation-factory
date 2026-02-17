@@ -1,0 +1,71 @@
+SECURITY INCIDENT PROTOCOL
+ASM Cockpit Service Station Network
+Document Version: 2.1 | Classification: Internal Use
+
+DRIVE-OFF PROCEDURES
+
+Definition
+Drive-off: Customer leaves without paying for fuel or other products. Includes intentional theft and unintentional (customer forgot).
+
+Immediate Response
+1. Do not pursue the vehicle - staff safety is priority
+2. Note vehicle registration, make, model, color
+3. Note pump number, approximate volume dispensed, product type
+4. Note time and any distinguishing features (driver description if safe to observe)
+5. If customer returns: Process payment normally; do not confront aggressively
+
+Reporting
+- Log in ASM Cockpit within 2 hours: Security > Incident Report > Drive-off
+- Attach CCTV footage if available (retain 30 days minimum)
+- For amounts over 100 EUR: Notify regional security manager same day
+- For amounts over 500 EUR: Consider police report - follow local guidance
+
+Prevention Measures
+- Prepay policy: Implement at high drive-off stations (see station-specific guidelines)
+- Pump positioning: Ensure clear view of pump from shop
+- Lighting: Adequate illumination during night hours
+- Signage: "Pay before you leave" at pump islands
+
+THEFT PREVENTION
+
+Shop Theft
+- High-value items in locked display or behind counter
+- Staff awareness training quarterly
+- Suspicious behavior: Observe, do not accuse; report to manager
+- Inventory variance: Investigate discrepancies over 50 EUR
+
+Cash Theft
+- Cash handling procedures must be followed - see cash_handling_procedures.txt
+- Safe drop frequency: Per station risk assessment
+- Two-person rule for cash transport where applicable
+
+Internal Theft
+- Unusual patterns: Report to regional office
+- Audit trail: All voids, refunds, discounts logged
+- Anonymous reporting: Ethics hotline available for staff
+
+CCTV MANAGEMENT
+
+Camera Coverage
+- Required: Forecourt, pump islands, shop entrance, till area, safe
+- Optional: Back office, storage areas per station
+- Verify cameras operational at shift start
+
+Footage Retention
+- Minimum 30 days for general footage
+- Incidents: Retain until investigation closed + 90 days
+- Export format: Per system capability; provide to police/insurance when requested
+
+Access to Footage
+- Station manager: View live and recent playback
+- Regional security: Full access
+- Police/authorities: With proper request; document all access
+- Never delete footage related to incident
+
+ROBBERY PROTOCOL
+- Comply with perpetrator demands - no heroics
+- Activate silent alarm if available
+- Observe details for later report
+- Do not pursue
+- Preserve scene for police
+- Support staff - offer counseling per policy

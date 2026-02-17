@@ -1,0 +1,48 @@
+CUSTOMER COMPLAINT: PANNONIA FREIGHT - FUEL QUALITY CONCERN
+Complaint ID: CMP-2025-00189
+Date Received: 27 January 2025
+Account: Pannonia Freight (FLT-2020-0089)
+Status: Resolved
+
+COMPLAINT SUMMARY
+Pannonia Freight fleet manager reported fuel quality concerns following fueling at station HU-BP-001 on 26 January 2025. Three vehicles exhibited rough engine performance and check engine lights. Fleet manager requested investigation and potential compensation.
+
+COMPLAINT DETAILS
+- Reporter: Istvan Horvath, Fleet Manager, Pannonia Freight
+- Contact: istvan.horvath@pannonia-freight.hu
+- Station: HU-BP-001
+- Date: 26 January 2025
+- Vehicles affected: 3 (2x MAN TGX, 1x Scania R450)
+- Product: Diesel from Tank 2
+- Volume: Approximately 180L total across 3 vehicles
+- Weather: -5 degrees Celsius at time of fueling
+
+INVESTIGATION
+- Full investigation conducted per standard procedure
+- Tank sample: Within specification
+- Delivery history: Last delivery 24 January, all checks passed
+- Dispenser: Filters replaced 15 January, no issues
+- Cross-reference: No other complaints from same pumps/period
+- Reference: incident_report_fuel_quality_complaint.txt for full investigation details
+
+FINDINGS
+- No evidence of fuel contamination at HU-BP-001
+- Possible contributing factors: Cold weather fuel behavior, pre-existing vehicle condition, fuel from other sources
+- Station fuel quality: Within specification
+
+RESOLUTION
+- Communication: Laszlo Toth (account manager) contacted Istvan Horvath 30 January
+- Explanation: Investigation results shared; no station fault identified
+- Goodwill: Offered fuel system flush for 3 vehicles at ASM expense (approximately 450 EUR total)
+- Customer accepted: Vehicles serviced 5 February 2025
+- Outcome: No recurrence reported; relationship maintained
+
+CUSTOMER RESPONSE
+- Istvan Horvath: Appreciated thorough investigation and goodwill gesture
+- Feedback: Requested cold weather fuel advisory for fleet - under development
+- Contract: No impact on Pannonia contract or volume commitment
+
+REFERENCE
+- fleet_contract_pannonia.txt
+- customer_complaint_resolution.txt (issue_resolution)
+- fuel_delivery_procedures.txt (issue_resolution)

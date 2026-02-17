@@ -1,0 +1,82 @@
+B2B INVOICING AND BILLING PROCEDURES
+ASM Cockpit Customer Relations
+Document Version: 2.1 | Last Updated: January 2025
+
+OVERVIEW
+Accurate and timely B2B invoicing is critical for fleet customer satisfaction. Billing errors are a leading cause of disputes and can damage relationships. This document covers invoicing cycles, payment terms, and credit management for fleet accounts.
+
+INVOICING CYCLES
+
+Weekly Invoicing
+- Accounts: TransEuropa, Central Taxi, other high-transaction fleets
+- Cut-off: Sunday 23:59
+- Invoice generation: Monday morning
+- Delivery: Email by Monday 12:00
+- Detail: Transaction-level or summary per customer preference
+
+Bi-Weekly Invoicing
+- Accounts: Pannonia, mid-size fleets
+- Cut-off: Alternating Sundays
+- Invoice generation: Monday following cut-off
+- Delivery: Within 24 hours of generation
+
+Monthly Invoicing
+- Accounts: Starline, Danubia, large consolidated accounts
+- Cut-off: Last day of month
+- Invoice generation: Within 5 business days
+- Delivery: Email; portal access for some accounts
+
+INVOICE CONTENT
+- Header: Customer name, address, tax ID, contract reference
+- Period: Invoice date range
+- Summary: Total volume, total amount by product type
+- Detail: Per station, per vehicle, or per transaction as per contract
+- Taxes: Clearly stated; VAT breakdown
+- Payment: Due date, bank details, reference for payment
+- Contact: Billing inquiry contact
+
+PAYMENT TERMS
+- Standard: 14-21 days from invoice date
+- Extended: 30 days for premium accounts (e.g., Starline)
+- Method: Bank transfer standard; no cash, no card for B2B
+- Currency: Per contract - HUF, EUR, or multi-currency
+- Reference: Customer must include invoice number on payment
+
+CREDIT MANAGEMENT
+
+Credit Limits
+- New accounts: Credit check before contract
+- Limit: Based on expected monthly volume, payment terms
+- Review: Annual or when volume increases significantly
+- Hold: New accounts may require deposit or shorter terms initially
+
+Late Payment
+- Day 1-7 overdue: Reminder email
+- Day 8-14: Phone call from account manager
+- Day 15-21: Escalation to credit team; possible service restriction
+- Day 22+: Formal demand; potential suspension of fueling privileges
+- Interest: Late payment interest per contract (typically 8-10% annual)
+
+Dispute Resolution
+- Customer disputes invoice: Document in writing
+- Investigation: Within 5 business days
+- Credit note: If error confirmed; process within 3 business days
+- Reference: customer_complaint_taxi_invoicing.txt for dispute process
+
+RECONCILIATION
+- Payment allocation: Match payment to invoices
+- Short payment: Contact customer; may be partial payment or error
+- Overpayment: Credit to account or refund per customer preference
+- Unallocated: Investigate within 5 days
+
+REPORTING
+- Aging report: Weekly for credit team
+- DSO: Days sales outstanding by account
+- Bad debt: Write-off process per finance policy
+- Dashboard: ASM Cockpit B2B billing module
+
+SPECIAL REQUIREMENTS
+- 24/7 invoicing: Central Taxi and similar - invoice available for all shifts
+- Multi-country: Consolidated invoice with country breakdown
+- Vehicle-level: Required for some fleets (driver cost allocation)
+- Reference: fleet_contract_central_taxi.txt for 24/7 requirement

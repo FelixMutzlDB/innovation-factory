@@ -11,7 +11,7 @@ router = APIRouter(tags=["projects"])
 @router.get("/projects", response_model=List[ProjectOut], operation_id="listProjects")
 def list_projects(db: SessionDep):
     """List all available projects for the gallery."""
-    statement = select(Project).order_by(Project.created_at.asc())
+    statement = select(Project).order_by(Project.created_at.asc())  # type: ignore[unresolved-attribute]
     projects = db.exec(statement).all()
     return list(projects)
 

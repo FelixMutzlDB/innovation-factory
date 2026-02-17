@@ -1,0 +1,77 @@
+LPG DISPENSING SAFETY PROCEDURES
+ASM Cockpit Service Station Network
+Document Version: 2.0 | Applicable to LPG-Equipped Stations Only
+
+OVERVIEW
+Liquefied Petroleum Gas (LPG) dispensing presents unique hazards: flammable gas, high pressure, and potential for rapid release. Stations offering LPG (primarily for vehicle conversion and some commercial use) must follow strict safety procedures. This document supplements general emergency procedures.
+
+LPG DISPENSING SAFETY
+
+Pre-Dispensing Checks
+- Vehicle: Verify LPG-compatible; check for certification label
+- Hose and nozzle: Inspect for damage, secure connection
+- Dispenser: No error codes; emergency stop functional
+- Area: No ignition sources within 10 meters (no running engines, smoking, mobile phones)
+- Ventilation: Adequate in enclosed or semi-enclosed areas
+
+Dispensing Procedure
+1. Customer parks, engine off, ignition key removed
+2. Staff or customer connects nozzle - ensure positive seal
+3. Verify tank capacity - do not overfill (80% maximum per regulation)
+4. Start dispenser; monitor throughout
+5. On completion: Close dispenser valve first, then disconnect nozzle
+6. Allow brief pause before customer starts engine (vapor dissipation)
+
+Overfill Prevention
+- LPG expands with temperature - tank must have vapor space
+- Automatic shut-off: Verify functioning at each use
+- Manual monitoring: Never leave unattended during fill
+- 80% rule: Standard maximum fill level for vehicle tanks
+
+TANK INSPECTION
+
+Storage Tank (Bulk LPG at Station)
+- Visual: Monthly - corrosion, damage, fittings
+- Pressure: Gauge reading within normal range
+- Valves: Operate smoothly, no leaks
+- Cathodic protection: If applicable - annual test
+- Professional inspection: Per local regulation (typically annually)
+
+Vehicle Tank (Customer)
+- Staff should not inspect customer tanks - dispensing only
+- If obvious damage: Decline to fill, advise customer to seek inspection
+- Expired certification: Per local regulation - some jurisdictions require current certification to fill
+
+LEAK DETECTION
+
+Signs of Leak
+- Odor: LPG has odorant added - distinctive smell
+- Hissing: Gas escaping under pressure
+- Frost: On fittings (indicates rapid gas release and cooling)
+- Bubbles: Soapy water on connection - bubbles indicate leak
+
+If Leak Detected
+1. Do not operate electrical switches
+2. Shut off dispenser and tank valves if safe
+3. Evacuate area - upwind
+4. Prevent ignition: No vehicles starting, no smoking
+5. Call emergency services: 112
+6. Call LPG supplier emergency line
+7. Cordon off area
+8. Do not attempt repair - wait for qualified technician
+
+PREVENTIVE MAINTENANCE
+- Dispenser: Quarterly professional inspection
+- Hose: Replace per manufacturer schedule (typically 2-3 years) or when damage noted
+- Nozzle: Inspect each use; replace O-rings when worn
+- Emergency equipment: Dry chemical extinguisher (Class B) at dispenser
+
+TRAINING
+- All staff at LPG stations: Initial training and annual refresh
+- Document: Training records in ASM Cockpit
+- New staff: Must complete before authorized to dispense LPG
+
+REGULATORY
+- Local regulations vary: Verify compliance with national and municipal requirements
+- Permits: Some jurisdictions require specific LPG dispensing permit
+- Record keeping: Dispensing logs, maintenance records per regulation

@@ -1,0 +1,59 @@
+LOYALTY PROGRAM CAMPAIGNS 2025
+ASM Cockpit Customer Relations
+Planning Document | Last Updated: February 2025
+
+OVERVIEW
+This document outlines active and planned loyalty campaigns for 2025. Campaigns drive engagement, increase visit frequency, and support cross-sell (fuel to shop, shop to Fresh Corner). All campaigns are tracked in ASM Cockpit Campaign module.
+
+ACTIVE CAMPAIGNS (Q1 2025)
+
+Double Points - Fuel (January 15 - February 28)
+- Mechanic: 2x points on all fuel purchases for Silver and above
+- Target: Increase fuel volume during low season
+- Channels: In-station signage, app push, email
+- Results: TBD (campaign ongoing)
+
+Coffee Loyalty - Buy 5 Get 1 Free (Ongoing)
+- Mechanic: Stamp card or digital tracking; 6th coffee free
+- Target: Increase coffee attachment rate
+- Reference: campaign_coffee_loyalty.txt for full details
+
+Winter Warm-Up (February 1 - February 28)
+- Mechanic: 50 bonus points on Fresh Corner hot food over 5 EUR
+- Target: Drive Fresh Corner during cold months
+- Eligibility: All members
+
+PLANNED CAMPAIGNS 2025
+
+Spring Refresh (March 15 - April 15)
+- Mechanic: 3x points on car wash
+- Target: Car wash utilization after winter
+- Budget: 15,000 EUR equivalent points
+
+Summer Promo 2025 (June 1 - August 31)
+- Mechanic: Double points on fuel; Fresh Corner discounts
+- Target: Peak travel season volume
+- Reference: campaign_summer_promo_2025.txt for full details
+- Budget: 45,000 EUR equivalent
+
+Back to School (September 1 - September 15)
+- Mechanic: Bonus points on shop purchases over 15 EUR
+- Target: Family travelers, commuters
+- Channels: In-station, app
+
+Fleet Onboarding Bonus (Ongoing)
+- Mechanic: 500 bonus points for new fleet customers in first month
+- Target: New fleet contract activation
+- Reference: campaign_fleet_onboarding.txt
+
+Q4 Holiday (November 15 - December 31)
+- Mechanic: TBD - under development
+- Target: Year-end volume, gift purchases
+- Planning: Campaign brief due March 2025
+
+CAMPAIGN GOVERNANCE
+- Approval: Marketing and Commercial sign-off required
+- Budget: Tracked against annual loyalty budget (280,000 EUR equivalent 2025)
+- Measurement: Incremental volume, points cost, ROI
+- Compliance: All campaigns comply with loyalty program terms
+- Communication: Customer communications reviewed for clarity, compliance

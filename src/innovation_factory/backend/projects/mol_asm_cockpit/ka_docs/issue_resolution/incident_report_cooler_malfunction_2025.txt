@@ -1,0 +1,42 @@
+INCIDENT REPORT: WALK-IN COOLER TEMPERATURE ALARM
+Station: HR-C-002 (Croatia, Zagreb area)
+Date: 22 January 2025
+Incident ID: INC-2025-00189
+Classification: Equipment Failure / Food Safety
+
+SUMMARY
+The walk-in cooler at station HR-C-002 triggered a high-temperature alarm at 03:47. Temperature had risen to 8.2 degrees Celsius (threshold: 7C). Alarm was received by night shift staff. Investigation found evaporator fan motor failure. Product was assessed; items above 5C for more than 2 hours were discarded per food safety protocol.
+
+TIMELINE
+03:47 - Temperature alarm activated (remote monitoring + local alarm)
+03:50 - Night staff verified alarm, confirmed temperature 8.2C
+03:52 - Regional on-call notified
+03:55 - Staff began moving high-value product to shop refrigerators
+04:15 - Refrigeration contractor dispatched
+05:30 - Contractor arrived, diagnosed fan motor failure
+06:45 - Replacement motor installed
+07:30 - Cooler temperature returned to 4C
+08:00 - Product assessment completed
+
+PRODUCT IMPACT
+- Total product in cooler: Approximately 4,200 EUR value
+- Product discarded: 1,847 EUR (items held above 5C for estimated 3+ hours)
+- Product saved: 2,353 EUR (moved to backup refrigeration or within safe hold time)
+- Discarded items: Sandwiches, dairy, prepared salads, chilled beverages
+
+ROOT CAUSE
+Evaporator fan motor bearing failure. Motor was 6 years old. No preventive maintenance record for fan motor replacement. Ambient temperature was -2C overnight, which may have delayed temperature rise but also indicated cooling had failed several hours before alarm.
+
+CORRECTIVE ACTIONS
+- Evaporator fan motors: Add to preventive maintenance schedule - replace at 5 years
+- Backup alarm: Verify secondary notification reaches manager (SMS was delayed 45 minutes)
+- Product placement: High-value items positioned for quick removal in future
+- Training: Night staff refresher on cooler alarm response
+
+PREVENTIVE MEASURES
+- All stations: Audit cooler alarm response procedures
+- HR-C-002: Install backup fan alarm (redundant sensor)
+- Regional: Review refrigeration maintenance contracts for PM inclusion
+
+REFERENCE
+See fresh_corner_food_safety.txt for cold chain and temperature requirements.

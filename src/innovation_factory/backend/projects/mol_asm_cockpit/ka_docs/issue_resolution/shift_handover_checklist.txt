@@ -1,0 +1,69 @@
+SHIFT HANDOVER STANDARD OPERATING PROCEDURE
+ASM Cockpit Service Station Network
+Document Version: 2.0 | Mandatory for All Stations
+
+PURPOSE
+Consistent shift handover ensures continuity of operations, prevents incidents from being overlooked, and supports accountability. Incomplete handovers have contributed to equipment failures, inventory discrepancies, and customer service issues.
+
+HANDOVER TIMING
+- Overlap period: Minimum 15 minutes for shift change
+- Incoming shift: Arrive 10 minutes before shift start
+- Outgoing shift: Remain until handover complete and incoming shift acknowledged
+
+CHECKLIST ITEMS
+
+1. CASH AND PAYMENT
+- Till count: Verify cash drawer matches expected
+- Safe count: Document safe balance
+- Pending transactions: Any authorizations to clear?
+- Cash drop log: All drops completed and documented?
+
+2. FUEL OPERATIONS
+- Tank levels: Current readings for all tanks
+- Out-of-service equipment: Pumps, dispensers, EV chargers
+- Pending deliveries: Scheduled for next shift?
+- Any fuel quality concerns from previous shift?
+
+3. SHOP AND FRESH CORNER
+- Inventory: Low stock items requiring reorder
+- Fresh Corner: Hot food batch status, cooler/freezer temps
+- Date checks: Items approaching expiry
+- Waste log: Documented and disposed
+
+4. EQUIPMENT STATUS
+- POS terminals: All operational?
+- Coffee machines: Any faults?
+- Car wash: Operational status
+- HVAC, lighting: Any issues?
+
+5. INCIDENTS AND FOLLOW-UPS
+- Drive-offs: Reported?
+- Customer complaints: Pending resolution?
+- Maintenance: Technician visits scheduled?
+- Security: Any concerns?
+
+6. COMMUNICATIONS
+- Messages from regional office
+- Customer feedback or complaints
+- Supplier notifications
+
+DOCUMENTATION
+- Complete Shift Handover Form SH-001
+- Both shifts sign and date
+- Retain in station records 90 days
+- Critical items: Log in ASM Cockpit incident module
+
+INCOMING SHIFT RESPONSIBILITIES
+- Review handover form before accepting shift
+- Verify critical items (e.g., tank levels, safe count)
+- Ask clarifying questions - do not assume
+- Sign only when satisfied with handover
+
+OUTGOING SHIFT RESPONSIBILITIES
+- Complete all checklist items honestly
+- Do not omit issues to avoid delay
+- Escalate unresolved items to manager if needed
+- Leave work area tidy and stocked
+
+MANAGER HANDOVER
+When manager changes: Extended handover including staffing, ongoing projects, budget status, audit findings. Minimum 30 minutes overlap.

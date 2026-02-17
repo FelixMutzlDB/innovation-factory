@@ -1,0 +1,61 @@
+B2B FLEET PRICING FRAMEWORK
+ASM Cockpit Customer Relations
+Document Version: 2.0 | Confidential - Internal Use Only
+
+OVERVIEW
+This document outlines the pricing framework for B2B fleet customers. Pricing is negotiated within these guidelines. Deviations require regional commercial approval. Framework ensures consistency while allowing flexibility for strategic accounts.
+
+VOLUME DISCOUNT TIERS
+
+Base Tiers (Monthly Diesel Equivalent)
+- Bronze: 10,000 - 24,999 liters - 3% discount
+- Silver: 25,000 - 49,999 liters - 4.5% discount
+- Gold: 50,000 - 99,999 liters - 6% discount
+- Platinum: 100,000 - 199,999 liters - 8% discount
+- Premium: 200,000+ liters - 9-10% discount (negotiated)
+
+Adjustments
+- Gasoline/LPG mix: Slightly lower discount (margin structure differs)
+- Multi-country: +0.5% for cross-border complexity
+- Commitment length: +0.25% for 3-year vs. 1-year commitment
+- Payment terms: Faster payment (7-14 days) may support +0.25%
+
+NEGOTIATION GUIDELINES
+
+Authority Levels
+- Account manager: Up to published tier
+- Regional commercial: +0.5% above tier, non-standard terms
+- Head of B2B: +1% above tier, strategic deals
+- Board: Above 10% discount, exceptional circumstances
+
+Competitive Response
+- When customer presents competitor quote: Verify quote authenticity
+- Match only when: Volume confirmed, contract term acceptable
+- Do not lead with discount: Establish value first
+- Walk-away: Know minimum acceptable terms per account
+
+Value Beyond Price
+- Payment terms: Extended terms have cost - factor in
+- Volume commitment: Higher commitment justifies higher discount
+- Station network: Access to high-demand locations
+- Service: Account management, reporting, support
+- Loyalty: Points value for fleet
+
+PRICING COMPONENTS
+- Base: Pump price (excluding taxes) at station
+- Discount: Applied to base
+- Net price: Base minus discount
+- Taxes: Applied to net; customer responsibility
+- Cross-border: Additional fee unless waived (platinum/premium)
+
+CONTRACT TERMS
+- Minimum term: 12 months standard; 24-36 for higher discounts
+- Volume commitment: Typically 80-90% of stated volume
+- Shortfall: Discount review or contract termination
+- Price mechanism: Pump price minus discount; or fixed margin (rare)
+- Review: Annual price review clause standard
+
+DOCUMENTATION
+- All negotiated terms in contract
+- Discount approval documented in ASM Cockpit
+- Audit trail for compliance

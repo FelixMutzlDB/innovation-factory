@@ -49,7 +49,7 @@ def compare_providers(
     if not readings:
         raise HTTPException(status_code=404, detail="No readings found for this household")
 
-    current_monthly_cost = _calculate_monthly_cost(readings, current_provider)
+    current_monthly_cost = _calculate_monthly_cost(readings, current_provider)  # type: ignore[invalid-argument-type]
 
     all_providers = db.exec(select(VhEnergyProvider)).all()
 
@@ -57,13 +57,14 @@ def compare_providers(
     for provider in all_providers:
         if provider.id == current_provider_id:
             continue
-        monthly_cost = _calculate_monthly_cost(readings, provider)
+        monthly_cost = _calculate_monthly_cost(readings, provider)  # type: ignore[invalid-argument-type]
         savings = current_monthly_cost - monthly_cost
         savings_percent = (savings / current_monthly_cost * 100) if current_monthly_cost > 0 else 0
 
         alternative_providers.append(VhAlternativeProviderOut(
             provider=VhEnergyProviderOut(
-                id=provider.id, name=provider.name, base_rate_eur=provider.base_rate_eur,
+                id=provider.id,  # type: ignore[invalid-argument-type]
+                name=provider.name, base_rate_eur=provider.base_rate_eur,
                 kwh_rate_eur=provider.kwh_rate_eur, night_rate_eur=provider.night_rate_eur,
                 feed_in_rate_eur=provider.feed_in_rate_eur,
             ),
@@ -76,7 +77,8 @@ def compare_providers(
 
     return VhProviderComparisonOut(
         current_provider=VhEnergyProviderOut(
-            id=current_provider.id, name=current_provider.name,
+            id=current_provider.id,  # type: ignore[invalid-argument-type]
+            name=current_provider.name,
             base_rate_eur=current_provider.base_rate_eur, kwh_rate_eur=current_provider.kwh_rate_eur,
             night_rate_eur=current_provider.night_rate_eur, feed_in_rate_eur=current_provider.feed_in_rate_eur,
         ),

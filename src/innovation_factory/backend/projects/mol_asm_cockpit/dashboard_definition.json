@@ -1,0 +1,413 @@
+{
+  "version": 1,
+  "datasets": [
+    {
+      "name": "dataset_fuel",
+      "warehouseId": "0024da9c9e9a4dc2",
+      "query": {
+        "sql": "SELECT s.station_code, s.name as station_name, s.region, s.station_type, f.sale_date, f.fuel_type, f.volume_liters, f.revenue, f.margin, f.unit_price FROM innovation_factory_catalog.mac.fuel_sales f JOIN innovation_factory_catalog.mac.stations s ON f.station_id = s.id WHERE f.sale_date >= date_sub(current_date(), 90)",
+        "fields": []
+      }
+    },
+    {
+      "name": "dataset_nonfuel",
+      "warehouseId": "0024da9c9e9a4dc2",
+      "query": {
+        "sql": "SELECT s.station_code, s.name as station_name, s.region, s.station_type, s.has_fresh_corner, n.sale_date, n.category, n.quantity, n.revenue, n.margin FROM innovation_factory_catalog.mac.nonfuel_sales n JOIN innovation_factory_catalog.mac.stations s ON n.station_id = s.id WHERE n.sale_date >= date_sub(current_date(), 90)",
+        "fields": []
+      }
+    },
+    {
+      "name": "dataset_pricing",
+      "warehouseId": "0024da9c9e9a4dc2",
+      "query": {
+        "sql": "SELECT s.station_code, s.name as station_name, s.region, p.price_date, p.fuel_type, p.price_per_liter, p.cost_per_liter, p.price_per_liter - p.cost_per_liter as margin_per_liter FROM innovation_factory_catalog.mac.price_history p JOIN innovation_factory_catalog.mac.stations s ON p.station_id = s.id WHERE p.price_date >= date_sub(current_date(), 90)",
+        "fields": []
+      }
+    },
+    {
+      "name": "dataset_workforce",
+      "warehouseId": "0024da9c9e9a4dc2",
+      "query": {
+        "sql": "SELECT s.station_code, s.name as station_name, s.region, w.shift_date, w.shift_type, w.planned_headcount, w.actual_headcount, w.overtime_hours, w.planned_headcount - w.actual_headcount as staffing_gap FROM innovation_factory_catalog.mac.workforce_shifts w JOIN innovation_factory_catalog.mac.stations s ON w.station_id = s.id WHERE w.shift_date >= date_sub(current_date(), 30)",
+        "fields": []
+      }
+    }
+  ],
+  "pages": [
+    {
+      "pageType": "PAGE_TYPE_CANVAS",
+      "title": "Fuel Performance",
+      "widgets": [
+        {
+          "name": "fuel-title",
+          "widgetType": "text",
+          "layout": {"x": 0, "y": 0, "width": 6, "height": 1},
+          "multilineTextboxSpec": {
+            "lines": [{"type": "text", "content": "Fuel Performance Overview"}]
+          },
+          "frame": {"showTitle": false}
+        },
+        {
+          "name": "counter-total-volume",
+          "widgetType": "counter",
+          "layout": {"x": 0, "y": 1, "width": 2, "height": 3},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_fuel",
+            "fields": [{"name": "sum(volume_liters)", "expression": "SUM(`volume_liters`)"}]
+          }],
+          "spec": {
+            "version": 2,
+            "disaggregated": false,
+            "encodings": {"value": {"fieldName": "sum(volume_liters)", "displayName": "Total Volume"}}
+          },
+          "frame": {"showTitle": true, "title": "Total Volume"}
+        },
+        {
+          "name": "counter-total-revenue",
+          "widgetType": "counter",
+          "layout": {"x": 2, "y": 1, "width": 2, "height": 3},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_fuel",
+            "fields": [{"name": "sum(revenue)", "expression": "SUM(`revenue`)"}]
+          }],
+          "spec": {
+            "version": 2,
+            "disaggregated": false,
+            "encodings": {"value": {"fieldName": "sum(revenue)", "displayName": "Total Revenue"}}
+          },
+          "frame": {"showTitle": true, "title": "Total Revenue"}
+        },
+        {
+          "name": "counter-total-margin",
+          "widgetType": "counter",
+          "layout": {"x": 4, "y": 1, "width": 2, "height": 3},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_fuel",
+            "fields": [{"name": "sum(margin)", "expression": "SUM(`margin`)"}]
+          }],
+          "spec": {
+            "version": 2,
+            "disaggregated": false,
+            "encodings": {"value": {"fieldName": "sum(margin)", "displayName": "Total Margin"}}
+          },
+          "frame": {"showTitle": true, "title": "Total Margin"}
+        },
+        {
+          "name": "bar-revenue-by-fuel-type",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 4, "width": 3, "height": 5},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_fuel",
+            "fields": [
+              {"name": "fuel_type", "expression": "`fuel_type`"},
+              {"name": "sum(revenue)", "expression": "SUM(`revenue`)"}
+            ]
+          }],
+          "spec": {
+            "version": 3,
+            "disaggregated": false,
+            "encodings": {
+              "x": {"fieldName": "fuel_type", "scale": {"type": "categorical"}},
+              "y": {"fieldName": "sum(revenue)", "scale": {"type": "quantitative"}}
+            }
+          },
+          "frame": {"showTitle": true, "title": "Revenue by Fuel Type"}
+        },
+        {
+          "name": "bar-margin-by-region",
+          "widgetType": "bar",
+          "layout": {"x": 3, "y": 4, "width": 3, "height": 5},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_fuel",
+            "fields": [
+              {"name": "region", "expression": "`region`"},
+              {"name": "sum(margin)", "expression": "SUM(`margin`)"}
+            ]
+          }],
+          "spec": {
+            "version": 3,
+            "disaggregated": false,
+            "encodings": {
+              "x": {"fieldName": "region", "scale": {"type": "categorical"}},
+              "y": {"fieldName": "sum(margin)", "scale": {"type": "quantitative"}}
+            }
+          },
+          "frame": {"showTitle": true, "title": "Margin by Region"}
+        }
+      ]
+    },
+    {
+      "pageType": "PAGE_TYPE_CANVAS",
+      "title": "Non-Fuel & Fresh Corner",
+      "widgets": [
+        {
+          "name": "nonfuel-title",
+          "widgetType": "text",
+          "layout": {"x": 0, "y": 0, "width": 6, "height": 1},
+          "multilineTextboxSpec": {
+            "lines": [{"type": "text", "content": "Non-Fuel & Fresh Corner"}]
+          },
+          "frame": {"showTitle": false}
+        },
+        {
+          "name": "counter-nonfuel-revenue",
+          "widgetType": "counter",
+          "layout": {"x": 0, "y": 1, "width": 3, "height": 3},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_nonfuel",
+            "fields": [{"name": "sum(revenue)", "expression": "SUM(`revenue`)"}]
+          }],
+          "spec": {
+            "version": 2,
+            "disaggregated": false,
+            "encodings": {"value": {"fieldName": "sum(revenue)", "displayName": "Total Non-Fuel Revenue"}}
+          },
+          "frame": {"showTitle": true, "title": "Total Non-Fuel Revenue"}
+        },
+        {
+          "name": "counter-nonfuel-margin",
+          "widgetType": "counter",
+          "layout": {"x": 3, "y": 1, "width": 3, "height": 3},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_nonfuel",
+            "fields": [{"name": "sum(margin)", "expression": "SUM(`margin`)"}]
+          }],
+          "spec": {
+            "version": 2,
+            "disaggregated": false,
+            "encodings": {"value": {"fieldName": "sum(margin)", "displayName": "Total Non-Fuel Margin"}}
+          },
+          "frame": {"showTitle": true, "title": "Total Non-Fuel Margin"}
+        },
+        {
+          "name": "bar-nonfuel-revenue-by-category",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 4, "width": 3, "height": 5},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_nonfuel",
+            "fields": [
+              {"name": "category", "expression": "`category`"},
+              {"name": "sum(revenue)", "expression": "SUM(`revenue`)"}
+            ]
+          }],
+          "spec": {
+            "version": 3,
+            "disaggregated": false,
+            "encodings": {
+              "x": {"fieldName": "category", "scale": {"type": "categorical"}},
+              "y": {"fieldName": "sum(revenue)", "scale": {"type": "quantitative"}}
+            }
+          },
+          "frame": {"showTitle": true, "title": "Revenue by Category"}
+        },
+        {
+          "name": "bar-nonfuel-margin-by-category",
+          "widgetType": "bar",
+          "layout": {"x": 3, "y": 4, "width": 3, "height": 5},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_nonfuel",
+            "fields": [
+              {"name": "category", "expression": "`category`"},
+              {"name": "sum(margin)", "expression": "SUM(`margin`)"}
+            ]
+          }],
+          "spec": {
+            "version": 3,
+            "disaggregated": false,
+            "encodings": {
+              "x": {"fieldName": "category", "scale": {"type": "categorical"}},
+              "y": {"fieldName": "sum(margin)", "scale": {"type": "quantitative"}}
+            }
+          },
+          "frame": {"showTitle": true, "title": "Margin by Category"}
+        }
+      ]
+    },
+    {
+      "pageType": "PAGE_TYPE_CANVAS",
+      "title": "Pricing Intelligence",
+      "widgets": [
+        {
+          "name": "pricing-title",
+          "widgetType": "text",
+          "layout": {"x": 0, "y": 0, "width": 6, "height": 1},
+          "multilineTextboxSpec": {
+            "lines": [{"type": "text", "content": "Pricing Intelligence"}]
+          },
+          "frame": {"showTitle": false}
+        },
+        {
+          "name": "counter-avg-diesel-price",
+          "widgetType": "counter",
+          "layout": {"x": 0, "y": 1, "width": 2, "height": 3},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_pricing",
+            "fields": [{"name": "avg_diesel_price", "expression": "AVG(CASE WHEN `fuel_type` = 'diesel' THEN `price_per_liter` END)"}]
+          }],
+          "spec": {
+            "version": 2,
+            "disaggregated": false,
+            "encodings": {"value": {"fieldName": "avg_diesel_price", "displayName": "Avg Diesel Price"}}
+          },
+          "frame": {"showTitle": true, "title": "Avg Diesel Price"}
+        },
+        {
+          "name": "counter-avg-diesel-margin",
+          "widgetType": "counter",
+          "layout": {"x": 2, "y": 1, "width": 2, "height": 3},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_pricing",
+            "fields": [{"name": "avg_diesel_margin", "expression": "AVG(CASE WHEN `fuel_type` = 'diesel' THEN `margin_per_liter` END)"}]
+          }],
+          "spec": {
+            "version": 2,
+            "disaggregated": false,
+            "encodings": {"value": {"fieldName": "avg_diesel_margin", "displayName": "Avg Diesel Margin"}}
+          },
+          "frame": {"showTitle": true, "title": "Avg Diesel Margin"}
+        },
+        {
+          "name": "counter-avg-premium98-price",
+          "widgetType": "counter",
+          "layout": {"x": 4, "y": 1, "width": 2, "height": 3},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_pricing",
+            "fields": [{"name": "avg_premium98_price", "expression": "AVG(CASE WHEN `fuel_type` = 'premium_98' THEN `price_per_liter` END)"}]
+          }],
+          "spec": {
+            "version": 2,
+            "disaggregated": false,
+            "encodings": {"value": {"fieldName": "avg_premium98_price", "displayName": "Avg Premium 98 Price"}}
+          },
+          "frame": {"showTitle": true, "title": "Avg Premium 98 Price"}
+        },
+        {
+          "name": "bar-avg-price-by-fuel-type",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 4, "width": 6, "height": 5},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_pricing",
+            "fields": [
+              {"name": "fuel_type", "expression": "`fuel_type`"},
+              {"name": "avg(price_per_liter)", "expression": "AVG(`price_per_liter`)"}
+            ]
+          }],
+          "spec": {
+            "version": 3,
+            "disaggregated": false,
+            "encodings": {
+              "x": {"fieldName": "fuel_type", "scale": {"type": "categorical"}},
+              "y": {"fieldName": "avg(price_per_liter)", "scale": {"type": "quantitative"}}
+            }
+          },
+          "frame": {"showTitle": true, "title": "Avg Price by Fuel Type"}
+        }
+      ]
+    },
+    {
+      "pageType": "PAGE_TYPE_CANVAS",
+      "title": "Workforce & Operations",
+      "widgets": [
+        {
+          "name": "workforce-title",
+          "widgetType": "text",
+          "layout": {"x": 0, "y": 0, "width": 6, "height": 1},
+          "multilineTextboxSpec": {
+            "lines": [{"type": "text", "content": "Workforce & Operations"}]
+          },
+          "frame": {"showTitle": false}
+        },
+        {
+          "name": "counter-total-overtime",
+          "widgetType": "counter",
+          "layout": {"x": 0, "y": 1, "width": 3, "height": 3},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_workforce",
+            "fields": [{"name": "sum(overtime_hours)", "expression": "SUM(`overtime_hours`)"}]
+          }],
+          "spec": {
+            "version": 2,
+            "disaggregated": false,
+            "encodings": {"value": {"fieldName": "sum(overtime_hours)", "displayName": "Total Overtime Hours"}}
+          },
+          "frame": {"showTitle": true, "title": "Total Overtime Hours"}
+        },
+        {
+          "name": "counter-total-staffing-gaps",
+          "widgetType": "counter",
+          "layout": {"x": 3, "y": 1, "width": 3, "height": 3},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_workforce",
+            "fields": [{"name": "sum(staffing_gap)", "expression": "SUM(`staffing_gap`)"}]
+          }],
+          "spec": {
+            "version": 2,
+            "disaggregated": false,
+            "encodings": {"value": {"fieldName": "sum(staffing_gap)", "displayName": "Total Staffing Gaps"}}
+          },
+          "frame": {"showTitle": true, "title": "Total Staffing Gaps"}
+        },
+        {
+          "name": "bar-overtime-by-region",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 4, "width": 3, "height": 5},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_workforce",
+            "fields": [
+              {"name": "region", "expression": "`region`"},
+              {"name": "sum(overtime_hours)", "expression": "SUM(`overtime_hours`)"}
+            ]
+          }],
+          "spec": {
+            "version": 3,
+            "disaggregated": false,
+            "encodings": {
+              "x": {"fieldName": "region", "scale": {"type": "categorical"}},
+              "y": {"fieldName": "sum(overtime_hours)", "scale": {"type": "quantitative"}}
+            }
+          },
+          "frame": {"showTitle": true, "title": "Overtime by Region"}
+        },
+        {
+          "name": "bar-staffing-gap-by-shift-type",
+          "widgetType": "bar",
+          "layout": {"x": 3, "y": 4, "width": 3, "height": 5},
+          "queries": [{
+            "name": "main_query",
+            "queryName": "dataset_workforce",
+            "fields": [
+              {"name": "shift_type", "expression": "`shift_type`"},
+              {"name": "sum(staffing_gap)", "expression": "SUM(`staffing_gap`)"}
+            ]
+          }],
+          "spec": {
+            "version": 3,
+            "disaggregated": false,
+            "encodings": {
+              "x": {"fieldName": "shift_type", "scale": {"type": "categorical"}},
+              "y": {"fieldName": "sum(staffing_gap)", "scale": {"type": "quantitative"}}
+            }
+          },
+          "frame": {"showTitle": true, "title": "Staffing Gap by Shift Type"}
+        }
+      ]
+    }
+  ]
+}

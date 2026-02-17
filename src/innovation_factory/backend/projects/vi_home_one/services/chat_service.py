@@ -70,7 +70,7 @@ GUARDRAILS (S4 Framework - Show Sources or Say Sorry):
         if household:
             latest_reading_query = select(VhEnergyReading).where(
                 VhEnergyReading.household_id == household.id
-            ).order_by(VhEnergyReading.timestamp.desc()).limit(1)
+            ).order_by(VhEnergyReading.timestamp.desc()).limit(1)  # type: ignore[unresolved-attribute]
             latest_reading = session.exec(latest_reading_query).first()
             if latest_reading:
                 context_parts.append(f"""

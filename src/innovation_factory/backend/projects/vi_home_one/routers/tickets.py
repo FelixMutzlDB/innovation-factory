@@ -29,7 +29,7 @@ def list_tickets(
         query = query.where(VhTicket.household_id == household_id)
     if status:
         query = query.where(VhTicket.status == status)
-    query = query.order_by(VhTicket.created_at.desc())
+    query = query.order_by(VhTicket.created_at.desc())  # type: ignore[unresolved-attribute]
     tickets = db.exec(query).all()
     return list(tickets)
 

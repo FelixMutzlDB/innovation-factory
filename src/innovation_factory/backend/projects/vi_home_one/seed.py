@@ -26,7 +26,7 @@ def seed_vh_data(session: Session):
 
     print("  Seeding vi-home-one data...")
     neighborhood = _seed_neighborhood(session)
-    households = _seed_households(session, neighborhood.id)
+    households = _seed_households(session, neighborhood.id)  # type: ignore[invalid-argument-type]
     _seed_energy_devices(session, households)
     _seed_energy_readings(session, households)
     _seed_energy_providers(session)
@@ -74,7 +74,8 @@ def _seed_energy_devices(session: Session, households: list[VhHousehold]):
         for dtype, brand, model, capacity in devices:
             device = VhEnergyDevice(
                 household_id=hh.id, device_type=dtype, brand=brand, model=model,
-                capacity_kw=capacity, installation_date=installation_date,
+                capacity_kw=capacity,
+                installation_date=installation_date,
                 serial_number=f"{dtype.value.upper()}-2023-{hh.id:03d}",
             )
             session.add(device)
@@ -140,15 +141,15 @@ def _seed_energy_readings(session: Session, households: list[VhHousehold]):
         pv_cap = device_dict[DeviceType.pv_system].capacity_kw if DeviceType.pv_system in device_dict else 0
         bat_cap = device_dict[DeviceType.battery].capacity_kw if DeviceType.battery in device_dict else 0
         hp_cap = device_dict[DeviceType.heat_pump].capacity_kw if DeviceType.heat_pump in device_dict else 0
-        bat_level = bat_cap * 0.5
+        bat_level = bat_cap * 0.5  # type: ignore[unsupported-operator]
 
         for hour_offset in range(24):
             ts = start_date + timedelta(hours=hour_offset)
             hour = ts.hour
             doy = ts.timetuple().tm_yday
 
-            pv_gen = _calc_pv(hour, doy, pv_cap) if household.has_pv else 0.0
-            hp_cons = _calc_hp(hour, doy, hp_cap)
+            pv_gen = _calc_pv(hour, doy, pv_cap) if household.has_pv else 0.0  # type: ignore[invalid-argument-type]
+            hp_cons = _calc_hp(hour, doy, hp_cap)  # type: ignore[invalid-argument-type]
             hh_cons = _calc_household(hour, cfg["base_load"]) * cfg["mult"]
             ev_cons = _calc_ev(hour, household.has_ev)
             total_cons = hp_cons + hh_cons + ev_cons
@@ -157,13 +158,13 @@ def _seed_energy_readings(session: Session, households: list[VhHousehold]):
             if household.has_battery:
                 if pv_gen > total_cons:
                     surplus = pv_gen - total_cons
-                    can_charge = min(surplus, bat_cap - bat_level, bat_cap * 0.2)
+                    can_charge = min(surplus, bat_cap - bat_level, bat_cap * 0.2)  # type: ignore[unsupported-operator]
                     bat_charge = can_charge
                     bat_level += bat_charge
                     grid_export = surplus - bat_charge
                 else:
                     deficit = total_cons - pv_gen
-                    can_discharge = min(deficit, bat_level, bat_cap * 0.2)
+                    can_discharge = min(deficit, bat_level, bat_cap * 0.2)  # type: ignore[unsupported-operator]
                     bat_discharge = can_discharge
                     bat_level -= bat_discharge
                     grid_import = deficit - bat_discharge
@@ -200,7 +201,7 @@ def _seed_maintenance_alerts(session: Session, households: list[VhHousehold]):
     for hh in households[:3]:
         devices = session.exec(select(VhEnergyDevice).where(
             VhEnergyDevice.household_id == hh.id,
-            VhEnergyDevice.device_type.in_([DeviceType.heat_pump, DeviceType.pv_system])
+            VhEnergyDevice.device_type.in_([DeviceType.heat_pump, DeviceType.pv_system])  # type: ignore[unresolved-attribute]
         )).all()
         for device in devices:
             if device.device_type == DeviceType.heat_pump:
