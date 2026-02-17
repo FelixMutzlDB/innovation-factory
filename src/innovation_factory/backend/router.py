@@ -1,9 +1,11 @@
 import threading
+from pathlib import Path
 from typing import Annotated
 
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.iam import User as UserOut
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
 
 from .._metadata import api_prefix
 from .dependencies import get_obo_ws
@@ -53,6 +55,52 @@ def seed_database(request: Request):
 
     threading.Thread(target=_do_seed, daemon=True).start()
     return {"status": "started"}
+
+
+class DocListOut(BaseModel):
+    slugs: list[str]
+
+
+class DocContentOut(BaseModel):
+    slug: str
+    title: str
+    content: str
+
+
+_DOCS_DIR = Path(__file__).resolve().parent.parent.parent.parent / "docs" / "projects"
+
+
+@api.get(
+    "/docs/projects",
+    response_model=DocListOut,
+    operation_id="listProjectDocs",
+)
+async def list_project_docs():
+    """List available project documentation slugs."""
+    if not _DOCS_DIR.exists():
+        return DocListOut(slugs=[])
+    slugs = sorted(p.stem for p in _DOCS_DIR.glob("*.md"))
+    return DocListOut(slugs=slugs)
+
+
+@api.get(
+    "/docs/projects/{slug}",
+    response_model=DocContentOut,
+    operation_id="getProjectDoc",
+)
+async def get_project_doc(slug: str):
+    """Get markdown content for a project's documentation."""
+    md_file = _DOCS_DIR / f"{slug}.md"
+    if not md_file.exists():
+        raise HTTPException(status_code=404, detail=f"Documentation not found for '{slug}'")
+    content = md_file.read_text(encoding="utf-8")
+    # Extract title from first markdown heading
+    title = slug
+    for line in content.splitlines():
+        if line.startswith("# "):
+            title = line[2:].strip()
+            break
+    return DocContentOut(slug=slug, title=title, content=content)
 
 
 # Platform routers

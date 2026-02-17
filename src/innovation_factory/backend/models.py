@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from sqlmodel import SQLModel, Field
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from .. import __version__
 
@@ -20,8 +20,8 @@ class Project(SQLModel, table=True):
     company: str
     icon: Optional[str] = None
     color: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class PlatformUser(SQLModel, table=True):
@@ -31,7 +31,7 @@ class PlatformUser(SQLModel, table=True):
     email: str = Field(unique=True, index=True)
     display_name: str
     avatar_url: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 # ============================================================================
@@ -53,7 +53,7 @@ class IdeaSession(SQLModel, table=True):
     description: Optional[str] = None
     generated_prompt: Optional[str] = None
     status: IdeaSessionStatus = Field(default=IdeaSessionStatus.collecting_name)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class IdeaMessage(SQLModel, table=True):
@@ -63,7 +63,7 @@ class IdeaMessage(SQLModel, table=True):
     session_id: int = Field(foreign_key="idea_sessions.id", index=True)
     role: str  # "user", "assistant", "system"
     content: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 # ============================================================================

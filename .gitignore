@@ -39,3 +39,8 @@ node_modules/
 
 # UI dist folder
 src/innovation_factory/__dist__/.mcp.json
+
+# Test artifacts
+test-results/
+.pytest_cache/
+file:test_shared

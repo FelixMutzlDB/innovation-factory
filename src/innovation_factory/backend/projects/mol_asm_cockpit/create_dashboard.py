@@ -41,7 +41,7 @@ def main():
 
     warehouse_id = WAREHOUSE_ID
     if not warehouse_id:
-        print("WARNING: MAC_WAREHOUSE_ID not set, skipping publish step.")
+        print("WARNING: WAREHOUSE_ID not set, skipping publish step.")
         print(f"  Dashboard ID : {dashboard_id}")
         return
 

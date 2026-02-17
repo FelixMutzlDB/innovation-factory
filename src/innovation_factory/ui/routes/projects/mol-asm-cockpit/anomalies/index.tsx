@@ -8,7 +8,7 @@ import {
   useMac_updateAnomalyAlert,
   mac_listAnomalyAlertsKey,
   type MacAnomalyAlertOut,
-  type AlertStatus,
+  type MacAlertStatus,
 } from "@/lib/api";
 import selector from "@/lib/selector";
 import { useState, useMemo } from "react";
@@ -156,7 +156,7 @@ function AnomaliesContent() {
 
   const handleUpdateStatus = async (
     alertId: number,
-    newStatus: AlertStatus,
+    newStatus: MacAlertStatus,
   ) => {
     await updateAlert.mutateAsync({
       params: { alert_id: alertId },

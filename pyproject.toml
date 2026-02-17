@@ -17,7 +17,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "ty>=0.0.12", "apx==0.2.6",
+    "ty>=0.0.12",
+    "apx==0.2.6",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "httpx>=0.28.1",
 ]
 
 [tool.apx.metadata]
@@ -40,6 +44,13 @@ exclude = ["scripts/", "**/seed_uc_tables.py", "**/create_dashboard.py"]
 
 [tool.ty.rules]
 deprecated = "ignore"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: marks tests that require live Databricks connection",
+]
+asyncio_mode = "auto"
 
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning>=0.7.0"]

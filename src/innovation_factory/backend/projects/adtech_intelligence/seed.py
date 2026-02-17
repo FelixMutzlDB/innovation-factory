@@ -5,7 +5,7 @@ outdoor (OOH / DOOH) advertising across Germany.
 """
 
 import random
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 from sqlmodel import Session, select
 
@@ -495,7 +495,7 @@ def _seed_anomalies(
         resolved_at = None
         resolved_by = None
         if status in (AnomalyStatus.resolved, AnomalyStatus.dismissed):
-            resolved_at = datetime.utcnow() - timedelta(days=_rng.randint(0, 14))
+            resolved_at = datetime.now(timezone.utc) - timedelta(days=_rng.randint(0, 14))
             resolved_by = _rng.choice(ACCOUNT_MANAGERS)
 
         suggested = _generate_suggested_actions(atype)
@@ -508,7 +508,7 @@ def _seed_anomalies(
             severity=severity,
             title=title,
             description=desc,
-            detected_at=datetime.utcnow() - timedelta(days=_rng.randint(0, 30), hours=_rng.randint(0, 23)),
+            detected_at=datetime.now(timezone.utc) - timedelta(days=_rng.randint(0, 30), hours=_rng.randint(0, 23)),
             status=status,
             metric_name=metric,
             expected_value=expected,
@@ -634,7 +634,7 @@ def _seed_issues(
                 "Technical team replaced the faulty hardware. Screen back online.",
                 "Tracking pixel re-deployed. Conversions now recording correctly.",
             ])
-            resolved_at = datetime.utcnow() - timedelta(days=_rng.randint(0, 14))
+            resolved_at = datetime.now(timezone.utc) - timedelta(days=_rng.randint(0, 14))
 
         issue = AtIssue(
             campaign_id=camp.id,
@@ -646,7 +646,7 @@ def _seed_issues(
             priority=priority,
             resolution=resolution,
             assigned_to=_rng.choice(ACCOUNT_MANAGERS),
-            created_at=datetime.utcnow() - timedelta(days=_rng.randint(0, 60)),
+            created_at=datetime.now(timezone.utc) - timedelta(days=_rng.randint(0, 60)),
             resolved_at=resolved_at,
         )
         session.add(issue)

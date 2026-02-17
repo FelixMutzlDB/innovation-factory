@@ -84,14 +84,15 @@ def list_chat_sessions(
 ):
     """List recent chat sessions."""
     sessions = db.exec(
-        select(AtChatSession).order_by(AtChatSession.started_at.desc()).limit(20)
+        select(AtChatSession).order_by(AtChatSession.started_at.desc()).limit(20)  # type: ignore[unresolved-attribute]
     ).all()
     result = []
     for s in sessions:
+        assert s.id is not None
         messages = db.exec(
             select(AtChatMessage)
             .where(AtChatMessage.session_id == s.id)
-            .order_by(AtChatMessage.created_at.asc())
+            .order_by(AtChatMessage.created_at.asc())  # type: ignore[unresolved-attribute]
         ).all()
         result.append(
             AtChatHistoryOut(
@@ -118,11 +119,12 @@ def get_chat_session(
     session = db.get(AtChatSession, session_id)
     if not session:
         raise HTTPException(404, detail="Chat session not found")
+    assert session.id is not None
 
     messages = db.exec(
         select(AtChatMessage)
         .where(AtChatMessage.session_id == session.id)
-        .order_by(AtChatMessage.created_at.asc())
+        .order_by(AtChatMessage.created_at.asc())  # type: ignore[unresolved-attribute]
     ).all()
 
     return AtChatHistoryOut(

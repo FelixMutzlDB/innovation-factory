@@ -118,7 +118,7 @@ class AnomalyService:
         latest = db.exec(
             select(AtPerformanceMetric)
             .where(AtPerformanceMetric.metric_date >= cutoff)
-            .order_by(AtPerformanceMetric.metric_date.desc())
+            .order_by(AtPerformanceMetric.metric_date.desc())  # type: ignore[unresolved-attribute]
             .limit(1)
         ).first()
         if not latest:

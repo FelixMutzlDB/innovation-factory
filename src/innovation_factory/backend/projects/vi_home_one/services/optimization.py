@@ -1,5 +1,5 @@
 """Optimization service for generating energy and cost saving suggestions."""
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlmodel import Session, select
 
 from ..models import (
@@ -18,7 +18,7 @@ def generate_optimization_suggestions(
     """Generate optimization suggestions based on household mode and energy data."""
     suggestions = []
 
-    one_day_ago = datetime.utcnow() - timedelta(hours=24)
+    one_day_ago = datetime.now(timezone.utc) - timedelta(hours=24)
     readings_query = select(VhEnergyReading).where(
         VhEnergyReading.household_id == household.id,
         VhEnergyReading.timestamp >= one_day_ago

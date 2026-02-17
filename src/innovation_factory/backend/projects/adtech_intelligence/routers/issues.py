@@ -48,7 +48,7 @@ def list_issues(
         stmt = stmt.where(AtIssue.category == category)
     if campaign_id:
         stmt = stmt.where(AtIssue.campaign_id == campaign_id)
-    stmt = stmt.order_by(AtIssue.created_at.desc()).offset(offset).limit(limit)
+    stmt = stmt.order_by(AtIssue.created_at.desc()).offset(offset).limit(limit)  # type: ignore[unresolved-attribute]
     return db.exec(stmt).all()
 
 
@@ -117,5 +117,5 @@ def list_contracts(
     stmt = select(AtCustomerContract)
     if advertiser_id:
         stmt = stmt.where(AtCustomerContract.advertiser_id == advertiser_id)
-    stmt = stmt.order_by(AtCustomerContract.start_date.desc())
+    stmt = stmt.order_by(AtCustomerContract.start_date.desc())  # type: ignore[unresolved-attribute]
     return db.exec(stmt).all()

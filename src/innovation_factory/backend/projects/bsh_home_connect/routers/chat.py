@@ -1,5 +1,7 @@
 """Chat router for BSH Home Connect."""
-from typing import Annotated, List
+from datetime import datetime, timezone
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlmodel import Session, select
@@ -12,7 +14,6 @@ from ..models import (
     BshChatMessageOut,
     BshChatHistoryOut,
     BshCustomer,
-    BshTechnician,
 )
 from ..services.chat_service import ChatService
 
@@ -71,6 +72,6 @@ def get_chat_history(
         session_id=session_id,
         ticket_id=ticket_id,
         session_type=session_type,
-        started_at=messages[0].created_at if messages else None,  # type: ignore[invalid-argument-type]
+        started_at=messages[0].created_at if messages else datetime.now(timezone.utc),
         messages=[BshChatMessageOut.model_validate(msg) for msg in messages],
     )

@@ -57,13 +57,13 @@ def get_dashboard_summary(
     ).one()
     active_anomalies = db.exec(
         select(func.count(AtAnomaly.id)).where(
-            AtAnomaly.status.in_([AnomalyStatus.new, AnomalyStatus.acknowledged, AnomalyStatus.investigating])
+            AtAnomaly.status.in_([AnomalyStatus.new, AnomalyStatus.acknowledged, AnomalyStatus.investigating])  # type: ignore[unresolved-attribute]
         )
     ).one()
     critical_anomalies = db.exec(
         select(func.count(AtAnomaly.id)).where(
             AtAnomaly.severity == "critical",
-            AtAnomaly.status.in_([AnomalyStatus.new, AnomalyStatus.acknowledged, AnomalyStatus.investigating]),
+            AtAnomaly.status.in_([AnomalyStatus.new, AnomalyStatus.acknowledged, AnomalyStatus.investigating]),  # type: ignore[unresolved-attribute]
         )
     ).one()
 
@@ -104,7 +104,7 @@ def list_campaigns(
         stmt = stmt.where(AtCampaign.campaign_type == campaign_type)
     if advertiser_id:
         stmt = stmt.where(AtCampaign.advertiser_id == advertiser_id)
-    stmt = stmt.order_by(AtCampaign.created_at.desc()).offset(offset).limit(limit)
+    stmt = stmt.order_by(AtCampaign.created_at.desc()).offset(offset).limit(limit)  # type: ignore[unresolved-attribute]
     return db.exec(stmt).all()
 
 
@@ -159,7 +159,7 @@ def list_placements(
     stmt = (
         select(AtPlacement)
         .where(AtPlacement.campaign_id == campaign_id)
-        .order_by(AtPlacement.start_date)
+        .order_by(AtPlacement.start_date)  # type: ignore[invalid-argument-type]
     )
     return db.exec(stmt).all()
 

@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, func, select
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ....dependencies import get_session
 from ..models import (
@@ -34,7 +34,7 @@ def get_anomaly_counts(
     active_statuses = [AnomalyStatus.new, AnomalyStatus.acknowledged, AnomalyStatus.investigating]
     stmt = (
         select(AtAnomaly.severity, func.count(AtAnomaly.id))
-        .where(AtAnomaly.status.in_(active_statuses))
+        .where(AtAnomaly.status.in_(active_statuses))  # type: ignore[unresolved-attribute]
         .group_by(AtAnomaly.severity)
     )
     rows = db.exec(stmt).all()
@@ -72,7 +72,7 @@ def list_anomalies(
         stmt = stmt.where(AtAnomaly.anomaly_type == anomaly_type)
     if campaign_id:
         stmt = stmt.where(AtAnomaly.campaign_id == campaign_id)
-    stmt = stmt.order_by(AtAnomaly.detected_at.desc()).offset(offset).limit(limit)
+    stmt = stmt.order_by(AtAnomaly.detected_at.desc()).offset(offset).limit(limit)  # type: ignore[unresolved-attribute]
     return db.exec(stmt).all()
 
 
@@ -107,7 +107,7 @@ def update_anomaly(
     for key, value in body.model_dump(exclude_unset=True).items():
         setattr(anomaly, key, value)
     if body.status in (AnomalyStatus.resolved, AnomalyStatus.dismissed):
-        anomaly.resolved_at = datetime.utcnow()
+        anomaly.resolved_at = datetime.now(timezone.utc)
     db.add(anomaly)
     db.commit()
     db.refresh(anomaly)

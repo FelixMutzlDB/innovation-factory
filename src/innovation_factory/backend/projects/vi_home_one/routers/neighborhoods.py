@@ -1,7 +1,7 @@
 """API router for neighborhood endpoints."""
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from ....dependencies import SessionDep
 from ..models import (
@@ -36,7 +36,7 @@ def get_neighborhood_summary(neighborhood_id: int, db: SessionDep):
     households_query = select(VhHousehold).where(VhHousehold.neighborhood_id == neighborhood_id)
     households = db.exec(households_query).all()
 
-    one_day_ago = datetime.utcnow() - timedelta(hours=24)
+    one_day_ago = datetime.now(timezone.utc) - timedelta(hours=24)
 
     total_consumption = 0.0
     total_generation = 0.0

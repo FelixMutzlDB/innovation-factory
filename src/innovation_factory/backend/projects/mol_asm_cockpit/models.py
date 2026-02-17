@@ -3,7 +3,7 @@
 All table names use the ``mac_`` prefix (mol-asm-cockpit).
 """
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -59,21 +59,21 @@ class ProductCategory(str, Enum):
     convenience = "convenience"
 
 
-class AlertSeverity(str, Enum):
+class MacAlertSeverity(str, Enum):
     low = "low"
     medium = "medium"
     high = "high"
     critical = "critical"
 
 
-class AlertStatus(str, Enum):
+class MacAlertStatus(str, Enum):
     active = "active"
     acknowledged = "acknowledged"
     resolved = "resolved"
     dismissed = "dismissed"
 
 
-class IssueStatus(str, Enum):
+class MacIssueStatus(str, Enum):
     open = "open"
     in_progress = "in_progress"
     resolved = "resolved"
@@ -114,7 +114,7 @@ class MacRegion(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(unique=True, index=True)
     country: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class MacStation(SQLModel, table=True):
@@ -133,7 +133,7 @@ class MacStation(SQLModel, table=True):
     num_pumps: int = Field(default=6)
     shop_area_sqm: float = Field(default=80.0)
     opened_date: Optional[date] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class MacFuelSale(SQLModel, table=True):
@@ -227,12 +227,12 @@ class MacAnomalyAlert(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     station_id: int = Field(foreign_key="mac_stations.id", index=True)
     metric_type: str
-    severity: AlertSeverity
+    severity: MacAlertSeverity
     title: str
     description: str = Field(sa_column=Column(Text))
     suggested_action: str = Field(sa_column=Column(Text))
-    status: AlertStatus = Field(default=AlertStatus.active)
-    detected_at: datetime = Field(default_factory=datetime.utcnow)
+    status: MacAlertStatus = Field(default=MacAlertStatus.active)
+    detected_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     resolved_at: Optional[datetime] = None
 
 
@@ -245,9 +245,9 @@ class MacIssue(SQLModel, table=True):
     title: str
     description: str = Field(sa_column=Column(Text))
     resolution: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))
-    status: IssueStatus = Field(default=IssueStatus.open)
+    status: MacIssueStatus = Field(default=MacIssueStatus.open)
     priority: int = Field(default=3)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     resolved_at: Optional[datetime] = None
 
 
@@ -262,8 +262,8 @@ class MacCustomerProfile(SQLModel, table=True):
     fleet_size: int = Field(default=0)
     loyalty_tier: LoyaltyTier = Field(default=LoyaltyTier.bronze)
     contract_type: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class MacCustomerContract(SQLModel, table=True):
@@ -277,7 +277,7 @@ class MacCustomerContract(SQLModel, table=True):
     start_date: date
     end_date: Optional[date] = None
     notes: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class MacChatSession(SQLModel, table=True):
@@ -285,7 +285,7 @@ class MacChatSession(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     session_type: str = Field(default="issue_resolution")
-    started_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: Optional[datetime] = None
 
 
@@ -297,7 +297,7 @@ class MacChatMessage(SQLModel, table=True):
     role: MacChatRole
     content: str = Field(sa_column=Column(Text))
     sources: Optional[list[dict]] = Field(default=None, sa_column=Column(JSON))
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 # ============================================================================
@@ -416,17 +416,17 @@ class MacAnomalyAlertOut(BaseModel):
     id: int
     station_id: int
     metric_type: str
-    severity: AlertSeverity
+    severity: MacAlertSeverity
     title: str
     description: str
     suggested_action: str
-    status: AlertStatus
+    status: MacAlertStatus
     detected_at: datetime
     resolved_at: Optional[datetime] = None
 
 
 class MacAnomalyAlertUpdate(BaseModel):
-    status: Optional[AlertStatus] = None
+    status: Optional[MacAlertStatus] = None
     resolved_at: Optional[datetime] = None
 
 
@@ -437,7 +437,7 @@ class MacIssueOut(BaseModel):
     title: str
     description: str
     resolution: Optional[str] = None
-    status: IssueStatus
+    status: MacIssueStatus
     priority: int
     created_at: datetime
     resolved_at: Optional[datetime] = None

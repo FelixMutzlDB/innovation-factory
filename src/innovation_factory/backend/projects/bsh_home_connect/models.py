@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -71,8 +71,8 @@ class BshCustomer(SQLModel, table=True):
     city: Optional[str] = None
     postal_code: Optional[str] = None
     country: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     devices: list["BshCustomerDevice"] = Relationship(back_populates="customer")
     tickets: list["BshTicket"] = Relationship(back_populates="customer")
@@ -89,8 +89,8 @@ class BshTechnician(SQLModel, table=True):
     phone: Optional[str] = None
     specialization: Optional[str] = None
     certification_level: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     tickets: list["BshTicket"] = Relationship(back_populates="technician")
 
@@ -106,7 +106,7 @@ class BshDevice(SQLModel, table=True):
     description: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))
     specifications: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     image_url: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     customer_devices: list["BshCustomerDevice"] = Relationship(back_populates="device")
     knowledge_articles: list["BshKnowledgeArticle"] = Relationship(
@@ -125,7 +125,7 @@ class BshCustomerDevice(SQLModel, table=True):
     purchase_date: Optional[date] = None
     warranty_expiry_date: Optional[date] = None
     batch_number: Optional[str] = None
-    registered_at: datetime = Field(default_factory=datetime.utcnow)
+    registered_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     customer: Optional[BshCustomer] = Relationship(back_populates="devices")
     device: Optional[BshDevice] = Relationship(back_populates="customer_devices")
@@ -153,8 +153,8 @@ class BshTicket(SQLModel, table=True):
     )
     shipping_label_url: Optional[str] = None
     tracking_number: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     assigned_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
 
@@ -179,7 +179,7 @@ class BshTicketMedia(SQLModel, table=True):
     file_size: Optional[int] = None
     mime_type: Optional[str] = None
     uploaded_by_role: UserRole
-    uploaded_at: datetime = Field(default_factory=datetime.utcnow)
+    uploaded_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     ticket: Optional[BshTicket] = Relationship(back_populates="media")
 
@@ -193,7 +193,7 @@ class BshTicketNote(SQLModel, table=True):
     author_role: UserRole
     author_id: Optional[int] = None
     is_internal: bool = Field(default=False)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     ticket: Optional[BshTicket] = Relationship(back_populates="notes")
 
@@ -213,8 +213,8 @@ class BshKnowledgeArticle(SQLModel, table=True):
     view_count: int = Field(default=0)
     helpful_count: int = Field(default=0)
     embedding: Optional[list[float]] = Field(default=None, sa_column=Column(JSON))
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     device: Optional[BshDevice] = Relationship(back_populates="knowledge_articles")
 
@@ -231,8 +231,8 @@ class BshDocument(SQLModel, table=True):
     language: str = Field(default="en")
     version: Optional[str] = None
     embedding: Optional[list[float]] = Field(default=None, sa_column=Column(JSON))
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     device: Optional[BshDevice] = Relationship(back_populates="documents")
 
@@ -243,7 +243,7 @@ class BshChatSession(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     ticket_id: int = Field(foreign_key="bsh_tickets.id", index=True)
     session_type: str = Field(default="troubleshooting")
-    started_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: Optional[datetime] = None
 
     ticket: Optional[BshTicket] = Relationship(back_populates="chat_sessions")
@@ -259,7 +259,7 @@ class BshChatMessage(SQLModel, table=True):
     content: str = Field(sa_column=Column(Text))
     sources: Optional[list[dict]] = Field(default=None, sa_column=Column(JSON))
     tokens_used: Optional[int] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     session: Optional[BshChatSession] = Relationship(back_populates="messages")
 

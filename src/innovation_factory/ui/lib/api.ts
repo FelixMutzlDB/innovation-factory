@@ -10,13 +10,6 @@ export const AlertSeverity = {
 
 export type AlertSeverity = (typeof AlertSeverity)[keyof typeof AlertSeverity];
 
-export const AlertStatus = {
-  active: "active",
-  acknowledged: "acknowledged",
-} as const;
-
-export type AlertStatus = (typeof AlertStatus)[keyof typeof AlertStatus];
-
 export const AnomalySeverity = {
   low: "low",
   medium: "medium",
@@ -466,12 +459,6 @@ export const ConsumptionCategory = {
 
 export type ConsumptionCategory = (typeof ConsumptionCategory)[keyof typeof ConsumptionCategory];
 
-export interface DashboardEmbedOut {
-  configured?: boolean;
-  dashboard_id?: string | null;
-  embed_url?: string | null;
-} as const;
-
 export const ContractStatus = {
   active: "active",
   expired: "expired",
@@ -480,6 +467,12 @@ export const ContractStatus = {
 } as const;
 
 export type ContractStatus = (typeof ContractStatus)[keyof typeof ContractStatus];
+
+export interface DashboardEmbedOut {
+  configured?: boolean;
+  dashboard_id?: string | null;
+  embed_url?: string | null;
+}
 
 export interface DatabricksResourcesOut {
   dashboard_embed_url: string;
@@ -515,6 +508,16 @@ export const DeviceType = {
 } as const;
 
 export type DeviceType = (typeof DeviceType)[keyof typeof DeviceType];
+
+export interface DocContentOut {
+  content: string;
+  slug: string;
+  title: string;
+}
+
+export interface DocListOut {
+  slugs: string[];
+}
 
 export const FuelType = {
   diesel: "diesel",
@@ -559,18 +562,6 @@ export const IdeaSessionStatus = {
 } as const;
 
 export type IdeaSessionStatus = (typeof IdeaSessionStatus)[keyof typeof IdeaSessionStatus];
-
-export const MacIssueCategory = {
-  equipment: "equipment",
-  supply_chain: "supply_chain",
-  quality: "quality",
-  customer_complaint: "customer_complaint",
-  staffing: "staffing",
-  safety: "safety",
-  it_system: "it_system",
-} as const;
-
-export type MacIssueCategory = (typeof MacIssueCategory)[keyof typeof MacIssueCategory];
 
 export const InventoryStatus = {
   available: "available",
@@ -626,6 +617,19 @@ export const IssueStatus = {
 
 export type IssueStatus = (typeof IssueStatus)[keyof typeof IssueStatus];
 
+export const LocationType = {
+  online: "online",
+  train_station: "train_station",
+  mall: "mall",
+  pedestrian_zone: "pedestrian_zone",
+  highway: "highway",
+  bus_stop: "bus_stop",
+  airport: "airport",
+  subway: "subway",
+} as const;
+
+export type LocationType = (typeof LocationType)[keyof typeof LocationType];
+
 export const LoyaltyTier = {
   bronze: "bronze",
   silver: "silver",
@@ -635,22 +639,40 @@ export const LoyaltyTier = {
 
 export type LoyaltyTier = (typeof LoyaltyTier)[keyof typeof LoyaltyTier];
 
+export const MacAlertSeverity = {
+  low: "low",
+  medium: "medium",
+  high: "high",
+  critical: "critical",
+} as const;
+
+export type MacAlertSeverity = (typeof MacAlertSeverity)[keyof typeof MacAlertSeverity];
+
+export const MacAlertStatus = {
+  active: "active",
+  acknowledged: "acknowledged",
+  resolved: "resolved",
+  dismissed: "dismissed",
+} as const;
+
+export type MacAlertStatus = (typeof MacAlertStatus)[keyof typeof MacAlertStatus];
+
 export interface MacAnomalyAlertOut {
   description: string;
   detected_at: string;
   id: number;
   metric_type: string;
   resolved_at?: string | null;
-  severity: AlertSeverity;
+  severity: MacAlertSeverity;
   station_id: number;
-  status: AlertStatus;
+  status: MacAlertStatus;
   suggested_action: string;
   title: string;
 }
 
 export interface MacAnomalyAlertUpdate {
   resolved_at?: string | null;
-  status?: AlertStatus | null;
+  status?: MacAlertStatus | null;
 }
 
 export interface MacChatHistoryOut {
@@ -737,6 +759,18 @@ export interface MacInventoryOut {
   stock_out_events: number;
 }
 
+export const MacIssueCategory = {
+  equipment: "equipment",
+  supply_chain: "supply_chain",
+  quality: "quality",
+  customer_complaint: "customer_complaint",
+  staffing: "staffing",
+  safety: "safety",
+  it_system: "it_system",
+} as const;
+
+export type MacIssueCategory = (typeof MacIssueCategory)[keyof typeof MacIssueCategory];
+
 export interface MacIssueOut {
   category: MacIssueCategory;
   created_at: string;
@@ -746,9 +780,18 @@ export interface MacIssueOut {
   resolution?: string | null;
   resolved_at?: string | null;
   station_id: number;
-  status: IssueStatus;
+  status: MacIssueStatus;
   title: string;
 }
+
+export const MacIssueStatus = {
+  open: "open",
+  in_progress: "in_progress",
+  resolved: "resolved",
+  closed: "closed",
+} as const;
+
+export type MacIssueStatus = (typeof MacIssueStatus)[keyof typeof MacIssueStatus];
 
 export interface MacLoyaltyMetricOut {
   active_members: number;
@@ -837,18 +880,6 @@ export const NonfuelCategory = {
 } as const;
 
 export type NonfuelCategory = (typeof NonfuelCategory)[keyof typeof NonfuelCategory];
-export const LocationType = {
-  online: "online",
-  train_station: "train_station",
-  mall: "mall",
-  pedestrian_zone: "pedestrian_zone",
-  highway: "highway",
-  bus_stop: "bus_stop",
-  airport: "airport",
-  subway: "subway",
-} as const;
-
-export type LocationType = (typeof LocationType)[keyof typeof LocationType];
 
 export const OptimizationMode = {
   energy_saver: "energy_saver",
@@ -856,6 +887,16 @@ export const OptimizationMode = {
 } as const;
 
 export type OptimizationMode = (typeof OptimizationMode)[keyof typeof OptimizationMode];
+
+export const PlacementStatus = {
+  scheduled: "scheduled",
+  active: "active",
+  paused: "paused",
+  completed: "completed",
+  cancelled: "cancelled",
+} as const;
+
+export type PlacementStatus = (typeof PlacementStatus)[keyof typeof PlacementStatus];
 
 export const ProductCategory = {
   fuel: "fuel",
@@ -871,16 +912,6 @@ export const ProductCategory = {
 
 export type ProductCategory = (typeof ProductCategory)[keyof typeof ProductCategory];
 
-export const PlacementStatus = {
-  scheduled: "scheduled",
-  active: "active",
-  paused: "paused",
-  completed: "completed",
-  cancelled: "cancelled",
-} as const;
-
-export type PlacementStatus = (typeof PlacementStatus)[keyof typeof PlacementStatus];
-
 export interface ProjectOut {
   color?: string | null;
   company: string;
@@ -890,6 +921,14 @@ export interface ProjectOut {
   name: string;
   slug: string;
 }
+
+export const RuleConditionType = {
+  threshold: "threshold",
+  trend: "trend",
+  deviation: "deviation",
+} as const;
+
+export type RuleConditionType = (typeof RuleConditionType)[keyof typeof RuleConditionType];
 
 export const ShiftType = {
   morning: "morning",
@@ -906,13 +945,6 @@ export const StationType = {
 } as const;
 
 export type StationType = (typeof StationType)[keyof typeof StationType];
-export const RuleConditionType = {
-  threshold: "threshold",
-  trend: "trend",
-  deviation: "deviation",
-} as const;
-
-export type RuleConditionType = (typeof RuleConditionType)[keyof typeof RuleConditionType];
 
 export const UserRole = {
   customer: "customer",
@@ -1146,6 +1178,10 @@ export interface VhTicketUpdate {
 
 export interface CurrentUserParams {
   "X-Forwarded-Access-Token"?: string | null;
+}
+
+export interface GetProjectDocParams {
+  slug: string;
 }
 
 export interface GetIdeaSessionParams {
@@ -1540,6 +1576,52 @@ export function useCurrentUser<TData = { data: unknown }>(options?: { params?: C
 
 export function useCurrentUserSuspense<TData = { data: unknown }>(options?: { params?: CurrentUserParams; query?: Omit<UseSuspenseQueryOptions<{ data: unknown }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: currentUserKey(options?.params), queryFn: () => currentUser(options?.params), ...options?.query });
+}
+
+export const listProjectDocs = async (options?: RequestInit): Promise<{ data: DocListOut }> => {
+  const res = await fetch("/api/docs/projects", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const listProjectDocsKey = () => {
+  return ["/api/docs/projects"] as const;
+};
+
+export function useListProjectDocs<TData = { data: DocListOut }>(options?: { query?: Omit<UseQueryOptions<{ data: DocListOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: listProjectDocsKey(), queryFn: () => listProjectDocs(), ...options?.query });
+}
+
+export function useListProjectDocsSuspense<TData = { data: DocListOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: DocListOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: listProjectDocsKey(), queryFn: () => listProjectDocs(), ...options?.query });
+}
+
+export const getProjectDoc = async (params: GetProjectDocParams, options?: RequestInit): Promise<{ data: DocContentOut }> => {
+  const res = await fetch(`/api/docs/projects/${params.slug}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const getProjectDocKey = (params?: GetProjectDocParams) => {
+  return ["/api/docs/projects/{slug}", params] as const;
+};
+
+export function useGetProjectDoc<TData = { data: DocContentOut }>(options: { params: GetProjectDocParams; query?: Omit<UseQueryOptions<{ data: DocContentOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: getProjectDocKey(options.params), queryFn: () => getProjectDoc(options.params), ...options?.query });
+}
+
+export function useGetProjectDocSuspense<TData = { data: DocContentOut }>(options: { params: GetProjectDocParams; query?: Omit<UseSuspenseQueryOptions<{ data: DocContentOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: getProjectDocKey(options.params), queryFn: () => getProjectDoc(options.params), ...options?.query });
 }
 
 export const createIdeaSession = async (options?: RequestInit): Promise<{ data: IdeaSessionOut }> => {

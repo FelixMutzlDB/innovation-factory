@@ -32,7 +32,12 @@ def search_knowledge(
     )
     statement = statement.limit(limit)
     articles = db.exec(statement).all()
-    return [BshKnowledgeArticleOut.model_validate(article) for article in articles]
+    return [
+        BshKnowledgeArticleOut.model_validate(
+            article.model_dump(exclude={"embedding"})
+        )
+        for article in articles
+    ]
 
 
 @router.get("/knowledge/device/{device_id}", response_model=List[BshKnowledgeArticleOut], operation_id="bsh_getDeviceKnowledge")

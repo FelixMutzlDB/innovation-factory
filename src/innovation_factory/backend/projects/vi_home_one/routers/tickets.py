@@ -1,7 +1,7 @@
 """API router for support tickets."""
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from sqlmodel import select
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ....dependencies import SessionDep
 from ..models import (
@@ -74,10 +74,10 @@ def update_ticket(ticket_id: int, ticket_update: VhTicketUpdate, db: SessionDep)
     if ticket_update.status:
         ticket.status = ticket_update.status
         if ticket_update.status == VhTicketStatus.resolved:
-            ticket.resolved_at = datetime.utcnow()
+            ticket.resolved_at = datetime.now(timezone.utc)
     if ticket_update.resolution_notes:
         ticket.resolution_notes = ticket_update.resolution_notes
-    ticket.updated_at = datetime.utcnow()
+    ticket.updated_at = datetime.now(timezone.utc)
 
     db.add(ticket)
     db.commit()

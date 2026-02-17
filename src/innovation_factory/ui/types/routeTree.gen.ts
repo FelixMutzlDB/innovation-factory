@@ -13,6 +13,7 @@ import { Route as SidebarRouteRouteImport } from './../routes/_sidebar/route'
 import { Route as IndexRouteImport } from './../routes/index'
 import { Route as BuildIdeaIndexRouteImport } from './../routes/build-idea/index'
 import { Route as SidebarProfileRouteImport } from './../routes/_sidebar/profile'
+import { Route as SidebarDocumentationRouteImport } from './../routes/_sidebar/documentation'
 import { Route as ProjectsViHomeOneRouteRouteImport } from './../routes/projects/vi-home-one/route'
 import { Route as ProjectsMolAsmCockpitRouteRouteImport } from './../routes/projects/mol-asm-cockpit/route'
 import { Route as ProjectsBshHomeConnectRouteRouteImport } from './../routes/projects/bsh-home-connect/route'
@@ -65,6 +66,11 @@ const BuildIdeaIndexRoute = BuildIdeaIndexRouteImport.update({
 const SidebarProfileRoute = SidebarProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => SidebarRouteRoute,
+} as any)
+const SidebarDocumentationRoute = SidebarDocumentationRouteImport.update({
+  id: '/documentation',
+  path: '/documentation',
   getParentRoute: () => SidebarRouteRoute,
 } as any)
 const ProjectsViHomeOneRouteRoute = ProjectsViHomeOneRouteRouteImport.update({
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectRouteRouteWithChildren
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
+  '/documentation': typeof SidebarDocumentationRoute
   '/profile': typeof SidebarProfileRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
@@ -311,6 +318,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/documentation': typeof SidebarDocumentationRoute
   '/profile': typeof SidebarProfileRoute
   '/build-idea': typeof BuildIdeaIndexRoute
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
@@ -352,6 +360,7 @@ export interface FileRoutesById {
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectRouteRouteWithChildren
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
+  '/_sidebar/documentation': typeof SidebarDocumentationRoute
   '/_sidebar/profile': typeof SidebarProfileRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
@@ -393,6 +402,7 @@ export interface FileRouteTypes {
     | '/projects/bsh-home-connect'
     | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
+    | '/documentation'
     | '/profile'
     | '/build-idea/'
     | '/projects/adtech-intelligence/dashboard'
@@ -428,6 +438,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/documentation'
     | '/profile'
     | '/build-idea'
     | '/projects/adtech-intelligence/dashboard'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/projects/bsh-home-connect'
     | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
+    | '/_sidebar/documentation'
     | '/_sidebar/profile'
     | '/build-idea/'
     | '/projects/adtech-intelligence/dashboard'
@@ -540,6 +552,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof SidebarProfileRouteImport
+      parentRoute: typeof SidebarRouteRoute
+    }
+    '/_sidebar/documentation': {
+      id: '/_sidebar/documentation'
+      path: '/documentation'
+      fullPath: '/documentation'
+      preLoaderRoute: typeof SidebarDocumentationRouteImport
       parentRoute: typeof SidebarRouteRoute
     }
     '/projects/vi-home-one': {
@@ -784,10 +803,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface SidebarRouteRouteChildren {
+  SidebarDocumentationRoute: typeof SidebarDocumentationRoute
   SidebarProfileRoute: typeof SidebarProfileRoute
 }
 
 const SidebarRouteRouteChildren: SidebarRouteRouteChildren = {
+  SidebarDocumentationRoute: SidebarDocumentationRoute,
   SidebarProfileRoute: SidebarProfileRoute,
 }
 

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from enum import Enum
 
 
@@ -62,7 +62,7 @@ class VhNeighborhood(SQLModel, table=True):
     name: str
     location: str
     total_households: int
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # Relationships
     households: List["VhHousehold"] = Relationship(back_populates="neighborhood")
@@ -81,8 +81,8 @@ class VhHousehold(SQLModel, table=True):
     has_battery: bool = Field(default=False)
     has_ev: bool = Field(default=False)
     has_heat_pump: bool = Field(default=False)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # Relationships
     neighborhood: VhNeighborhood = Relationship(back_populates="households")
@@ -106,7 +106,7 @@ class VhEnergyDevice(SQLModel, table=True):
     next_maintenance_date: Optional[date] = None
     serial_number: Optional[str] = None
     specifications: Optional[str] = None  # JSON string
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # Relationships
     household: VhHousehold = Relationship(back_populates="devices")
@@ -169,7 +169,7 @@ class VhEnergyProvider(SQLModel, table=True):
     feed_in_rate_eur: float
     night_start_hour: int = Field(default=22)
     night_end_hour: int = Field(default=6)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class VhMaintenanceAlert(SQLModel, table=True):
@@ -183,7 +183,7 @@ class VhMaintenanceAlert(SQLModel, table=True):
     message: str
     predicted_date: Optional[date] = None
     is_acknowledged: bool = Field(default=False)
-    created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
     acknowledged_at: Optional[datetime] = None
 
     # Relationships
@@ -206,8 +206,8 @@ class VhTicket(SQLModel, table=True):
     issue_summary: Optional[str] = None
     resolution_notes: Optional[str] = None
 
-    created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     resolved_at: Optional[datetime] = None
 
     # Relationships
@@ -228,7 +228,7 @@ class VhTicketMedia(SQLModel, table=True):
     file_name: str
     file_size: Optional[int] = None
     mime_type: Optional[str] = None
-    uploaded_at: datetime = Field(default_factory=datetime.utcnow)
+    uploaded_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # Relationships
     ticket: VhTicket = Relationship(back_populates="media")
@@ -242,7 +242,7 @@ class VhChatSession(SQLModel, table=True):
     ticket_id: int = Field(foreign_key="vh_tickets.id", index=True)
 
     session_type: str = Field(default="support")
-    started_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: Optional[datetime] = None
 
     # Relationships
@@ -261,7 +261,7 @@ class VhChatMessage(SQLModel, table=True):
     content: str
     sources: Optional[str] = None
     tokens_used: Optional[int] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
 
     # Relationships
     session: VhChatSession = Relationship(back_populates="messages")
@@ -283,8 +283,8 @@ class VhKnowledgeArticle(SQLModel, table=True):
 
     embedding: Optional[str] = None
 
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 # ============================================================================

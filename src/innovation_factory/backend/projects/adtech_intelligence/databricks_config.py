@@ -1,6 +1,7 @@
 """Databricks resource IDs for AdTech Intelligence project.
 
-All values are read from environment variables (prefixed with ``ADTECH_``).
+Shared values (``WAREHOUSE_ID``, ``UC_CATALOG``) come from global env vars.
+Project-specific values are prefixed with ``ADTECH_``.
 Defaults are provided for convenience but should be overridden via ``.env``
 for each deployment target. See ``.env.example`` for the full list.
 """
@@ -10,8 +11,8 @@ import os
 # Workspace
 WORKSPACE_URL = os.getenv("ADTECH_WORKSPACE_URL", "")
 
-# Unity Catalog
-UC_CATALOG = os.getenv("ADTECH_UC_CATALOG", "main")
+# Shared: Unity Catalog
+UC_CATALOG = os.getenv("UC_CATALOG", "innovation_factory_catalog")
 UC_SCHEMA = os.getenv("ADTECH_UC_SCHEMA", "adtech_intelligence")
 
 # AI/BI Dashboard
@@ -30,5 +31,5 @@ CUSTOMER_RELATIONS_KA_ENDPOINT = os.getenv("ADTECH_CUSTOMER_RELATIONS_KA_ENDPOIN
 MAS_TILE_ID = os.getenv("ADTECH_MAS_TILE_ID", "")
 MAS_ENDPOINT_NAME = os.getenv("ADTECH_MAS_ENDPOINT_NAME", "")
 
-# SQL Warehouse
-WAREHOUSE_ID = os.getenv("ADTECH_WAREHOUSE_ID", "")
+# Shared: SQL Warehouse
+WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "")

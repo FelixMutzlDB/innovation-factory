@@ -3,7 +3,7 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlmodel import Session, select
 from databricks.sdk import WorkspaceClient
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ....dependencies import get_obo_ws, get_session
 from ..models import (
@@ -148,12 +148,12 @@ def update_ticket(
 
     for key, value in ticket_update.model_dump(exclude_unset=True).items():
         setattr(ticket, key, value)
-    ticket.updated_at = datetime.utcnow()
+    ticket.updated_at = datetime.now(timezone.utc)
 
     if ticket_update.technician_id and not ticket.assigned_at:
-        ticket.assigned_at = datetime.utcnow()
+        ticket.assigned_at = datetime.now(timezone.utc)
     if ticket_update.status == BshTicketStatus.resolved and not ticket.completed_at:
-        ticket.completed_at = datetime.utcnow()
+        ticket.completed_at = datetime.now(timezone.utc)
 
     db.add(ticket)
     db.commit()
@@ -265,7 +265,7 @@ def generate_shipping_label(
     ticket.shipping_label_url = label_url
     ticket.tracking_number = tracking_number
     ticket.status = BshTicketStatus.shipped_for_repair
-    ticket.updated_at = datetime.utcnow()
+    ticket.updated_at = datetime.now(timezone.utc)
 
     db.add(ticket)
     db.commit()

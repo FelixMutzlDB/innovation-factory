@@ -4,7 +4,7 @@ from urllib.parse import quote
 
 from databricks.sdk import WorkspaceClient
 from sqlalchemy import Engine, Enum as SAEnum, create_engine, event
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import NullPool, StaticPool
 from sqlmodel import SQLModel, Session, text
 
 from .config import AppConfig
@@ -107,6 +107,22 @@ class Runtime:
 
     @cached_property
     def engine(self) -> Engine:
+        # SQLite: for testing (DATABASE_URL=sqlite://)
+        if self.engine_url.startswith("sqlite"):
+            engine = create_engine(
+                self.engine_url,
+                connect_args={"check_same_thread": False},
+                poolclass=StaticPool,
+            )
+
+            @event.listens_for(engine, "connect")
+            def set_sqlite_pragma(dbapi_conn, connection_record):
+                cursor = dbapi_conn.cursor()
+                cursor.execute("PRAGMA foreign_keys=ON")
+                cursor.close()
+
+            return engine
+
         # In PGlite dev mode: no SSL, no password callback, single connection (PGlite limit)
         # Otherwise (Lakebase Autoscaling): require SSL and use Databricks OAuth token callback
         if self._is_local_dev:

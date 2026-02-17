@@ -1,5 +1,5 @@
 """Anomaly alert endpoints for the ASM Cockpit."""
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
@@ -10,8 +10,8 @@ from ..models import (
     MacAnomalyAlert,
     MacAnomalyAlertOut,
     MacAnomalyAlertUpdate,
-    AlertStatus,
-    AlertSeverity,
+    MacAlertStatus,
+    MacAlertSeverity,
 )
 
 router = APIRouter(prefix="/anomalies", tags=["mac-anomalies"])
@@ -54,8 +54,8 @@ def update_anomaly_alert(alert_id: int, update: MacAnomalyAlertUpdate, session: 
         raise HTTPException(status_code=404, detail="Alert not found")
     if update.status is not None:
         alert.status = update.status
-        if update.status in (AlertStatus.resolved, AlertStatus.dismissed):
-            alert.resolved_at = datetime.utcnow()
+        if update.status in (MacAlertStatus.resolved, MacAlertStatus.dismissed):
+            alert.resolved_at = datetime.now(timezone.utc)
     session.add(alert)
     session.commit()
     session.refresh(alert)

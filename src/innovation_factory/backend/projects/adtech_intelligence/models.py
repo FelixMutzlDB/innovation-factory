@@ -5,7 +5,7 @@ placements, performance metrics, anomaly detection, issues/tickets,
 customer contracts (CRM), and chat sessions for the issue-resolution agent.
 """
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -157,8 +157,8 @@ class AtAdvertiser(SQLModel, table=True):
     phone: Optional[str] = None
     website: Optional[str] = None
     budget_tier: str = Field(default="standard")  # standard / premium / enterprise
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     campaigns: list["AtCampaign"] = Relationship(back_populates="advertiser")
     contracts: list["AtCustomerContract"] = Relationship(back_populates="advertiser")
@@ -183,8 +183,8 @@ class AtCampaign(SQLModel, table=True):
     target_audience: Optional[str] = None
     target_regions: Optional[list] = Field(default=None, sa_column=Column(JSON))
     kpi_targets: Optional[dict] = Field(default=None, sa_column=Column(JSON))
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     advertiser: Optional[AtAdvertiser] = Relationship(back_populates="campaigns")
     placements: list["AtPlacement"] = Relationship(back_populates="campaign")
@@ -210,7 +210,7 @@ class AtAdInventory(SQLModel, table=True):
     cpm_rate: float = Field(default=0.0)
     status: InventoryStatus = Field(default=InventoryStatus.available)
     media_owner: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     placements: list["AtPlacement"] = Relationship(back_populates="inventory")
 
@@ -227,7 +227,7 @@ class AtPlacement(SQLModel, table=True):
     end_date: date
     daily_budget: float = Field(default=0.0)
     status: PlacementStatus = Field(default=PlacementStatus.scheduled)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     campaign: Optional[AtCampaign] = Relationship(back_populates="placements")
     inventory: Optional[AtAdInventory] = Relationship(back_populates="placements")
@@ -249,7 +249,7 @@ class AtPerformanceMetric(SQLModel, table=True):
     conversions: int = Field(default=0)
     spend: float = Field(default=0.0)
     viewability_rate: float = Field(default=0.0)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     placement: Optional[AtPlacement] = Relationship(back_populates="metrics")
 
@@ -270,7 +270,7 @@ class AtAnomalyRule(SQLModel, table=True):
     threshold_value: float
     lookback_days: int = Field(default=7)
     enabled: bool = Field(default=True)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class AtAnomaly(SQLModel, table=True):
@@ -292,7 +292,7 @@ class AtAnomaly(SQLModel, table=True):
     severity: AnomalySeverity
     title: str
     description: str = Field(sa_column=Column(Text))
-    detected_at: datetime = Field(default_factory=datetime.utcnow)
+    detected_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     status: AnomalyStatus = Field(default=AnomalyStatus.new)
     metric_name: str
     expected_value: float
@@ -330,8 +330,8 @@ class AtIssue(SQLModel, table=True):
         default=None, sa_column=Column(Text, nullable=True)
     )
     assigned_to: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     resolved_at: Optional[datetime] = None
 
     campaign: Optional[AtCampaign] = Relationship(back_populates="issues")
@@ -358,7 +358,7 @@ class AtCustomerContract(SQLModel, table=True):
         default=None, sa_column=Column(Text, nullable=True)
     )
     account_manager: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     advertiser: Optional[AtAdvertiser] = Relationship(back_populates="contracts")
 
@@ -374,7 +374,7 @@ class AtChatSession(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: Optional[str] = None
     session_type: str = Field(default="issue_resolution")
-    started_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ended_at: Optional[datetime] = None
 
     messages: list["AtChatMessage"] = Relationship(back_populates="session")
@@ -391,7 +391,7 @@ class AtChatMessage(SQLModel, table=True):
     content: str = Field(sa_column=Column(Text))
     sources: Optional[list[dict]] = Field(default=None, sa_column=Column(JSON))
     tokens_used: Optional[int] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     session: Optional[AtChatSession] = Relationship(back_populates="messages")
 

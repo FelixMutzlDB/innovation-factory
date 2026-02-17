@@ -1,7 +1,7 @@
 """API router for energy readings endpoints."""
 from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import select
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from ....dependencies import SessionDep
 from ..models import VhEnergyReading, VhEnergyReadingOut
@@ -16,7 +16,7 @@ def get_energy_readings(
     hours: int = Query(default=24, description="Number of hours of data to retrieve"),
 ):
     """Get energy readings for a household."""
-    start_time = datetime.utcnow() - timedelta(hours=hours)
+    start_time = datetime.now(timezone.utc) - timedelta(hours=hours)
 
     statement = select(VhEnergyReading).where(
         VhEnergyReading.household_id == household_id,

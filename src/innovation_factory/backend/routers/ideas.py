@@ -1,9 +1,14 @@
+"""Idea generation router — connects to the innovation-factory-generator Agent Bricks endpoint."""
+
+import os
 from typing import List
+
+from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
 from sqlmodel import select
 
 from ..dependencies import SessionDep, RuntimeDep
+from ..logger import logger
 from ..models import (
     IdeaSession,
     IdeaSessionOut,
@@ -16,6 +21,8 @@ from ..models import (
 
 router = APIRouter(prefix="/ideas", tags=["ideas"])
 
+IDEA_GENERATOR_ENDPOINT = os.getenv("IDEA_GENERATOR_ENDPOINT", "t2t-f9df30eb-endpoint")
+
 
 @router.post("/sessions", response_model=IdeaSessionOut, operation_id="createIdeaSession")
 def create_idea_session(db: SessionDep):
@@ -25,7 +32,6 @@ def create_idea_session(db: SessionDep):
     db.commit()
     db.refresh(session)
 
-    # Add welcome message
     welcome = IdeaMessage(
         session_id=session.id,
         role="assistant",
@@ -66,6 +72,37 @@ def get_idea_messages(session_id: int, db: SessionDep):
     return list(messages)
 
 
+def _query_idea_generator(ws: WorkspaceClient, company_name: str, description: str) -> str:
+    """Call the innovation-factory-generator serving endpoint.
+
+    Uses the standard chat messages format (``messages`` / ``choices``).
+    """
+    endpoint = IDEA_GENERATOR_ENDPOINT
+    if not endpoint:
+        logger.warning("IDEA_GENERATOR_ENDPOINT not set — falling back to template")
+        return _fallback_prompt(company_name, description)
+
+    prompt = (
+        f"Generate a detailed project idea for a company called \"{company_name}\". "
+        f"Description: {description}"
+    )
+
+    try:
+        result = ws.api_client.do(
+            "POST",
+            f"/serving-endpoints/{endpoint}/invocations",
+            body={"messages": [{"role": "user", "content": prompt}], "max_tokens": 2000},
+        )
+        # Standard chat completion response
+        choices = result.get("choices", [])  # type: ignore[union-attr]
+        if choices:
+            return choices[0].get("message", {}).get("content", "")  # type: ignore[union-attr,index]
+        return _fallback_prompt(company_name, description)
+    except Exception as e:
+        logger.error(f"Idea generator endpoint failed: {e}")
+        return _fallback_prompt(company_name, description)
+
+
 @router.post("/sessions/{session_id}/chat", operation_id="sendIdeaMessage")
 async def send_idea_message(
     session_id: int,
@@ -73,7 +110,7 @@ async def send_idea_message(
     db: SessionDep,
     rt: RuntimeDep,
 ):
-    """Send a message in an idea session and get a response (SSE streaming for generation)."""
+    """Send a message in an idea session and get a response."""
     session = db.get(IdeaSession, session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -89,7 +126,6 @@ async def send_idea_message(
 
     # Process based on session state
     if session.status == IdeaSessionStatus.collecting_name:
-        # User just provided the company name
         session.company_name = message.content.strip()
         session.status = IdeaSessionStatus.collecting_description
         db.add(session)
@@ -106,14 +142,15 @@ async def send_idea_message(
         return {"message": reply.content, "status": session.status, "done": True}
 
     elif session.status == IdeaSessionStatus.collecting_description:
-        # User provided the description - generate the prompt
         session.description = message.content.strip()
         session.status = IdeaSessionStatus.generating
         db.add(session)
         db.commit()
 
-        # Generate the coding agent prompt
-        prompt = _generate_coding_prompt(session.company_name or "", session.description or "")
+        # Call the Agent Bricks endpoint to generate the idea
+        prompt = _query_idea_generator(
+            rt.ws, session.company_name or "", session.description or ""
+        )
 
         session.generated_prompt = prompt
         session.status = IdeaSessionStatus.completed
@@ -123,7 +160,7 @@ async def send_idea_message(
         reply = IdeaMessage(
             session_id=session.id,
             role="assistant",
-            content=f"Here's your coding agent prompt:\n\n---\n\n{prompt}\n\n---\n\nYou can copy this prompt and use it with a coding agent to build your application!",
+            content=f"Here's your generated project idea:\n\n---\n\n{prompt}\n\n---\n\nYou can copy this prompt and use it with a coding agent to build your application!",
         )
         db.add(reply)
         db.commit()
@@ -143,8 +180,8 @@ async def send_idea_message(
         }
 
 
-def _generate_coding_prompt(company_name: str, description: str) -> str:
-    """Generate a structured coding agent prompt."""
+def _fallback_prompt(company_name: str, description: str) -> str:
+    """Template-based fallback when the serving endpoint is unavailable."""
     return f"""Build a full-stack web application for "{company_name}".
 
 ## Description

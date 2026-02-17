@@ -40,7 +40,7 @@ def list_inventory(
         stmt = stmt.where(AtAdInventory.status == status)
     if city:
         stmt = stmt.where(AtAdInventory.city == city)
-    stmt = stmt.order_by(AtAdInventory.created_at.desc()).offset(offset).limit(limit)
+    stmt = stmt.order_by(AtAdInventory.created_at.desc()).offset(offset).limit(limit)  # type: ignore[unresolved-attribute]
     return db.exec(stmt).all()
 
 

@@ -14,6 +14,7 @@ from typing import AsyncIterator, Optional
 from databricks.sdk import WorkspaceClient
 from sqlmodel import Session, select
 
+from ....services.databricks_agents import extract_agent_text, query_agent_endpoint
 from ..databricks_config import (
     ISSUE_RESOLUTION_KA_ENDPOINT,
     MAS_ENDPOINT_NAME,
@@ -25,89 +26,6 @@ from ..models import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def _query_serving_endpoint(
-    ws: WorkspaceClient,
-    endpoint_name: str,
-    messages: list[dict],
-) -> str:
-    """Call an Agent Bricks serving endpoint using the ``input`` field format."""
-    try:
-        payload = [
-            {"role": m["role"], "content": m["content"]}
-            for m in messages
-        ]
-        logger.info(f"Querying serving endpoint '{endpoint_name}' with {len(payload)} messages")
-        result = ws.api_client.do(
-            "POST",
-            f"/serving-endpoints/{endpoint_name}/invocations",
-            body={"input": payload},
-        )
-        logger.info(f"Received response from '{endpoint_name}'")
-        return _extract_text(result)
-    except Exception as e:
-        logger.error(f"Serving endpoint '{endpoint_name}' error: {type(e).__name__}: {e}", exc_info=True)
-        raise
-
-
-def _extract_text(result: dict | list | str) -> str:
-    """Extract plain text from an Agent Bricks response.
-
-    Agent Bricks endpoints return varied structures:
-    - {"output": [{"type":"message","content":[{"type":"output_text","text":"..."}]}]}
-    - {"output": "plain string"}
-    - {"choices": [{"message": {"content": "..."}}]}
-
-    Internal items (function_call, function_call_output) are skipped.
-    """
-    if isinstance(result, str):
-        return result
-
-    if isinstance(result, dict):
-        output = result.get("output")
-        if output is not None:
-            return _extract_text(output)
-        choices = result.get("choices")
-        if choices and isinstance(choices, list):
-            msg = choices[0].get("message", {})
-            return msg.get("content", "")
-        content = result.get("content")
-        if isinstance(content, list):
-            texts = []
-            for block in content:
-                if isinstance(block, dict) and block.get("type") == "output_text":
-                    texts.append(block.get("text", ""))
-            return "\n".join(texts) if texts else str(result)
-        if isinstance(content, str):
-            return content
-        text = result.get("text")
-        if isinstance(text, str):
-            return text
-        return str(result)
-
-    if isinstance(result, list):
-        texts = []
-        for item in result:
-            if isinstance(item, dict):
-                item_type = item.get("type", "")
-                # Skip internal agent-to-agent messages
-                if item_type in ("function_call", "function_call_output"):
-                    continue
-                if item_type == "message" and item.get("role") == "assistant":
-                    texts.append(_extract_text(item))
-                elif item_type == "output_text":
-                    texts.append(item.get("text", ""))
-                elif item_type == "message":
-                    # Non-assistant messages (e.g. tool output) — skip
-                    continue
-                else:
-                    texts.append(_extract_text(item))
-            elif isinstance(item, str):
-                texts.append(item)
-        return "\n".join(texts) if texts else str(result)
-
-    return str(result)
 
 
 class ChatService:
@@ -122,6 +40,7 @@ class ChatService:
     ) -> AsyncIterator[str]:
         """Stream a response from the Multi-Agent Supervisor."""
         session = self._get_or_create_session(db, session_id, "mas")
+        assert session.id is not None
         self._save_user_message(db, session.id, user_message)
 
         # Build messages for the MAS endpoint
@@ -129,9 +48,11 @@ class ChatService:
         messages = [{"role": m["role"], "content": m["content"]} for m in history]
 
         try:
-            content = _query_serving_endpoint(ws, MAS_ENDPOINT_NAME, messages)
+            result = query_agent_endpoint(ws, MAS_ENDPOINT_NAME, messages)
+            content = extract_agent_text(result)
             sources = [{"type": "mas", "source": "AdTech Intelligence Agent"}]
-        except Exception:
+        except Exception as e:
+            logger.error(f"MAS endpoint error: {type(e).__name__}: {e}", exc_info=True)
             content = (
                 "I'm sorry, I couldn't reach the AdTech Intelligence Agent right now. "
                 "Please check that the serving endpoint is online and try again."
@@ -157,6 +78,7 @@ class ChatService:
     ) -> AsyncIterator[str]:
         """Stream a response from the Issue Resolution Knowledge Assistant."""
         session = self._get_or_create_session(db, session_id, "issue_resolution")
+        assert session.id is not None
         self._save_user_message(db, session.id, user_message)
 
         # Build messages for the KA endpoint
@@ -164,9 +86,11 @@ class ChatService:
         messages = [{"role": m["role"], "content": m["content"]} for m in history]
 
         try:
-            content = _query_serving_endpoint(ws, ISSUE_RESOLUTION_KA_ENDPOINT, messages)
+            result = query_agent_endpoint(ws, ISSUE_RESOLUTION_KA_ENDPOINT, messages)
+            content = extract_agent_text(result)
             sources = [{"type": "knowledge_base", "source": "Issue Resolution Knowledge Base"}]
-        except Exception:
+        except Exception as e:
+            logger.error(f"KA endpoint error: {type(e).__name__}: {e}", exc_info=True)
             content = (
                 "I'm sorry, I couldn't reach the Issue Resolution Knowledge Base right now. "
                 "Please check that the serving endpoint is online and try again."
@@ -219,7 +143,7 @@ class ChatService:
         messages = db.exec(
             select(AtChatMessage)
             .where(AtChatMessage.session_id == session_id)
-            .order_by(AtChatMessage.created_at.asc())
+            .order_by(AtChatMessage.created_at.asc())  # type: ignore[unresolved-attribute]
         ).all()
         # Return the last N messages
         recent = messages[-limit:] if len(messages) > limit else messages

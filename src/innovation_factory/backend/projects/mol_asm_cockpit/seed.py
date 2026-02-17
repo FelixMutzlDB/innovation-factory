@@ -6,7 +6,7 @@ price history, anomaly alerts, issues, and customer profiles.
 """
 
 import random
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from sqlmodel import Session, select
 
 from .models import (
@@ -25,10 +25,10 @@ from .models import (
     MacCompetitorPrice,
     MacPriceHistory,
     MacAnomalyAlert,
-    AlertSeverity,
-    AlertStatus,
+    MacAlertSeverity,
+    MacAlertStatus,
     MacIssue,
-    IssueStatus,
+    MacIssueStatus,
     MacIssueCategory,
     MacCustomerProfile,
     MacCustomerContract,
@@ -323,49 +323,49 @@ def _seed_daily_facts(session: Session, stations: list[MacStation]):
 def _seed_anomaly_alerts(session: Session, stations: list[MacStation]):
     """Generate a mix of active and resolved anomaly alerts."""
     alert_templates = [
-        ("Fuel volume drop", "fuel_volume", AlertSeverity.high,
+        ("Fuel volume drop", "fuel_volume", MacAlertSeverity.high,
          "Station {code} diesel volume dropped 28% vs 7-day moving average.",
          "Investigate local road closures or competitor price changes. Consider temporary promo pricing."),
-        ("Hot food spoilage spike", "spoilage", AlertSeverity.medium,
+        ("Hot food spoilage spike", "spoilage", MacAlertSeverity.medium,
          "Station {code} hot food spoilage increased to 12% (threshold: 8%).",
          "Reduce hot dog batch sizes by 15-20% during 8pm-6am. Review demand forecast accuracy."),
-        ("Stock-out risk: Coffee beans", "stock_out", AlertSeverity.high,
+        ("Stock-out risk: Coffee beans", "stock_out", MacAlertSeverity.high,
          "Station {code} projected to run out of coffee beans within 24 hours based on current consumption.",
          "Advance replenishment order. Contact regional supply coordinator."),
-        ("Understaffing alert", "workforce", AlertSeverity.critical,
+        ("Understaffing alert", "workforce", MacAlertSeverity.critical,
          "Station {code} morning shift has 2 staff vs 4 planned for 3 consecutive days.",
          "Reassign staff from nearby station or activate on-call pool. Peak hours 7-9am at risk."),
-        ("Competitor price undercut", "pricing", AlertSeverity.medium,
+        ("Competitor price undercut", "pricing", MacAlertSeverity.medium,
          "Competitor Shell undercuts diesel by 0.05 EUR/L at station {code} cluster.",
          "Test -0.02 EUR response. Elasticity model suggests minimal volume loss if gap stays under 0.04."),
-        ("Bakery order deviation", "inventory", AlertSeverity.low,
+        ("Bakery order deviation", "inventory", MacAlertSeverity.low,
          "Station {code} ordering 40% more bakery items than forecast suggests.",
          "Reduce next order by 10%. Current spoilage rate 15% vs target 5%."),
-        ("Premium fuel margin opportunity", "pricing", AlertSeverity.low,
+        ("Premium fuel margin opportunity", "pricing", MacAlertSeverity.low,
          "Station {code} premium 98 demand is price-inelastic. Current margin 0.18 EUR/L.",
          "Test +3 HUF on premium fuel. Elasticity model suggests margin +2.1% with minimal volume impact."),
-        ("EV charging queue", "operations", AlertSeverity.medium,
+        ("EV charging queue", "operations", MacAlertSeverity.medium,
          "Station {code} EV charger utilization at 92% during 16:00-20:00 peak.",
          "Consider adding second fast charger. Current wait time averaging 18 minutes."),
-        ("Loyalty redemption surge", "loyalty", AlertSeverity.low,
+        ("Loyalty redemption surge", "loyalty", MacAlertSeverity.low,
          "Station {code} loyalty point redemptions up 45% this week.",
          "Ensure promotional stock is adequate. Check if campaign is driving the surge."),
-        ("Fresh Corner revenue opportunity", "revenue", AlertSeverity.medium,
+        ("Fresh Corner revenue opportunity", "revenue", MacAlertSeverity.medium,
          "Station {code} coffee sales 30% below peer average despite similar traffic.",
          "Review coffee machine maintenance schedule. Consider staff training on upselling."),
     ]
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     for i, (title_tpl, metric, severity, desc_tpl, action) in enumerate(alert_templates):
         # Pick random stations for each alert type
         chosen = random.sample(stations, min(random.randint(2, 6), len(stations)))
         for station in chosen:
             status = random.choices(
-                [AlertStatus.active, AlertStatus.acknowledged, AlertStatus.resolved, AlertStatus.dismissed],
+                [MacAlertStatus.active, MacAlertStatus.acknowledged, MacAlertStatus.resolved, MacAlertStatus.dismissed],
                 weights=[40, 25, 25, 10],
             )[0]
             detected = now - timedelta(hours=random.randint(1, 168))
-            resolved = detected + timedelta(hours=random.randint(2, 48)) if status in (AlertStatus.resolved, AlertStatus.dismissed) else None
+            resolved = detected + timedelta(hours=random.randint(2, 48)) if status in (MacAlertStatus.resolved, MacAlertStatus.dismissed) else None
             session.add(MacAnomalyAlert(
                 station_id=station.id,
                 metric_type=metric,
@@ -401,18 +401,18 @@ def _seed_issues(session: Session, stations: list[MacStation]):
         cat, title_tpl, desc, resolution = random.choice(issue_templates)
         station = random.choice(stations)
         status = random.choices(
-            [IssueStatus.open, IssueStatus.in_progress, IssueStatus.resolved, IssueStatus.closed],
+            [MacIssueStatus.open, MacIssueStatus.in_progress, MacIssueStatus.resolved, MacIssueStatus.closed],
             weights=[15, 10, 40, 35],
         )[0]
-        created = datetime.utcnow() - timedelta(days=random.randint(1, 180))
-        resolved = created + timedelta(hours=random.randint(1, 72)) if status in (IssueStatus.resolved, IssueStatus.closed) else None
+        created = datetime.now(timezone.utc) - timedelta(days=random.randint(1, 180))
+        resolved = created + timedelta(hours=random.randint(1, 72)) if status in (MacIssueStatus.resolved, MacIssueStatus.closed) else None
         n = random.randint(1, 12)
         session.add(MacIssue(
             station_id=station.id,
             category=cat,
             title=title_tpl.format(n=n),
             description=desc,
-            resolution=resolution if status in (IssueStatus.resolved, IssueStatus.closed) else None,
+            resolution=resolution if status in (MacIssueStatus.resolved, MacIssueStatus.closed) else None,
             status=status,
             priority=random.randint(1, 5),
             created_at=created,

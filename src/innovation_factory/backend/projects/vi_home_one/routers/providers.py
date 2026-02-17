@@ -1,7 +1,7 @@
 """API router for energy provider comparison."""
 from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import select
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from ....dependencies import SessionDep
 from ..models import (
@@ -39,7 +39,7 @@ def compare_providers(
     if not current_provider:
         raise HTTPException(status_code=404, detail="Current provider not found")
 
-    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
     readings_query = select(VhEnergyReading).where(
         VhEnergyReading.household_id == household_id,
         VhEnergyReading.timestamp >= thirty_days_ago

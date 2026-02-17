@@ -1,5 +1,5 @@
 """API router for maintenance alerts."""
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
@@ -56,7 +56,7 @@ def acknowledge_alert(alert_id: int, acknowledge: VhMaintenanceAlertAcknowledge,
 
     alert.is_acknowledged = acknowledge.is_acknowledged
     if acknowledge.is_acknowledged:
-        alert.acknowledged_at = datetime.utcnow()
+        alert.acknowledged_at = datetime.now(timezone.utc)
     else:
         alert.acknowledged_at = None
 

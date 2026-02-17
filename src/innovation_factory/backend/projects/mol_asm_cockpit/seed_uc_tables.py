@@ -4,19 +4,19 @@ Run on a Databricks cluster (requires PySpark). Example:
     %run /Workspace/.../mol_asm_cockpit/seed_uc_tables
 
 Or set the catalog/schema via environment variables:
-    MAC_UC_CATALOG, MAC_UC_SCHEMA
+    UC_CATALOG, MAC_UC_SCHEMA
 """
 import os
 import random
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pyspark.sql import SparkSession  # type: ignore[unresolved-import]
 from pyspark.sql.types import *  # type: ignore[unresolved-import]
 
 random.seed(42)
 spark = SparkSession.builder.getOrCreate()
 
-CATALOG = os.getenv("MAC_UC_CATALOG", "home_felix_mutzl")
-SCHEMA = os.getenv("MAC_UC_SCHEMA", "mac")
+CATALOG = os.getenv("UC_CATALOG", "innovation_factory_catalog")
+SCHEMA = os.getenv("MAC_UC_SCHEMA", "asm_cockpit")
 
 # --- Regions and Stations ---
 REGIONS = [
@@ -199,7 +199,7 @@ alert_templates = [
 ]
 alert_rows = []
 aid = 1
-now = datetime.utcnow()
+now = datetime.now(timezone.utc)
 for title, metric, sev, desc, action in alert_templates:
     for s in random.sample(STATIONS, min(5, len(STATIONS))):
         status = random.choice(["active","active","acknowledged","resolved"])
