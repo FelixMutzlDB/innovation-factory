@@ -13,11 +13,227 @@ export type AlertSeverity = (typeof AlertSeverity)[keyof typeof AlertSeverity];
 export const AlertStatus = {
   active: "active",
   acknowledged: "acknowledged",
+} as const;
+
+export type AlertStatus = (typeof AlertStatus)[keyof typeof AlertStatus];
+
+export const AnomalySeverity = {
+  low: "low",
+  medium: "medium",
+  high: "high",
+  critical: "critical",
+} as const;
+
+export type AnomalySeverity = (typeof AnomalySeverity)[keyof typeof AnomalySeverity];
+
+export const AnomalyStatus = {
+  new: "new",
+  acknowledged: "acknowledged",
+  investigating: "investigating",
   resolved: "resolved",
   dismissed: "dismissed",
 } as const;
 
-export type AlertStatus = (typeof AlertStatus)[keyof typeof AlertStatus];
+export type AnomalyStatus = (typeof AnomalyStatus)[keyof typeof AnomalyStatus];
+
+export const AnomalyType = {
+  performance_drop: "performance_drop",
+  budget_overrun: "budget_overrun",
+  ctr_anomaly: "ctr_anomaly",
+  impression_spike: "impression_spike",
+  viewability_drop: "viewability_drop",
+  conversion_decline: "conversion_decline",
+  inventory_underutilization: "inventory_underutilization",
+} as const;
+
+export type AnomalyType = (typeof AnomalyType)[keyof typeof AnomalyType];
+
+export interface AtAdInventoryOut {
+  city?: string | null;
+  cpm_rate: number;
+  created_at: string;
+  daily_impressions_est: number;
+  format_spec?: Record<string, unknown> | null;
+  id: number;
+  inventory_type: InventoryType;
+  latitude?: number | null;
+  location_type: LocationType;
+  longitude?: number | null;
+  media_owner?: string | null;
+  name: string;
+  region?: string | null;
+  status: InventoryStatus;
+}
+
+export interface AtAdvertiserOut {
+  budget_tier: string;
+  contact_email: string;
+  contact_name: string;
+  created_at: string;
+  id: number;
+  industry: string;
+  name: string;
+  phone?: string | null;
+  updated_at: string;
+  website?: string | null;
+}
+
+export interface AtAnomalyOut {
+  actual_value: number;
+  anomaly_type: AnomalyType;
+  campaign_id?: number | null;
+  description: string;
+  detected_at: string;
+  deviation_pct: number;
+  expected_value: number;
+  id: number;
+  metric_name: string;
+  placement_id?: number | null;
+  resolved_at?: string | null;
+  resolved_by?: string | null;
+  rule_id?: number | null;
+  severity: AnomalySeverity;
+  status: AnomalyStatus;
+  suggested_actions?: unknown[] | null;
+  title: string;
+}
+
+export interface AtAnomalyRuleOut {
+  condition_type: RuleConditionType;
+  created_at: string;
+  description?: string | null;
+  enabled: boolean;
+  id: number;
+  lookback_days: number;
+  metric_name: string;
+  name: string;
+  threshold_value: number;
+}
+
+export interface AtAnomalyUpdate {
+  resolved_by?: string | null;
+  status?: AnomalyStatus | null;
+}
+
+export interface AtCampaignOut {
+  advertiser?: AtAdvertiserOut | null;
+  advertiser_id: number;
+  budget: number;
+  campaign_type: CampaignType;
+  created_at: string;
+  description?: string | null;
+  end_date: string;
+  id: number;
+  kpi_targets?: Record<string, unknown> | null;
+  name: string;
+  spent: number;
+  start_date: string;
+  status: CampaignStatus;
+  target_audience?: string | null;
+  target_regions?: unknown[] | null;
+  updated_at: string;
+}
+
+export interface AtCampaignUpdate {
+  budget?: number | null;
+  kpi_targets?: Record<string, unknown> | null;
+  spent?: number | null;
+  status?: CampaignStatus | null;
+  target_audience?: string | null;
+  target_regions?: unknown[] | null;
+}
+
+export interface AtChatHistoryOut {
+  ended_at?: string | null;
+  messages: AtChatMessageOut[];
+  session_id: number;
+  session_type: string;
+  started_at: string;
+}
+
+export interface AtChatMessageIn {
+  message: string;
+  session_id?: number | null;
+}
+
+export interface AtChatMessageOut {
+  content: string;
+  created_at: string;
+  id: number;
+  role: AtChatRole;
+  session_id: number;
+  sources?: Record<string, unknown>[] | null;
+  tokens_used?: number | null;
+}
+
+export const AtChatRole = {
+  user: "user",
+  assistant: "assistant",
+  system: "system",
+} as const;
+
+export type AtChatRole = (typeof AtChatRole)[keyof typeof AtChatRole];
+
+export interface AtCustomerContractOut {
+  account_manager?: string | null;
+  advertiser_id: number;
+  contract_number: string;
+  contract_type: string;
+  created_at: string;
+  end_date: string;
+  id: number;
+  start_date: string;
+  status: ContractStatus;
+  terms_summary?: string | null;
+  total_value: number;
+}
+
+export interface AtDashboardSummaryOut {
+  active_anomalies: number;
+  active_campaigns: number;
+  available_inventory: number;
+  avg_ctr: number;
+  critical_anomalies: number;
+  total_campaigns: number;
+  total_impressions: number;
+  total_inventory: number;
+  total_spend: number;
+}
+
+export interface AtIssueOut {
+  advertiser_id?: number | null;
+  assigned_to?: string | null;
+  campaign_id?: number | null;
+  category: IssueCategory;
+  created_at: string;
+  description: string;
+  id: number;
+  priority: IssuePriority;
+  resolution?: string | null;
+  resolved_at?: string | null;
+  status: IssueStatus;
+  title: string;
+  updated_at: string;
+}
+
+export interface AtIssueUpdate {
+  assigned_to?: string | null;
+  priority?: IssuePriority | null;
+  resolution?: string | null;
+  status?: IssueStatus | null;
+}
+
+export interface AtPlacementOut {
+  campaign_id: number;
+  created_at: string;
+  daily_budget: number;
+  end_date: string;
+  id: number;
+  inventory?: AtAdInventoryOut | null;
+  inventory_id: number;
+  start_date: string;
+  status: PlacementStatus;
+}
 
 export interface Body_bsh_uploadTicketMedia {
   file: string;
@@ -222,6 +438,24 @@ export interface BshTicketUpdate {
   troubleshooting_attempted?: string | null;
 }
 
+export const CampaignStatus = {
+  draft: "draft",
+  active: "active",
+  paused: "paused",
+  completed: "completed",
+  cancelled: "cancelled",
+} as const;
+
+export type CampaignStatus = (typeof CampaignStatus)[keyof typeof CampaignStatus];
+
+export const CampaignType = {
+  online: "online",
+  outdoor: "outdoor",
+  crossmedia: "crossmedia",
+} as const;
+
+export type CampaignType = (typeof CampaignType)[keyof typeof CampaignType];
+
 export const ConsumptionCategory = {
   household_appliances: "household_appliances",
   climate_control: "climate_control",
@@ -236,6 +470,25 @@ export interface DashboardEmbedOut {
   configured?: boolean;
   dashboard_id?: string | null;
   embed_url?: string | null;
+} as const;
+
+export const ContractStatus = {
+  active: "active",
+  expired: "expired",
+  pending: "pending",
+  terminated: "terminated",
+} as const;
+
+export type ContractStatus = (typeof ContractStatus)[keyof typeof ContractStatus];
+
+export interface DatabricksResourcesOut {
+  dashboard_embed_url: string;
+  dashboard_id: string;
+  genie_space_id: string;
+  mas_endpoint_name: string;
+  mas_tile_id: string;
+  warehouse_id: string;
+  workspace_url: string;
 }
 
 export const DeviceCategory = {
@@ -307,7 +560,7 @@ export const IdeaSessionStatus = {
 
 export type IdeaSessionStatus = (typeof IdeaSessionStatus)[keyof typeof IdeaSessionStatus];
 
-export const IssueCategory = {
+export const MacIssueCategory = {
   equipment: "equipment",
   supply_chain: "supply_chain",
   quality: "quality",
@@ -317,11 +570,56 @@ export const IssueCategory = {
   it_system: "it_system",
 } as const;
 
+export type MacIssueCategory = (typeof MacIssueCategory)[keyof typeof MacIssueCategory];
+
+export const InventoryStatus = {
+  available: "available",
+  booked: "booked",
+  maintenance: "maintenance",
+  inactive: "inactive",
+} as const;
+
+export type InventoryStatus = (typeof InventoryStatus)[keyof typeof InventoryStatus];
+
+export const InventoryType = {
+  display_banner: "display_banner",
+  video: "video",
+  native: "native",
+  high_impact: "high_impact",
+  dooh_screen: "dooh_screen",
+  billboard: "billboard",
+  transit_poster: "transit_poster",
+  city_light: "city_light",
+  mega_poster: "mega_poster",
+} as const;
+
+export type InventoryType = (typeof InventoryType)[keyof typeof InventoryType];
+
+export const IssueCategory = {
+  delivery: "delivery",
+  targeting: "targeting",
+  creative: "creative",
+  billing: "billing",
+  technical: "technical",
+  reporting: "reporting",
+  inventory: "inventory",
+} as const;
+
 export type IssueCategory = (typeof IssueCategory)[keyof typeof IssueCategory];
+
+export const IssuePriority = {
+  low: "low",
+  medium: "medium",
+  high: "high",
+  urgent: "urgent",
+} as const;
+
+export type IssuePriority = (typeof IssuePriority)[keyof typeof IssuePriority];
 
 export const IssueStatus = {
   open: "open",
   in_progress: "in_progress",
+  waiting_on_customer: "waiting_on_customer",
   resolved: "resolved",
   closed: "closed",
 } as const;
@@ -440,7 +738,7 @@ export interface MacInventoryOut {
 }
 
 export interface MacIssueOut {
-  category: IssueCategory;
+  category: MacIssueCategory;
   created_at: string;
   description: string;
   id: number;
@@ -539,6 +837,18 @@ export const NonfuelCategory = {
 } as const;
 
 export type NonfuelCategory = (typeof NonfuelCategory)[keyof typeof NonfuelCategory];
+export const LocationType = {
+  online: "online",
+  train_station: "train_station",
+  mall: "mall",
+  pedestrian_zone: "pedestrian_zone",
+  highway: "highway",
+  bus_stop: "bus_stop",
+  airport: "airport",
+  subway: "subway",
+} as const;
+
+export type LocationType = (typeof LocationType)[keyof typeof LocationType];
 
 export const OptimizationMode = {
   energy_saver: "energy_saver",
@@ -560,6 +870,16 @@ export const ProductCategory = {
 } as const;
 
 export type ProductCategory = (typeof ProductCategory)[keyof typeof ProductCategory];
+
+export const PlacementStatus = {
+  scheduled: "scheduled",
+  active: "active",
+  paused: "paused",
+  completed: "completed",
+  cancelled: "cancelled",
+} as const;
+
+export type PlacementStatus = (typeof PlacementStatus)[keyof typeof PlacementStatus];
 
 export interface ProjectOut {
   color?: string | null;
@@ -586,6 +906,13 @@ export const StationType = {
 } as const;
 
 export type StationType = (typeof StationType)[keyof typeof StationType];
+export const RuleConditionType = {
+  threshold: "threshold",
+  trend: "trend",
+  deviation: "deviation",
+} as const;
+
+export type RuleConditionType = (typeof RuleConditionType)[keyof typeof RuleConditionType];
 
 export const UserRole = {
   customer: "customer",
@@ -831,6 +1158,85 @@ export interface SendIdeaMessageParams {
 
 export interface GetIdeaMessagesParams {
   session_id: number;
+}
+
+export interface At_listAnomaliesParams {
+  status?: AnomalyStatus | null;
+  severity?: AnomalySeverity | null;
+  anomaly_type?: AnomalyType | null;
+  campaign_id?: number | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface At_getAnomalyParams {
+  anomaly_id: number;
+}
+
+export interface At_updateAnomalyParams {
+  anomaly_id: number;
+}
+
+export interface At_listCampaignsParams {
+  status?: CampaignStatus | null;
+  campaign_type?: CampaignType | null;
+  advertiser_id?: number | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface At_getCampaignParams {
+  campaign_id: number;
+}
+
+export interface At_updateCampaignParams {
+  campaign_id: number;
+}
+
+export interface At_listPlacementsParams {
+  campaign_id: number;
+}
+
+export interface At_getChatSessionParams {
+  session_id: number;
+}
+
+export interface At_listContractsParams {
+  advertiser_id?: number | null;
+}
+
+export interface At_listInventoryParams {
+  inventory_type?: InventoryType | null;
+  location_type?: LocationType | null;
+  status?: InventoryStatus | null;
+  city?: string | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface At_getInventoryItemParams {
+  inventory_id: number;
+}
+
+export interface At_listIssuesParams {
+  status?: IssueStatus | null;
+  priority?: IssuePriority | null;
+  category?: IssueCategory | null;
+  campaign_id?: number | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface At_getIssueParams {
+  issue_id: number;
+}
+
+export interface At_updateIssueParams {
+  issue_id: number;
+}
+
+export interface At_getPlacementParams {
+  placement_id: number;
 }
 
 export interface Bsh_getCurrentCustomerParams {
@@ -1233,6 +1639,534 @@ export function useListProjects<TData = { data: ProjectOut[] }>(options?: { quer
 
 export function useListProjectsSuspense<TData = { data: ProjectOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: ProjectOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: listProjectsKey(), queryFn: () => listProjects(), ...options?.query });
+}
+
+export const at_listAdvertisers = async (options?: RequestInit): Promise<{ data: AtAdvertiserOut[] }> => {
+  const res = await fetch("/api/projects/adtech-intelligence/advertisers", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_listAdvertisersKey = () => {
+  return ["/api/projects/adtech-intelligence/advertisers"] as const;
+};
+
+export function useAt_listAdvertisers<TData = { data: AtAdvertiserOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: AtAdvertiserOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listAdvertisersKey(), queryFn: () => at_listAdvertisers(), ...options?.query });
+}
+
+export function useAt_listAdvertisersSuspense<TData = { data: AtAdvertiserOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: AtAdvertiserOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listAdvertisersKey(), queryFn: () => at_listAdvertisers(), ...options?.query });
+}
+
+export const at_listAnomalies = async (params?: At_listAnomaliesParams, options?: RequestInit): Promise<{ data: AtAnomalyOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.severity != null) searchParams.set("severity", String(params?.severity));
+  if (params?.anomaly_type != null) searchParams.set("anomaly_type", String(params?.anomaly_type));
+  if (params?.campaign_id != null) searchParams.set("campaign_id", String(params?.campaign_id));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/adtech-intelligence/anomalies?${queryString}` : `/api/projects/adtech-intelligence/anomalies`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_listAnomaliesKey = (params?: At_listAnomaliesParams) => {
+  return ["/api/projects/adtech-intelligence/anomalies", params] as const;
+};
+
+export function useAt_listAnomalies<TData = { data: AtAnomalyOut[] }>(options?: { params?: At_listAnomaliesParams; query?: Omit<UseQueryOptions<{ data: AtAnomalyOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listAnomaliesKey(options?.params), queryFn: () => at_listAnomalies(options?.params), ...options?.query });
+}
+
+export function useAt_listAnomaliesSuspense<TData = { data: AtAnomalyOut[] }>(options?: { params?: At_listAnomaliesParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtAnomalyOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listAnomaliesKey(options?.params), queryFn: () => at_listAnomalies(options?.params), ...options?.query });
+}
+
+export const at_getAnomalyCounts = async (options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch("/api/projects/adtech-intelligence/anomalies/counts", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_getAnomalyCountsKey = () => {
+  return ["/api/projects/adtech-intelligence/anomalies/counts"] as const;
+};
+
+export function useAt_getAnomalyCounts<TData = { data: unknown }>(options?: { query?: Omit<UseQueryOptions<{ data: unknown }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_getAnomalyCountsKey(), queryFn: () => at_getAnomalyCounts(), ...options?.query });
+}
+
+export function useAt_getAnomalyCountsSuspense<TData = { data: unknown }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: unknown }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_getAnomalyCountsKey(), queryFn: () => at_getAnomalyCounts(), ...options?.query });
+}
+
+export const at_getAnomaly = async (params: At_getAnomalyParams, options?: RequestInit): Promise<{ data: AtAnomalyOut }> => {
+  const res = await fetch(`/api/projects/adtech-intelligence/anomalies/${params.anomaly_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_getAnomalyKey = (params?: At_getAnomalyParams) => {
+  return ["/api/projects/adtech-intelligence/anomalies/{anomaly_id}", params] as const;
+};
+
+export function useAt_getAnomaly<TData = { data: AtAnomalyOut }>(options: { params: At_getAnomalyParams; query?: Omit<UseQueryOptions<{ data: AtAnomalyOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_getAnomalyKey(options.params), queryFn: () => at_getAnomaly(options.params), ...options?.query });
+}
+
+export function useAt_getAnomalySuspense<TData = { data: AtAnomalyOut }>(options: { params: At_getAnomalyParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtAnomalyOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_getAnomalyKey(options.params), queryFn: () => at_getAnomaly(options.params), ...options?.query });
+}
+
+export const at_updateAnomaly = async (params: At_updateAnomalyParams, data: AtAnomalyUpdate, options?: RequestInit): Promise<{ data: AtAnomalyOut }> => {
+  const res = await fetch(`/api/projects/adtech-intelligence/anomalies/${params.anomaly_id}`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useAt_updateAnomaly(options?: { mutation?: UseMutationOptions<{ data: AtAnomalyOut }, ApiError, { params: At_updateAnomalyParams; data: AtAnomalyUpdate }> }) {
+  return useMutation({ mutationFn: (vars) => at_updateAnomaly(vars.params, vars.data), ...options?.mutation });
+}
+
+export const at_listAnomalyRules = async (options?: RequestInit): Promise<{ data: AtAnomalyRuleOut[] }> => {
+  const res = await fetch("/api/projects/adtech-intelligence/anomaly-rules", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_listAnomalyRulesKey = () => {
+  return ["/api/projects/adtech-intelligence/anomaly-rules"] as const;
+};
+
+export function useAt_listAnomalyRules<TData = { data: AtAnomalyRuleOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: AtAnomalyRuleOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listAnomalyRulesKey(), queryFn: () => at_listAnomalyRules(), ...options?.query });
+}
+
+export function useAt_listAnomalyRulesSuspense<TData = { data: AtAnomalyRuleOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: AtAnomalyRuleOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listAnomalyRulesKey(), queryFn: () => at_listAnomalyRules(), ...options?.query });
+}
+
+export const at_listCampaigns = async (params?: At_listCampaignsParams, options?: RequestInit): Promise<{ data: AtCampaignOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.campaign_type != null) searchParams.set("campaign_type", String(params?.campaign_type));
+  if (params?.advertiser_id != null) searchParams.set("advertiser_id", String(params?.advertiser_id));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/adtech-intelligence/campaigns?${queryString}` : `/api/projects/adtech-intelligence/campaigns`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_listCampaignsKey = (params?: At_listCampaignsParams) => {
+  return ["/api/projects/adtech-intelligence/campaigns", params] as const;
+};
+
+export function useAt_listCampaigns<TData = { data: AtCampaignOut[] }>(options?: { params?: At_listCampaignsParams; query?: Omit<UseQueryOptions<{ data: AtCampaignOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listCampaignsKey(options?.params), queryFn: () => at_listCampaigns(options?.params), ...options?.query });
+}
+
+export function useAt_listCampaignsSuspense<TData = { data: AtCampaignOut[] }>(options?: { params?: At_listCampaignsParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtCampaignOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listCampaignsKey(options?.params), queryFn: () => at_listCampaigns(options?.params), ...options?.query });
+}
+
+export const at_getCampaign = async (params: At_getCampaignParams, options?: RequestInit): Promise<{ data: AtCampaignOut }> => {
+  const res = await fetch(`/api/projects/adtech-intelligence/campaigns/${params.campaign_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_getCampaignKey = (params?: At_getCampaignParams) => {
+  return ["/api/projects/adtech-intelligence/campaigns/{campaign_id}", params] as const;
+};
+
+export function useAt_getCampaign<TData = { data: AtCampaignOut }>(options: { params: At_getCampaignParams; query?: Omit<UseQueryOptions<{ data: AtCampaignOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_getCampaignKey(options.params), queryFn: () => at_getCampaign(options.params), ...options?.query });
+}
+
+export function useAt_getCampaignSuspense<TData = { data: AtCampaignOut }>(options: { params: At_getCampaignParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtCampaignOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_getCampaignKey(options.params), queryFn: () => at_getCampaign(options.params), ...options?.query });
+}
+
+export const at_updateCampaign = async (params: At_updateCampaignParams, data: AtCampaignUpdate, options?: RequestInit): Promise<{ data: AtCampaignOut }> => {
+  const res = await fetch(`/api/projects/adtech-intelligence/campaigns/${params.campaign_id}`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useAt_updateCampaign(options?: { mutation?: UseMutationOptions<{ data: AtCampaignOut }, ApiError, { params: At_updateCampaignParams; data: AtCampaignUpdate }> }) {
+  return useMutation({ mutationFn: (vars) => at_updateCampaign(vars.params, vars.data), ...options?.mutation });
+}
+
+export const at_listPlacements = async (params: At_listPlacementsParams, options?: RequestInit): Promise<{ data: AtPlacementOut[] }> => {
+  const res = await fetch(`/api/projects/adtech-intelligence/campaigns/${params.campaign_id}/placements`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_listPlacementsKey = (params?: At_listPlacementsParams) => {
+  return ["/api/projects/adtech-intelligence/campaigns/{campaign_id}/placements", params] as const;
+};
+
+export function useAt_listPlacements<TData = { data: AtPlacementOut[] }>(options: { params: At_listPlacementsParams; query?: Omit<UseQueryOptions<{ data: AtPlacementOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listPlacementsKey(options.params), queryFn: () => at_listPlacements(options.params), ...options?.query });
+}
+
+export function useAt_listPlacementsSuspense<TData = { data: AtPlacementOut[] }>(options: { params: At_listPlacementsParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtPlacementOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listPlacementsKey(options.params), queryFn: () => at_listPlacements(options.params), ...options?.query });
+}
+
+export const at_sendChatMessage = async (data: AtChatMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch("/api/projects/adtech-intelligence/chat", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useAt_sendChatMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, AtChatMessageIn> }) {
+  return useMutation({ mutationFn: (data) => at_sendChatMessage(data), ...options?.mutation });
+}
+
+export const at_listChatSessions = async (options?: RequestInit): Promise<{ data: AtChatHistoryOut[] }> => {
+  const res = await fetch("/api/projects/adtech-intelligence/chat/sessions", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_listChatSessionsKey = () => {
+  return ["/api/projects/adtech-intelligence/chat/sessions"] as const;
+};
+
+export function useAt_listChatSessions<TData = { data: AtChatHistoryOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: AtChatHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listChatSessionsKey(), queryFn: () => at_listChatSessions(), ...options?.query });
+}
+
+export function useAt_listChatSessionsSuspense<TData = { data: AtChatHistoryOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: AtChatHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listChatSessionsKey(), queryFn: () => at_listChatSessions(), ...options?.query });
+}
+
+export const at_getChatSession = async (params: At_getChatSessionParams, options?: RequestInit): Promise<{ data: AtChatHistoryOut }> => {
+  const res = await fetch(`/api/projects/adtech-intelligence/chat/sessions/${params.session_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_getChatSessionKey = (params?: At_getChatSessionParams) => {
+  return ["/api/projects/adtech-intelligence/chat/sessions/{session_id}", params] as const;
+};
+
+export function useAt_getChatSession<TData = { data: AtChatHistoryOut }>(options: { params: At_getChatSessionParams; query?: Omit<UseQueryOptions<{ data: AtChatHistoryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_getChatSessionKey(options.params), queryFn: () => at_getChatSession(options.params), ...options?.query });
+}
+
+export function useAt_getChatSessionSuspense<TData = { data: AtChatHistoryOut }>(options: { params: At_getChatSessionParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtChatHistoryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_getChatSessionKey(options.params), queryFn: () => at_getChatSession(options.params), ...options?.query });
+}
+
+export const at_listContracts = async (params?: At_listContractsParams, options?: RequestInit): Promise<{ data: AtCustomerContractOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.advertiser_id != null) searchParams.set("advertiser_id", String(params?.advertiser_id));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/adtech-intelligence/contracts?${queryString}` : `/api/projects/adtech-intelligence/contracts`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_listContractsKey = (params?: At_listContractsParams) => {
+  return ["/api/projects/adtech-intelligence/contracts", params] as const;
+};
+
+export function useAt_listContracts<TData = { data: AtCustomerContractOut[] }>(options?: { params?: At_listContractsParams; query?: Omit<UseQueryOptions<{ data: AtCustomerContractOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listContractsKey(options?.params), queryFn: () => at_listContracts(options?.params), ...options?.query });
+}
+
+export function useAt_listContractsSuspense<TData = { data: AtCustomerContractOut[] }>(options?: { params?: At_listContractsParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtCustomerContractOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listContractsKey(options?.params), queryFn: () => at_listContracts(options?.params), ...options?.query });
+}
+
+export const at_getDashboardSummary = async (options?: RequestInit): Promise<{ data: AtDashboardSummaryOut }> => {
+  const res = await fetch("/api/projects/adtech-intelligence/dashboard/summary", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_getDashboardSummaryKey = () => {
+  return ["/api/projects/adtech-intelligence/dashboard/summary"] as const;
+};
+
+export function useAt_getDashboardSummary<TData = { data: AtDashboardSummaryOut }>(options?: { query?: Omit<UseQueryOptions<{ data: AtDashboardSummaryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_getDashboardSummaryKey(), queryFn: () => at_getDashboardSummary(), ...options?.query });
+}
+
+export function useAt_getDashboardSummarySuspense<TData = { data: AtDashboardSummaryOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: AtDashboardSummaryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_getDashboardSummaryKey(), queryFn: () => at_getDashboardSummary(), ...options?.query });
+}
+
+export const at_getDatabricksResources = async (options?: RequestInit): Promise<{ data: DatabricksResourcesOut }> => {
+  const res = await fetch("/api/projects/adtech-intelligence/databricks-resources", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_getDatabricksResourcesKey = () => {
+  return ["/api/projects/adtech-intelligence/databricks-resources"] as const;
+};
+
+export function useAt_getDatabricksResources<TData = { data: DatabricksResourcesOut }>(options?: { query?: Omit<UseQueryOptions<{ data: DatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_getDatabricksResourcesKey(), queryFn: () => at_getDatabricksResources(), ...options?.query });
+}
+
+export function useAt_getDatabricksResourcesSuspense<TData = { data: DatabricksResourcesOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: DatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_getDatabricksResourcesKey(), queryFn: () => at_getDatabricksResources(), ...options?.query });
+}
+
+export const at_listInventory = async (params?: At_listInventoryParams, options?: RequestInit): Promise<{ data: AtAdInventoryOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.inventory_type != null) searchParams.set("inventory_type", String(params?.inventory_type));
+  if (params?.location_type != null) searchParams.set("location_type", String(params?.location_type));
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.city != null) searchParams.set("city", String(params?.city));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/adtech-intelligence/inventory?${queryString}` : `/api/projects/adtech-intelligence/inventory`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_listInventoryKey = (params?: At_listInventoryParams) => {
+  return ["/api/projects/adtech-intelligence/inventory", params] as const;
+};
+
+export function useAt_listInventory<TData = { data: AtAdInventoryOut[] }>(options?: { params?: At_listInventoryParams; query?: Omit<UseQueryOptions<{ data: AtAdInventoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listInventoryKey(options?.params), queryFn: () => at_listInventory(options?.params), ...options?.query });
+}
+
+export function useAt_listInventorySuspense<TData = { data: AtAdInventoryOut[] }>(options?: { params?: At_listInventoryParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtAdInventoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listInventoryKey(options?.params), queryFn: () => at_listInventory(options?.params), ...options?.query });
+}
+
+export const at_getInventoryItem = async (params: At_getInventoryItemParams, options?: RequestInit): Promise<{ data: AtAdInventoryOut }> => {
+  const res = await fetch(`/api/projects/adtech-intelligence/inventory/${params.inventory_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_getInventoryItemKey = (params?: At_getInventoryItemParams) => {
+  return ["/api/projects/adtech-intelligence/inventory/{inventory_id}", params] as const;
+};
+
+export function useAt_getInventoryItem<TData = { data: AtAdInventoryOut }>(options: { params: At_getInventoryItemParams; query?: Omit<UseQueryOptions<{ data: AtAdInventoryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_getInventoryItemKey(options.params), queryFn: () => at_getInventoryItem(options.params), ...options?.query });
+}
+
+export function useAt_getInventoryItemSuspense<TData = { data: AtAdInventoryOut }>(options: { params: At_getInventoryItemParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtAdInventoryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_getInventoryItemKey(options.params), queryFn: () => at_getInventoryItem(options.params), ...options?.query });
+}
+
+export const at_listIssues = async (params?: At_listIssuesParams, options?: RequestInit): Promise<{ data: AtIssueOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.priority != null) searchParams.set("priority", String(params?.priority));
+  if (params?.category != null) searchParams.set("category", String(params?.category));
+  if (params?.campaign_id != null) searchParams.set("campaign_id", String(params?.campaign_id));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/adtech-intelligence/issues?${queryString}` : `/api/projects/adtech-intelligence/issues`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_listIssuesKey = (params?: At_listIssuesParams) => {
+  return ["/api/projects/adtech-intelligence/issues", params] as const;
+};
+
+export function useAt_listIssues<TData = { data: AtIssueOut[] }>(options?: { params?: At_listIssuesParams; query?: Omit<UseQueryOptions<{ data: AtIssueOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listIssuesKey(options?.params), queryFn: () => at_listIssues(options?.params), ...options?.query });
+}
+
+export function useAt_listIssuesSuspense<TData = { data: AtIssueOut[] }>(options?: { params?: At_listIssuesParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtIssueOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listIssuesKey(options?.params), queryFn: () => at_listIssues(options?.params), ...options?.query });
+}
+
+export const at_getIssue = async (params: At_getIssueParams, options?: RequestInit): Promise<{ data: AtIssueOut }> => {
+  const res = await fetch(`/api/projects/adtech-intelligence/issues/${params.issue_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_getIssueKey = (params?: At_getIssueParams) => {
+  return ["/api/projects/adtech-intelligence/issues/{issue_id}", params] as const;
+};
+
+export function useAt_getIssue<TData = { data: AtIssueOut }>(options: { params: At_getIssueParams; query?: Omit<UseQueryOptions<{ data: AtIssueOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_getIssueKey(options.params), queryFn: () => at_getIssue(options.params), ...options?.query });
+}
+
+export function useAt_getIssueSuspense<TData = { data: AtIssueOut }>(options: { params: At_getIssueParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtIssueOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_getIssueKey(options.params), queryFn: () => at_getIssue(options.params), ...options?.query });
+}
+
+export const at_updateIssue = async (params: At_updateIssueParams, data: AtIssueUpdate, options?: RequestInit): Promise<{ data: AtIssueOut }> => {
+  const res = await fetch(`/api/projects/adtech-intelligence/issues/${params.issue_id}`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useAt_updateIssue(options?: { mutation?: UseMutationOptions<{ data: AtIssueOut }, ApiError, { params: At_updateIssueParams; data: AtIssueUpdate }> }) {
+  return useMutation({ mutationFn: (vars) => at_updateIssue(vars.params, vars.data), ...options?.mutation });
+}
+
+export const at_sendMasChatMessage = async (data: AtChatMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch("/api/projects/adtech-intelligence/mas-chat", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useAt_sendMasChatMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, AtChatMessageIn> }) {
+  return useMutation({ mutationFn: (data) => at_sendMasChatMessage(data), ...options?.mutation });
+}
+
+export const at_getPlacement = async (params: At_getPlacementParams, options?: RequestInit): Promise<{ data: AtPlacementOut }> => {
+  const res = await fetch(`/api/projects/adtech-intelligence/placements/${params.placement_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const at_getPlacementKey = (params?: At_getPlacementParams) => {
+  return ["/api/projects/adtech-intelligence/placements/{placement_id}", params] as const;
+};
+
+export function useAt_getPlacement<TData = { data: AtPlacementOut }>(options: { params: At_getPlacementParams; query?: Omit<UseQueryOptions<{ data: AtPlacementOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_getPlacementKey(options.params), queryFn: () => at_getPlacement(options.params), ...options?.query });
+}
+
+export function useAt_getPlacementSuspense<TData = { data: AtPlacementOut }>(options: { params: At_getPlacementParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtPlacementOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_getPlacementKey(options.params), queryFn: () => at_getPlacement(options.params), ...options?.query });
 }
 
 export const bsh_getCurrentCustomer = async (params?: Bsh_getCurrentCustomerParams, options?: RequestInit): Promise<{ data: BshCustomerOut }> => {

@@ -273,7 +273,6 @@ function ProfileSkeleton() {
           </div>
         </CardContent>
       </Card>
-
       <div className="grid gap-6 md:grid-cols-2">
         {[1, 2, 3, 4].map((i) => (
           <Card key={i} className="border-primary/20">
