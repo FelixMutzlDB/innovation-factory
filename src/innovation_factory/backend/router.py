@@ -114,8 +114,10 @@ from .projects.vi_home_one.router import router as vh_router
 from .projects.bsh_home_connect.router import router as bsh_router
 from .projects.mol_asm_cockpit.router import router as mac_router
 from .projects.adtech_intelligence.router import router as at_router
+from .projects.hb_product_center.router import router as hb_router
 
 api.include_router(vh_router, prefix="/projects/vi-home-one")
 api.include_router(bsh_router, prefix="/projects/bsh-home-connect")
 api.include_router(mac_router, prefix="/projects/mol-asm-cockpit")
 api.include_router(at_router, prefix="/projects/adtech-intelligence")
+api.include_router(hb_router, prefix="/projects/hb-product-center")

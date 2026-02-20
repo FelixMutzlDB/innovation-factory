@@ -16,16 +16,22 @@ import { Route as SidebarProfileRouteImport } from './../routes/_sidebar/profile
 import { Route as SidebarDocumentationRouteImport } from './../routes/_sidebar/documentation'
 import { Route as ProjectsViHomeOneRouteRouteImport } from './../routes/projects/vi-home-one/route'
 import { Route as ProjectsMolAsmCockpitRouteRouteImport } from './../routes/projects/mol-asm-cockpit/route'
+import { Route as ProjectsHbProductCenterRouteRouteImport } from './../routes/projects/hb-product-center/route'
 import { Route as ProjectsBshHomeConnectRouteRouteImport } from './../routes/projects/bsh-home-connect/route'
 import { Route as ProjectsAdtechIntelligenceRouteRouteImport } from './../routes/projects/adtech-intelligence/route'
 import { Route as ProjectsViHomeOneIndexRouteImport } from './../routes/projects/vi-home-one/index'
 import { Route as ProjectsMolAsmCockpitIndexRouteImport } from './../routes/projects/mol-asm-cockpit/index'
+import { Route as ProjectsHbProductCenterIndexRouteImport } from './../routes/projects/hb-product-center/index'
 import { Route as ProjectsBshHomeConnectIndexRouteImport } from './../routes/projects/bsh-home-connect/index'
 import { Route as ProjectsAdtechIntelligenceIndexRouteImport } from './../routes/projects/adtech-intelligence/index'
 import { Route as ProjectsViHomeOneProfileRouteImport } from './../routes/projects/vi-home-one/profile'
 import { Route as ProjectsMolAsmCockpitHomeRouteImport } from './../routes/projects/mol-asm-cockpit/home'
 import { Route as ProjectsMolAsmCockpitExplorerRouteImport } from './../routes/projects/mol-asm-cockpit/explorer'
 import { Route as ProjectsMolAsmCockpitAgentRouteImport } from './../routes/projects/mol-asm-cockpit/agent'
+import { Route as ProjectsHbProductCenterSupplyChainRouteImport } from './../routes/projects/hb-product-center/supply-chain'
+import { Route as ProjectsHbProductCenterRecognitionRouteImport } from './../routes/projects/hb-product-center/recognition'
+import { Route as ProjectsHbProductCenterProfileRouteImport } from './../routes/projects/hb-product-center/profile'
+import { Route as ProjectsHbProductCenterAuthenticityRouteImport } from './../routes/projects/hb-product-center/authenticity'
 import { Route as ProjectsBshHomeConnectSupportRouteImport } from './../routes/projects/bsh-home-connect/support'
 import { Route as ProjectsBshHomeConnectProfileRouteImport } from './../routes/projects/bsh-home-connect/profile'
 import { Route as ProjectsBshHomeConnectDashboardRouteImport } from './../routes/projects/bsh-home-connect/dashboard'
@@ -37,6 +43,7 @@ import { Route as ProjectsViHomeOneNeighborhoodIndexRouteImport } from './../rou
 import { Route as ProjectsViHomeOneHouseholdsIndexRouteImport } from './../routes/projects/vi-home-one/households/index'
 import { Route as ProjectsMolAsmCockpitStationsIndexRouteImport } from './../routes/projects/mol-asm-cockpit/stations/index'
 import { Route as ProjectsMolAsmCockpitAnomaliesIndexRouteImport } from './../routes/projects/mol-asm-cockpit/anomalies/index'
+import { Route as ProjectsHbProductCenterQualityIndexRouteImport } from './../routes/projects/hb-product-center/quality/index'
 import { Route as ProjectsBshHomeConnectTicketsIndexRouteImport } from './../routes/projects/bsh-home-connect/tickets/index'
 import { Route as ProjectsBshHomeConnectDevicesIndexRouteImport } from './../routes/projects/bsh-home-connect/devices/index'
 import { Route as ProjectsAdtechIntelligenceAnomaliesIndexRouteImport } from './../routes/projects/adtech-intelligence/anomalies/index'
@@ -44,6 +51,7 @@ import { Route as ProjectsViHomeOneSupportNewRouteImport } from './../routes/pro
 import { Route as ProjectsViHomeOneSupportTicketIdRouteImport } from './../routes/projects/vi-home-one/support/$ticketId'
 import { Route as ProjectsViHomeOneHouseholdsHouseholdIdRouteImport } from './../routes/projects/vi-home-one/households/$householdId'
 import { Route as ProjectsMolAsmCockpitStationsStationCodeRouteImport } from './../routes/projects/mol-asm-cockpit/stations/$stationCode'
+import { Route as ProjectsHbProductCenterQualityInspectionIdRouteImport } from './../routes/projects/hb-product-center/quality/$inspectionId'
 import { Route as ProjectsBshHomeConnectTicketsTicketIdRouteImport } from './../routes/projects/bsh-home-connect/tickets/$ticketId'
 import { Route as ProjectsBshHomeConnectDevicesRegisterRouteImport } from './../routes/projects/bsh-home-connect/devices/register'
 import { Route as ProjectsAdtechIntelligenceAnomaliesAnomalyIdRouteImport } from './../routes/projects/adtech-intelligence/anomalies/$anomalyId'
@@ -84,6 +92,12 @@ const ProjectsMolAsmCockpitRouteRoute =
     path: '/projects/mol-asm-cockpit',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProjectsHbProductCenterRouteRoute =
+  ProjectsHbProductCenterRouteRouteImport.update({
+    id: '/projects/hb-product-center',
+    path: '/projects/hb-product-center',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProjectsBshHomeConnectRouteRoute =
   ProjectsBshHomeConnectRouteRouteImport.update({
     id: '/projects/bsh-home-connect',
@@ -106,6 +120,12 @@ const ProjectsMolAsmCockpitIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
+  } as any)
+const ProjectsHbProductCenterIndexRoute =
+  ProjectsHbProductCenterIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProjectsHbProductCenterRouteRoute,
   } as any)
 const ProjectsBshHomeConnectIndexRoute =
   ProjectsBshHomeConnectIndexRouteImport.update({
@@ -142,6 +162,30 @@ const ProjectsMolAsmCockpitAgentRoute =
     id: '/agent',
     path: '/agent',
     getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
+  } as any)
+const ProjectsHbProductCenterSupplyChainRoute =
+  ProjectsHbProductCenterSupplyChainRouteImport.update({
+    id: '/supply-chain',
+    path: '/supply-chain',
+    getParentRoute: () => ProjectsHbProductCenterRouteRoute,
+  } as any)
+const ProjectsHbProductCenterRecognitionRoute =
+  ProjectsHbProductCenterRecognitionRouteImport.update({
+    id: '/recognition',
+    path: '/recognition',
+    getParentRoute: () => ProjectsHbProductCenterRouteRoute,
+  } as any)
+const ProjectsHbProductCenterProfileRoute =
+  ProjectsHbProductCenterProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => ProjectsHbProductCenterRouteRoute,
+  } as any)
+const ProjectsHbProductCenterAuthenticityRoute =
+  ProjectsHbProductCenterAuthenticityRouteImport.update({
+    id: '/authenticity',
+    path: '/authenticity',
+    getParentRoute: () => ProjectsHbProductCenterRouteRoute,
   } as any)
 const ProjectsBshHomeConnectSupportRoute =
   ProjectsBshHomeConnectSupportRouteImport.update({
@@ -209,6 +253,12 @@ const ProjectsMolAsmCockpitAnomaliesIndexRoute =
     path: '/anomalies/',
     getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
   } as any)
+const ProjectsHbProductCenterQualityIndexRoute =
+  ProjectsHbProductCenterQualityIndexRouteImport.update({
+    id: '/quality/',
+    path: '/quality/',
+    getParentRoute: () => ProjectsHbProductCenterRouteRoute,
+  } as any)
 const ProjectsBshHomeConnectTicketsIndexRoute =
   ProjectsBshHomeConnectTicketsIndexRouteImport.update({
     id: '/tickets/',
@@ -251,6 +301,12 @@ const ProjectsMolAsmCockpitStationsStationCodeRoute =
     path: '/stations/$stationCode',
     getParentRoute: () => ProjectsMolAsmCockpitRouteRoute,
   } as any)
+const ProjectsHbProductCenterQualityInspectionIdRoute =
+  ProjectsHbProductCenterQualityInspectionIdRouteImport.update({
+    id: '/quality/$inspectionId',
+    path: '/quality/$inspectionId',
+    getParentRoute: () => ProjectsHbProductCenterRouteRoute,
+  } as any)
 const ProjectsBshHomeConnectTicketsTicketIdRoute =
   ProjectsBshHomeConnectTicketsTicketIdRouteImport.update({
     id: '/tickets/$ticketId',
@@ -280,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectRouteRouteWithChildren
+  '/projects/hb-product-center': typeof ProjectsHbProductCenterRouteRouteWithChildren
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
   '/documentation': typeof SidebarDocumentationRoute
@@ -291,17 +348,23 @@ export interface FileRoutesByFullPath {
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
+  '/projects/hb-product-center/authenticity': typeof ProjectsHbProductCenterAuthenticityRoute
+  '/projects/hb-product-center/profile': typeof ProjectsHbProductCenterProfileRoute
+  '/projects/hb-product-center/recognition': typeof ProjectsHbProductCenterRecognitionRoute
+  '/projects/hb-product-center/supply-chain': typeof ProjectsHbProductCenterSupplyChainRoute
   '/projects/mol-asm-cockpit/agent': typeof ProjectsMolAsmCockpitAgentRoute
   '/projects/mol-asm-cockpit/explorer': typeof ProjectsMolAsmCockpitExplorerRoute
   '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
   '/projects/adtech-intelligence/': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/bsh-home-connect/': typeof ProjectsBshHomeConnectIndexRoute
+  '/projects/hb-product-center/': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit/': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one/': typeof ProjectsViHomeOneIndexRoute
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
+  '/projects/hb-product-center/quality/$inspectionId': typeof ProjectsHbProductCenterQualityInspectionIdRoute
   '/projects/mol-asm-cockpit/stations/$stationCode': typeof ProjectsMolAsmCockpitStationsStationCodeRoute
   '/projects/vi-home-one/households/$householdId': typeof ProjectsViHomeOneHouseholdsHouseholdIdRouteWithChildren
   '/projects/vi-home-one/support/$ticketId': typeof ProjectsViHomeOneSupportTicketIdRoute
@@ -309,6 +372,7 @@ export interface FileRoutesByFullPath {
   '/projects/adtech-intelligence/anomalies/': typeof ProjectsAdtechIntelligenceAnomaliesIndexRoute
   '/projects/bsh-home-connect/devices/': typeof ProjectsBshHomeConnectDevicesIndexRoute
   '/projects/bsh-home-connect/tickets/': typeof ProjectsBshHomeConnectTicketsIndexRoute
+  '/projects/hb-product-center/quality/': typeof ProjectsHbProductCenterQualityIndexRoute
   '/projects/mol-asm-cockpit/anomalies/': typeof ProjectsMolAsmCockpitAnomaliesIndexRoute
   '/projects/mol-asm-cockpit/stations/': typeof ProjectsMolAsmCockpitStationsIndexRoute
   '/projects/vi-home-one/households/': typeof ProjectsViHomeOneHouseholdsIndexRoute
@@ -327,17 +391,23 @@ export interface FileRoutesByTo {
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
+  '/projects/hb-product-center/authenticity': typeof ProjectsHbProductCenterAuthenticityRoute
+  '/projects/hb-product-center/profile': typeof ProjectsHbProductCenterProfileRoute
+  '/projects/hb-product-center/recognition': typeof ProjectsHbProductCenterRecognitionRoute
+  '/projects/hb-product-center/supply-chain': typeof ProjectsHbProductCenterSupplyChainRoute
   '/projects/mol-asm-cockpit/agent': typeof ProjectsMolAsmCockpitAgentRoute
   '/projects/mol-asm-cockpit/explorer': typeof ProjectsMolAsmCockpitExplorerRoute
   '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
   '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectIndexRoute
+  '/projects/hb-product-center': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one': typeof ProjectsViHomeOneIndexRoute
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
+  '/projects/hb-product-center/quality/$inspectionId': typeof ProjectsHbProductCenterQualityInspectionIdRoute
   '/projects/mol-asm-cockpit/stations/$stationCode': typeof ProjectsMolAsmCockpitStationsStationCodeRoute
   '/projects/vi-home-one/households/$householdId': typeof ProjectsViHomeOneHouseholdsHouseholdIdRouteWithChildren
   '/projects/vi-home-one/support/$ticketId': typeof ProjectsViHomeOneSupportTicketIdRoute
@@ -345,6 +415,7 @@ export interface FileRoutesByTo {
   '/projects/adtech-intelligence/anomalies': typeof ProjectsAdtechIntelligenceAnomaliesIndexRoute
   '/projects/bsh-home-connect/devices': typeof ProjectsBshHomeConnectDevicesIndexRoute
   '/projects/bsh-home-connect/tickets': typeof ProjectsBshHomeConnectTicketsIndexRoute
+  '/projects/hb-product-center/quality': typeof ProjectsHbProductCenterQualityIndexRoute
   '/projects/mol-asm-cockpit/anomalies': typeof ProjectsMolAsmCockpitAnomaliesIndexRoute
   '/projects/mol-asm-cockpit/stations': typeof ProjectsMolAsmCockpitStationsIndexRoute
   '/projects/vi-home-one/households': typeof ProjectsViHomeOneHouseholdsIndexRoute
@@ -358,6 +429,7 @@ export interface FileRoutesById {
   '/_sidebar': typeof SidebarRouteRouteWithChildren
   '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectRouteRouteWithChildren
+  '/projects/hb-product-center': typeof ProjectsHbProductCenterRouteRouteWithChildren
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
   '/_sidebar/documentation': typeof SidebarDocumentationRoute
@@ -369,17 +441,23 @@ export interface FileRoutesById {
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
+  '/projects/hb-product-center/authenticity': typeof ProjectsHbProductCenterAuthenticityRoute
+  '/projects/hb-product-center/profile': typeof ProjectsHbProductCenterProfileRoute
+  '/projects/hb-product-center/recognition': typeof ProjectsHbProductCenterRecognitionRoute
+  '/projects/hb-product-center/supply-chain': typeof ProjectsHbProductCenterSupplyChainRoute
   '/projects/mol-asm-cockpit/agent': typeof ProjectsMolAsmCockpitAgentRoute
   '/projects/mol-asm-cockpit/explorer': typeof ProjectsMolAsmCockpitExplorerRoute
   '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
   '/projects/adtech-intelligence/': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/bsh-home-connect/': typeof ProjectsBshHomeConnectIndexRoute
+  '/projects/hb-product-center/': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit/': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one/': typeof ProjectsViHomeOneIndexRoute
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
+  '/projects/hb-product-center/quality/$inspectionId': typeof ProjectsHbProductCenterQualityInspectionIdRoute
   '/projects/mol-asm-cockpit/stations/$stationCode': typeof ProjectsMolAsmCockpitStationsStationCodeRoute
   '/projects/vi-home-one/households/$householdId': typeof ProjectsViHomeOneHouseholdsHouseholdIdRouteWithChildren
   '/projects/vi-home-one/support/$ticketId': typeof ProjectsViHomeOneSupportTicketIdRoute
@@ -387,6 +465,7 @@ export interface FileRoutesById {
   '/projects/adtech-intelligence/anomalies/': typeof ProjectsAdtechIntelligenceAnomaliesIndexRoute
   '/projects/bsh-home-connect/devices/': typeof ProjectsBshHomeConnectDevicesIndexRoute
   '/projects/bsh-home-connect/tickets/': typeof ProjectsBshHomeConnectTicketsIndexRoute
+  '/projects/hb-product-center/quality/': typeof ProjectsHbProductCenterQualityIndexRoute
   '/projects/mol-asm-cockpit/anomalies/': typeof ProjectsMolAsmCockpitAnomaliesIndexRoute
   '/projects/mol-asm-cockpit/stations/': typeof ProjectsMolAsmCockpitStationsIndexRoute
   '/projects/vi-home-one/households/': typeof ProjectsViHomeOneHouseholdsIndexRoute
@@ -400,6 +479,7 @@ export interface FileRouteTypes {
     | '/'
     | '/projects/adtech-intelligence'
     | '/projects/bsh-home-connect'
+    | '/projects/hb-product-center'
     | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
     | '/documentation'
@@ -411,17 +491,23 @@ export interface FileRouteTypes {
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
+    | '/projects/hb-product-center/authenticity'
+    | '/projects/hb-product-center/profile'
+    | '/projects/hb-product-center/recognition'
+    | '/projects/hb-product-center/supply-chain'
     | '/projects/mol-asm-cockpit/agent'
     | '/projects/mol-asm-cockpit/explorer'
     | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
     | '/projects/adtech-intelligence/'
     | '/projects/bsh-home-connect/'
+    | '/projects/hb-product-center/'
     | '/projects/mol-asm-cockpit/'
     | '/projects/vi-home-one/'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
+    | '/projects/hb-product-center/quality/$inspectionId'
     | '/projects/mol-asm-cockpit/stations/$stationCode'
     | '/projects/vi-home-one/households/$householdId'
     | '/projects/vi-home-one/support/$ticketId'
@@ -429,6 +515,7 @@ export interface FileRouteTypes {
     | '/projects/adtech-intelligence/anomalies/'
     | '/projects/bsh-home-connect/devices/'
     | '/projects/bsh-home-connect/tickets/'
+    | '/projects/hb-product-center/quality/'
     | '/projects/mol-asm-cockpit/anomalies/'
     | '/projects/mol-asm-cockpit/stations/'
     | '/projects/vi-home-one/households/'
@@ -447,17 +534,23 @@ export interface FileRouteTypes {
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
+    | '/projects/hb-product-center/authenticity'
+    | '/projects/hb-product-center/profile'
+    | '/projects/hb-product-center/recognition'
+    | '/projects/hb-product-center/supply-chain'
     | '/projects/mol-asm-cockpit/agent'
     | '/projects/mol-asm-cockpit/explorer'
     | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
     | '/projects/adtech-intelligence'
     | '/projects/bsh-home-connect'
+    | '/projects/hb-product-center'
     | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
+    | '/projects/hb-product-center/quality/$inspectionId'
     | '/projects/mol-asm-cockpit/stations/$stationCode'
     | '/projects/vi-home-one/households/$householdId'
     | '/projects/vi-home-one/support/$ticketId'
@@ -465,6 +558,7 @@ export interface FileRouteTypes {
     | '/projects/adtech-intelligence/anomalies'
     | '/projects/bsh-home-connect/devices'
     | '/projects/bsh-home-connect/tickets'
+    | '/projects/hb-product-center/quality'
     | '/projects/mol-asm-cockpit/anomalies'
     | '/projects/mol-asm-cockpit/stations'
     | '/projects/vi-home-one/households'
@@ -477,6 +571,7 @@ export interface FileRouteTypes {
     | '/_sidebar'
     | '/projects/adtech-intelligence'
     | '/projects/bsh-home-connect'
+    | '/projects/hb-product-center'
     | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
     | '/_sidebar/documentation'
@@ -488,17 +583,23 @@ export interface FileRouteTypes {
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
+    | '/projects/hb-product-center/authenticity'
+    | '/projects/hb-product-center/profile'
+    | '/projects/hb-product-center/recognition'
+    | '/projects/hb-product-center/supply-chain'
     | '/projects/mol-asm-cockpit/agent'
     | '/projects/mol-asm-cockpit/explorer'
     | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
     | '/projects/adtech-intelligence/'
     | '/projects/bsh-home-connect/'
+    | '/projects/hb-product-center/'
     | '/projects/mol-asm-cockpit/'
     | '/projects/vi-home-one/'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
+    | '/projects/hb-product-center/quality/$inspectionId'
     | '/projects/mol-asm-cockpit/stations/$stationCode'
     | '/projects/vi-home-one/households/$householdId'
     | '/projects/vi-home-one/support/$ticketId'
@@ -506,6 +607,7 @@ export interface FileRouteTypes {
     | '/projects/adtech-intelligence/anomalies/'
     | '/projects/bsh-home-connect/devices/'
     | '/projects/bsh-home-connect/tickets/'
+    | '/projects/hb-product-center/quality/'
     | '/projects/mol-asm-cockpit/anomalies/'
     | '/projects/mol-asm-cockpit/stations/'
     | '/projects/vi-home-one/households/'
@@ -519,6 +621,7 @@ export interface RootRouteChildren {
   SidebarRouteRoute: typeof SidebarRouteRouteWithChildren
   ProjectsAdtechIntelligenceRouteRoute: typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
   ProjectsBshHomeConnectRouteRoute: typeof ProjectsBshHomeConnectRouteRouteWithChildren
+  ProjectsHbProductCenterRouteRoute: typeof ProjectsHbProductCenterRouteRouteWithChildren
   ProjectsMolAsmCockpitRouteRoute: typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   ProjectsViHomeOneRouteRoute: typeof ProjectsViHomeOneRouteRouteWithChildren
   BuildIdeaIndexRoute: typeof BuildIdeaIndexRoute
@@ -575,6 +678,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsMolAsmCockpitRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/hb-product-center': {
+      id: '/projects/hb-product-center'
+      path: '/projects/hb-product-center'
+      fullPath: '/projects/hb-product-center'
+      preLoaderRoute: typeof ProjectsHbProductCenterRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/bsh-home-connect': {
       id: '/projects/bsh-home-connect'
       path: '/projects/bsh-home-connect'
@@ -602,6 +712,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/mol-asm-cockpit/'
       preLoaderRoute: typeof ProjectsMolAsmCockpitIndexRouteImport
       parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
+    }
+    '/projects/hb-product-center/': {
+      id: '/projects/hb-product-center/'
+      path: '/'
+      fullPath: '/projects/hb-product-center/'
+      preLoaderRoute: typeof ProjectsHbProductCenterIndexRouteImport
+      parentRoute: typeof ProjectsHbProductCenterRouteRoute
     }
     '/projects/bsh-home-connect/': {
       id: '/projects/bsh-home-connect/'
@@ -644,6 +761,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/mol-asm-cockpit/agent'
       preLoaderRoute: typeof ProjectsMolAsmCockpitAgentRouteImport
       parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
+    }
+    '/projects/hb-product-center/supply-chain': {
+      id: '/projects/hb-product-center/supply-chain'
+      path: '/supply-chain'
+      fullPath: '/projects/hb-product-center/supply-chain'
+      preLoaderRoute: typeof ProjectsHbProductCenterSupplyChainRouteImport
+      parentRoute: typeof ProjectsHbProductCenterRouteRoute
+    }
+    '/projects/hb-product-center/recognition': {
+      id: '/projects/hb-product-center/recognition'
+      path: '/recognition'
+      fullPath: '/projects/hb-product-center/recognition'
+      preLoaderRoute: typeof ProjectsHbProductCenterRecognitionRouteImport
+      parentRoute: typeof ProjectsHbProductCenterRouteRoute
+    }
+    '/projects/hb-product-center/profile': {
+      id: '/projects/hb-product-center/profile'
+      path: '/profile'
+      fullPath: '/projects/hb-product-center/profile'
+      preLoaderRoute: typeof ProjectsHbProductCenterProfileRouteImport
+      parentRoute: typeof ProjectsHbProductCenterRouteRoute
+    }
+    '/projects/hb-product-center/authenticity': {
+      id: '/projects/hb-product-center/authenticity'
+      path: '/authenticity'
+      fullPath: '/projects/hb-product-center/authenticity'
+      preLoaderRoute: typeof ProjectsHbProductCenterAuthenticityRouteImport
+      parentRoute: typeof ProjectsHbProductCenterRouteRoute
     }
     '/projects/bsh-home-connect/support': {
       id: '/projects/bsh-home-connect/support'
@@ -722,6 +867,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsMolAsmCockpitAnomaliesIndexRouteImport
       parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
     }
+    '/projects/hb-product-center/quality/': {
+      id: '/projects/hb-product-center/quality/'
+      path: '/quality'
+      fullPath: '/projects/hb-product-center/quality/'
+      preLoaderRoute: typeof ProjectsHbProductCenterQualityIndexRouteImport
+      parentRoute: typeof ProjectsHbProductCenterRouteRoute
+    }
     '/projects/bsh-home-connect/tickets/': {
       id: '/projects/bsh-home-connect/tickets/'
       path: '/tickets'
@@ -770,6 +922,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/mol-asm-cockpit/stations/$stationCode'
       preLoaderRoute: typeof ProjectsMolAsmCockpitStationsStationCodeRouteImport
       parentRoute: typeof ProjectsMolAsmCockpitRouteRoute
+    }
+    '/projects/hb-product-center/quality/$inspectionId': {
+      id: '/projects/hb-product-center/quality/$inspectionId'
+      path: '/quality/$inspectionId'
+      fullPath: '/projects/hb-product-center/quality/$inspectionId'
+      preLoaderRoute: typeof ProjectsHbProductCenterQualityInspectionIdRouteImport
+      parentRoute: typeof ProjectsHbProductCenterRouteRoute
     }
     '/projects/bsh-home-connect/tickets/$ticketId': {
       id: '/projects/bsh-home-connect/tickets/$ticketId'
@@ -877,6 +1036,37 @@ const ProjectsBshHomeConnectRouteRouteWithChildren =
     ProjectsBshHomeConnectRouteRouteChildren,
   )
 
+interface ProjectsHbProductCenterRouteRouteChildren {
+  ProjectsHbProductCenterAuthenticityRoute: typeof ProjectsHbProductCenterAuthenticityRoute
+  ProjectsHbProductCenterProfileRoute: typeof ProjectsHbProductCenterProfileRoute
+  ProjectsHbProductCenterRecognitionRoute: typeof ProjectsHbProductCenterRecognitionRoute
+  ProjectsHbProductCenterSupplyChainRoute: typeof ProjectsHbProductCenterSupplyChainRoute
+  ProjectsHbProductCenterIndexRoute: typeof ProjectsHbProductCenterIndexRoute
+  ProjectsHbProductCenterQualityInspectionIdRoute: typeof ProjectsHbProductCenterQualityInspectionIdRoute
+  ProjectsHbProductCenterQualityIndexRoute: typeof ProjectsHbProductCenterQualityIndexRoute
+}
+
+const ProjectsHbProductCenterRouteRouteChildren: ProjectsHbProductCenterRouteRouteChildren =
+  {
+    ProjectsHbProductCenterAuthenticityRoute:
+      ProjectsHbProductCenterAuthenticityRoute,
+    ProjectsHbProductCenterProfileRoute: ProjectsHbProductCenterProfileRoute,
+    ProjectsHbProductCenterRecognitionRoute:
+      ProjectsHbProductCenterRecognitionRoute,
+    ProjectsHbProductCenterSupplyChainRoute:
+      ProjectsHbProductCenterSupplyChainRoute,
+    ProjectsHbProductCenterIndexRoute: ProjectsHbProductCenterIndexRoute,
+    ProjectsHbProductCenterQualityInspectionIdRoute:
+      ProjectsHbProductCenterQualityInspectionIdRoute,
+    ProjectsHbProductCenterQualityIndexRoute:
+      ProjectsHbProductCenterQualityIndexRoute,
+  }
+
+const ProjectsHbProductCenterRouteRouteWithChildren =
+  ProjectsHbProductCenterRouteRoute._addFileChildren(
+    ProjectsHbProductCenterRouteRouteChildren,
+  )
+
 interface ProjectsMolAsmCockpitRouteRouteChildren {
   ProjectsMolAsmCockpitAgentRoute: typeof ProjectsMolAsmCockpitAgentRoute
   ProjectsMolAsmCockpitExplorerRoute: typeof ProjectsMolAsmCockpitExplorerRoute
@@ -960,6 +1150,8 @@ const rootRouteChildren: RootRouteChildren = {
     ProjectsAdtechIntelligenceRouteRouteWithChildren,
   ProjectsBshHomeConnectRouteRoute:
     ProjectsBshHomeConnectRouteRouteWithChildren,
+  ProjectsHbProductCenterRouteRoute:
+    ProjectsHbProductCenterRouteRouteWithChildren,
   ProjectsMolAsmCockpitRouteRoute: ProjectsMolAsmCockpitRouteRouteWithChildren,
   ProjectsViHomeOneRouteRoute: ProjectsViHomeOneRouteRouteWithChildren,
   BuildIdeaIndexRoute: BuildIdeaIndexRoute,

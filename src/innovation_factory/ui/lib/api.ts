@@ -1,6 +1,16 @@
 import { useQuery, useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import type { UseQueryOptions, UseSuspenseQueryOptions, UseMutationOptions } from "@tanstack/react-query";
 
+export const AlertResolution = {
+  open: "open",
+  investigating: "investigating",
+  confirmed_counterfeit: "confirmed_counterfeit",
+  false_positive: "false_positive",
+  resolved: "resolved",
+} as const;
+
+export type AlertResolution = (typeof AlertResolution)[keyof typeof AlertResolution];
+
 export const AlertSeverity = {
   low: "low",
   medium: "medium",
@@ -380,7 +390,7 @@ export interface BshTicketNoteIn {
 
 export interface BshTicketNoteOut {
   author_id?: number | null;
-  author_role: UserRole;
+  author_role: innovation_factory__backend__projects__bsh_home_connect__models__UserRole;
   content: string;
   created_at: string;
   id: number;
@@ -449,6 +459,26 @@ export const CampaignType = {
 
 export type CampaignType = (typeof CampaignType)[keyof typeof CampaignType];
 
+export const ChatContext = {
+  recognition: "recognition",
+  quality: "quality",
+  authenticity: "authenticity",
+  supply_chain: "supply_chain",
+  general: "general",
+  quality_asst: "quality_asst",
+} as const;
+
+export type ChatContext = (typeof ChatContext)[keyof typeof ChatContext];
+
+export const ComplianceStatus = {
+  compliant: "compliant",
+  non_compliant: "non_compliant",
+  pending_review: "pending_review",
+  exempted: "exempted",
+} as const;
+
+export type ComplianceStatus = (typeof ComplianceStatus)[keyof typeof ComplianceStatus];
+
 export const ConsumptionCategory = {
   household_appliances: "household_appliances",
   climate_control: "climate_control",
@@ -483,6 +513,30 @@ export interface DatabricksResourcesOut {
   warehouse_id: string;
   workspace_url: string;
 }
+
+export const DefectSeverity = {
+  minor: "minor",
+  moderate: "moderate",
+  major: "major",
+  critical: "critical",
+} as const;
+
+export type DefectSeverity = (typeof DefectSeverity)[keyof typeof DefectSeverity];
+
+export const DefectType = {
+  stitching: "stitching",
+  fabric_flaw: "fabric_flaw",
+  color_variation: "color_variation",
+  misalignment: "misalignment",
+  stain: "stain",
+  missing_component: "missing_component",
+  zipper_defect: "zipper_defect",
+  button_issue: "button_issue",
+  print_error: "print_error",
+  sizing_error: "sizing_error",
+} as const;
+
+export type DefectType = (typeof DefectType)[keyof typeof DefectType];
 
 export const DeviceCategory = {
   washing_machine: "washing_machine",
@@ -533,6 +587,270 @@ export interface HTTPValidationError {
   detail?: ValidationError[];
 }
 
+export interface HbAuthAlertOut {
+  alert_type: string;
+  created_at: string;
+  description: string;
+  id: number;
+  investigated_by?: string | null;
+  region: string;
+  resolution: AlertResolution;
+  resolved_at?: string | null;
+  severity: AlertSeverity;
+  verification_id: number;
+}
+
+export interface HbAuthAlertUpdate {
+  investigated_by?: string | null;
+  resolution?: string | null;
+}
+
+export interface HbAuthVerificationCreate {
+  product_id?: number | null;
+  region?: string;
+  requester_email?: string | null;
+  requester_name?: string;
+  requester_type: string;
+  verification_method?: string;
+}
+
+export interface HbAuthVerificationOut {
+  completed_at?: string | null;
+  confidence_score?: number | null;
+  created_at: string;
+  id: number;
+  image_url?: string | null;
+  notes?: string | null;
+  product_id?: number | null;
+  region: string;
+  requester_email?: string | null;
+  requester_name: string;
+  requester_type: RequesterType;
+  status: VerificationStatus;
+  verification_method: VerificationMethod;
+}
+
+export interface HbChatMessageIn {
+  content: string;
+  session_id?: number | null;
+}
+
+export interface HbChatMessageOut {
+  content: string;
+  created_at: string;
+  id: number;
+  role: string;
+  session_id: number;
+}
+
+export interface HbChatSessionCreate {
+  context?: string;
+  user_role?: string | null;
+}
+
+export interface HbChatSessionOut {
+  context: ChatContext;
+  created_at: string;
+  id: number;
+  user_role?: innovation_factory__backend__projects__hb_product_center__models__UserRole | null;
+}
+
+export interface HbDashboardSummary {
+  active_products: number;
+  auth_alerts_open: number;
+  auth_success_rate: number;
+  avg_quality_score: number;
+  avg_sustainability_score: number;
+  inspections_pending: number;
+  recognition_jobs_today: number;
+  recognition_jobs_total: number;
+  supply_chain_events_total: number;
+  total_products: number;
+}
+
+export interface HbDatabricksResourcesOut {
+  aq_dashboard_embed_url: string;
+  aq_dashboard_id: string;
+  aq_genie_space_id: string;
+  sc_dashboard_embed_url: string;
+  sc_dashboard_id: string;
+  sc_genie_space_id: string;
+  workspace_url: string;
+}
+
+export interface HbInspectionDetailOut {
+  batch_number: string;
+  completed_at?: string | null;
+  created_at: string;
+  defects?: HbQualityDefectOut[];
+  id: number;
+  inspector: string;
+  manufacturing_partner: string;
+  notes?: string | null;
+  overall_score: number;
+  product?: HbProductOut | null;
+  product_id: number;
+  status: InspectionStatus;
+}
+
+export interface HbProductImageOut {
+  created_at: string;
+  id: number;
+  image_type: ImageType;
+  image_url: string;
+  product_id: number;
+  uploaded_by?: string | null;
+}
+
+export interface HbProductJourney {
+  events: HbSupplyChainEventOut[];
+  product: HbProductOut;
+  sustainability?: HbSustainabilityMetricOut | null;
+}
+
+export interface HbProductOut {
+  category: innovation_factory__backend__projects__hb_product_center__models__ProductCategory;
+  collection: ProductCollection;
+  color: string;
+  color_code: string;
+  country_of_origin: string;
+  created_at: string;
+  id: number;
+  material: string;
+  price: number;
+  season: ProductSeason;
+  size: string;
+  sku: string;
+  status: ProductStatus;
+  style_name: string;
+  supplier_name: string;
+}
+
+export interface HbQualityDefectOut {
+  confidence_score: number;
+  created_at: string;
+  defect_type: DefectType;
+  id: number;
+  image_url?: string | null;
+  inspection_id: number;
+  location_description: string;
+  severity: DefectSeverity;
+}
+
+export interface HbQualityInspectionCreate {
+  batch_number?: string;
+  inspector?: string;
+  manufacturing_partner?: string;
+  product_id: number;
+}
+
+export interface HbQualityInspectionOut {
+  batch_number: string;
+  completed_at?: string | null;
+  created_at: string;
+  id: number;
+  inspector: string;
+  manufacturing_partner: string;
+  notes?: string | null;
+  overall_score: number;
+  product_id: number;
+  status: InspectionStatus;
+}
+
+export interface HbQualityInspectionUpdate {
+  notes?: string | null;
+  overall_score?: number | null;
+  status?: string | null;
+}
+
+export interface HbQualityStats {
+  approved: number;
+  avg_score: number;
+  defect_counts: Record<string, number>;
+  in_review: number;
+  pending: number;
+  rejected: number;
+  severity_counts: Record<string, number>;
+  total_inspections: number;
+}
+
+export interface HbRecognitionJobCreate {
+  image_count?: number;
+  job_type?: string;
+  submitted_by?: string | null;
+  user_role?: string | null;
+}
+
+export interface HbRecognitionJobDetailOut {
+  completed_at?: string | null;
+  completed_count: number;
+  created_at: string;
+  id: number;
+  image_count: number;
+  job_type: RecognitionJobType;
+  results?: HbRecognitionResultOut[];
+  status: RecognitionJobStatus;
+  submitted_by?: string | null;
+  user_role?: innovation_factory__backend__projects__hb_product_center__models__UserRole | null;
+}
+
+export interface HbRecognitionJobOut {
+  completed_at?: string | null;
+  completed_count: number;
+  created_at: string;
+  id: number;
+  image_count: number;
+  job_type: RecognitionJobType;
+  status: RecognitionJobStatus;
+  submitted_by?: string | null;
+  user_role?: innovation_factory__backend__projects__hb_product_center__models__UserRole | null;
+}
+
+export interface HbRecognitionResultOut {
+  confidence_score: number;
+  created_at: string;
+  detected_category?: string | null;
+  detected_color?: string | null;
+  detected_size?: string | null;
+  detected_sku?: string | null;
+  id: number;
+  image_url: string;
+  job_id: number;
+  processing_time_ms: number;
+  product_id?: number | null;
+}
+
+export interface HbSupplyChainEventOut {
+  country: string;
+  created_at: string;
+  details?: string | null;
+  event_date: string;
+  event_type: SupplyChainEventType;
+  id: number;
+  location: string;
+  partner_name: string;
+  product_id: number;
+}
+
+export interface HbSustainabilityMetricOut {
+  carbon_footprint_kg: number;
+  certifications?: Record<string, unknown> | null;
+  compliance_status: ComplianceStatus;
+  created_at: string;
+  id: number;
+  last_audit_date?: string | null;
+  organic_material_pct: number;
+  product_id: number;
+  recycled_content_pct: number;
+  water_usage_liters: number;
+}
+
+export interface HbTrendPoint {
+  date: string;
+  label?: string | null;
+  value: number;
+}
+
 export interface IdeaMessageIn {
   content: string;
 }
@@ -562,6 +880,25 @@ export const IdeaSessionStatus = {
 } as const;
 
 export type IdeaSessionStatus = (typeof IdeaSessionStatus)[keyof typeof IdeaSessionStatus];
+
+export const ImageType = {
+  master: "master",
+  sample: "sample",
+  inspection: "inspection",
+  customer: "customer",
+  lifestyle: "lifestyle",
+} as const;
+
+export type ImageType = (typeof ImageType)[keyof typeof ImageType];
+
+export const InspectionStatus = {
+  pending: "pending",
+  in_review: "in_review",
+  approved: "approved",
+  rejected: "rejected",
+} as const;
+
+export type InspectionStatus = (typeof InspectionStatus)[keyof typeof InspectionStatus];
 
 export const InventoryStatus = {
   available: "available",
@@ -750,7 +1087,7 @@ export interface MacFuelSaleOut {
 export interface MacInventoryOut {
   delivery_scheduled: boolean;
   id: number;
-  product_category: ProductCategory;
+  product_category: innovation_factory__backend__projects__mol_asm_cockpit__models__ProductCategory;
   record_date: string;
   reorder_point: number;
   spoilage_count: number;
@@ -898,19 +1235,53 @@ export const PlacementStatus = {
 
 export type PlacementStatus = (typeof PlacementStatus)[keyof typeof PlacementStatus];
 
-export const ProductCategory = {
-  fuel: "fuel",
-  coffee: "coffee",
-  hot_food: "hot_food",
-  cold_food: "cold_food",
-  bakery: "bakery",
-  beverages: "beverages",
-  tobacco: "tobacco",
-  car_care: "car_care",
-  convenience: "convenience",
+export const ProductCollection = {
+  BOSS: "BOSS",
+  HUGO: "HUGO",
+  "BOSS Orange": "BOSS Orange",
+  "BOSS Green": "BOSS Green",
 } as const;
 
-export type ProductCategory = (typeof ProductCategory)[keyof typeof ProductCategory];
+export type ProductCollection = (typeof ProductCollection)[keyof typeof ProductCollection];
+
+export interface ProductIdentifyRequest {
+  description: string;
+}
+
+export interface ProductIdentifyResponse {
+  ai_analysis: string;
+  matches: ProductMatch[];
+}
+
+export interface ProductMatch {
+  category: string;
+  collection?: string | null;
+  color?: string | null;
+  confidence: string;
+  material?: string | null;
+  price?: number | null;
+  product_id: number;
+  sku: string;
+  style_name: string;
+}
+
+export const ProductSeason = {
+  SS25: "SS25",
+  FW25: "FW25",
+  SS26: "SS26",
+  FW26: "FW26",
+} as const;
+
+export type ProductSeason = (typeof ProductSeason)[keyof typeof ProductSeason];
+
+export const ProductStatus = {
+  active: "active",
+  discontinued: "discontinued",
+  sample: "sample",
+  pre_production: "pre_production",
+} as const;
+
+export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus];
 
 export interface ProjectOut {
   color?: string | null;
@@ -921,6 +1292,31 @@ export interface ProjectOut {
   name: string;
   slug: string;
 }
+
+export const RecognitionJobStatus = {
+  pending: "pending",
+  processing: "processing",
+  completed: "completed",
+  failed: "failed",
+} as const;
+
+export type RecognitionJobStatus = (typeof RecognitionJobStatus)[keyof typeof RecognitionJobStatus];
+
+export const RecognitionJobType = {
+  single: "single",
+  batch: "batch",
+} as const;
+
+export type RecognitionJobType = (typeof RecognitionJobType)[keyof typeof RecognitionJobType];
+
+export const RequesterType = {
+  customer: "customer",
+  partner: "partner",
+  internal: "internal",
+  retailer: "retailer",
+} as const;
+
+export type RequesterType = (typeof RequesterType)[keyof typeof RequesterType];
 
 export const RuleConditionType = {
   threshold: "threshold",
@@ -946,13 +1342,19 @@ export const StationType = {
 
 export type StationType = (typeof StationType)[keyof typeof StationType];
 
-export const UserRole = {
-  customer: "customer",
-  technician: "technician",
-  system: "system",
+export const SupplyChainEventType = {
+  manufactured: "manufactured",
+  quality_checked: "quality_checked",
+  shipped: "shipped",
+  received_warehouse: "received_warehouse",
+  inspected: "inspected",
+  distributed: "distributed",
+  received_store: "received_store",
+  sold: "sold",
+  returned: "returned",
 } as const;
 
-export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+export type SupplyChainEventType = (typeof SupplyChainEventType)[keyof typeof SupplyChainEventType];
 
 export interface ValidationError {
   ctx?: Record<string, unknown>;
@@ -961,6 +1363,25 @@ export interface ValidationError {
   msg: string;
   type: string;
 }
+
+export const VerificationMethod = {
+  image_analysis: "image_analysis",
+  nfc_tag: "nfc_tag",
+  qr_code: "qr_code",
+  label_check: "label_check",
+  material_analysis: "material_analysis",
+} as const;
+
+export type VerificationMethod = (typeof VerificationMethod)[keyof typeof VerificationMethod];
+
+export const VerificationStatus = {
+  pending: "pending",
+  verified: "verified",
+  suspicious: "suspicious",
+  counterfeit: "counterfeit",
+} as const;
+
+export type VerificationStatus = (typeof VerificationStatus)[keyof typeof VerificationStatus];
 
 export interface VersionOut {
   version: string;
@@ -1176,6 +1597,55 @@ export interface VhTicketUpdate {
   status?: VhTicketStatus | null;
 }
 
+export const innovation_factory__backend__projects__bsh_home_connect__models__UserRole = {
+  customer: "customer",
+  technician: "technician",
+  system: "system",
+} as const;
+
+export type innovation_factory__backend__projects__bsh_home_connect__models__UserRole = (typeof innovation_factory__backend__projects__bsh_home_connect__models__UserRole)[keyof typeof innovation_factory__backend__projects__bsh_home_connect__models__UserRole];
+
+export const innovation_factory__backend__projects__hb_product_center__models__ProductCategory = {
+  suits: "suits",
+  shirts: "shirts",
+  knitwear: "knitwear",
+  outerwear: "outerwear",
+  trousers: "trousers",
+  shoes: "shoes",
+  accessories: "accessories",
+  fragrances: "fragrances",
+  sportswear: "sportswear",
+  denim: "denim",
+} as const;
+
+export type innovation_factory__backend__projects__hb_product_center__models__ProductCategory = (typeof innovation_factory__backend__projects__hb_product_center__models__ProductCategory)[keyof typeof innovation_factory__backend__projects__hb_product_center__models__ProductCategory];
+
+export const innovation_factory__backend__projects__hb_product_center__models__UserRole = {
+  store_associate: "store_associate",
+  warehouse_staff: "warehouse_staff",
+  buyer: "buyer",
+  merchandiser: "merchandiser",
+  brand_protection: "brand_protection",
+  sustainability: "sustainability",
+  quality_inspector: "quality_inspector",
+} as const;
+
+export type innovation_factory__backend__projects__hb_product_center__models__UserRole = (typeof innovation_factory__backend__projects__hb_product_center__models__UserRole)[keyof typeof innovation_factory__backend__projects__hb_product_center__models__UserRole];
+
+export const innovation_factory__backend__projects__mol_asm_cockpit__models__ProductCategory = {
+  fuel: "fuel",
+  coffee: "coffee",
+  hot_food: "hot_food",
+  cold_food: "cold_food",
+  bakery: "bakery",
+  beverages: "beverages",
+  tobacco: "tobacco",
+  car_care: "car_care",
+  convenience: "convenience",
+} as const;
+
+export type innovation_factory__backend__projects__mol_asm_cockpit__models__ProductCategory = (typeof innovation_factory__backend__projects__mol_asm_cockpit__models__ProductCategory)[keyof typeof innovation_factory__backend__projects__mol_asm_cockpit__models__ProductCategory];
+
 export interface CurrentUserParams {
   "X-Forwarded-Access-Token"?: string | null;
 }
@@ -1371,6 +1841,98 @@ export interface Bsh_addTicketNoteParams {
 export interface Bsh_generateShippingLabelParams {
   ticket_id: number;
   "X-Forwarded-Access-Token"?: string | null;
+}
+
+export interface Hb_listAlertsParams {
+  resolution?: string | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Hb_updateAlertParams {
+  alert_id: number;
+}
+
+export interface Hb_listVerificationsParams {
+  status?: string | null;
+  requester_type?: string | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Hb_getVerificationParams {
+  verification_id: number;
+}
+
+export interface Hb_getChatMessagesParams {
+  session_id: number;
+}
+
+export interface Hb_sendChatMessageParams {
+  session_id: number;
+}
+
+export interface Hb_listProductsParams {
+  category?: string | null;
+  collection?: string | null;
+  season?: string | null;
+  search?: string | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Hb_getProductParams {
+  product_id: number;
+}
+
+export interface Hb_getProductImagesParams {
+  product_id: number;
+}
+
+export interface Hb_listInspectionsParams {
+  status?: string | null;
+  product_id?: number | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Hb_getInspectionParams {
+  inspection_id: number;
+}
+
+export interface Hb_updateInspectionParams {
+  inspection_id: number;
+}
+
+export interface Hb_listRecognitionJobsParams {
+  status?: string | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Hb_getRecognitionJobParams {
+  job_id: number;
+}
+
+export interface Hb_listSupplyChainEventsParams {
+  product_id?: number | null;
+  event_type?: string | null;
+  country?: string | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Hb_getProductJourneyParams {
+  product_id: number;
+}
+
+export interface Hb_listSustainabilityMetricsParams {
+  limit?: number;
+  offset?: number;
+}
+
+export interface Hb_getProductSustainabilityParams {
+  product_id: number;
 }
 
 export interface Mac_listAnomalyAlertsParams {
@@ -2687,6 +3249,656 @@ export const bsh_generateShippingLabel = async (params: Bsh_generateShippingLabe
 
 export function useBsh_generateShippingLabel(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: Bsh_generateShippingLabelParams }> }) {
   return useMutation({ mutationFn: (vars) => bsh_generateShippingLabel(vars.params), ...options?.mutation });
+}
+
+export const hb_listAlerts = async (params?: Hb_listAlertsParams, options?: RequestInit): Promise<{ data: HbAuthAlertOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.resolution != null) searchParams.set("resolution", String(params?.resolution));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/hb-product-center/authenticity/alerts?${queryString}` : `/api/projects/hb-product-center/authenticity/alerts`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_listAlertsKey = (params?: Hb_listAlertsParams) => {
+  return ["/api/projects/hb-product-center/authenticity/alerts", params] as const;
+};
+
+export function useHb_listAlerts<TData = { data: HbAuthAlertOut[] }>(options?: { params?: Hb_listAlertsParams; query?: Omit<UseQueryOptions<{ data: HbAuthAlertOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_listAlertsKey(options?.params), queryFn: () => hb_listAlerts(options?.params), ...options?.query });
+}
+
+export function useHb_listAlertsSuspense<TData = { data: HbAuthAlertOut[] }>(options?: { params?: Hb_listAlertsParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbAuthAlertOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_listAlertsKey(options?.params), queryFn: () => hb_listAlerts(options?.params), ...options?.query });
+}
+
+export const hb_updateAlert = async (params: Hb_updateAlertParams, data: HbAuthAlertUpdate, options?: RequestInit): Promise<{ data: HbAuthAlertOut }> => {
+  const res = await fetch(`/api/projects/hb-product-center/authenticity/alerts/${params.alert_id}`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_updateAlert(options?: { mutation?: UseMutationOptions<{ data: HbAuthAlertOut }, ApiError, { params: Hb_updateAlertParams; data: HbAuthAlertUpdate }> }) {
+  return useMutation({ mutationFn: (vars) => hb_updateAlert(vars.params, vars.data), ...options?.mutation });
+}
+
+export const hb_listVerifications = async (params?: Hb_listVerificationsParams, options?: RequestInit): Promise<{ data: HbAuthVerificationOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.requester_type != null) searchParams.set("requester_type", String(params?.requester_type));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/hb-product-center/authenticity/verifications?${queryString}` : `/api/projects/hb-product-center/authenticity/verifications`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_listVerificationsKey = (params?: Hb_listVerificationsParams) => {
+  return ["/api/projects/hb-product-center/authenticity/verifications", params] as const;
+};
+
+export function useHb_listVerifications<TData = { data: HbAuthVerificationOut[] }>(options?: { params?: Hb_listVerificationsParams; query?: Omit<UseQueryOptions<{ data: HbAuthVerificationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_listVerificationsKey(options?.params), queryFn: () => hb_listVerifications(options?.params), ...options?.query });
+}
+
+export function useHb_listVerificationsSuspense<TData = { data: HbAuthVerificationOut[] }>(options?: { params?: Hb_listVerificationsParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbAuthVerificationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_listVerificationsKey(options?.params), queryFn: () => hb_listVerifications(options?.params), ...options?.query });
+}
+
+export const hb_getVerification = async (params: Hb_getVerificationParams, options?: RequestInit): Promise<{ data: HbAuthVerificationOut }> => {
+  const res = await fetch(`/api/projects/hb-product-center/authenticity/verifications/${params.verification_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getVerificationKey = (params?: Hb_getVerificationParams) => {
+  return ["/api/projects/hb-product-center/authenticity/verifications/{verification_id}", params] as const;
+};
+
+export function useHb_getVerification<TData = { data: HbAuthVerificationOut }>(options: { params: Hb_getVerificationParams; query?: Omit<UseQueryOptions<{ data: HbAuthVerificationOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getVerificationKey(options.params), queryFn: () => hb_getVerification(options.params), ...options?.query });
+}
+
+export function useHb_getVerificationSuspense<TData = { data: HbAuthVerificationOut }>(options: { params: Hb_getVerificationParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbAuthVerificationOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getVerificationKey(options.params), queryFn: () => hb_getVerification(options.params), ...options?.query });
+}
+
+export const hb_createVerification = async (data: HbAuthVerificationCreate, options?: RequestInit): Promise<{ data: HbAuthVerificationOut }> => {
+  const res = await fetch("/api/projects/hb-product-center/authenticity/verify", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_createVerification(options?: { mutation?: UseMutationOptions<{ data: HbAuthVerificationOut }, ApiError, HbAuthVerificationCreate> }) {
+  return useMutation({ mutationFn: (data) => hb_createVerification(data), ...options?.mutation });
+}
+
+export const hb_sendMasChatMessage = async (data: HbChatMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch("/api/projects/hb-product-center/chat/mas-chat", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_sendMasChatMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, HbChatMessageIn> }) {
+  return useMutation({ mutationFn: (data) => hb_sendMasChatMessage(data), ...options?.mutation });
+}
+
+export const hb_createChatSession = async (data: HbChatSessionCreate, options?: RequestInit): Promise<{ data: HbChatSessionOut }> => {
+  const res = await fetch("/api/projects/hb-product-center/chat/sessions", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_createChatSession(options?: { mutation?: UseMutationOptions<{ data: HbChatSessionOut }, ApiError, HbChatSessionCreate> }) {
+  return useMutation({ mutationFn: (data) => hb_createChatSession(data), ...options?.mutation });
+}
+
+export const hb_getChatMessages = async (params: Hb_getChatMessagesParams, options?: RequestInit): Promise<{ data: HbChatMessageOut[] }> => {
+  const res = await fetch(`/api/projects/hb-product-center/chat/sessions/${params.session_id}/messages`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getChatMessagesKey = (params?: Hb_getChatMessagesParams) => {
+  return ["/api/projects/hb-product-center/chat/sessions/{session_id}/messages", params] as const;
+};
+
+export function useHb_getChatMessages<TData = { data: HbChatMessageOut[] }>(options: { params: Hb_getChatMessagesParams; query?: Omit<UseQueryOptions<{ data: HbChatMessageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getChatMessagesKey(options.params), queryFn: () => hb_getChatMessages(options.params), ...options?.query });
+}
+
+export function useHb_getChatMessagesSuspense<TData = { data: HbChatMessageOut[] }>(options: { params: Hb_getChatMessagesParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbChatMessageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getChatMessagesKey(options.params), queryFn: () => hb_getChatMessages(options.params), ...options?.query });
+}
+
+export const hb_sendChatMessage = async (params: Hb_sendChatMessageParams, data: HbChatMessageIn, options?: RequestInit): Promise<{ data: HbChatMessageOut }> => {
+  const res = await fetch(`/api/projects/hb-product-center/chat/sessions/${params.session_id}/messages`, { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_sendChatMessage(options?: { mutation?: UseMutationOptions<{ data: HbChatMessageOut }, ApiError, { params: Hb_sendChatMessageParams; data: HbChatMessageIn }> }) {
+  return useMutation({ mutationFn: (vars) => hb_sendChatMessage(vars.params, vars.data), ...options?.mutation });
+}
+
+export const hb_getDashboardSummary = async (options?: RequestInit): Promise<{ data: HbDashboardSummary }> => {
+  const res = await fetch("/api/projects/hb-product-center/dashboard/summary", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getDashboardSummaryKey = () => {
+  return ["/api/projects/hb-product-center/dashboard/summary"] as const;
+};
+
+export function useHb_getDashboardSummary<TData = { data: HbDashboardSummary }>(options?: { query?: Omit<UseQueryOptions<{ data: HbDashboardSummary }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getDashboardSummaryKey(), queryFn: () => hb_getDashboardSummary(), ...options?.query });
+}
+
+export function useHb_getDashboardSummarySuspense<TData = { data: HbDashboardSummary }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: HbDashboardSummary }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getDashboardSummaryKey(), queryFn: () => hb_getDashboardSummary(), ...options?.query });
+}
+
+export const hb_getDashboardTrends = async (options?: RequestInit): Promise<{ data: HbTrendPoint[] }> => {
+  const res = await fetch("/api/projects/hb-product-center/dashboard/trends", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getDashboardTrendsKey = () => {
+  return ["/api/projects/hb-product-center/dashboard/trends"] as const;
+};
+
+export function useHb_getDashboardTrends<TData = { data: HbTrendPoint[] }>(options?: { query?: Omit<UseQueryOptions<{ data: HbTrendPoint[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getDashboardTrendsKey(), queryFn: () => hb_getDashboardTrends(), ...options?.query });
+}
+
+export function useHb_getDashboardTrendsSuspense<TData = { data: HbTrendPoint[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: HbTrendPoint[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getDashboardTrendsKey(), queryFn: () => hb_getDashboardTrends(), ...options?.query });
+}
+
+export const hb_getDatabricksResources = async (options?: RequestInit): Promise<{ data: HbDatabricksResourcesOut }> => {
+  const res = await fetch("/api/projects/hb-product-center/databricks-resources", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getDatabricksResourcesKey = () => {
+  return ["/api/projects/hb-product-center/databricks-resources"] as const;
+};
+
+export function useHb_getDatabricksResources<TData = { data: HbDatabricksResourcesOut }>(options?: { query?: Omit<UseQueryOptions<{ data: HbDatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getDatabricksResourcesKey(), queryFn: () => hb_getDatabricksResources(), ...options?.query });
+}
+
+export function useHb_getDatabricksResourcesSuspense<TData = { data: HbDatabricksResourcesOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: HbDatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getDatabricksResourcesKey(), queryFn: () => hb_getDatabricksResources(), ...options?.query });
+}
+
+export const hb_listProducts = async (params?: Hb_listProductsParams, options?: RequestInit): Promise<{ data: HbProductOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.category != null) searchParams.set("category", String(params?.category));
+  if (params?.collection != null) searchParams.set("collection", String(params?.collection));
+  if (params?.season != null) searchParams.set("season", String(params?.season));
+  if (params?.search != null) searchParams.set("search", String(params?.search));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/hb-product-center/products?${queryString}` : `/api/projects/hb-product-center/products`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_listProductsKey = (params?: Hb_listProductsParams) => {
+  return ["/api/projects/hb-product-center/products", params] as const;
+};
+
+export function useHb_listProducts<TData = { data: HbProductOut[] }>(options?: { params?: Hb_listProductsParams; query?: Omit<UseQueryOptions<{ data: HbProductOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_listProductsKey(options?.params), queryFn: () => hb_listProducts(options?.params), ...options?.query });
+}
+
+export function useHb_listProductsSuspense<TData = { data: HbProductOut[] }>(options?: { params?: Hb_listProductsParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbProductOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_listProductsKey(options?.params), queryFn: () => hb_listProducts(options?.params), ...options?.query });
+}
+
+export const hb_getProduct = async (params: Hb_getProductParams, options?: RequestInit): Promise<{ data: HbProductOut }> => {
+  const res = await fetch(`/api/projects/hb-product-center/products/${params.product_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getProductKey = (params?: Hb_getProductParams) => {
+  return ["/api/projects/hb-product-center/products/{product_id}", params] as const;
+};
+
+export function useHb_getProduct<TData = { data: HbProductOut }>(options: { params: Hb_getProductParams; query?: Omit<UseQueryOptions<{ data: HbProductOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getProductKey(options.params), queryFn: () => hb_getProduct(options.params), ...options?.query });
+}
+
+export function useHb_getProductSuspense<TData = { data: HbProductOut }>(options: { params: Hb_getProductParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbProductOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getProductKey(options.params), queryFn: () => hb_getProduct(options.params), ...options?.query });
+}
+
+export const hb_getProductImages = async (params: Hb_getProductImagesParams, options?: RequestInit): Promise<{ data: HbProductImageOut[] }> => {
+  const res = await fetch(`/api/projects/hb-product-center/products/${params.product_id}/images`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getProductImagesKey = (params?: Hb_getProductImagesParams) => {
+  return ["/api/projects/hb-product-center/products/{product_id}/images", params] as const;
+};
+
+export function useHb_getProductImages<TData = { data: HbProductImageOut[] }>(options: { params: Hb_getProductImagesParams; query?: Omit<UseQueryOptions<{ data: HbProductImageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getProductImagesKey(options.params), queryFn: () => hb_getProductImages(options.params), ...options?.query });
+}
+
+export function useHb_getProductImagesSuspense<TData = { data: HbProductImageOut[] }>(options: { params: Hb_getProductImagesParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbProductImageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getProductImagesKey(options.params), queryFn: () => hb_getProductImages(options.params), ...options?.query });
+}
+
+export const hb_sendQualityAssistantMessage = async (data: HbChatMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch("/api/projects/hb-product-center/quality/assistant-chat", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_sendQualityAssistantMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, HbChatMessageIn> }) {
+  return useMutation({ mutationFn: (data) => hb_sendQualityAssistantMessage(data), ...options?.mutation });
+}
+
+export const hb_listInspections = async (params?: Hb_listInspectionsParams, options?: RequestInit): Promise<{ data: HbQualityInspectionOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.product_id != null) searchParams.set("product_id", String(params?.product_id));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/hb-product-center/quality/inspections?${queryString}` : `/api/projects/hb-product-center/quality/inspections`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_listInspectionsKey = (params?: Hb_listInspectionsParams) => {
+  return ["/api/projects/hb-product-center/quality/inspections", params] as const;
+};
+
+export function useHb_listInspections<TData = { data: HbQualityInspectionOut[] }>(options?: { params?: Hb_listInspectionsParams; query?: Omit<UseQueryOptions<{ data: HbQualityInspectionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_listInspectionsKey(options?.params), queryFn: () => hb_listInspections(options?.params), ...options?.query });
+}
+
+export function useHb_listInspectionsSuspense<TData = { data: HbQualityInspectionOut[] }>(options?: { params?: Hb_listInspectionsParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbQualityInspectionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_listInspectionsKey(options?.params), queryFn: () => hb_listInspections(options?.params), ...options?.query });
+}
+
+export const hb_createInspection = async (data: HbQualityInspectionCreate, options?: RequestInit): Promise<{ data: HbQualityInspectionOut }> => {
+  const res = await fetch("/api/projects/hb-product-center/quality/inspections", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_createInspection(options?: { mutation?: UseMutationOptions<{ data: HbQualityInspectionOut }, ApiError, HbQualityInspectionCreate> }) {
+  return useMutation({ mutationFn: (data) => hb_createInspection(data), ...options?.mutation });
+}
+
+export const hb_getInspection = async (params: Hb_getInspectionParams, options?: RequestInit): Promise<{ data: HbInspectionDetailOut }> => {
+  const res = await fetch(`/api/projects/hb-product-center/quality/inspections/${params.inspection_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getInspectionKey = (params?: Hb_getInspectionParams) => {
+  return ["/api/projects/hb-product-center/quality/inspections/{inspection_id}", params] as const;
+};
+
+export function useHb_getInspection<TData = { data: HbInspectionDetailOut }>(options: { params: Hb_getInspectionParams; query?: Omit<UseQueryOptions<{ data: HbInspectionDetailOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getInspectionKey(options.params), queryFn: () => hb_getInspection(options.params), ...options?.query });
+}
+
+export function useHb_getInspectionSuspense<TData = { data: HbInspectionDetailOut }>(options: { params: Hb_getInspectionParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbInspectionDetailOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getInspectionKey(options.params), queryFn: () => hb_getInspection(options.params), ...options?.query });
+}
+
+export const hb_updateInspection = async (params: Hb_updateInspectionParams, data: HbQualityInspectionUpdate, options?: RequestInit): Promise<{ data: HbQualityInspectionOut }> => {
+  const res = await fetch(`/api/projects/hb-product-center/quality/inspections/${params.inspection_id}`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_updateInspection(options?: { mutation?: UseMutationOptions<{ data: HbQualityInspectionOut }, ApiError, { params: Hb_updateInspectionParams; data: HbQualityInspectionUpdate }> }) {
+  return useMutation({ mutationFn: (vars) => hb_updateInspection(vars.params, vars.data), ...options?.mutation });
+}
+
+export const hb_getQualityStats = async (options?: RequestInit): Promise<{ data: HbQualityStats }> => {
+  const res = await fetch("/api/projects/hb-product-center/quality/stats", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getQualityStatsKey = () => {
+  return ["/api/projects/hb-product-center/quality/stats"] as const;
+};
+
+export function useHb_getQualityStats<TData = { data: HbQualityStats }>(options?: { query?: Omit<UseQueryOptions<{ data: HbQualityStats }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getQualityStatsKey(), queryFn: () => hb_getQualityStats(), ...options?.query });
+}
+
+export function useHb_getQualityStatsSuspense<TData = { data: HbQualityStats }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: HbQualityStats }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getQualityStatsKey(), queryFn: () => hb_getQualityStats(), ...options?.query });
+}
+
+export const hb_identifyProduct = async (data: ProductIdentifyRequest, options?: RequestInit): Promise<{ data: ProductIdentifyResponse }> => {
+  const res = await fetch("/api/projects/hb-product-center/recognition/identify", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_identifyProduct(options?: { mutation?: UseMutationOptions<{ data: ProductIdentifyResponse }, ApiError, ProductIdentifyRequest> }) {
+  return useMutation({ mutationFn: (data) => hb_identifyProduct(data), ...options?.mutation });
+}
+
+export const hb_listRecognitionJobs = async (params?: Hb_listRecognitionJobsParams, options?: RequestInit): Promise<{ data: HbRecognitionJobOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/hb-product-center/recognition/jobs?${queryString}` : `/api/projects/hb-product-center/recognition/jobs`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_listRecognitionJobsKey = (params?: Hb_listRecognitionJobsParams) => {
+  return ["/api/projects/hb-product-center/recognition/jobs", params] as const;
+};
+
+export function useHb_listRecognitionJobs<TData = { data: HbRecognitionJobOut[] }>(options?: { params?: Hb_listRecognitionJobsParams; query?: Omit<UseQueryOptions<{ data: HbRecognitionJobOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_listRecognitionJobsKey(options?.params), queryFn: () => hb_listRecognitionJobs(options?.params), ...options?.query });
+}
+
+export function useHb_listRecognitionJobsSuspense<TData = { data: HbRecognitionJobOut[] }>(options?: { params?: Hb_listRecognitionJobsParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbRecognitionJobOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_listRecognitionJobsKey(options?.params), queryFn: () => hb_listRecognitionJobs(options?.params), ...options?.query });
+}
+
+export const hb_createRecognitionJob = async (data: HbRecognitionJobCreate, options?: RequestInit): Promise<{ data: HbRecognitionJobOut }> => {
+  const res = await fetch("/api/projects/hb-product-center/recognition/jobs", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_createRecognitionJob(options?: { mutation?: UseMutationOptions<{ data: HbRecognitionJobOut }, ApiError, HbRecognitionJobCreate> }) {
+  return useMutation({ mutationFn: (data) => hb_createRecognitionJob(data), ...options?.mutation });
+}
+
+export const hb_createBatchRecognitionJob = async (data: HbRecognitionJobCreate, options?: RequestInit): Promise<{ data: HbRecognitionJobOut }> => {
+  const res = await fetch("/api/projects/hb-product-center/recognition/jobs/batch", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_createBatchRecognitionJob(options?: { mutation?: UseMutationOptions<{ data: HbRecognitionJobOut }, ApiError, HbRecognitionJobCreate> }) {
+  return useMutation({ mutationFn: (data) => hb_createBatchRecognitionJob(data), ...options?.mutation });
+}
+
+export const hb_getRecognitionJob = async (params: Hb_getRecognitionJobParams, options?: RequestInit): Promise<{ data: HbRecognitionJobDetailOut }> => {
+  const res = await fetch(`/api/projects/hb-product-center/recognition/jobs/${params.job_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getRecognitionJobKey = (params?: Hb_getRecognitionJobParams) => {
+  return ["/api/projects/hb-product-center/recognition/jobs/{job_id}", params] as const;
+};
+
+export function useHb_getRecognitionJob<TData = { data: HbRecognitionJobDetailOut }>(options: { params: Hb_getRecognitionJobParams; query?: Omit<UseQueryOptions<{ data: HbRecognitionJobDetailOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getRecognitionJobKey(options.params), queryFn: () => hb_getRecognitionJob(options.params), ...options?.query });
+}
+
+export function useHb_getRecognitionJobSuspense<TData = { data: HbRecognitionJobDetailOut }>(options: { params: Hb_getRecognitionJobParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbRecognitionJobDetailOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getRecognitionJobKey(options.params), queryFn: () => hb_getRecognitionJob(options.params), ...options?.query });
+}
+
+export const hb_listSupplyChainEvents = async (params?: Hb_listSupplyChainEventsParams, options?: RequestInit): Promise<{ data: HbSupplyChainEventOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.product_id != null) searchParams.set("product_id", String(params?.product_id));
+  if (params?.event_type != null) searchParams.set("event_type", String(params?.event_type));
+  if (params?.country != null) searchParams.set("country", String(params?.country));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/hb-product-center/supply-chain/events?${queryString}` : `/api/projects/hb-product-center/supply-chain/events`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_listSupplyChainEventsKey = (params?: Hb_listSupplyChainEventsParams) => {
+  return ["/api/projects/hb-product-center/supply-chain/events", params] as const;
+};
+
+export function useHb_listSupplyChainEvents<TData = { data: HbSupplyChainEventOut[] }>(options?: { params?: Hb_listSupplyChainEventsParams; query?: Omit<UseQueryOptions<{ data: HbSupplyChainEventOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_listSupplyChainEventsKey(options?.params), queryFn: () => hb_listSupplyChainEvents(options?.params), ...options?.query });
+}
+
+export function useHb_listSupplyChainEventsSuspense<TData = { data: HbSupplyChainEventOut[] }>(options?: { params?: Hb_listSupplyChainEventsParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbSupplyChainEventOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_listSupplyChainEventsKey(options?.params), queryFn: () => hb_listSupplyChainEvents(options?.params), ...options?.query });
+}
+
+export const hb_getProductJourney = async (params: Hb_getProductJourneyParams, options?: RequestInit): Promise<{ data: HbProductJourney }> => {
+  const res = await fetch(`/api/projects/hb-product-center/supply-chain/products/${params.product_id}/journey`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getProductJourneyKey = (params?: Hb_getProductJourneyParams) => {
+  return ["/api/projects/hb-product-center/supply-chain/products/{product_id}/journey", params] as const;
+};
+
+export function useHb_getProductJourney<TData = { data: HbProductJourney }>(options: { params: Hb_getProductJourneyParams; query?: Omit<UseQueryOptions<{ data: HbProductJourney }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getProductJourneyKey(options.params), queryFn: () => hb_getProductJourney(options.params), ...options?.query });
+}
+
+export function useHb_getProductJourneySuspense<TData = { data: HbProductJourney }>(options: { params: Hb_getProductJourneyParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbProductJourney }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getProductJourneyKey(options.params), queryFn: () => hb_getProductJourney(options.params), ...options?.query });
+}
+
+export const hb_listSustainabilityMetrics = async (params?: Hb_listSustainabilityMetricsParams, options?: RequestInit): Promise<{ data: HbSustainabilityMetricOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/hb-product-center/supply-chain/sustainability?${queryString}` : `/api/projects/hb-product-center/supply-chain/sustainability`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_listSustainabilityMetricsKey = (params?: Hb_listSustainabilityMetricsParams) => {
+  return ["/api/projects/hb-product-center/supply-chain/sustainability", params] as const;
+};
+
+export function useHb_listSustainabilityMetrics<TData = { data: HbSustainabilityMetricOut[] }>(options?: { params?: Hb_listSustainabilityMetricsParams; query?: Omit<UseQueryOptions<{ data: HbSustainabilityMetricOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_listSustainabilityMetricsKey(options?.params), queryFn: () => hb_listSustainabilityMetrics(options?.params), ...options?.query });
+}
+
+export function useHb_listSustainabilityMetricsSuspense<TData = { data: HbSustainabilityMetricOut[] }>(options?: { params?: Hb_listSustainabilityMetricsParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbSustainabilityMetricOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_listSustainabilityMetricsKey(options?.params), queryFn: () => hb_listSustainabilityMetrics(options?.params), ...options?.query });
+}
+
+export const hb_getProductSustainability = async (params: Hb_getProductSustainabilityParams, options?: RequestInit): Promise<{ data: HbSustainabilityMetricOut }> => {
+  const res = await fetch(`/api/projects/hb-product-center/supply-chain/sustainability/${params.product_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getProductSustainabilityKey = (params?: Hb_getProductSustainabilityParams) => {
+  return ["/api/projects/hb-product-center/supply-chain/sustainability/{product_id}", params] as const;
+};
+
+export function useHb_getProductSustainability<TData = { data: HbSustainabilityMetricOut }>(options: { params: Hb_getProductSustainabilityParams; query?: Omit<UseQueryOptions<{ data: HbSustainabilityMetricOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getProductSustainabilityKey(options.params), queryFn: () => hb_getProductSustainability(options.params), ...options?.query });
+}
+
+export function useHb_getProductSustainabilitySuspense<TData = { data: HbSustainabilityMetricOut }>(options: { params: Hb_getProductSustainabilityParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbSustainabilityMetricOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getProductSustainabilityKey(options.params), queryFn: () => hb_getProductSustainability(options.params), ...options?.query });
 }
 
 export const mac_listAnomalyAlerts = async (params?: Mac_listAnomalyAlertsParams, options?: RequestInit): Promise<{ data: MacAnomalyAlertOut[] }> => {

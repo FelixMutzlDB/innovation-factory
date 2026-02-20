@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "datasets": [
+    {
+      "name": "ds_sc_events",
+      "warehouseId": "862f1d757f0424f7",
+      "query": {
+        "sql": "SELECT * FROM innovation_factory_catalog.hb_product_center.hb_supply_chain_events",
+        "fields": []
+      }
+    },
+    {
+      "name": "ds_sustainability",
+      "warehouseId": "862f1d757f0424f7",
+      "query": {
+        "sql": "SELECT s.*, p.category, p.style_name, p.collection FROM innovation_factory_catalog.hb_product_center.hb_sustainability_metrics s JOIN innovation_factory_catalog.hb_product_center.hb_products p ON s.product_id = p.id",
+        "fields": []
+      }
+    }
+  ],
+  "pages": [
+    {
+      "pageType": "PAGE_TYPE_CANVAS",
+      "title": "Supply Chain Overview",
+      "widgets": [
+        {
+          "name": "sc-title",
+          "widgetType": "text",
+          "layout": {"x": 0, "y": 0, "width": 6, "height": 1},
+          "multilineTextboxSpec": {
+            "lines": [{"type": "text", "content": "Hugo Boss Supply Chain Intelligence"}]
+          },
+          "frame": {"showTitle": false}
+        },
+        {
+          "name": "counter-total-events",
+          "widgetType": "counter",
+          "layout": {"x": 0, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_sc_events", "fields": [{"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "count(id)", "displayName": "Total Events"}}},
+          "frame": {"showTitle": true, "title": "Total Events"}
+        },
+        {
+          "name": "counter-countries",
+          "widgetType": "counter",
+          "layout": {"x": 2, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_sc_events", "fields": [{"name": "count(distinct country)", "expression": "COUNT(DISTINCT `country`)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "count(distinct country)", "displayName": "Countries"}}},
+          "frame": {"showTitle": true, "title": "Countries"}
+        },
+        {
+          "name": "counter-partners",
+          "widgetType": "counter",
+          "layout": {"x": 4, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_sc_events", "fields": [{"name": "count(distinct partner_name)", "expression": "COUNT(DISTINCT `partner_name`)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "count(distinct partner_name)", "displayName": "Partners"}}},
+          "frame": {"showTitle": true, "title": "Partners"}
+        },
+        {
+          "name": "bar-events-by-type",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 4, "width": 3, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_sc_events", "fields": [{"name": "event_type", "expression": "`event_type`"}, {"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "event_type", "scale": {"type": "categorical"}}, "y": {"fieldName": "count(id)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Events by Type"}
+        },
+        {
+          "name": "bar-events-by-country",
+          "widgetType": "bar",
+          "layout": {"x": 3, "y": 4, "width": 3, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_sc_events", "fields": [{"name": "country", "expression": "`country`"}, {"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "country", "scale": {"type": "categorical"}}, "y": {"fieldName": "count(id)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Events by Country"}
+        },
+        {
+          "name": "line-events-timeline",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 9, "width": 6, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_sc_events", "fields": [{"name": "month", "expression": "DATE_TRUNC(\"MONTH\", `event_date`)"}, {"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "month", "scale": {"type": "temporal"}}, "y": {"fieldName": "count(id)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Events Over Time"}
+        }
+      ]
+    },
+    {
+      "pageType": "PAGE_TYPE_CANVAS",
+      "title": "Sustainability",
+      "widgets": [
+        {
+          "name": "sust-title",
+          "widgetType": "text",
+          "layout": {"x": 0, "y": 0, "width": 6, "height": 1},
+          "multilineTextboxSpec": {
+            "lines": [{"type": "text", "content": "Sustainability Metrics"}]
+          },
+          "frame": {"showTitle": false}
+        },
+        {
+          "name": "counter-avg-carbon",
+          "widgetType": "counter",
+          "layout": {"x": 0, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_sustainability", "fields": [{"name": "avg(carbon_footprint_kg)", "expression": "AVG(`carbon_footprint_kg`)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "avg(carbon_footprint_kg)", "displayName": "Avg Carbon (kg)"}}},
+          "frame": {"showTitle": true, "title": "Avg Carbon Footprint"}
+        },
+        {
+          "name": "counter-avg-recycled",
+          "widgetType": "counter",
+          "layout": {"x": 2, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_sustainability", "fields": [{"name": "avg(recycled_content_pct)", "expression": "AVG(`recycled_content_pct`)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "avg(recycled_content_pct)", "displayName": "Avg Recycled %"}}},
+          "frame": {"showTitle": true, "title": "Avg Recycled Content"}
+        },
+        {
+          "name": "counter-compliant",
+          "widgetType": "counter",
+          "layout": {"x": 4, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_sustainability", "fields": [{"name": "compliant_count", "expression": "SUM(CASE WHEN `compliance_status` = 'compliant' THEN 1 ELSE 0 END)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "compliant_count", "displayName": "Compliant Products"}}},
+          "frame": {"showTitle": true, "title": "Compliant Products"}
+        },
+        {
+          "name": "bar-carbon-by-category",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 4, "width": 3, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_sustainability", "fields": [{"name": "category", "expression": "`category`"}, {"name": "avg(carbon_footprint_kg)", "expression": "AVG(`carbon_footprint_kg`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "category", "scale": {"type": "categorical"}}, "y": {"fieldName": "avg(carbon_footprint_kg)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Avg Carbon by Category"}
+        },
+        {
+          "name": "pie-compliance",
+          "widgetType": "bar",
+          "layout": {"x": 3, "y": 4, "width": 3, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_sustainability", "fields": [{"name": "compliance_status", "expression": "`compliance_status`"}, {"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "compliance_status", "scale": {"type": "categorical"}}, "y": {"fieldName": "count(id)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Compliance Distribution"}
+        }
+      ]
+    }
+  ]
+}

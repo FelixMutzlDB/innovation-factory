@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "datasets": [
+    {
+      "name": "ds_auth",
+      "warehouseId": "862f1d757f0424f7",
+      "query": {
+        "sql": "SELECT v.*, p.style_name, p.category FROM innovation_factory_catalog.hb_product_center.hb_auth_verifications v LEFT JOIN innovation_factory_catalog.hb_product_center.hb_products p ON v.product_id = p.id",
+        "fields": []
+      }
+    },
+    {
+      "name": "ds_alerts",
+      "warehouseId": "862f1d757f0424f7",
+      "query": {
+        "sql": "SELECT * FROM innovation_factory_catalog.hb_product_center.hb_auth_alerts",
+        "fields": []
+      }
+    },
+    {
+      "name": "ds_inspections",
+      "warehouseId": "862f1d757f0424f7",
+      "query": {
+        "sql": "SELECT i.*, p.style_name, p.category FROM innovation_factory_catalog.hb_product_center.hb_quality_inspections i LEFT JOIN innovation_factory_catalog.hb_product_center.hb_products p ON i.product_id = p.id",
+        "fields": []
+      }
+    },
+    {
+      "name": "ds_defects",
+      "warehouseId": "862f1d757f0424f7",
+      "query": {
+        "sql": "SELECT * FROM innovation_factory_catalog.hb_product_center.hb_quality_defects",
+        "fields": []
+      }
+    }
+  ],
+  "pages": [
+    {
+      "pageType": "PAGE_TYPE_CANVAS",
+      "title": "Authenticity",
+      "widgets": [
+        {
+          "name": "auth-title",
+          "widgetType": "text",
+          "layout": {"x": 0, "y": 0, "width": 6, "height": 1},
+          "multilineTextboxSpec": {
+            "lines": [{"type": "text", "content": "Authenticity Verification Center"}]
+          },
+          "frame": {"showTitle": false}
+        },
+        {
+          "name": "counter-verifications",
+          "widgetType": "counter",
+          "layout": {"x": 0, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_auth", "fields": [{"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "count(id)", "displayName": "Total Verifications"}}},
+          "frame": {"showTitle": true, "title": "Total Verifications"}
+        },
+        {
+          "name": "counter-verified",
+          "widgetType": "counter",
+          "layout": {"x": 2, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_auth", "fields": [{"name": "verified_count", "expression": "SUM(CASE WHEN `status` = 'verified' THEN 1 ELSE 0 END)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "verified_count", "displayName": "Verified"}}},
+          "frame": {"showTitle": true, "title": "Verified"}
+        },
+        {
+          "name": "counter-alerts",
+          "widgetType": "counter",
+          "layout": {"x": 4, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_alerts", "fields": [{"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "count(id)", "displayName": "Alerts"}}},
+          "frame": {"showTitle": true, "title": "Active Alerts"}
+        },
+        {
+          "name": "bar-auth-by-status",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 4, "width": 3, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_auth", "fields": [{"name": "status", "expression": "`status`"}, {"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "status", "scale": {"type": "categorical"}}, "y": {"fieldName": "count(id)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Verifications by Status"}
+        },
+        {
+          "name": "bar-auth-by-region",
+          "widgetType": "bar",
+          "layout": {"x": 3, "y": 4, "width": 3, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_auth", "fields": [{"name": "region", "expression": "`region`"}, {"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "region", "scale": {"type": "categorical"}}, "y": {"fieldName": "count(id)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Verifications by Region"}
+        },
+        {
+          "name": "bar-auth-methods",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 9, "width": 6, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_auth", "fields": [{"name": "verification_method", "expression": "`verification_method`"}, {"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "verification_method", "scale": {"type": "categorical"}}, "y": {"fieldName": "count(id)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Verification Methods"}
+        }
+      ]
+    },
+    {
+      "pageType": "PAGE_TYPE_CANVAS",
+      "title": "Quality Control",
+      "widgets": [
+        {
+          "name": "quality-title",
+          "widgetType": "text",
+          "layout": {"x": 0, "y": 0, "width": 6, "height": 1},
+          "multilineTextboxSpec": {
+            "lines": [{"type": "text", "content": "Quality Control Studio"}]
+          },
+          "frame": {"showTitle": false}
+        },
+        {
+          "name": "counter-inspections",
+          "widgetType": "counter",
+          "layout": {"x": 0, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_inspections", "fields": [{"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "count(id)", "displayName": "Total Inspections"}}},
+          "frame": {"showTitle": true, "title": "Total Inspections"}
+        },
+        {
+          "name": "counter-avg-score",
+          "widgetType": "counter",
+          "layout": {"x": 2, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_inspections", "fields": [{"name": "avg(overall_score)", "expression": "AVG(`overall_score`)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "avg(overall_score)", "displayName": "Avg Score"}}},
+          "frame": {"showTitle": true, "title": "Average Quality Score"}
+        },
+        {
+          "name": "counter-defects",
+          "widgetType": "counter",
+          "layout": {"x": 4, "y": 1, "width": 2, "height": 3},
+          "queries": [{"name": "main_query", "queryName": "ds_defects", "fields": [{"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 2, "disaggregated": false, "encodings": {"value": {"fieldName": "count(id)", "displayName": "Defects Found"}}},
+          "frame": {"showTitle": true, "title": "Total Defects"}
+        },
+        {
+          "name": "bar-insp-by-status",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 4, "width": 3, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_inspections", "fields": [{"name": "status", "expression": "`status`"}, {"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "status", "scale": {"type": "categorical"}}, "y": {"fieldName": "count(id)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Inspections by Status"}
+        },
+        {
+          "name": "bar-defect-types",
+          "widgetType": "bar",
+          "layout": {"x": 3, "y": 4, "width": 3, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_defects", "fields": [{"name": "defect_type", "expression": "`defect_type`"}, {"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "defect_type", "scale": {"type": "categorical"}}, "y": {"fieldName": "count(id)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Defects by Type"}
+        },
+        {
+          "name": "bar-partner-quality",
+          "widgetType": "bar",
+          "layout": {"x": 0, "y": 9, "width": 3, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_inspections", "fields": [{"name": "manufacturing_partner", "expression": "`manufacturing_partner`"}, {"name": "avg(overall_score)", "expression": "AVG(`overall_score`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "manufacturing_partner", "scale": {"type": "categorical"}}, "y": {"fieldName": "avg(overall_score)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Quality by Partner"}
+        },
+        {
+          "name": "bar-defect-severity",
+          "widgetType": "bar",
+          "layout": {"x": 3, "y": 9, "width": 3, "height": 5},
+          "queries": [{"name": "main_query", "queryName": "ds_defects", "fields": [{"name": "severity", "expression": "`severity`"}, {"name": "count(id)", "expression": "COUNT(`id`)"}]}],
+          "spec": {"version": 3, "disaggregated": false, "encodings": {"x": {"fieldName": "severity", "scale": {"type": "categorical"}}, "y": {"fieldName": "count(id)", "scale": {"type": "quantitative"}}}},
+          "frame": {"showTitle": true, "title": "Defects by Severity"}
+        }
+      ]
+    }
+  ]
+}
