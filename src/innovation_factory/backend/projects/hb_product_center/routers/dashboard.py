@@ -1,66 +1,56 @@
-"""Dashboard aggregation endpoints."""
+"""Dashboard aggregation endpoints using Unity Catalog tables."""
 
 from datetime import datetime, timedelta, timezone
+from typing import Annotated
 
-from fastapi import APIRouter
-from sqlmodel import func, select
+from databricks.sdk import WorkspaceClient
+from fastapi import APIRouter, Depends
 
-from ....dependencies import SessionDep
-from ..models import (
-    AlertResolution,
-    HbAuthAlert,
-    HbAuthVerification,
-    HbDashboardSummary,
-    HbProduct,
-    HbQualityInspection,
-    HbRecognitionJob,
-    HbSupplyChainEvent,
-    HbSustainabilityMetric,
-    HbTrendPoint,
-    InspectionStatus,
-    ProductStatus,
-    VerificationStatus,
-)
+from ....dependencies import RuntimeDep
+from ..databricks_config import UC_CATALOG, UC_SCHEMA, WAREHOUSE_ID
+from ..models import HbDashboardSummary, HbTrendPoint
+from ..services.uc_query_service import count_rows, avg_column, execute_query
 
 router = APIRouter(prefix="/dashboard", tags=["hb-product-center"])
 
 
+def get_ws(runtime: RuntimeDep) -> WorkspaceClient:
+    """Get WorkspaceClient from runtime (uses app SP identity)."""
+    return runtime.ws
+
+
+WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
+
+
 @router.get("/summary", response_model=HbDashboardSummary, operation_id="hb_getDashboardSummary")
-def get_dashboard_summary(session: SessionDep):
-    total_products = session.exec(select(func.count(HbProduct.id))).one()
-    active_products = session.exec(
-        select(func.count(HbProduct.id)).where(HbProduct.status == ProductStatus.active)
-    ).one()
+def get_dashboard_summary(ws: WsDep):
+    """Get dashboard summary metrics from Unity Catalog tables."""
+    # Products
+    total_products = count_rows(ws, "hb_products")
+    active_products = count_rows(ws, "hb_products", "status = 'active'")
 
-    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    jobs_today = session.exec(
-        select(func.count(HbRecognitionJob.id)).where(HbRecognitionJob.created_at >= today_start)
-    ).one()
-    jobs_total = session.exec(select(func.count(HbRecognitionJob.id))).one()
+    # Recognition jobs
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    jobs_today = count_rows(ws, "hb_recognition_jobs", f"created_at >= '{today_str}'")
+    jobs_total = count_rows(ws, "hb_recognition_jobs")
 
-    scores = session.exec(
-        select(HbQualityInspection.overall_score).where(HbQualityInspection.overall_score > 0)
-    ).all()
-    avg_quality = round(sum(scores) / len(scores), 1) if scores else 0.0
+    # Quality inspections
+    avg_quality = round(avg_column(ws, "hb_quality_inspections", "overall_score", "overall_score > 0"), 1)
+    pending_inspections = count_rows(ws, "hb_quality_inspections", "status = 'pending'")
 
-    pending_inspections = session.exec(
-        select(func.count(HbQualityInspection.id)).where(HbQualityInspection.status == InspectionStatus.pending)
-    ).one()
-
-    total_verifications = session.exec(select(func.count(HbAuthVerification.id))).one()
-    verified = session.exec(
-        select(func.count(HbAuthVerification.id)).where(HbAuthVerification.status == VerificationStatus.verified)
-    ).one()
+    # Auth verifications
+    total_verifications = count_rows(ws, "hb_auth_verifications")
+    verified = count_rows(ws, "hb_auth_verifications", "status = 'verified'")
     auth_rate = round(verified / total_verifications * 100, 1) if total_verifications > 0 else 0.0
 
-    open_alerts = session.exec(
-        select(func.count(HbAuthAlert.id)).where(HbAuthAlert.resolution == AlertResolution.open)
-    ).one()
+    # Auth alerts
+    open_alerts = count_rows(ws, "hb_auth_alerts", "resolution = 'open'")
 
-    sc_events = session.exec(select(func.count(HbSupplyChainEvent.id))).one()
+    # Supply chain
+    sc_events = count_rows(ws, "hb_supply_chain_events")
 
-    sustainability_scores = session.exec(select(HbSustainabilityMetric.recycled_content_pct)).all()
-    avg_sustainability = round(sum(sustainability_scores) / len(sustainability_scores), 1) if sustainability_scores else 0.0
+    # Sustainability
+    avg_sustainability = round(avg_column(ws, "hb_sustainability_metrics", "recycled_content_pct"), 1)
 
     return HbDashboardSummary(
         total_products=total_products,
@@ -77,22 +67,31 @@ def get_dashboard_summary(session: SessionDep):
 
 
 @router.get("/trends", response_model=list[HbTrendPoint], operation_id="hb_getDashboardTrends")
-def get_dashboard_trends(session: SessionDep):
-    """Return daily recognition job counts for the last 30 days."""
+def get_dashboard_trends(ws: WsDep):
+    """Return daily recognition job counts for the last 30 days from Unity Catalog."""
+    table = f"{UC_CATALOG}.{UC_SCHEMA}.hb_recognition_jobs"
     now = datetime.now(timezone.utc)
+    start_date = (now - timedelta(days=30)).strftime("%Y-%m-%d")
+
+    # Single query to get all daily counts
+    sql = f"""
+        SELECT DATE(created_at) as day, COUNT(*) as cnt
+        FROM {table}
+        WHERE created_at >= '{start_date}'
+        GROUP BY DATE(created_at)
+        ORDER BY day
+    """
+    rows = execute_query(ws, sql)
+    daily_counts = {row[0]: int(row[1]) for row in rows}
+
+    # Build result with all 31 days (including today)
     points = []
     for i in range(30, -1, -1):
         day = now - timedelta(days=i)
-        day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
-        day_end = day_start + timedelta(days=1)
-        count = session.exec(
-            select(func.count(HbRecognitionJob.id)).where(
-                HbRecognitionJob.created_at >= day_start,
-                HbRecognitionJob.created_at < day_end,
-            )
-        ).one()
+        day_str = day.strftime("%Y-%m-%d")
+        count = daily_counts.get(day_str, 0)
         points.append(HbTrendPoint(
-            date=day_start.strftime("%Y-%m-%d"),
+            date=day_str,
             value=float(count),
             label="Recognition Jobs",
         ))

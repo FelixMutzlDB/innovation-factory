@@ -96,10 +96,28 @@ function UploadSection() {
   const [mode, setMode] = useState<"single" | "batch">("single");
   const [description, setDescription] = useState("");
   const [identifyResult, setIdentifyResult] = useState<ProductIdentifyResponse | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const queryClient = useQueryClient();
   const createJob = useHb_createRecognitionJob();
   const identifyProduct = useHb_identifyProduct();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file);
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    const label = file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
+    setDescription(`Product image: ${label}`);
+  };
+
+  const clearFile = () => {
+    setSelectedFile(null);
+    if (preview) URL.revokeObjectURL(preview);
+    setPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleUpload = () => {
     createJob.mutate(
@@ -112,6 +130,7 @@ function UploadSection() {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["hb_listRecognitionJobs"] });
+          clearFile();
         },
       },
     );
@@ -129,6 +148,13 @@ function UploadSection() {
     );
   };
 
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith("image/")) handleFileSelect(file);
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -144,16 +170,49 @@ function UploadSection() {
           </CardHeader>
           <CardContent>
             <div
-              className="border-2 border-dashed rounded-lg p-8 text-center hover:bg-muted/50 transition-colors cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
+                isDragging
+                  ? "border-primary bg-primary/5"
+                  : selectedFile
+                    ? "border-primary/50 bg-muted/30"
+                    : "hover:bg-muted/50"
+              }`}
+              onClick={() => !selectedFile && fileInputRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={handleDrop}
             >
-              <Camera className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-              <p className="text-sm text-muted-foreground mb-1">
-                Drop product image here or click to browse
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Supports JPG, PNG, WebP up to 10MB
-              </p>
+              {preview && selectedFile ? (
+                <div className="space-y-3">
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="mx-auto max-h-32 rounded-md object-contain"
+                  />
+                  <p className="text-sm font-medium truncate">{selectedFile.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {(selectedFile.size / 1024).toFixed(0)} KB
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => { e.stopPropagation(); clearFile(); }}
+                  >
+                    <XCircle className="h-3 w-3 mr-1" />
+                    Remove
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Camera className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                  <p className="text-sm text-muted-foreground mb-1">
+                    Drop product image here or click to browse
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Supports JPG, PNG, WebP up to 10MB
+                  </p>
+                </>
+              )}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -161,11 +220,7 @@ function UploadSection() {
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  if (file) {
-                    setDescription(
-                      `Product image: ${file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ")}`,
-                    );
-                  }
+                  if (file) handleFileSelect(file);
                 }}
               />
             </div>
@@ -190,7 +245,7 @@ function UploadSection() {
             <Button
               className="w-full mt-4"
               onClick={handleUpload}
-              disabled={createJob.isPending}
+              disabled={createJob.isPending || (!selectedFile && mode === "single")}
             >
               {createJob.isPending ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

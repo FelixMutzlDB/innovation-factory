@@ -4,6 +4,12 @@ bundle:
 sync:
   include:
     - .build
+  exclude:
+    - node_modules
+    - .venv
+    - .git
+    - "*.pyc"
+    - __pycache__
 
 artifacts:
   default:
@@ -37,4 +43,4 @@ targets:
     mode: development
     default: true
     workspace:
-      profile: e2-demo-field-eng
+      profile: e2

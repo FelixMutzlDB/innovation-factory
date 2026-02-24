@@ -170,7 +170,6 @@ class ChatContext(str, Enum):
     authenticity = "authenticity"
     supply_chain = "supply_chain"
     general = "general"
-    quality_asst = "quality_asst"
 
 
 # ============================================================================

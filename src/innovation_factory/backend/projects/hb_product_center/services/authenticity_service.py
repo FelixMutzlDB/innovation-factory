@@ -20,6 +20,27 @@ from ..models import (
 _rng = random.Random()
 
 
+def generate_verification_result() -> tuple[str, float]:
+    """Generate a random verification status and confidence for UC-based verifications.
+
+    Returns:
+        Tuple of (status_string, confidence_score)
+    """
+    outcome = _rng.choices(
+        [VerificationStatus.verified, VerificationStatus.suspicious, VerificationStatus.counterfeit],
+        weights=[85, 10, 5],
+    )[0]
+
+    if outcome == VerificationStatus.verified:
+        confidence = round(_rng.uniform(0.88, 0.99), 3)
+    elif outcome == VerificationStatus.suspicious:
+        confidence = round(_rng.uniform(0.40, 0.65), 3)
+    else:
+        confidence = round(_rng.uniform(0.15, 0.40), 3)
+
+    return outcome.value, confidence
+
+
 def verify_product(session: Session, verification: HbAuthVerification) -> HbAuthVerification:
     """Simulate product authenticity verification."""
     outcome = _rng.choices(

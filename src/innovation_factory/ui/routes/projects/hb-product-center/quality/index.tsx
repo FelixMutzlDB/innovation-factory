@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Suspense, useState, useRef, useEffect, useCallback } from "react";
+import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import {
@@ -36,11 +36,6 @@ import {
   BarChart3,
   Sparkles,
   ExternalLink,
-  Send,
-  Loader2,
-  Bot,
-  User,
-  BookOpen,
 } from "lucide-react";
 
 export const Route = createFileRoute(
@@ -75,22 +70,14 @@ function QualityPage() {
               </Card>
             )}
           >
-            <Tabs defaultValue="assistant">
+            <Tabs defaultValue="dashboard">
               <TabsList>
-                <TabsTrigger value="assistant">
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Knowledge Assistant
-                </TabsTrigger>
                 <TabsTrigger value="dashboard">
                   <BarChart3 className="h-4 w-4 mr-2" />
                   AI/BI Dashboard
                 </TabsTrigger>
                 <TabsTrigger value="inspections">Inspections</TabsTrigger>
               </TabsList>
-
-              <TabsContent value="assistant" className="space-y-4">
-                <QualityAssistantChat />
-              </TabsContent>
 
               <TabsContent value="dashboard" className="space-y-4">
                 <Suspense
@@ -240,209 +227,6 @@ function InspectionsList() {
             ))}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
-  );
-}
-
-interface ChatMessage {
-  role: "user" | "assistant";
-  content: string;
-}
-
-function QualityAssistantChat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [sessionId, setSessionId] = useState<number | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = useCallback(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, scrollToBottom]);
-
-  const handleSend = async () => {
-    const text = input.trim();
-    if (!text || isLoading) return;
-
-    setInput("");
-    setMessages((prev) => [...prev, { role: "user", content: text }]);
-    setIsLoading(true);
-
-    try {
-      const res = await fetch(
-        "/api/projects/hb-product-center/quality/assistant-chat",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content: text, session_id: sessionId }),
-        },
-      );
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error("No response body");
-
-      const decoder = new TextDecoder();
-      let accumulated = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        accumulated += decoder.decode(value, { stream: true });
-
-        const lines = accumulated.split("\n");
-        accumulated = lines.pop() ?? "";
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          try {
-            const chunk = JSON.parse(line.slice(6));
-            if (chunk.session_id) setSessionId(chunk.session_id);
-            if (chunk.content && !chunk.done) {
-              setMessages((prev) => {
-                const last = prev[prev.length - 1];
-                if (last?.role === "assistant") {
-                  return [
-                    ...prev.slice(0, -1),
-                    { role: "assistant", content: chunk.content },
-                  ];
-                }
-                return [...prev, { role: "assistant", content: chunk.content }];
-              });
-            }
-          } catch {
-            // skip malformed lines
-          }
-        }
-      }
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "Sorry, I couldn't reach the quality assistant. Please try again.",
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary" />
-          Quality Knowledge Assistant
-        </CardTitle>
-        <CardDescription>
-          Describe a quality issue to get mitigation recommendations based on
-          Hugo Boss quality documentation
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div
-          ref={scrollRef}
-          className="h-96 overflow-y-auto space-y-3 mb-3 rounded-lg border bg-muted/30 p-3"
-        >
-          {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm gap-2">
-              <Bot className="h-8 w-8" />
-              <p>
-                Describe a quality issue and I'll propose mitigations based on
-                our quality documentation.
-              </p>
-              <div className="flex flex-wrap gap-2 mt-2 justify-center">
-                {[
-                  "Fabric pilling on BOSS knitwear after 3 washes",
-                  "Color shade variation in suit jacket lot",
-                  "Button detachment on shirts batch HB-2026-0412",
-                  "Seam puckering on lightweight summer trousers",
-                ].map((q) => (
-                  <button
-                    key={q}
-                    className="px-3 py-1.5 rounded-full border text-xs hover:bg-muted transition-colors"
-                    onClick={() => setInput(q)}
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              {msg.role === "assistant" && (
-                <div className="flex-shrink-0 h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Bot className="h-4 w-4 text-primary" />
-                </div>
-              )}
-              <div
-                className={`max-w-[85%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${
-                  msg.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background border"
-                }`}
-              >
-                {msg.content}
-              </div>
-              {msg.role === "user" && (
-                <div className="flex-shrink-0 h-7 w-7 rounded-full bg-muted flex items-center justify-center">
-                  <User className="h-4 w-4" />
-                </div>
-              )}
-            </div>
-          ))}
-          {isLoading && messages[messages.length - 1]?.role === "user" && (
-            <div className="flex gap-2">
-              <div className="flex-shrink-0 h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                <Bot className="h-4 w-4 text-primary" />
-              </div>
-              <div className="bg-background border rounded-lg px-3 py-2">
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-              </div>
-            </div>
-          )}
-        </div>
-        <form
-          className="flex gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}
-        >
-          <input
-            type="text"
-            className="flex-1 rounded-md border px-3 py-2 text-sm"
-            placeholder="Describe a quality issue for mitigation recommendations..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            disabled={isLoading}
-          />
-          <Button
-            type="submit"
-            size="sm"
-            disabled={isLoading || !input.trim()}
-          >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </Button>
-        </form>
       </CardContent>
     </Card>
   );

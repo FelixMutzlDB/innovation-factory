@@ -81,6 +81,9 @@ class Runtime:
         This callback calls ws.postgres.generate_database_credential() to get
         a fresh token for every new connection, matching the recommended pattern
         from the Lakebase Autoscaling documentation.
+
+        NOTE: This uses the app's Service Principal identity (via self.ws), NOT
+        the logged-in user's identity. This ensures consistent database permissions.
         """
         endpoint_name = self.config.db.endpoint_name
         if not endpoint_name:
@@ -88,6 +91,12 @@ class Runtime:
                 "ENDPOINT_NAME must be set for Lakebase Autoscaling credential rotation. "
                 "Get it from the Lakebase Connect modal or: databricks postgres list-endpoints"
             )
+        # Log SP identity for debugging (only once per connection pool lifetime)
+        try:
+            sp_identity = self.ws.current_user.me().user_name
+            logger.debug(f"Generating Lakebase credential as: {sp_identity}")
+        except Exception:
+            pass  # Don't fail if we can't get identity
         credential = self.ws.postgres.generate_database_credential(endpoint=endpoint_name)
         cparams["password"] = credential.token
 
@@ -178,4 +187,42 @@ class Runtime:
             # With multiple uvicorn workers, another worker may have already created
             # the tables. If so, just log a warning and continue.
             logger.warning(f"create_all raised (likely concurrent worker race): {e}")
+
+        # Grant permissions to PUBLIC on all tables for multi-user Lakebase access
+        self._grant_table_permissions()
         logger.info("Database models initialized successfully")
+
+    def _grant_table_permissions(self) -> None:
+        """Grant SELECT, INSERT, UPDATE, DELETE on all tables to PUBLIC.
+
+        In Lakebase, tables are owned by the user who creates them. Other users
+        won't have access unless explicitly granted. This ensures all authenticated
+        Databricks users can access the app's tables.
+        """
+        if self._is_local_dev:
+            return  # Skip for local PGlite development
+
+        table_names = list(SQLModel.metadata.tables.keys())
+        if not table_names:
+            return
+
+        with self.get_session() as session:
+            # Set default privileges for future tables
+            try:
+                session.execute(
+                    text("ALTER DEFAULT PRIVILEGES GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO PUBLIC")
+                )
+            except Exception as e:
+                logger.debug(f"Could not set default privileges: {e}")
+
+            # Grant on existing tables
+            for table_name in table_names:
+                try:
+                    session.execute(
+                        text(f'GRANT SELECT, INSERT, UPDATE, DELETE ON "{table_name}" TO PUBLIC')
+                    )
+                except Exception as e:
+                    # Ignore errors (e.g., if we don't own the table or grant already exists)
+                    logger.debug(f"Could not grant permissions on {table_name}: {e}")
+            session.commit()
+            logger.info(f"Granted permissions to PUBLIC on {len(table_names)} tables")

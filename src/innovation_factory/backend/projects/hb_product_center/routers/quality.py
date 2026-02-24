@@ -1,144 +1,204 @@
-"""Quality control inspection and defect endpoints."""
+"""Quality control inspection and defect endpoints using Unity Catalog."""
 
 from typing import Annotated, Optional
 
+from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import StreamingResponse
-from sqlmodel import Session, func, select
 
-from ....dependencies import SessionDep, get_session, get_runtime
-from ....runtime import Runtime
+from ....dependencies import RuntimeDep
 from ..models import (
-    HbChatMessageIn,
-    HbProduct,
+    DefectSeverity,
+    DefectType,
+    HbInspectionDetailOut,
     HbProductOut,
-    HbQualityDefect,
     HbQualityDefectOut,
-    HbQualityInspection,
     HbQualityInspectionCreate,
     HbQualityInspectionOut,
     HbQualityInspectionUpdate,
     HbQualityStats,
-    HbInspectionDetailOut,
     InspectionStatus,
+    ProductCategory,
+    ProductCollection,
+    ProductSeason,
+    ProductStatus,
 )
-from ..services.quality_service import run_quality_inspection
-from ..services.quality_knowledge_service import QualityKnowledgeService
+from ..services.uc_query_service import (
+    select_all,
+    select_by_id,
+    insert_row,
+    update_row,
+    execute_query,
+    get_table_name,
+)
 
 router = APIRouter(prefix="/quality", tags=["hb-product-center"])
 
-_quality_assistant = QualityKnowledgeService()
+_VALID_INSPECTION_STATUSES = {e.value for e in InspectionStatus}
+_VALID_DEFECT_TYPES = {e.value for e in DefectType}
+_VALID_DEFECT_SEVERITIES = {e.value for e in DefectSeverity}
+_VALID_CATEGORIES = {e.value for e in ProductCategory}
+_VALID_COLLECTIONS = {e.value for e in ProductCollection}
+_VALID_SEASONS = {e.value for e in ProductSeason}
+_VALID_PRODUCT_STATUSES = {e.value for e in ProductStatus}
+
+
+def _sanitize_inspection_row(row: dict) -> HbQualityInspectionOut:
+    row = dict(row)
+    if "status" in row and row["status"] is not None:
+        val = str(row["status"]).strip().lower()
+        row["status"] = val if val in _VALID_INSPECTION_STATUSES else "pending"
+    return HbQualityInspectionOut(**row)
+
+
+def _sanitize_defect_row(row: dict) -> HbQualityDefectOut:
+    row = dict(row)
+    if "defect_type" in row and row["defect_type"] is not None:
+        val = str(row["defect_type"]).strip().lower()
+        row["defect_type"] = val if val in _VALID_DEFECT_TYPES else "fabric_flaw"
+    if "severity" in row and row["severity"] is not None:
+        val = str(row["severity"]).strip().lower()
+        row["severity"] = val if val in _VALID_DEFECT_SEVERITIES else "minor"
+    return HbQualityDefectOut(**row)
+
+
+def _sanitize_product_row(row: dict) -> HbProductOut:
+    row = dict(row)
+    for field, valid, default in [
+        ("category", _VALID_CATEGORIES, "accessories"),
+        ("collection", _VALID_COLLECTIONS, "BOSS"),
+        ("season", _VALID_SEASONS, "SS25"),
+        ("status", _VALID_PRODUCT_STATUSES, "active"),
+    ]:
+        if field in row and row[field] is not None:
+            val = str(row[field]).strip()
+            val_lower = val.lower()
+            row[field] = val if val in valid else (val_lower if val_lower in valid else default)
+    return HbProductOut(**row)
+
+
+def get_ws(runtime: RuntimeDep) -> WorkspaceClient:
+    """Get WorkspaceClient from runtime (uses app SP identity)."""
+    return runtime.ws
+
+
+WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 
 
 @router.get("/inspections", response_model=list[HbQualityInspectionOut], operation_id="hb_listInspections")
 def list_inspections(
-    session: SessionDep,
+    ws: WsDep,
     status: Optional[str] = Query(None),
     product_id: Optional[int] = Query(None),
     limit: int = Query(50, le=200),
     offset: int = Query(0),
 ):
-    stmt = select(HbQualityInspection)
+    """List quality inspections from Unity Catalog."""
+    conditions = []
     if status:
-        stmt = stmt.where(HbQualityInspection.status == status)
+        conditions.append(f"status = '{status}'")
     if product_id:
-        stmt = stmt.where(HbQualityInspection.product_id == product_id)
-    stmt = stmt.order_by(HbQualityInspection.created_at.desc()).offset(offset).limit(limit)  # type: ignore[union-attr]
-    return list(session.exec(stmt).all())
+        conditions.append(f"product_id = {product_id}")
 
+    where = " AND ".join(conditions) if conditions else ""
+    rows = select_all(ws, "hb_quality_inspections", where=where, order_by="created_at DESC", limit=limit, offset=offset)
+    return [_sanitize_inspection_row(row) for row in rows]
 
 @router.get("/inspections/{inspection_id}", response_model=HbInspectionDetailOut, operation_id="hb_getInspection")
-def get_inspection(inspection_id: int, session: SessionDep):
-    inspection = session.get(HbQualityInspection, inspection_id)
+def get_inspection(inspection_id: int, ws: WsDep):
+    """Get inspection details including defects from Unity Catalog."""
+    inspection = select_by_id(ws, "hb_quality_inspections", inspection_id)
     if not inspection:
         raise HTTPException(status_code=404, detail="Inspection not found")
-    defects = list(session.exec(
-        select(HbQualityDefect).where(HbQualityDefect.inspection_id == inspection_id)
-    ).all())
-    product = session.get(HbProduct, inspection.product_id)
+
+    sanitized = _sanitize_inspection_row(inspection)
+    defects = select_all(ws, "hb_quality_defects", where=f"inspection_id = {inspection_id}")
+    product = select_by_id(ws, "hb_products", inspection["product_id"]) if inspection.get("product_id") else None
+
     return HbInspectionDetailOut(
-        **inspection.model_dump(),
-        defects=[HbQualityDefectOut(**d.model_dump()) for d in defects],
-        product=HbProductOut(**product.model_dump()) if product else None,
+        **sanitized.model_dump(),
+        defects=[_sanitize_defect_row(d) for d in defects],
+        product=_sanitize_product_row(product) if product else None,
     )
 
 
 @router.post("/inspections", response_model=HbQualityInspectionOut, operation_id="hb_createInspection")
-def create_inspection(data: HbQualityInspectionCreate, session: SessionDep):
-    product = session.get(HbProduct, data.product_id)
+def create_inspection(data: HbQualityInspectionCreate, ws: WsDep):
+    """Create a new quality inspection in Unity Catalog."""
+    product = select_by_id(ws, "hb_products", data.product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    inspection = HbQualityInspection(**data.model_dump())
-    session.add(inspection)
-    session.flush()
-    inspection = run_quality_inspection(session, inspection)
-    session.commit()
-    return inspection
 
+    from datetime import datetime, timezone
+    from ..services.quality_service import generate_inspection_score
+
+    # Generate inspection results
+    score, status = generate_inspection_score()
+
+    inspection_data = {
+        **data.model_dump(),
+        "overall_score": score,
+        "status": status,
+        "created_at": datetime.now(timezone.utc),
+    }
+
+    insert_row(ws, "hb_quality_inspections", inspection_data)
+
+    # Return the created inspection
+    rows = select_all(ws, "hb_quality_inspections", order_by="id DESC", limit=1)
+    return _sanitize_inspection_row(rows[0]) if rows else HbQualityInspectionOut(**inspection_data, id=0)  # type: ignore[arg-type]
 
 @router.patch("/inspections/{inspection_id}", response_model=HbQualityInspectionOut, operation_id="hb_updateInspection")
-def update_inspection(inspection_id: int, data: HbQualityInspectionUpdate, session: SessionDep):
-    inspection = session.get(HbQualityInspection, inspection_id)
+def update_inspection(inspection_id: int, data: HbQualityInspectionUpdate, ws: WsDep):
+    """Update an inspection in Unity Catalog."""
+    inspection = select_by_id(ws, "hb_quality_inspections", inspection_id)
     if not inspection:
         raise HTTPException(status_code=404, detail="Inspection not found")
-    update_data = data.model_dump(exclude_unset=True)
-    for key, value in update_data.items():
-        setattr(inspection, key, value)
-    session.add(inspection)
-    session.commit()
-    session.refresh(inspection)
-    return inspection
 
+    update_data = data.model_dump(exclude_unset=True)
+    if update_data:
+        update_row(ws, "hb_quality_inspections", inspection_id, update_data)
+
+    updated = select_by_id(ws, "hb_quality_inspections", inspection_id)
+    return _sanitize_inspection_row(updated) if updated else _sanitize_inspection_row(inspection)
 
 @router.get("/stats", response_model=HbQualityStats, operation_id="hb_getQualityStats")
-def get_quality_stats(session: SessionDep):
-    inspections = list(session.exec(select(HbQualityInspection)).all())
-    defects = list(session.exec(select(HbQualityDefect)).all())
+def get_quality_stats(ws: WsDep):
+    """Get quality statistics from Unity Catalog."""
+    insp_table = get_table_name("hb_quality_inspections")
+    defect_table = get_table_name("hb_quality_defects")
 
-    status_counts = {s.value: 0 for s in InspectionStatus}
-    scores = []
-    for insp in inspections:
-        status_counts[insp.status.value] = status_counts.get(insp.status.value, 0) + 1
-        if insp.overall_score > 0:
-            scores.append(insp.overall_score)
+    # Status counts
+    status_sql = f"SELECT status, COUNT(*) as cnt FROM {insp_table} GROUP BY status"
+    status_rows = execute_query(ws, status_sql)
+    status_counts = {row[0]: int(row[1]) for row in status_rows}
 
-    defect_counts: dict[str, int] = {}
-    severity_counts: dict[str, int] = {}
-    for d in defects:
-        defect_counts[d.defect_type.value] = defect_counts.get(d.defect_type.value, 0) + 1
-        severity_counts[d.severity.value] = severity_counts.get(d.severity.value, 0) + 1
+    # Average score
+    avg_sql = f"SELECT AVG(overall_score) FROM {insp_table} WHERE overall_score > 0"
+    avg_rows = execute_query(ws, avg_sql)
+    avg_score = float(avg_rows[0][0]) if avg_rows and avg_rows[0][0] else 0.0
+
+    # Total count
+    total_sql = f"SELECT COUNT(*) FROM {insp_table}"
+    total_rows = execute_query(ws, total_sql)
+    total = int(total_rows[0][0]) if total_rows else 0
+
+    # Defect counts by type
+    defect_sql = f"SELECT defect_type, COUNT(*) as cnt FROM {defect_table} GROUP BY defect_type"
+    defect_rows = execute_query(ws, defect_sql)
+    defect_counts = {row[0]: int(row[1]) for row in defect_rows}
+
+    # Severity counts
+    severity_sql = f"SELECT severity, COUNT(*) as cnt FROM {defect_table} GROUP BY severity"
+    severity_rows = execute_query(ws, severity_sql)
+    severity_counts = {row[0]: int(row[1]) for row in severity_rows}
 
     return HbQualityStats(
-        total_inspections=len(inspections),
+        total_inspections=total,
         approved=status_counts.get("approved", 0),
         rejected=status_counts.get("rejected", 0),
         pending=status_counts.get("pending", 0),
         in_review=status_counts.get("in_review", 0),
-        avg_score=round(sum(scores) / len(scores), 1) if scores else 0.0,
+        avg_score=round(avg_score, 1),
         defect_counts=defect_counts,
         severity_counts=severity_counts,
-    )
-
-
-@router.post("/assistant-chat", operation_id="hb_sendQualityAssistantMessage")
-async def send_quality_assistant_message(
-    message: HbChatMessageIn,
-    db: Annotated[Session, Depends(get_session)],
-    runtime: Annotated[Runtime, Depends(get_runtime)],
-):
-    """Send a message to the Quality Knowledge Assistant (streaming)."""
-
-    async def event_generator():
-        async for chunk in _quality_assistant.stream_response(
-            ws=runtime.ws,
-            db=db,
-            user_message=message.content,
-            session_id=message.session_id,
-        ):
-            yield f"data: {chunk}\n\n"
-
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
     )

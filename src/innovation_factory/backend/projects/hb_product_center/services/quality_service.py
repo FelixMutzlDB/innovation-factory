@@ -27,6 +27,31 @@ DEFECT_LOCATIONS = [
 ]
 
 
+def generate_inspection_score() -> tuple[float, str]:
+    """Generate a random inspection score and status for UC-based inspections.
+
+    Returns:
+        Tuple of (score, status_string)
+    """
+    n_defects = _rng.choices([0, 1, 2, 3, 4], weights=[40, 30, 15, 10, 5])[0]
+
+    if n_defects == 0:
+        score = round(_rng.uniform(92, 100), 1)
+    elif n_defects <= 2:
+        score = round(_rng.uniform(70, 91), 1)
+    else:
+        score = round(_rng.uniform(35, 69), 1)
+
+    if score >= 85 and n_defects <= 1:
+        status = "approved"
+    elif score < 50:
+        status = "rejected"
+    else:
+        status = "in_review"
+
+    return score, status
+
+
 def run_quality_inspection(session: Session, inspection: HbQualityInspection) -> HbQualityInspection:
     """Simulate an AI quality inspection with defect detection."""
     inspection.status = InspectionStatus.in_review

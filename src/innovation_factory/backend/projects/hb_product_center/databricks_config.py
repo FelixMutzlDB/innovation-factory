@@ -16,8 +16,6 @@ AQ_DASHBOARD_ID = os.getenv("HB_AQ_DASHBOARD_ID", "01f10dd25a091cb583999906bfb01
 SC_GENIE_SPACE_ID = os.getenv("HB_SC_GENIE_SPACE_ID", "01f10dce917e158093ef87c43e5f66f3")
 AQ_GENIE_SPACE_ID = os.getenv("HB_AQ_GENIE_SPACE_ID", "01f10dcf2ecd1b26a5dd22b98cff8a73")
 
-MAS_ENDPOINT_NAME = os.getenv("HB_MAS_ENDPOINT_NAME", "mas-fac40cde-endpoint")
-
-LLM_ENDPOINT_NAME = os.getenv("HB_LLM_ENDPOINT_NAME", "databricks-claude-sonnet-4-6")
+MAS_ENDPOINT_NAME = os.getenv("HB_MAS_ENDPOINT_NAME", "databricks-claude-sonnet-4-6")
 
 WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "862f1d757f0424f7")

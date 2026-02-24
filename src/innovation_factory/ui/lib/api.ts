@@ -465,7 +465,6 @@ export const ChatContext = {
   authenticity: "authenticity",
   supply_chain: "supply_chain",
   general: "general",
-  quality_asst: "quality_asst",
 } as const;
 
 export type ChatContext = (typeof ChatContext)[keyof typeof ChatContext];
@@ -3576,21 +3575,6 @@ export function useHb_getProductImages<TData = { data: HbProductImageOut[] }>(op
 
 export function useHb_getProductImagesSuspense<TData = { data: HbProductImageOut[] }>(options: { params: Hb_getProductImagesParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbProductImageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: hb_getProductImagesKey(options.params), queryFn: () => hb_getProductImages(options.params), ...options?.query });
-}
-
-export const hb_sendQualityAssistantMessage = async (data: HbChatMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
-  const res = await fetch("/api/projects/hb-product-center/quality/assistant-chat", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
-  if (!res.ok) {
-    const body = await res.text();
-    let parsed: unknown;
-    try { parsed = JSON.parse(body); } catch { parsed = body; }
-    throw new ApiError(res.status, res.statusText, parsed);
-  }
-  return { data: await res.json() };
-};
-
-export function useHb_sendQualityAssistantMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, HbChatMessageIn> }) {
-  return useMutation({ mutationFn: (data) => hb_sendQualityAssistantMessage(data), ...options?.mutation });
 }
 
 export const hb_listInspections = async (params?: Hb_listInspectionsParams, options?: RequestInit): Promise<{ data: HbQualityInspectionOut[] }> => {
