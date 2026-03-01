@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Suspense, useState, useRef, useEffect, useCallback } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useHb_getDashboardSummarySuspense } from "@/lib/api";
 import { selector } from "@/lib/selector";
 import {
@@ -11,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -26,7 +29,9 @@ import {
   Loader2,
   Bot,
   User,
+  Sparkles,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects/hb-product-center/")({
   component: () => <OverviewPage />,
@@ -160,6 +165,7 @@ function OverviewPage() {
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  sources?: Array<{ type: string; source: string }>;
 }
 
 function ProductCenterChat() {
@@ -168,6 +174,7 @@ function ProductCenterChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isLoadingRef = useRef(false);
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
@@ -179,67 +186,84 @@ function ProductCenterChat() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  const handleSend = async () => {
-    const text = input.trim();
-    if (!text || isLoading) return;
+  const sendMessage = useCallback(
+    async (text: string) => {
+      if (!text.trim() || isLoadingRef.current) return;
+      isLoadingRef.current = true;
+      setIsLoading(true);
+      setInput("");
+      setMessages((prev) => [...prev, { role: "user", content: text }]);
 
-    setInput("");
-    setMessages((prev) => [...prev, { role: "user", content: text }]);
-    setIsLoading(true);
+      try {
+        const res = await fetch(
+          "/api/projects/hb-product-center/chat/mas-chat",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: text, session_id: sessionId }),
+          },
+        );
 
-    try {
-      const res = await fetch("/api/projects/hb-product-center/chat/mas-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: text, session_id: sessionId }),
-      });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
+        const reader = res.body?.getReader();
+        if (!reader) throw new Error("No response body");
 
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error("No response body");
+        const decoder = new TextDecoder();
+        let accumulated = "";
 
-      const decoder = new TextDecoder();
-      let accumulated = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          accumulated += decoder.decode(value, { stream: true });
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        accumulated += decoder.decode(value, { stream: true });
+          const lines = accumulated.split("\n");
+          accumulated = lines.pop() ?? "";
 
-        const lines = accumulated.split("\n");
-        accumulated = lines.pop() ?? "";
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          try {
-            const chunk = JSON.parse(line.slice(6));
-            if (chunk.session_id) setSessionId(chunk.session_id);
-            if (chunk.content && !chunk.done) {
-              setMessages((prev) => {
-                const last = prev[prev.length - 1];
-                if (last?.role === "assistant") {
-                  return [...prev.slice(0, -1), { role: "assistant", content: chunk.content }];
-                }
-                return [...prev, { role: "assistant", content: chunk.content }];
-              });
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            try {
+              const chunk = JSON.parse(line.slice(6));
+              if (chunk.session_id) setSessionId(chunk.session_id);
+              if (chunk.content && !chunk.done) {
+                setMessages((prev) => {
+                  const last = prev[prev.length - 1];
+                  const msg: ChatMessage = {
+                    role: "assistant",
+                    content: chunk.content,
+                    sources: chunk.sources,
+                  };
+                  if (last?.role === "assistant") {
+                    return [...prev.slice(0, -1), msg];
+                  }
+                  return [...prev, msg];
+                });
+              }
+            } catch {
+              // skip malformed lines
             }
-          } catch {
-            // skip malformed lines
           }
         }
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              "Sorry, I couldn't reach the agent. Please try again.",
+          },
+        ]);
+      } finally {
+        isLoadingRef.current = false;
+        setIsLoading(false);
       }
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Sorry, I couldn't reach the agent. Please try again." },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [sessionId],
+  );
+
+  const handleSend = useCallback(() => {
+    sendMessage(input.trim());
+  }, [input, sendMessage]);
 
   return (
     <Card>
@@ -249,13 +273,14 @@ function ProductCenterChat() {
           Product Center Intelligence Agent
         </CardTitle>
         <CardDescription>
-          Ask questions about supply chain, quality, authenticity, or product identification
+          Ask questions about supply chain, quality, authenticity, or product
+          identification
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div
           ref={scrollRef}
-          className="h-64 overflow-y-auto space-y-3 mb-3 rounded-lg border bg-muted/30 p-3"
+          className="h-96 overflow-y-auto space-y-4 mb-3 rounded-lg border bg-muted/30 p-4"
         >
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm gap-2">
@@ -270,9 +295,7 @@ function ProductCenterChat() {
                   <button
                     key={q}
                     className="px-3 py-1.5 rounded-full border text-xs hover:bg-muted transition-colors"
-                    onClick={() => {
-                      setInput(q);
-                    }}
+                    onClick={() => sendMessage(q)}
                   >
                     {q}
                   </button>
@@ -283,24 +306,133 @@ function ProductCenterChat() {
           {messages.map((msg, i) => (
             <div
               key={i}
-              className={`flex gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              className={cn(
+                "flex gap-2",
+                msg.role === "user" ? "justify-end" : "justify-start",
+              )}
             >
               {msg.role === "assistant" && (
-                <div className="flex-shrink-0 h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                <div className="flex-shrink-0 h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center mt-1">
                   <Bot className="h-4 w-4 text-primary" />
                 </div>
               )}
               <div
-                className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
+                className={cn(
+                  "max-w-[85%] rounded-lg px-4 py-3 text-sm",
                   msg.role === "user"
                     ? "bg-primary text-primary-foreground"
-                    : "bg-background border"
-                }`}
+                    : "bg-background border",
+                )}
               >
-                {msg.content}
+                {msg.role === "user" ? (
+                  msg.content
+                ) : (
+                  <>
+                    <div className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          h1: ({ children }) => (
+                            <h1 className="text-lg font-bold mt-4 mb-2 first:mt-0">
+                              {children}
+                            </h1>
+                          ),
+                          h2: ({ children }) => (
+                            <h2 className="text-base font-semibold mt-3 mb-1.5 first:mt-0">
+                              {children}
+                            </h2>
+                          ),
+                          h3: ({ children }) => (
+                            <h3 className="text-sm font-semibold mt-2 mb-1 first:mt-0">
+                              {children}
+                            </h3>
+                          ),
+                          p: ({ children }) => (
+                            <p className="mb-2 last:mb-0 leading-relaxed">
+                              {children}
+                            </p>
+                          ),
+                          ul: ({ children }) => (
+                            <ul className="mb-2 ml-4 list-disc space-y-0.5">
+                              {children}
+                            </ul>
+                          ),
+                          ol: ({ children }) => (
+                            <ol className="mb-2 ml-4 list-decimal space-y-0.5">
+                              {children}
+                            </ol>
+                          ),
+                          li: ({ children }) => (
+                            <li className="leading-relaxed">{children}</li>
+                          ),
+                          blockquote: ({ children }) => (
+                            <blockquote className="border-l-3 border-primary/40 pl-3 my-2 text-muted-foreground italic">
+                              {children}
+                            </blockquote>
+                          ),
+                          hr: () => <hr className="my-3 border-border" />,
+                          table: ({ children }) => (
+                            <div className="overflow-x-auto my-3 rounded-md border">
+                              <table className="min-w-full text-xs">
+                                {children}
+                              </table>
+                            </div>
+                          ),
+                          thead: ({ children }) => (
+                            <thead className="bg-muted/60">{children}</thead>
+                          ),
+                          th: ({ children }) => (
+                            <th className="px-3 py-1.5 text-left font-semibold border-b whitespace-nowrap">
+                              {children}
+                            </th>
+                          ),
+                          td: ({ children }) => (
+                            <td className="px-3 py-1.5 border-b border-border/50">
+                              {children}
+                            </td>
+                          ),
+                          code: ({ children, className }) =>
+                            className ? (
+                              <code className="block bg-muted/80 p-3 rounded-md text-xs overflow-x-auto font-mono my-2">
+                                {children}
+                              </code>
+                            ) : (
+                              <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">
+                                {children}
+                              </code>
+                            ),
+                          pre: ({ children }) => (
+                            <pre className="my-2">{children}</pre>
+                          ),
+                          strong: ({ children }) => (
+                            <strong className="font-semibold">
+                              {children}
+                            </strong>
+                          ),
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    </div>
+                    {msg.sources && msg.sources.length > 0 && (
+                      <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-border/50">
+                        <Sparkles className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                        {msg.sources.map((src, j) => (
+                          <Badge
+                            key={j}
+                            variant="secondary"
+                            className="text-[10px] px-1.5 py-0 font-normal"
+                          >
+                            {src.source}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
               {msg.role === "user" && (
-                <div className="flex-shrink-0 h-7 w-7 rounded-full bg-muted flex items-center justify-center">
+                <div className="flex-shrink-0 h-7 w-7 rounded-full bg-muted flex items-center justify-center mt-1">
                   <User className="h-4 w-4" />
                 </div>
               )}

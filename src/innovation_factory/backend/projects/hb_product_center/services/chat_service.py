@@ -59,10 +59,9 @@ class HbChatService:
             result = ws.api_client.do(
                 "POST",
                 f"/serving-endpoints/{MAS_ENDPOINT_NAME}/invocations",
-                body={"messages": messages, "max_tokens": 1024},
+                body={"input": messages},
             )
-            content = self._extract_text(result)
-            sources = [{"type": "agent", "source": "HB Product Center Intelligence"}]
+            content, sources = self._extract_mas_response(result)
         except Exception as e:
             logger.error(f"Agent endpoint error: {type(e).__name__}: {e}", exc_info=True)
             content = (
@@ -81,16 +80,63 @@ class HbChatService:
         })
         yield json.dumps({"content": "", "done": True})
 
-    def _extract_text(self, response: Any) -> str:
-        if isinstance(response, dict):
-            resp: dict[str, Any] = response
+    def _extract_mas_response(self, response: Any) -> tuple[str, list[dict[str, str]]]:
+        """Extract content and sources from a MAS supervisor response.
+
+        Returns (content_text, sources) where content_text is the final
+        assistant summary and sources lists which agents contributed.
+        """
+        if not isinstance(response, dict):
+            return str(response), []
+
+        resp: dict[str, Any] = response
+        output = resp.get("output")
+
+        # Plain string output
+        if isinstance(output, str):
+            return output, [{"type": "agent", "source": "HB Product Center Intelligence"}]
+
+        # Standard chat completion fallback
+        if output is None:
             choices = resp.get("choices", [])
             if choices:
-                return choices[0].get("message", {}).get("content", "")
-            output = resp.get("output")
-            if isinstance(output, str):
-                return output
-        return str(response)
+                text = choices[0].get("message", {}).get("content", "")
+                return text, [{"type": "agent", "source": "HB Product Center Intelligence"}]
+            return str(response), []
+
+        # MAS list-of-items format
+        if not isinstance(output, list):
+            return str(output), []
+
+        parts: list[str] = []
+        sources: list[dict[str, str]] = []
+        seen_agents: set[str] = set()
+
+        for item in output:
+            item_type = item.get("type")
+
+            if item_type == "function_call":
+                agent_name = item.get("name", "")
+                if agent_name and agent_name not in seen_agents:
+                    seen_agents.add(agent_name)
+                    label = agent_name.replace("agent-", "").replace("hb-", "").replace("-", " ").title()
+                    sources.append({"type": "agent", "source": label})
+
+            elif item_type == "message":
+                content_blocks = item.get("content", [])
+                for block in content_blocks:
+                    text = block.get("text", "")
+                    if not text:
+                        continue
+                    # Skip agent name tags like <name>...</name>
+                    if text.startswith("<name>") and text.endswith("</name>"):
+                        continue
+                    parts.append(text)
+
+        if not sources:
+            sources.append({"type": "agent", "source": "HB Product Center Intelligence"})
+
+        return "\n\n".join(parts), sources
 
     def _get_or_create_session(self, db: Session, session_id: Optional[int]) -> HbChatSession:
         if session_id:
@@ -136,7 +182,6 @@ class HbChatService:
         compatible with Unity Catalog-only deployments.
         """
         messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_message},
         ]
 
@@ -144,10 +189,9 @@ class HbChatService:
             result = ws.api_client.do(
                 "POST",
                 f"/serving-endpoints/{MAS_ENDPOINT_NAME}/invocations",
-                body={"messages": messages, "max_tokens": 1024},
+                body={"input": messages},
             )
-            content = self._extract_text(result)
-            sources = [{"type": "agent", "source": "HB Product Center Intelligence"}]
+            content, sources = self._extract_mas_response(result)
         except Exception as e:
             logger.error(f"Agent endpoint error: {type(e).__name__}: {e}", exc_info=True)
             content = (

@@ -1,14 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Suspense, useState, useRef } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { QueryErrorResetBoundary, useQueryClient } from "@tanstack/react-query";
+import { useState, useRef } from "react";
 import {
-  useHb_listRecognitionJobsSuspense,
-  useHb_createRecognitionJob,
-  useHb_identifyProduct,
-  type ProductIdentifyResponse,
+  useHb_findSimilarImages,
+  type SimilarImageResult,
 } from "@/lib/api";
-import { selector } from "@/lib/selector";
 import {
   Card,
   CardContent,
@@ -20,24 +15,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   ScanSearch,
   Upload,
   Camera,
-  Layers,
-  CheckCircle2,
-  Clock,
   XCircle,
   Loader2,
-  Sparkles,
-  Package,
+  ImageIcon,
 } from "lucide-react";
 
 export const Route = createFileRoute(
@@ -47,104 +30,36 @@ export const Route = createFileRoute(
 });
 
 function RecognitionPage() {
-  return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-          <ScanSearch className="h-6 w-6" />
-          Visual Product Recognition Hub
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Upload product images to instantly identify SKU, style, color, and
-          size. Supports single and batch processing.
-        </p>
-      </div>
-
-      <UploadSection />
-
-      <QueryErrorResetBoundary>
-        {({ reset }) => (
-          <ErrorBoundary
-            onReset={reset}
-            fallbackRender={({ resetErrorBoundary }) => (
-              <Card>
-                <CardContent className="p-6">
-                  <p className="text-destructive">
-                    Failed to load recognition jobs.
-                  </p>
-                  <button
-                    onClick={resetErrorBoundary}
-                    className="mt-2 text-sm underline"
-                  >
-                    Retry
-                  </button>
-                </CardContent>
-              </Card>
-            )}
-          >
-            <Suspense fallback={<JobsSkeleton />}>
-              <JobsList />
-            </Suspense>
-          </ErrorBoundary>
-        )}
-      </QueryErrorResetBoundary>
-    </div>
-  );
-}
-
-function UploadSection() {
-  const [mode, setMode] = useState<"single" | "batch">("single");
-  const [description, setDescription] = useState("");
-  const [identifyResult, setIdentifyResult] = useState<ProductIdentifyResponse | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const queryClient = useQueryClient();
-  const createJob = useHb_createRecognitionJob();
-  const identifyProduct = useHb_identifyProduct();
+  const [results, setResults] = useState<SimilarImageResult[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const findSimilar = useHb_findSimilarImages();
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-    const label = file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
-    setDescription(`Product image: ${label}`);
+    setPreview(URL.createObjectURL(file));
+    setResults(null);
   };
 
   const clearFile = () => {
     setSelectedFile(null);
     if (preview) URL.revokeObjectURL(preview);
     setPreview(null);
+    setResults(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleUpload = () => {
-    createJob.mutate(
-      {
-        job_type: mode,
-        image_count: mode === "batch" ? 10 : 1,
-        user_role: "store_associate",
-        submitted_by: "Current User",
-      },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["hb_listRecognitionJobs"] });
-          clearFile();
-        },
-      },
+  const handleSearch = async () => {
+    if (!selectedFile) return;
+    const buffer = await selectedFile.arrayBuffer();
+    const base64 = btoa(
+      new Uint8Array(buffer).reduce((s, b) => s + String.fromCharCode(b), ""),
     );
-  };
-
-  const handleIdentify = () => {
-    if (!description.trim()) return;
-    identifyProduct.mutate(
-      { description: description.trim() },
-      {
-        onSuccess: (result) => {
-          setIdentifyResult(result.data);
-        },
-      },
+    findSimilar.mutate(
+      { image_base64: base64, top_k: 5 },
+      { onSuccess: (res) => setResults(res.data.results) },
     );
   };
 
@@ -156,21 +71,32 @@ function UploadSection() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Upload className="h-4 w-4" />
-              Upload Image
-            </CardTitle>
-            <CardDescription>
-              Drag and drop or click to upload product images
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+    <div className="p-6 space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <ScanSearch className="h-6 w-6" />
+          Visual Product Recognition
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Upload a product image to find visually similar items using AI-powered
+          image embeddings and vector search.
+        </p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Upload className="h-4 w-4" />
+            Upload Image
+          </CardTitle>
+          <CardDescription>
+            Drag and drop or click to upload a product image
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-4">
             <div
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
+              className={`flex-1 border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
                 isDragging
                   ? "border-primary bg-primary/5"
                   : selectedFile
@@ -178,7 +104,10 @@ function UploadSection() {
                     : "hover:bg-muted/50"
               }`}
               onClick={() => !selectedFile && fileInputRef.current?.click()}
-              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleDrop}
             >
@@ -186,17 +115,22 @@ function UploadSection() {
                 <div className="space-y-3">
                   <img
                     src={preview}
-                    alt="Preview"
-                    className="mx-auto max-h-32 rounded-md object-contain"
+                    alt="Query"
+                    className="mx-auto max-h-48 rounded-md object-contain"
                   />
-                  <p className="text-sm font-medium truncate">{selectedFile.name}</p>
+                  <p className="text-sm font-medium truncate">
+                    {selectedFile.name}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {(selectedFile.size / 1024).toFixed(0)} KB
                   </p>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={(e) => { e.stopPropagation(); clearFile(); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      clearFile();
+                    }}
                   >
                     <XCircle className="h-3 w-3 mr-1" />
                     Remove
@@ -224,139 +158,56 @@ function UploadSection() {
                 }}
               />
             </div>
-            <div className="flex gap-2 mt-4">
+
+            <div className="flex sm:flex-col justify-center">
               <Button
-                variant={mode === "single" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setMode("single")}
+                size="lg"
+                onClick={handleSearch}
+                disabled={findSimilar.isPending || !selectedFile}
+                className="min-w-[160px]"
               >
-                <Camera className="h-3 w-3 mr-1" />
-                Single
-              </Button>
-              <Button
-                variant={mode === "batch" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setMode("batch")}
-              >
-                <Layers className="h-3 w-3 mr-1" />
-                Batch
+                {findSimilar.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <ScanSearch className="h-4 w-4 mr-2" />
+                )}
+                Find Similar
               </Button>
             </div>
-            <Button
-              className="w-full mt-4"
-              onClick={handleUpload}
-              disabled={createJob.isPending || (!selectedFile && mode === "single")}
-            >
-              {createJob.isPending ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <ScanSearch className="h-4 w-4 mr-2" />
-              )}
-              {mode === "batch"
-                ? "Start Batch Recognition"
-                : "Submit Recognition Job"}
-            </Button>
-          </CardContent>
-        </Card>
+          </div>
 
+          {findSimilar.isError && (
+            <p className="text-sm text-destructive mt-3">
+              Search failed. Please try again.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {findSimilar.isPending && <ResultsSkeleton />}
+
+      {results && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
-              AI Product Identification
+              <ImageIcon className="h-4 w-4" />
+              Similar Images
             </CardTitle>
             <CardDescription>
-              Describe a product or paste image details to identify it using AI
+              {results.length} result{results.length !== 1 ? "s" : ""} found
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <textarea
-              className="w-full rounded-md border px-3 py-2 text-sm min-h-[100px] resize-none"
-              placeholder="Describe the product... e.g. 'Black slim fit suit jacket, wool blend, BOSS branding on inner label'"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <Button
-              className="w-full"
-              onClick={handleIdentify}
-              disabled={identifyProduct.isPending || !description.trim()}
-            >
-              {identifyProduct.isPending ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <ScanSearch className="h-4 w-4 mr-2" />
-              )}
-              Identify Product
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {identifyResult && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              Identification Results
-            </CardTitle>
-            <CardDescription>
-              {identifyResult.matches.length} potential match
-              {identifyResult.matches.length !== 1 ? "es" : ""} found
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {identifyResult.ai_analysis && (
-              <div className="p-4 rounded-lg bg-muted/50 border">
-                <p className="text-sm font-medium flex items-center gap-2 mb-2">
-                  <Sparkles className="h-4 w-4 text-purple-500" />
-                  AI Analysis
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {identifyResult.ai_analysis}
-                </p>
+          <CardContent>
+            {results.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No similar images found.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                {results.map((result, idx) => (
+                  <ResultCard key={result.id} result={result} rank={idx + 1} />
+                ))}
               </div>
-            )}
-            {identifyResult.matches.length > 0 && (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>SKU</TableHead>
-                    <TableHead>Style</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Color</TableHead>
-                    <TableHead>Material</TableHead>
-                    <TableHead>Confidence</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {identifyResult.matches.map((match) => (
-                    <TableRow key={match.product_id}>
-                      <TableCell className="font-mono text-sm">
-                        {match.sku}
-                      </TableCell>
-                      <TableCell className="text-sm font-medium">
-                        {match.style_name}
-                      </TableCell>
-                      <TableCell className="text-sm">{match.category}</TableCell>
-                      <TableCell className="text-sm">{match.color ?? "-"}</TableCell>
-                      <TableCell className="text-sm">{match.material ?? "-"}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            match.confidence === "high"
-                              ? "default"
-                              : match.confidence === "medium"
-                                ? "secondary"
-                                : "outline"
-                          }
-                        >
-                          {match.confidence}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
             )}
           </CardContent>
         </Card>
@@ -365,94 +216,79 @@ function UploadSection() {
   );
 }
 
-const statusConfig: Record<string, { icon: React.ReactNode; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  completed: {
-    icon: <CheckCircle2 className="h-3 w-3" />,
-    variant: "default",
-  },
-  processing: {
-    icon: <Loader2 className="h-3 w-3 animate-spin" />,
-    variant: "secondary",
-  },
-  pending: {
-    icon: <Clock className="h-3 w-3" />,
-    variant: "outline",
-  },
-  failed: {
-    icon: <XCircle className="h-3 w-3" />,
-    variant: "destructive",
-  },
-};
-
-function JobsList() {
-  const { data: jobs } = useHb_listRecognitionJobsSuspense(selector());
+function ResultCard({
+  result,
+  rank,
+}: {
+  result: SimilarImageResult;
+  rank: number;
+}) {
+  const scorePercent = Math.round(result.score * 100);
+  const variant =
+    scorePercent >= 90
+      ? "default"
+      : scorePercent >= 70
+        ? "secondary"
+        : "outline";
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Recognition Jobs</CardTitle>
-        <CardDescription>
-          {jobs.length} jobs found
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Images</TableHead>
-              <TableHead>Submitted By</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {jobs.map((job) => {
-              const cfg = statusConfig[job.status] ?? statusConfig.pending;
-              return (
-                <TableRow key={job.id}>
-                  <TableCell className="font-mono text-sm">#{job.id}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="capitalize">
-                      {job.job_type}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={cfg.variant} className="gap-1">
-                      {cfg.icon}
-                      {job.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {job.completed_count}/{job.image_count}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {job.submitted_by ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {new Date(job.created_at).toLocaleDateString()}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+    <div className="rounded-lg border bg-card overflow-hidden">
+      <div className="aspect-square bg-muted relative">
+        <img
+          src={result.image_url}
+          alt={result.file_name}
+          className="w-full h-full object-contain"
+          loading="lazy"
+        />
+        <Badge className="absolute top-2 left-2 text-xs" variant="secondary">
+          #{rank}
+        </Badge>
+        <Badge className={`absolute top-2 right-2 text-xs`} variant={variant}>
+          {scorePercent}%
+        </Badge>
+      </div>
+      <div className="p-3 space-y-1">
+        <p
+          className="text-sm font-medium truncate"
+          title={result.file_name}
+        >
+          {result.file_name}
+        </p>
+        <div className="flex items-center justify-between">
+          <Badge variant="outline" className="text-xs capitalize">
+            {result.category}
+          </Badge>
+          <span
+            className="text-xs text-muted-foreground font-mono"
+            title={result.id}
+          >
+            {result.id.slice(0, 8)}...
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }
 
-function JobsSkeleton() {
+function ResultsSkeleton() {
   return (
     <Card>
       <CardHeader>
-        <Skeleton className="h-6 w-48" />
+        <Skeleton className="h-6 w-36" />
+        <Skeleton className="h-4 w-24 mt-1" />
       </CardHeader>
-      <CardContent className="space-y-3">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-10 w-full" />
-        ))}
+      <CardContent>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="rounded-lg border overflow-hidden">
+              <Skeleton className="aspect-square w-full" />
+              <div className="p-3 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

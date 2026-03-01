@@ -1,14 +1,18 @@
 """Visual product recognition endpoints using Unity Catalog."""
 
+import base64
 import logging
+import mimetypes
+import os
 from typing import Annotated, Optional
 
 from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import Response
 from pydantic import BaseModel
 
 from ....dependencies import RuntimeDep
-from ..databricks_config import MAS_ENDPOINT_NAME
+from ..databricks_config import IMAGE_VOLUME_PATH, MAS_ENDPOINT_NAME, VS_IMAGE_TABLE
 from ..models import (
     HbRecognitionJobCreate,
     HbRecognitionJobDetailOut,
@@ -18,6 +22,7 @@ from ..models import (
     RecognitionJobType,
     UserRole,
 )
+from ..services.image_similarity_service import compute_embedding, find_similar_images
 from ..services.uc_query_service import select_all, select_by_id, insert_row
 
 logger = logging.getLogger(__name__)
@@ -215,3 +220,98 @@ def create_batch_recognition_job(data: HbRecognitionJobCreate, ws: WsDep):
 
     rows = select_all(ws, "hb_recognition_jobs", order_by="id DESC", limit=1)
     return _sanitize_job_row(rows[0]) if rows else HbRecognitionJobOut(**job_data, id=0)  # type: ignore[arg-type]
+
+
+# ---------------------------------------------------------------------------
+# Image Similarity Search (Vector Search + CLIP)
+# ---------------------------------------------------------------------------
+
+
+class SimilarImageRequest(BaseModel):
+    image_base64: str
+    top_k: int = 5
+
+
+class SimilarImageResult(BaseModel):
+    id: str
+    file_name: str
+    category: str
+    score: float
+    image_url: str
+
+
+class SimilarImagesResponse(BaseModel):
+    results: list[SimilarImageResult]
+
+
+@router.post(
+    "/similar",
+    response_model=SimilarImagesResponse,
+    operation_id="hb_findSimilarImages",
+)
+async def find_similar(request: SimilarImageRequest, ws: WsDep):
+    """Upload a base64-encoded image, compute its CLIP embedding, and return similar images from the vector search index."""
+    try:
+        image_bytes = base64.b64decode(request.image_base64)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid base64 image data")
+
+    try:
+        embedding = compute_embedding(image_bytes)
+    except Exception as e:
+        logger.error(f"Failed to compute embedding: {e}")
+        raise HTTPException(status_code=500, detail="Failed to process image")
+
+    try:
+        raw_results = find_similar_images(ws, embedding, top_k=request.top_k)
+    except Exception as e:
+        logger.error(f"Vector search failed: {e}")
+        raise HTTPException(status_code=500, detail="Similarity search failed")
+
+    results = [
+        SimilarImageResult(
+            id=r["id"],
+            file_name=r["file_name"],
+            category=r["category"],
+            score=round(r["score"], 4),
+            image_url=f"/api/projects/hb-product-center/recognition/images/{r['id']}",
+        )
+        for r in raw_results
+    ]
+    return SimilarImagesResponse(results=results)
+
+
+@router.get(
+    "/images/{image_id}",
+    operation_id="hb_getRecognitionImage",
+    responses={200: {"content": {"image/*": {}}}},
+)
+def get_recognition_image(image_id: str, ws: WsDep):
+    """Serve an image from UC Volumes by looking up its path in the embeddings table."""
+    from ..services.uc_query_service import execute_query_with_schema
+
+    escaped_id = image_id.replace("'", "''")
+    sql = f"SELECT image_uri FROM {VS_IMAGE_TABLE} WHERE id = '{escaped_id}' LIMIT 1"
+
+    try:
+        columns, rows = execute_query_with_schema(ws, sql)
+    except Exception as e:
+        logger.error(f"Failed to look up image {image_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to look up image")
+
+    if not rows:
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    image_uri = rows[0][0]
+
+    if not os.path.exists(image_uri):
+        raise HTTPException(status_code=404, detail=f"Image file not found on volume")
+
+    content_type, _ = mimetypes.guess_type(image_uri)
+    if not content_type:
+        content_type = "image/png"
+
+    with open(image_uri, "rb") as f:
+        image_bytes = f.read()
+
+    return Response(content=image_bytes, media_type=content_type)

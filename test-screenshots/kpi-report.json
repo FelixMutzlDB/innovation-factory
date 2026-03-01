@@ -1,0 +1,14 @@
+{
+  "hbProductCenter": {
+    "screenshot": "hb-product-center-after-30s.png",
+    "hasSkeletonClass": false,
+    "hasSkeletonAria": false,
+    "has50": false,
+    "has40": false,
+    "has80": false,
+    "hasNumbers": false,
+    "kpiSnippet": ""
+  },
+  "home": {},
+  "error": "page.content: Unable to retrieve content because the page is navigating and changing the content."
+}

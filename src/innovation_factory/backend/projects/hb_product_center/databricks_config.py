@@ -16,6 +16,20 @@ AQ_DASHBOARD_ID = os.getenv("HB_AQ_DASHBOARD_ID", "01f10dd25a091cb583999906bfb01
 SC_GENIE_SPACE_ID = os.getenv("HB_SC_GENIE_SPACE_ID", "01f10dce917e158093ef87c43e5f66f3")
 AQ_GENIE_SPACE_ID = os.getenv("HB_AQ_GENIE_SPACE_ID", "01f10dcf2ecd1b26a5dd22b98cff8a73")
 
-MAS_ENDPOINT_NAME = os.getenv("HB_MAS_ENDPOINT_NAME", "databricks-claude-sonnet-4-6")
+MAS_ENDPOINT_NAME = os.getenv("HB_MAS_ENDPOINT_NAME", "mas-2f3fba77-endpoint")
 
 WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "862f1d757f0424f7")
+
+VS_ENDPOINT_NAME = os.getenv("VS_ENDPOINT_NAME", "image_similarity_endpoint")
+VS_INDEX_NAME = os.getenv(
+    "VS_INDEX_NAME",
+    "saschas.image_similarity.image_similarity_index",
+)
+VS_IMAGE_TABLE = os.getenv(
+    "VS_IMAGE_TABLE",
+    "saschas.image_similarity.image_embeddings",
+)
+IMAGE_VOLUME_PATH = os.getenv(
+    "IMAGE_VOLUME_PATH",
+    "/Volumes/saschas/image_similarity/images",
+)

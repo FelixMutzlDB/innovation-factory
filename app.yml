@@ -13,3 +13,5 @@ env:
     value: require
   - name: ENDPOINT_NAME
     value: projects/ff37da7a-d6dc-4703-94e9-0201881be663/branches/br-tiny-hall-d1o2yr5i/endpoints/ep-solitary-morning-d1fm39qw
+  - name: HB_MAS_ENDPOINT_NAME
+    value: mas-2f3fba77-endpoint

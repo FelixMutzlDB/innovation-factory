@@ -1,0 +1,15 @@
+{
+  "url": "https://innovation-factory-1444828305810485.aws.databricksapps.com/projects/hb-product-center/recognition",
+  "timestamp": "2026-02-23T14:30:28.110Z",
+  "screenshot": "/Users/sascha.saumer/GIT/innovation-factory/debug-recognition-output/recognition-screenshot.png",
+  "pageLayout": "Log in\nContinue with SSO\nContact your site administrator to request access.\nPrivacy Notice\nTerms of Use",
+  "consoleErrors": [],
+  "consoleLogsCount": 38,
+  "failedRequests": [],
+  "imageUploadElements": [],
+  "errorMessagesOnPage": [],
+  "clickAttemptResult": {
+    "success": false,
+    "error": "No upload element found"
+  }
+}

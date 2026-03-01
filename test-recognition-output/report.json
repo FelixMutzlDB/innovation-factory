@@ -1,0 +1,104 @@
+{
+  "timestamp": "2026-02-23T14:38:43.507Z",
+  "url": "https://innovation-factory-1444828305810485.aws.databricksapps.com/projects/hb-product-center/recognition",
+  "screenshots": [
+    "01-login-page.png",
+    "02-unknown-state.png"
+  ],
+  "jobsTableLoaded": false,
+  "jobsTableError": null,
+  "uploadAreaRenders": false,
+  "dropZoneText": null,
+  "dropZoneClickScreenshot": null,
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 8769.",
+    "Authenticator is not listening on port 8769.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 65111.",
+    "Authenticator is not listening on port 65111.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 65121.",
+    "Authenticator is not listening on port 65121.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 65131.",
+    "Authenticator is not listening on port 65131.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 65141.",
+    "Authenticator is not listening on port 65141.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 65151.",
+    "Authenticator is not listening on port 65151.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 8769.",
+    "Authenticator is not listening on port 8769.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 65111.",
+    "Authenticator is not listening on port 65111.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 65121.",
+    "Authenticator is not listening on port 65121.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 65131.",
+    "Authenticator is not listening on port 65131.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 65141.",
+    "Authenticator is not listening on port 65141.",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Something unexpected happened while we were checking port 65151.",
+    "Authenticator is not listening on port 65151.",
+    "No available ports. Loopback server failed and polling is cancelled."
+  ],
+  "failedRequests": [
+    {
+      "url": "https://00ovn07tb9icixtoqmjd.authenticatorlocalprod.com:8769/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "https://00ovn07tb9icixtoqmjd.authenticatorlocalprod.com:65111/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "https://00ovn07tb9icixtoqmjd.authenticatorlocalprod.com:65121/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "https://00ovn07tb9icixtoqmjd.authenticatorlocalprod.com:65131/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "https://00ovn07tb9icixtoqmjd.authenticatorlocalprod.com:65141/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "https://00ovn07tb9icixtoqmjd.authenticatorlocalprod.com:65151/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:8769/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:65111/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:65121/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:65131/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:65141/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "url": "http://127.0.0.1:65151/probe",
+      "error": "net::ERR_CONNECTION_REFUSED"
+    }
+  ],
+  "jobsApiRequests": [],
+  "jobsApiFailed": []
+}

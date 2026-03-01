@@ -1333,6 +1333,23 @@ export const ShiftType = {
 
 export type ShiftType = (typeof ShiftType)[keyof typeof ShiftType];
 
+export interface SimilarImageRequest {
+  image_base64: string;
+  top_k?: number;
+}
+
+export interface SimilarImageResult {
+  category: string;
+  file_name: string;
+  id: string;
+  image_url: string;
+  score: number;
+}
+
+export interface SimilarImagesResponse {
+  results: SimilarImageResult[];
+}
+
 export const StationType = {
   highway: "highway",
   urban: "urban",
@@ -1901,6 +1918,10 @@ export interface Hb_getInspectionParams {
 
 export interface Hb_updateInspectionParams {
   inspection_id: number;
+}
+
+export interface Hb_getRecognitionImageParams {
+  image_id: string;
 }
 
 export interface Hb_listRecognitionJobsParams {
@@ -3698,6 +3719,29 @@ export function useHb_identifyProduct(options?: { mutation?: UseMutationOptions<
   return useMutation({ mutationFn: (data) => hb_identifyProduct(data), ...options?.mutation });
 }
 
+export const hb_getRecognitionImage = async (params: Hb_getRecognitionImageParams, options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch(`/api/projects/hb-product-center/recognition/images/${params.image_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const hb_getRecognitionImageKey = (params?: Hb_getRecognitionImageParams) => {
+  return ["/api/projects/hb-product-center/recognition/images/{image_id}", params] as const;
+};
+
+export function useHb_getRecognitionImage<TData = { data: unknown }>(options: { params: Hb_getRecognitionImageParams; query?: Omit<UseQueryOptions<{ data: unknown }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: hb_getRecognitionImageKey(options.params), queryFn: () => hb_getRecognitionImage(options.params), ...options?.query });
+}
+
+export function useHb_getRecognitionImageSuspense<TData = { data: unknown }>(options: { params: Hb_getRecognitionImageParams; query?: Omit<UseSuspenseQueryOptions<{ data: unknown }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: hb_getRecognitionImageKey(options.params), queryFn: () => hb_getRecognitionImage(options.params), ...options?.query });
+}
+
 export const hb_listRecognitionJobs = async (params?: Hb_listRecognitionJobsParams, options?: RequestInit): Promise<{ data: HbRecognitionJobOut[] }> => {
   const searchParams = new URLSearchParams();
   if (params?.status != null) searchParams.set("status", String(params?.status));
@@ -3778,6 +3822,21 @@ export function useHb_getRecognitionJob<TData = { data: HbRecognitionJobDetailOu
 
 export function useHb_getRecognitionJobSuspense<TData = { data: HbRecognitionJobDetailOut }>(options: { params: Hb_getRecognitionJobParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbRecognitionJobDetailOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: hb_getRecognitionJobKey(options.params), queryFn: () => hb_getRecognitionJob(options.params), ...options?.query });
+}
+
+export const hb_findSimilarImages = async (data: SimilarImageRequest, options?: RequestInit): Promise<{ data: SimilarImagesResponse }> => {
+  const res = await fetch("/api/projects/hb-product-center/recognition/similar", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useHb_findSimilarImages(options?: { mutation?: UseMutationOptions<{ data: SimilarImagesResponse }, ApiError, SimilarImageRequest> }) {
+  return useMutation({ mutationFn: (data) => hb_findSimilarImages(data), ...options?.mutation });
 }
 
 export const hb_listSupplyChainEvents = async (params?: Hb_listSupplyChainEventsParams, options?: RequestInit): Promise<{ data: HbSupplyChainEventOut[] }> => {
