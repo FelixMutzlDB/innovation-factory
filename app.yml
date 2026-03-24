@@ -10,9 +10,17 @@ resources:
     sql_warehouse:
       id: 8af6100313039ba2
       permission: CAN_USE
-  - name: serving-endpoint
+  - name: issue-resolution-ka
     serving_endpoint:
-      name: databricks-claude-sonnet-4
+      name: ka-9b426cbe-endpoint
+      permission: CAN_QUERY
+  - name: customer-relations-ka
+    serving_endpoint:
+      name: ka-1e46e5cf-endpoint
+      permission: CAN_QUERY
+  - name: adtech-mas
+    serving_endpoint:
+      name: mas-6d1add8f-endpoint
       permission: CAN_QUERY
 
 env:

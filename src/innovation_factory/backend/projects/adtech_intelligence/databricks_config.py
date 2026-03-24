@@ -19,7 +19,7 @@ UC_CATALOG = os.getenv("UC_CATALOG", "innovation_factory_catalog")
 UC_SCHEMA = os.getenv("ADTECH_UC_SCHEMA", "adtech_intelligence")
 
 # AI/BI Dashboard
-DASHBOARD_ID = os.getenv("ADTECH_DASHBOARD_ID", "01f12399316a1a828aa75cf7e90d7aae")
+DASHBOARD_ID = os.getenv("ADTECH_DASHBOARD_ID", "01f127aac05f137b8e0608351f86e161")
 
 # Genie Space
 GENIE_SPACE_ID = os.getenv("ADTECH_GENIE_SPACE_ID", "01f1269032301e2ab448180e1accb1df")
