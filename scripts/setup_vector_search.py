@@ -19,7 +19,7 @@ import torch
 from databricks.sdk import WorkspaceClient
 from PIL import Image as PILImage
 
-CATALOG = "saschas"
+CATALOG = "innovation_factory_catalog"
 SCHEMA = "image_similarity"
 VOLUME = "images"
 IMAGE_TABLE = f"{CATALOG}.{SCHEMA}.image_embeddings"
@@ -28,7 +28,7 @@ VS_INDEX_NAME = f"{CATALOG}.{SCHEMA}.image_similarity_index"
 VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA}/{VOLUME}"
 EMBEDDING_DIM = 512
 
-WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "862f1d757f0424f7")
+WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "8af6100313039ba2")
 
 ASSETS_DIR = Path(__file__).parent.parent / ".cursor" / "projects" / "Users-sascha-saumer-GIT-innovation-factory" / "assets"
 if not ASSETS_DIR.exists():

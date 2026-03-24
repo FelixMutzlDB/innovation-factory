@@ -35,6 +35,8 @@ The Innovation Factory ships as a single Databricks App containing a curated gal
 | **ViDistrictOne** | Smart Energy | Neighborhood-level energy monitoring, PV & battery optimization, EV charging, maintenance alerts |
 | **BSH Remote Assist** | Home Appliances | AI-powered service ticket resolution, device management, knowledge search, technician workflows |
 | **AdTech Intelligence** | Advertising & Media | AI/BI dashboards, Genie-powered inventory exploration, multi-agent issue resolution, anomaly detection |
+| **MOL ASM Cockpit** | Fuel & Retail | Area Sales Manager station analytics, fuel/nonfuel KPIs, anomaly detection, Genie-powered exploration |
+| **HB Product Center** | Fashion & Luxury | Visual product recognition, supply chain tracking, authenticity verification, quality control, AI agent orchestration |
 
 Each accelerator demonstrates a different facet of the Databricks platform — from Genie Spaces for natural-language data exploration to Multi-Agent Supervisors orchestrating complex workflows.
 
