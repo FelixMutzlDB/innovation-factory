@@ -4,12 +4,13 @@ import base64
 import logging
 import mimetypes
 import os
+import re
 from typing import Annotated, Optional
 
 from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import Response
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ....dependencies import RuntimeDep
 from ..databricks_config import IMAGE_VOLUME_PATH, MAS_ENDPOINT_NAME, VS_IMAGE_TABLE
@@ -23,7 +24,7 @@ from ..models import (
     UserRole,
 )
 from ..services.image_similarity_service import compute_embedding, find_similar_images
-from ..services.uc_query_service import select_all, select_by_id, insert_row
+from ..services.uc_query_service import search_like, select_all, select_by_id, insert_row
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/recognition", tags=["hb-product-center"])
@@ -31,6 +32,8 @@ router = APIRouter(prefix="/recognition", tags=["hb-product-center"])
 _VALID_JOB_TYPES = {e.value for e in RecognitionJobType}
 _VALID_JOB_STATUSES = {e.value for e in RecognitionJobStatus}
 _VALID_USER_ROLES = {e.value for e in UserRole}
+
+_HEX_RE = re.compile(r"^[a-fA-F0-9\-]+$")
 
 
 def _sanitize_job_row(row: dict) -> HbRecognitionJobOut:
@@ -57,7 +60,7 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 
 
 class ProductIdentifyRequest(BaseModel):
-    description: str
+    description: str = Field(..., min_length=2, max_length=500)
 
 
 class ProductMatch(BaseModel):
@@ -86,16 +89,9 @@ async def identify_product(request: ProductIdentifyRequest, ws: WsDep):
     """Identify a Hugo Boss product from a visual description using AI."""
     desc = request.description.lower()
 
-    # Search products by description keywords
-    escaped_desc = desc.replace("'", "''")
-    where_clause = f"""
-        LOWER(style_name) LIKE '%{escaped_desc}%'
-        OR LOWER(category) LIKE '%{escaped_desc}%'
-        OR LOWER(color) LIKE '%{escaped_desc}%'
-        OR LOWER(material) LIKE '%{escaped_desc}%'
-        OR LOWER(collection) LIKE '%{escaped_desc}%'
-    """
-    db_matches = select_all(ws, "hb_products", where=where_clause, limit=5)
+    # Search products by description keywords using safe LIKE search
+    search_columns = ["style_name", "category", "color", "material", "collection"]
+    db_matches = search_like(ws, "hb_products", search_columns, desc, limit=5)
 
     # If no matches, try individual keywords
     keywords = desc.split()
@@ -103,14 +99,12 @@ async def identify_product(request: ProductIdentifyRequest, ws: WsDep):
         for kw in keywords:
             if len(kw) < 3:
                 continue
-            escaped_kw = kw.replace("'", "''")
-            kw_where = f"""
-                LOWER(style_name) LIKE '%{escaped_kw}%'
-                OR LOWER(category) LIKE '%{escaped_kw}%'
-                OR LOWER(color) LIKE '%{escaped_kw}%'
-                OR LOWER(material) LIKE '%{escaped_kw}%'
-            """
-            db_matches = select_all(ws, "hb_products", where=kw_where, limit=5)
+            db_matches = search_like(
+                ws, "hb_products",
+                ["style_name", "category", "color", "material"],
+                kw,
+                limit=5,
+            )
             if db_matches:
                 break
 
@@ -156,17 +150,23 @@ async def identify_product(request: ProductIdentifyRequest, ws: WsDep):
 @router.get("/jobs", response_model=list[HbRecognitionJobOut], operation_id="hb_listRecognitionJobs")
 def list_recognition_jobs(
     ws: WsDep,
-    status: Optional[str] = Query(None),
+    status: Optional[str] = Query(None, max_length=50),
     limit: int = Query(50, le=200),
     offset: int = Query(0),
 ):
     """List recognition jobs from Unity Catalog."""
-    conditions = []
+    filters: dict[str, str] | None = None
     if status:
-        conditions.append(f"status = '{status}'")
+        filters = {"status": status}
 
-    where = " AND ".join(conditions) if conditions else ""
-    rows = select_all(ws, "hb_recognition_jobs", where=where, order_by="created_at DESC", limit=limit, offset=offset)
+    rows = select_all(
+        ws, "hb_recognition_jobs",
+        filters=filters,
+        order_by_column="created_at",
+        order_desc=True,
+        limit=limit,
+        offset=offset,
+    )
     return [_sanitize_job_row(row) for row in rows]
 
 @router.get("/jobs/{job_id}", response_model=HbRecognitionJobDetailOut, operation_id="hb_getRecognitionJob")
@@ -177,7 +177,7 @@ def get_recognition_job(job_id: int, ws: WsDep):
         raise HTTPException(status_code=404, detail="Recognition job not found")
 
     sanitized = _sanitize_job_row(job)
-    results = select_all(ws, "hb_recognition_results", where=f"job_id = {job_id}")
+    results = select_all(ws, "hb_recognition_results", filters={"job_id": str(job_id)})
     return HbRecognitionJobDetailOut(
         **sanitized.model_dump(),
         results=[HbRecognitionResultOut(**r) for r in results],
@@ -199,7 +199,7 @@ def create_recognition_job(data: HbRecognitionJobCreate, ws: WsDep):
 
     insert_row(ws, "hb_recognition_jobs", job_data)
 
-    rows = select_all(ws, "hb_recognition_jobs", order_by="id DESC", limit=1)
+    rows = select_all(ws, "hb_recognition_jobs", order_by_column="id", order_desc=True, limit=1)
     return _sanitize_job_row(rows[0]) if rows else HbRecognitionJobOut(**job_data, id=0)  # type: ignore[arg-type]
 
 @router.post("/jobs/batch", response_model=HbRecognitionJobOut, operation_id="hb_createBatchRecognitionJob")
@@ -218,7 +218,7 @@ def create_batch_recognition_job(data: HbRecognitionJobCreate, ws: WsDep):
 
     insert_row(ws, "hb_recognition_jobs", job_data)
 
-    rows = select_all(ws, "hb_recognition_jobs", order_by="id DESC", limit=1)
+    rows = select_all(ws, "hb_recognition_jobs", order_by_column="id", order_desc=True, limit=1)
     return _sanitize_job_row(rows[0]) if rows else HbRecognitionJobOut(**job_data, id=0)  # type: ignore[arg-type]
 
 
@@ -288,10 +288,14 @@ async def find_similar(request: SimilarImageRequest, ws: WsDep):
 )
 def get_recognition_image(image_id: str, ws: WsDep):
     """Serve an image from UC Volumes by looking up its path in the embeddings table."""
-    from ..services.uc_query_service import execute_query_with_schema
+    from ..services.uc_query_service import _escape_value, execute_query_with_schema
 
-    escaped_id = image_id.replace("'", "''")
-    sql = f"SELECT image_uri FROM {VS_IMAGE_TABLE} WHERE id = '{escaped_id}' LIMIT 1"
+    # Validate image_id is a safe hex/UUID string
+    if not _HEX_RE.match(image_id):
+        raise HTTPException(status_code=400, detail="Invalid image ID format")
+
+    escaped_id = _escape_value(image_id)
+    sql = f"SELECT image_uri FROM {VS_IMAGE_TABLE} WHERE id = {escaped_id} LIMIT 1"
 
     try:
         columns, rows = execute_query_with_schema(ws, sql)
