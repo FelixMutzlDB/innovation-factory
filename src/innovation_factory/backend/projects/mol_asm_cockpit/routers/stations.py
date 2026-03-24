@@ -7,7 +7,7 @@ from sqlmodel import col, func, select
 from ....dependencies import SessionDep
 from ..models import (
     MacAnomalyAlert,
-    AlertStatus,
+    MacAlertStatus,
     MacFuelSale,
     MacNonfuelSale,
     MacRegion,
@@ -80,7 +80,7 @@ def station_kpis(
             MacAnomalyAlert.station_id,
             func.count(MacAnomalyAlert.id).label("active_alerts"),
         )
-        .where(MacAnomalyAlert.status == AlertStatus.active)
+        .where(MacAnomalyAlert.status == MacAlertStatus.active)
         .group_by(MacAnomalyAlert.station_id)
         .subquery()
     )
