@@ -44,9 +44,9 @@ async def get_databricks_resources() -> HbDatabricksResourcesOut:
     return HbDatabricksResourcesOut(
         workspace_url=WORKSPACE_URL,
         sc_dashboard_id=SC_DASHBOARD_ID,
-        sc_dashboard_embed_url=f"{base}/embed/dashboardsv3/{SC_DASHBOARD_ID}",
+        sc_dashboard_embed_url=f"{base}/embed/dashboardsv3/{SC_DASHBOARD_ID}?embed",
         aq_dashboard_id=AQ_DASHBOARD_ID,
-        aq_dashboard_embed_url=f"{base}/embed/dashboardsv3/{AQ_DASHBOARD_ID}",
+        aq_dashboard_embed_url=f"{base}/embed/dashboardsv3/{AQ_DASHBOARD_ID}?embed",
         sc_genie_space_id=SC_GENIE_SPACE_ID,
         aq_genie_space_id=AQ_GENIE_SPACE_ID,
     )

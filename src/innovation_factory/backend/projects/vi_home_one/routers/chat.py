@@ -1,9 +1,9 @@
 """API router for chat with streaming support."""
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
 from sqlmodel import select
 
 from ....dependencies import SessionDep
+from ....services.streaming import create_chat_stream
 from ..models import (
     VhTicket,
     VhChatSession,
@@ -47,12 +47,7 @@ async def send_chat_message(ticket_id: int, message: VhChatMessageIn, db: Sessio
     db.add(user_msg)
     db.commit()
 
-    async def event_generator():
-        full_response = ""
-        async for chunk in chat_service.stream_chat_response(ticket_id, message.content, db):
-            full_response += chunk
-            yield f"data: {chunk}\n\n"
-
+    def on_complete(full_response: str):
         assistant_msg = VhChatMessage(
             session_id=chat_session.id,
             role=VhChatRole.assistant,
@@ -62,9 +57,8 @@ async def send_chat_message(ticket_id: int, message: VhChatMessageIn, db: Sessio
         db.add(assistant_msg)
         db.commit()
 
-        yield "data: [DONE]\n\n"
-
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+    stream = chat_service.stream_chat_response(ticket_id, message.content, db)
+    return await create_chat_stream(stream, on_complete=on_complete)
 
 
 @router.get("/tickets/{ticket_id}/history", response_model=VhChatHistoryOut, operation_id="vh_get_chat_history")

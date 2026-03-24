@@ -48,7 +48,8 @@ class HbChatService:
     ) -> AsyncIterator[str]:
         """Stream a response from the agent endpoint."""
         session = self._get_or_create_session(db, session_id)
-        assert session.id is not None
+        if session.id is None:
+            raise RuntimeError("Chat session was created but has no ID")
         self._save_user_message(db, session.id, user_message)
 
         history = self._get_message_history(db, session.id, limit=10)
