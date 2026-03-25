@@ -40,7 +40,7 @@ async def get_databricks_resources() -> DatabricksResourcesOut:
     """Return Databricks resource IDs for frontend embedding."""
     return DatabricksResourcesOut(
         dashboard_id=DASHBOARD_ID,
-        dashboard_embed_url=f"https://{WORKSPACE_URL}/embed/dashboardsv3/{DASHBOARD_ID}",
+        dashboard_embed_url=f"https://{WORKSPACE_URL}/embed/dashboardsv3/{DASHBOARD_ID}?embed",
         genie_space_id=GENIE_SPACE_ID,
         mas_tile_id=MAS_TILE_ID,
         mas_endpoint_name=MAS_ENDPOINT_NAME,

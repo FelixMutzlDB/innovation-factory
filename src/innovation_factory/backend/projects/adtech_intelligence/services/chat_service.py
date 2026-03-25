@@ -40,7 +40,8 @@ class ChatService:
     ) -> AsyncIterator[str]:
         """Stream a response from the Multi-Agent Supervisor."""
         session = self._get_or_create_session(db, session_id, "mas")
-        assert session.id is not None
+        if session.id is None:
+            raise RuntimeError("Chat session was created but has no ID")
         self._save_user_message(db, session.id, user_message)
 
         # Build messages for the MAS endpoint
@@ -78,7 +79,8 @@ class ChatService:
     ) -> AsyncIterator[str]:
         """Stream a response from the Issue Resolution Knowledge Assistant."""
         session = self._get_or_create_session(db, session_id, "issue_resolution")
-        assert session.id is not None
+        if session.id is None:
+            raise RuntimeError("Chat session was created but has no ID")
         self._save_user_message(db, session.id, user_message)
 
         # Build messages for the KA endpoint

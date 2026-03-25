@@ -7,11 +7,11 @@ Provides two chat endpoints:
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import StreamingResponse
 from sqlmodel import Session, select
 
 from ....dependencies import get_session, get_runtime
 from ....runtime import Runtime
+from ....services.streaming import create_chat_stream
 from ..models import (
     AtChatHistoryOut,
     AtChatMessage,
@@ -33,19 +33,14 @@ async def send_chat_message(
     runtime: Annotated[Runtime, Depends(get_runtime)],
 ):
     """Send a message to the issue-resolution KA and get a streaming response."""
-
-    async def event_generator():
-        async for chunk in chat_service.stream_ka_response(
-            ws=runtime.ws,
-            db=db,
-            user_message=message.message,
-            session_id=message.session_id,
-        ):
-            yield f"data: {chunk}\n\n"
-
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
+    stream = chat_service.stream_ka_response(
+        ws=runtime.ws,
+        db=db,
+        user_message=message.message,
+        session_id=message.session_id,
+    )
+    return await create_chat_stream(
+        stream,
         headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
     )
 
@@ -57,19 +52,14 @@ async def send_mas_chat_message(
     runtime: Annotated[Runtime, Depends(get_runtime)],
 ):
     """Send a message to the Multi-Agent Supervisor and get a streaming response."""
-
-    async def event_generator():
-        async for chunk in chat_service.stream_mas_response(
-            ws=runtime.ws,
-            db=db,
-            user_message=message.message,
-            session_id=message.session_id,
-        ):
-            yield f"data: {chunk}\n\n"
-
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
+    stream = chat_service.stream_mas_response(
+        ws=runtime.ws,
+        db=db,
+        user_message=message.message,
+        session_id=message.session_id,
+    )
+    return await create_chat_stream(
+        stream,
         headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
     )
 
@@ -88,7 +78,8 @@ def list_chat_sessions(
     ).all()
     result = []
     for s in sessions:
-        assert s.id is not None
+        if s.id is None:
+            raise HTTPException(status_code=500, detail="Chat session has no ID")
         messages = db.exec(
             select(AtChatMessage)
             .where(AtChatMessage.session_id == s.id)
@@ -118,8 +109,9 @@ def get_chat_session(
     """Get a specific chat session with all messages."""
     session = db.get(AtChatSession, session_id)
     if not session:
-        raise HTTPException(404, detail="Chat session not found")
-    assert session.id is not None
+        raise HTTPException(status_code=404, detail="Chat session not found")
+    if session.id is None:
+        raise HTTPException(status_code=500, detail="Chat session has no ID")
 
     messages = db.exec(
         select(AtChatMessage)

@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-03-01T11:03:23.061Z",
+  "url": "https://innovation-factory-1444828305810485.aws.databricksapps.com/projects/hb-product-center/",
+  "screenshots": [
+    "01-initial-load.png"
+  ],
+  "step1_pageLoaded": false,
+  "step2_chatWidgetVisible": false,
+  "step3_sampleButtonFound": false,
+  "step4_autoSent": null,
+  "step5_userMessageVisible": null,
+  "step6_responseReceived": null,
+  "step7_markdownRendered": null,
+  "bodyTextSnippet": "Connecting to \n\nSign in with your account to access FE AWS Demo Environments\n\nSign In\nUsername \n\nEmail address\n\nKeep me signed in\nUnlock account?\nit-support@databricks.com\n\nPowered by Okta\n\nPrivacy Policy"
+}

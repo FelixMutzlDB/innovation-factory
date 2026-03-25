@@ -62,4 +62,9 @@ class TestAdTechAPI:
         resp = client.get("/api/projects/adtech-intelligence/databricks-resources")
         assert resp.status_code == 200
         data = resp.json()
-        assert "dashboard_embed_url" in data or "workspace_url" in data
+        assert data["workspace_url"], "workspace_url must not be empty"
+        assert data["dashboard_id"], "dashboard_id must not be empty"
+        assert data["genie_space_id"], "genie_space_id must not be empty"
+        assert data["dashboard_embed_url"].startswith("https://")
+        assert "/embed/dashboardsv3/" in data["dashboard_embed_url"]
+        assert data["dashboard_id"] in data["dashboard_embed_url"]

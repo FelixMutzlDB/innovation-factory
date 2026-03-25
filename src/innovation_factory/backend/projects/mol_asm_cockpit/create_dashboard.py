@@ -54,7 +54,7 @@ def main():
     if not host.startswith("http"):
         host = f"https://{host}"
     url = f"{host}/sql/dashboardsv3/{dashboard_id}"
-    embed_url = f"{host}/embed/dashboardsv3/{dashboard_id}"
+    embed_url = f"{host}/embed/dashboardsv3/{dashboard_id}?embed"
 
     print(f"\nDashboard created and published successfully!")
     print(f"  Dashboard ID : {dashboard_id}")

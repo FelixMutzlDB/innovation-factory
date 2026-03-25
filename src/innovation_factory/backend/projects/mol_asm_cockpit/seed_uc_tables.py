@@ -16,7 +16,7 @@ random.seed(42)
 spark = SparkSession.builder.getOrCreate()
 
 CATALOG = os.getenv("UC_CATALOG", "innovation_factory_catalog")
-SCHEMA = os.getenv("MAC_UC_SCHEMA", "asm_cockpit")
+SCHEMA = os.getenv("MAC_UC_SCHEMA", "mac")
 
 # --- Regions and Stations ---
 REGIONS = [

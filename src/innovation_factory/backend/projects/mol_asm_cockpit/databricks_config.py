@@ -15,8 +15,8 @@ DASHBOARD_ID = os.getenv("MAC_DASHBOARD_ID", "")
 MAS_ENDPOINT_NAME = os.getenv("MAC_MAS_ENDPOINT_NAME", "")
 
 # Shared: SQL Warehouse
-WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "")
+WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "8af6100313039ba2")
 
 # Shared: Unity Catalog
 UC_CATALOG = os.getenv("UC_CATALOG", "innovation_factory_catalog")
-UC_SCHEMA = os.getenv("MAC_UC_SCHEMA", "asm_cockpit")
+UC_SCHEMA = os.getenv("MAC_UC_SCHEMA", "mac")

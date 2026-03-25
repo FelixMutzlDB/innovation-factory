@@ -6,16 +6,28 @@ from .projects.vi_home_one.seed import seed_vh_data
 from .projects.bsh_home_connect.seed import seed_bsh_data
 from .projects.mol_asm_cockpit.seed import seed_mac_data
 from .projects.adtech_intelligence.seed import seed_at_data
+from .projects.hb_product_center.seed import seed_hb_data
 from .logger import logger
 
 
 def check_and_seed_if_empty(runtime: Runtime):
-    """Check if database is empty and seed if needed."""
+    """Check if database is empty and seed if needed.
+
+    Always ensures all projects are registered and each project's data exists.
+    Individual seed functions are idempotent (they skip if their data exists).
+    """
     with runtime.get_session() as session:
         try:
             project = session.exec(select(Project)).first()
             if project:
-                logger.info("Database already contains data - skipping seed")
+                logger.info("Database has data - checking for missing project seeds")
+                _seed_projects(session)
+                seed_vh_data(session)
+                seed_bsh_data(session)
+                seed_mac_data(session)
+                seed_at_data(session)
+                seed_hb_data(session)
+                session.commit()
                 return
         except Exception as e:
             logger.error(f"Error checking database: {e}")
@@ -28,9 +40,8 @@ def check_and_seed_if_empty(runtime: Runtime):
         seed_bsh_data(session)
         seed_mac_data(session)
         seed_at_data(session)
+        seed_hb_data(session)
 
-        # Ensure everything is committed (sub-seed functions may return early
-        # if their data already exists, skipping their own commit calls)
         session.commit()
 
         print("\nDatabase seeding completed successfully!\n")
@@ -70,6 +81,14 @@ def _seed_projects(session: Session):
             "company": "Media Solutions",
             "icon": "Radio",
             "color": "#8b5cf6",
+        },
+        {
+            "slug": "hb-product-center",
+            "name": "HB Product Center",
+            "description": "Intelligent Product Center for visual product recognition, AI-powered quality control, authenticity verification, and supply chain intelligence across the Hugo Boss value chain.",
+            "company": "Hugo Boss",
+            "icon": "ScanSearch",
+            "color": "#1a1a1a",
         },
     ]
 

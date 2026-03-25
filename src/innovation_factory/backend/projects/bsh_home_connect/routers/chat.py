@@ -3,11 +3,11 @@ from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import StreamingResponse
 from sqlmodel import Session, select
 from databricks.sdk import WorkspaceClient
 
 from ....dependencies import get_obo_ws, get_session
+from ....services.streaming import create_chat_stream
 from ..models import (
     BshTicket,
     BshChatMessageIn,
@@ -40,15 +40,12 @@ async def send_chat_message(
     customer = db.exec(customer_statement).first()
     session_type = "customer_support" if customer and ticket.customer_id == customer.id else "technician_assist"
 
-    async def event_generator():
-        async for chunk in chat_service.stream_chat_response(
-            db=db, ticket_id=ticket_id,
-            user_message=message.message, session_type=session_type,
-        ):
-            yield f"data: {chunk}\n\n"
-
-    return StreamingResponse(
-        event_generator(), media_type="text/event-stream",
+    stream = chat_service.stream_chat_response(
+        db=db, ticket_id=ticket_id,
+        user_message=message.message, session_type=session_type,
+    )
+    return await create_chat_stream(
+        stream,
         headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
     )
 

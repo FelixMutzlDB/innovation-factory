@@ -32,7 +32,7 @@ def get_dashboard_embed(request: Request):
         if not host.startswith("http"):
             host = f"https://{host}"
 
-        embed_url = f"{host}/embed/dashboardsv3/{DASHBOARD_ID}"
+        embed_url = f"{host}/embed/dashboardsv3/{DASHBOARD_ID}?embed"
 
         return DashboardEmbedOut(
             embed_url=embed_url,
