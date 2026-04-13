@@ -4,32 +4,22 @@ resources:
   - name: lakebase-db
     postgres:
       branch: projects/innovation-factory/branches/production
-      database: projects/innovation-factory/branches/production/databases/db-pe0w-sbkpizjrbd
+      database: projects/innovation-factory/branches/production/databases/db-e9w7-uyd0a1xns2
       permission: CAN_CONNECT_AND_CREATE
   - name: sql-warehouse
     sql_warehouse:
-      id: 8af6100313039ba2
+      id: f7cdb11888c4799e
       permission: CAN_USE
-  - name: issue-resolution-ka
+  - name: serving-endpoint
     serving_endpoint:
-      name: ka-9b426cbe-endpoint
-      permission: CAN_QUERY
-  - name: customer-relations-ka
-    serving_endpoint:
-      name: ka-1e46e5cf-endpoint
-      permission: CAN_QUERY
-  - name: adtech-mas
-    serving_endpoint:
-      name: mas-6d1add8f-endpoint
+      name: databricks-claude-sonnet-4
       permission: CAN_QUERY
 
 env:
   - name: PGHOST
-    value: ep-plain-block-d1diw9v5.database.us-west-2.cloud.databricks.com
+    value: ep-raspy-thunder-d7egfk1h.database.eu-central-1.cloud.databricks.com
   - name: PGDATABASE
     value: databricks_postgres
-  - name: PGUSER
-    value: 5da5166f-5929-494a-9d57-ba7bb51a85e3
   - name: PGPORT
     value: 5432
   - name: PGSSLMODE
@@ -37,6 +27,6 @@ env:
   - name: ENDPOINT_NAME
     value: projects/innovation-factory/branches/production/endpoints/primary
   - name: UC_CATALOG
-    value: innovation_factory_catalog
+    value: felix_demo_catalog
   - name: WAREHOUSE_ID
-    value: 8af6100313039ba2
+    value: f7cdb11888c4799e
