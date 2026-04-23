@@ -428,7 +428,7 @@ Add new sections:
 - **Section 13: App Resources** — Lakebase, SQL warehouse, serving endpoint
   resource configuration for `app.yml`. Include the `postgres` field names
   discovered during migration (`branch`, `database` with full path, `CAN_CONNECT_AND_CREATE`).
-- **Section 14: Migration Playbook** — Reference `scripts/migrate_full.py` and
+- **Section 14: Migration Playbook** — Reference `scripts/archive/migrate_full.py` (archived) and
   the lesson about `OLD_CATALOG` vs actual catalog name on source workspace.
 - **Section 15: Security Checklist** — SQL injection prevention, input validation,
   markdown sanitization.
@@ -466,7 +466,7 @@ Cockpit and HB Product Center.
 
 ## P6 — Migration Cleanup
 
-### M1. Fix `migrate_full.py` OLD_CATALOG
+### M1. Fix `scripts/archive/migrate_full.py` OLD_CATALOG
 
 The migration script had `OLD_CATALOG = "felix_demo_sandbox_catalog"` but the
 actual data was in `innovation_factory_catalog` on the old workspace. Update the
@@ -486,8 +486,8 @@ dist files.
 
 ### M3. Remove `scripts/migrate_uc_data.py`
 
-This was the old partial migration script, superseded by `migrate_full.py`.
-Keep only `migrate_full.py` to avoid confusion.
+This was the old partial migration script, superseded by `scripts/archive/migrate_full.py`.
+Keep only `scripts/archive/migrate_full.py` to avoid confusion.
 
 ---
 
