@@ -425,18 +425,18 @@ def _seed_issues(session: Session, stations: list[MacStation]):
 def _seed_customer_profiles(session: Session):
     """Seed B2B customer profiles and contracts."""
     customers_data = [
-        {"company": "TransEuropa Logistics", "contact": "András Kovács", "email": "a.kovacs@transeuropa.hu", "fleet": 120, "tier": LoyaltyTier.platinum, "ctype": "Fleet Premium"},
-        {"company": "Pannonia Freight", "contact": "Zoltán Nagy", "email": "z.nagy@pannoniafreight.hu", "fleet": 85, "tier": LoyaltyTier.gold, "ctype": "Fleet Standard"},
-        {"company": "Adriatic Express", "contact": "Ivan Horvat", "email": "i.horvat@adriaticexp.hr", "fleet": 60, "tier": LoyaltyTier.gold, "ctype": "Fleet Standard"},
-        {"company": "Danubia Transport", "contact": "Peter Novák", "email": "p.novak@danubia.sk", "fleet": 200, "tier": LoyaltyTier.platinum, "ctype": "Fleet Premium"},
-        {"company": "Central Taxi Group", "contact": "Mária Tóth", "email": "m.toth@centraltaxi.hu", "fleet": 350, "tier": LoyaltyTier.platinum, "ctype": "Taxi Fleet"},
-        {"company": "GreenGo Delivery", "contact": "Lukáš Horák", "email": "l.horak@greengo.cz", "fleet": 45, "tier": LoyaltyTier.silver, "ctype": "Fleet Standard"},
-        {"company": "Alpine Couriers", "contact": "Maja Krajnc", "email": "m.krajnc@alpinecouriers.si", "fleet": 30, "tier": LoyaltyTier.silver, "ctype": "Fleet Standard"},
-        {"company": "Visegrad Construction", "contact": "Miroslav Kuba", "email": "m.kuba@visegradcon.cz", "fleet": 75, "tier": LoyaltyTier.gold, "ctype": "Fleet Heavy"},
-        {"company": "Budapest Bus Co.", "contact": "Gábor Fekete", "email": "g.fekete@bpbus.hu", "fleet": 180, "tier": LoyaltyTier.platinum, "ctype": "Municipal Fleet"},
-        {"company": "EcoFarm Agri", "contact": "Jana Vlková", "email": "j.vlkova@ecofarm.sk", "fleet": 25, "tier": LoyaltyTier.bronze, "ctype": "Seasonal"},
-        {"company": "Starline Rental Cars", "contact": "Tomáš Procházka", "email": "t.prochazka@starline.cz", "fleet": 500, "tier": LoyaltyTier.platinum, "ctype": "Rental Fleet"},
-        {"company": "Zagorje Milk", "contact": "Ante Jurić", "email": "a.juric@zagorjemilk.hr", "fleet": 18, "tier": LoyaltyTier.bronze, "ctype": "Fleet Standard"},
+        {"company": "TransEuropa Logistics", "contact": "András Kovács", "email": "a.kovacs@transeuropa.example", "fleet": 120, "tier": LoyaltyTier.platinum, "ctype": "Fleet Premium"},
+        {"company": "Pannonia Freight", "contact": "Zoltán Nagy", "email": "z.nagy@pannoniafreight.example", "fleet": 85, "tier": LoyaltyTier.gold, "ctype": "Fleet Standard"},
+        {"company": "Adriatic Express", "contact": "Ivan Horvat", "email": "i.horvat@adriaticexp.example", "fleet": 60, "tier": LoyaltyTier.gold, "ctype": "Fleet Standard"},
+        {"company": "Danubia Transport", "contact": "Peter Novák", "email": "p.novak@danubia.example", "fleet": 200, "tier": LoyaltyTier.platinum, "ctype": "Fleet Premium"},
+        {"company": "Central Taxi Group", "contact": "Mária Tóth", "email": "m.toth@centraltaxi.example", "fleet": 350, "tier": LoyaltyTier.platinum, "ctype": "Taxi Fleet"},
+        {"company": "GreenGo Delivery", "contact": "Lukáš Horák", "email": "l.horak@greengo.example", "fleet": 45, "tier": LoyaltyTier.silver, "ctype": "Fleet Standard"},
+        {"company": "Alpine Couriers", "contact": "Maja Krajnc", "email": "m.krajnc@alpinecouriers.example", "fleet": 30, "tier": LoyaltyTier.silver, "ctype": "Fleet Standard"},
+        {"company": "Visegrad Construction", "contact": "Miroslav Kuba", "email": "m.kuba@visegradcon.example", "fleet": 75, "tier": LoyaltyTier.gold, "ctype": "Fleet Heavy"},
+        {"company": "Budapest Bus Co.", "contact": "Gábor Fekete", "email": "g.fekete@bpbus.example", "fleet": 180, "tier": LoyaltyTier.platinum, "ctype": "Municipal Fleet"},
+        {"company": "EcoFarm Agri", "contact": "Jana Vlková", "email": "j.vlkova@ecofarm.example", "fleet": 25, "tier": LoyaltyTier.bronze, "ctype": "Seasonal"},
+        {"company": "Starline Rental Cars", "contact": "Tomáš Procházka", "email": "t.prochazka@starline.example", "fleet": 500, "tier": LoyaltyTier.platinum, "ctype": "Rental Fleet"},
+        {"company": "Zagorje Milk", "contact": "Ante Jurić", "email": "a.juric@zagorjemilk.example", "fleet": 18, "tier": LoyaltyTier.bronze, "ctype": "Fleet Standard"},
     ]
 
     for cd in customers_data:

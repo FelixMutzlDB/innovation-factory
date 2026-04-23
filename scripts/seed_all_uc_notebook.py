@@ -259,7 +259,7 @@ for i in range(25):
     notes_val = "Flagged by automated scan." if status == "suspicious" else None
     img = f"https://uploads.hugoboss.com/auth/{_rng.randint(10000,99999)}.jpg" if _rng.random() < 0.7 else None
     ver_data.append((status, region, method, created))
-    av_rows.append((i+1, pid, req_type, req_name, f"verify-{_rng.randint(100,999)}@hugoboss.com", status, conf, method, img, region, notes_val, created, completed))
+    av_rows.append((i+1, pid, req_type, req_name, f"verify-{_rng.randint(100,999)}@example.com", status, conf, method, img, region, notes_val, created, completed))
 
 av_schema = StructType([
     StructField("id", IntegerType()), StructField("product_id", IntegerType()),

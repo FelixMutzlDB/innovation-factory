@@ -228,7 +228,7 @@ def build_sql():
         ver_data.append((status, region, method, created))
         pid_val = str(pid) if pid else "NULL"
         conf_val = str(conf) if conf is not None else "NULL"
-        rows.append(f"({pid_val}, {s(req_type)}, {s(req_name)}, {s(f'verify-{_rng.randint(100,999)}@hugoboss.com')}, {s(status)}, {conf_val}, {s(method)}, {s(img)}, {s(region)}, {s(notes_val)}, {ts(created)}, {ts(completed)})")
+        rows.append(f"({pid_val}, {s(req_type)}, {s(req_name)}, {s(f'verify-{_rng.randint(100,999)}@example.com')}, {s(status)}, {conf_val}, {s(method)}, {s(img)}, {s(region)}, {s(notes_val)}, {ts(created)}, {ts(completed)})")
     stmts.append(f"INSERT INTO {CATALOG}.{SCHEMA}.hb_auth_verifications (product_id, requester_type, requester_name, requester_email, status, confidence_score, verification_method, image_url, region, notes, created_at, completed_at) VALUES\n" + ",\n".join(rows))
 
     # Auth Alerts

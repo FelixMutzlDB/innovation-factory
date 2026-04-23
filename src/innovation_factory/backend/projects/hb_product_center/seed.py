@@ -360,7 +360,7 @@ def _seed_auth_verifications(session: Session, products: list[HbProduct]) -> lis
             product_id=product.id if product else None,
             requester_type=_rng.choice(list(RequesterType)),
             requester_name=_rng.choice(["Customer Service", "Retail Partner Berlin", "E-Commerce Team", "Marketplace Compliance", "Partner: Nordstrom", "Partner: Zalando", "Internal Audit"]),
-            requester_email=f"verify-{_rng.randint(100,999)}@hugoboss.com",
+            requester_email=f"verify-{_rng.randint(100,999)}@example.com",
             status=status,
             confidence_score=confidence,
             verification_method=_rng.choice(list(VerificationMethod)),

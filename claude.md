@@ -73,6 +73,20 @@ projects/<slug>/
   ka_docs/                          # Optional: Knowledge Assistant source docs
 ```
 
+## Working mode (read before every non-trivial task)
+
+For anything larger than a one-line fix, follow this loop:
+
+1. **Investigate** — read the relevant code, git history, logs, and prior docs before forming an opinion. Use Explore agents in parallel for wide codebase sweeps.
+2. **Plan** — write out the plan *including the test design* (unit, integration, and where relevant UI/E2E). Hand it to the user for review before touching implementation.
+3. **Implement** — smallest viable change; keep commits focused.
+4. **Test thoroughly** — run the designed tests, exercise the golden path and edge cases, and for UI changes actually open a browser.
+5. **Iterate** — fix issues surfaced by testing until the feature works well under realistic conditions. Don't declare done on the first green run.
+
+Throughout, prioritize in this order: **operational efficiency** (readability, simplicity, maintainability, dev-loop speed), **security** (OWASP top 10, input validation, secrets handling, least-privilege resource access), and **compliance with coding best practices** (the Do's and Don'ts below, plus the constraints). Only skip the investigate/plan step for truly trivial edits, and only skip review with the user when they've explicitly said "just do it".
+
+**Regression-test rule:** no P0 or P1 bug fix is considered done without a named, automated regression test. The test title should reference the bug symptom (not just the fix). For SQL-safety, XSS, auth, and other security fixes, this rule is non-negotiable.
+
 ## Constraints (read before every task)
 
 - **Never edit auto-generated files** — `ui/lib/api.ts` and `ui/types/routeTree.gen.ts` regenerate on save when dev servers run

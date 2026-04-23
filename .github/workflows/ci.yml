@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+# Cancel in-flight runs for the same PR when a new commit is pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint-and-build:
+    name: Lint + Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python deps
+        run: uv sync --group dev
+
+      - name: Run ty + tsc via apx
+        # apx dev check runs both ty (Python) and tsc (TypeScript) checks
+        run: uv run apx dev check
+
+      - name: Build (frontend + wheel)
+        run: uv run apx build
+
+      - name: Verify build outputs
+        run: |
+          test -f .build/app.yml || (echo ".build/app.yml missing" && exit 1)
+          test -f .build/requirements.txt || (echo ".build/requirements.txt missing" && exit 1)
+          ls .build/*.whl >/dev/null 2>&1 || (echo "wheel missing" && exit 1)
+          echo "Build artifacts OK"
+
+  tests:
+    name: Pytest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # pytest is wired but no tests exist yet; the job is a placeholder that
+    # passes on an empty suite and will start reporting coverage once Batch B
+    # lands. Not marked as required in branch protection until then.
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python deps
+        run: uv sync --group dev
+
+      - name: Run unit tests (skip integration)
+        # "integration" tests require a live Databricks workspace; skip in CI.
+        run: uv run pytest -m "not integration" --tb=short
