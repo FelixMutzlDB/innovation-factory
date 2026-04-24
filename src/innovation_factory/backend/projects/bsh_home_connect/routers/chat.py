@@ -2,11 +2,12 @@
 from datetime import datetime, timezone
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session, select
 from databricks.sdk import WorkspaceClient
 
 from ....dependencies import get_obo_ws, get_session
+from ....rate_limit import limiter
 from ....services.streaming import create_chat_stream
 from ..models import (
     BshTicket,
@@ -23,7 +24,9 @@ chat_service = ChatService()
 
 
 @router.post("/tickets/{ticket_id}/chat", operation_id="bsh_sendChatMessage")
+@limiter.limit("30/minute")
 async def send_chat_message(
+    request: Request,
     ticket_id: int,
     message: BshChatMessageIn,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],

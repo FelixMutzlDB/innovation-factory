@@ -6,10 +6,11 @@ Provides two chat endpoints:
 """
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session, select
 
 from ....dependencies import get_session, get_runtime
+from ....rate_limit import limiter
 from ....runtime import Runtime
 from ....services.streaming import create_chat_stream
 from ..models import (
@@ -27,7 +28,9 @@ chat_service = ChatService()
 
 
 @router.post("/chat", operation_id="at_sendChatMessage")
+@limiter.limit("30/minute")
 async def send_chat_message(
+    request: Request,
     message: AtChatMessageIn,
     db: Annotated[Session, Depends(get_session)],
     runtime: Annotated[Runtime, Depends(get_runtime)],
@@ -46,7 +49,9 @@ async def send_chat_message(
 
 
 @router.post("/mas-chat", operation_id="at_sendMasChatMessage")
+@limiter.limit("30/minute")
 async def send_mas_chat_message(
+    request: Request,
     message: AtChatMessageIn,
     db: Annotated[Session, Depends(get_session)],
     runtime: Annotated[Runtime, Depends(get_runtime)],

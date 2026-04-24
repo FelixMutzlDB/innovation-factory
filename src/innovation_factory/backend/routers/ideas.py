@@ -3,11 +3,12 @@
 import os
 from typing import List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from sqlmodel import select
 
 from ..dependencies import SessionDep, RuntimeDep
 from ..logger import logger
+from ..rate_limit import limiter
 from ..runtime import Runtime
 from ..models import (
     IdeaSession,
@@ -108,7 +109,9 @@ def _query_idea_generator(rt: Runtime, company_name: str, description: str) -> s
 
 
 @router.post("/sessions/{session_id}/chat", operation_id="sendIdeaMessage")
+@limiter.limit("20/minute")
 async def send_idea_message(
+    request: Request,
     session_id: int,
     message: IdeaMessageIn,
     db: SessionDep,

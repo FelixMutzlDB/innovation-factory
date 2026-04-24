@@ -8,12 +8,13 @@ import re
 from typing import Annotated, Optional
 
 from databricks.sdk import WorkspaceClient
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import Response
 from pydantic import BaseModel, BeforeValidator, Field
 
 from ....dependencies import RuntimeDep
 from ....input_sanitize import sanitize_text
+from ....rate_limit import limiter
 from ..databricks_config import IMAGE_VOLUME_PATH, MAS_ENDPOINT_NAME, VS_IMAGE_TABLE
 from ..models import (
     HbRecognitionJobCreate,
@@ -93,9 +94,19 @@ class ProductIdentifyResponse(BaseModel):
     response_model=ProductIdentifyResponse,
     operation_id="hb_identifyProduct",
 )
-async def identify_product(request: ProductIdentifyRequest, ws: WsDep):
-    """Identify a HB product from a visual description using AI."""
-    desc = request.description.lower()
+@limiter.limit("10/minute")
+async def identify_product(
+    request: Request,
+    payload: ProductIdentifyRequest,
+    ws: WsDep,
+):
+    """Identify a HB product from a visual description using AI.
+
+    Note: the first param is named ``request`` (FastAPI/slowapi convention
+    for the limiter key extractor). The ProductIdentifyRequest body is
+    ``payload`` to avoid shadowing.
+    """
+    desc = payload.description.lower()
 
     # Search products by description keywords using safe LIKE search
     search_columns = ["style_name", "category", "color", "material", "collection"]
@@ -139,7 +150,7 @@ async def identify_product(request: ProductIdentifyRequest, ws: WsDep):
 
     ai_analysis = ""
     try:
-        prompt = f"Briefly analyze this product description and suggest what HB product it might be: '{request.description}'. Mention likely category, style, and material. Keep it under 100 words."
+        prompt = f"Briefly analyze this product description and suggest what HB product it might be: '{payload.description}'. Mention likely category, style, and material. Keep it under 100 words."
         result = ws.api_client.do(
             "POST",
             f"/serving-endpoints/{MAS_ENDPOINT_NAME}/invocations",

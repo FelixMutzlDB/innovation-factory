@@ -9,10 +9,11 @@ Catalog tables — the MAS endpoint manages conversation state internally.
 from typing import Annotated
 
 from databricks.sdk import WorkspaceClient
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 
 from ....dependencies import RuntimeDep
+from ....rate_limit import limiter
 from ..models import HbChatMessageIn
 from ..services.chat_service import HbChatService
 
@@ -30,7 +31,9 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 
 
 @router.post("/mas-chat", operation_id="hb_sendMasChatMessage")
+@limiter.limit("30/minute")
 async def send_mas_chat_message(
+    request: Request,
     message: HbChatMessageIn,
     ws: WsDep,
 ):
