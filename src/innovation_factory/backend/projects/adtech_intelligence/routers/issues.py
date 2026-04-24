@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
-from ....dependencies import get_session
+from ....dependencies import SessionDep, get_session
 from ..models import (
     AtIssue,
     AtIssueIn,
@@ -31,7 +31,7 @@ router = APIRouter(tags=["adtech-issues"])
     operation_id="at_listIssues",
 )
 def list_issues(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     status: Optional[IssueStatus] = None,
     priority: Optional[IssuePriority] = None,
     category: Optional[IssueCategory] = None,
@@ -59,7 +59,7 @@ def list_issues(
 )
 def get_issue(
     issue_id: int,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     issue = db.get(AtIssue, issue_id)
     if not issue:
@@ -75,7 +75,7 @@ def get_issue(
 def update_issue(
     issue_id: int,
     body: AtIssueUpdate,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     issue = db.get(AtIssue, issue_id)
     if not issue:
@@ -97,7 +97,7 @@ def update_issue(
     operation_id="at_listAdvertisers",
 )
 def list_advertisers(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     return db.exec(select(AtAdvertiser).order_by(AtAdvertiser.name)).all()
 
@@ -111,7 +111,7 @@ def list_advertisers(
     operation_id="at_listContracts",
 )
 def list_contracts(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     advertiser_id: Optional[int] = None,
 ):
     stmt = select(AtCustomerContract)

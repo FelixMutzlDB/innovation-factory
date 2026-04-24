@@ -5,7 +5,7 @@ from sqlmodel import Session, select
 from databricks.sdk import WorkspaceClient
 from datetime import datetime, timezone
 
-from ....dependencies import get_obo_ws, get_session
+from ....dependencies import SessionDep, get_obo_ws, get_session
 from ....pagination import Pagination
 from ..models import (
     BshTicket,
@@ -69,7 +69,7 @@ def _build_ticket_out(ticket: BshTicket, db: Session) -> BshTicketOut:
 def create_ticket(
     ticket_data: BshTicketIn,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Create a new support ticket."""
     databricks_user = obo_ws.current_user.me()
@@ -96,7 +96,7 @@ def create_ticket(
 @router.get("/tickets", response_model=List[BshTicketOut], operation_id="bsh_listTickets")
 def list_tickets(
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     page: Pagination,
     status: BshTicketStatus | None = None,
     role: str | None = None,
@@ -131,7 +131,7 @@ def list_tickets(
 def get_ticket(
     ticket_id: int,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Get ticket details."""
     ticket = db.get(BshTicket, ticket_id)
@@ -145,7 +145,7 @@ def update_ticket(
     ticket_id: int,
     ticket_update: BshTicketUpdate,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Update ticket status, assignment, shipping info."""
     ticket = db.get(BshTicket, ticket_id)
@@ -172,7 +172,7 @@ def add_ticket_note(
     ticket_id: int,
     note_data: BshTicketNoteIn,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Add a note to a ticket."""
     databricks_user = obo_ws.current_user.me()
@@ -205,7 +205,7 @@ def add_ticket_note(
 def list_ticket_notes(
     ticket_id: int,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """List notes for a ticket."""
     databricks_user = obo_ws.current_user.me()
@@ -230,7 +230,7 @@ async def upload_ticket_media(
     file: UploadFile = File(...),
     media_type: str = Form(...),
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)] = None,  # type: ignore[invalid-parameter-default]
-    db: Annotated[Session, Depends(get_session)] = None,  # type: ignore[invalid-parameter-default]
+    db: SessionDep = None,  # type: ignore[invalid-parameter-default]
 ):
     """Upload media to a ticket."""
     ticket = db.get(BshTicket, ticket_id)
@@ -258,7 +258,7 @@ async def upload_ticket_media(
 def generate_shipping_label(
     ticket_id: int,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Generate a shipping label for the ticket."""
     ticket = db.get(BshTicket, ticket_id)

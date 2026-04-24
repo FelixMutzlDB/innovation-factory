@@ -5,7 +5,7 @@ from sqlmodel import Session, select
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.iam import User as DatabricksUser
 
-from ....dependencies import get_obo_ws, get_session
+from ....dependencies import SessionDep, get_obo_ws, get_session
 from ..models import (
     BshCustomer,
     BshCustomerOut,
@@ -64,7 +64,7 @@ def get_or_create_technician(db: Session, databricks_user: DatabricksUser) -> Bs
 @router.get("/customers/me", response_model=BshCustomerOut, operation_id="bsh_getCurrentCustomer")
 def get_current_customer(
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Get the current customer profile."""
     databricks_user = obo_ws.current_user.me()
@@ -75,7 +75,7 @@ def get_current_customer(
 def update_current_customer(
     customer_update: BshCustomerIn,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Update the current customer profile."""
     databricks_user = obo_ws.current_user.me()
@@ -91,7 +91,7 @@ def update_current_customer(
 @router.get("/technicians/me", response_model=BshTechnicianOut, operation_id="bsh_getCurrentTechnician")
 def get_current_technician(
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Get the current technician profile."""
     databricks_user = obo_ws.current_user.me()
@@ -99,7 +99,7 @@ def get_current_technician(
 
 
 @router.get("/technicians/{technician_id}", response_model=BshTechnicianOut, operation_id="bsh_getTechnician")
-def get_technician(technician_id: int, db: Annotated[Session, Depends(get_session)]):
+def get_technician(technician_id: int, db: SessionDep):
     """Get a technician by ID."""
     technician = db.get(BshTechnician, technician_id)
     if not technician:

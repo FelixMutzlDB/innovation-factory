@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from databricks.sdk import WorkspaceClient
 
-from ....dependencies import get_obo_ws, get_session
+from ....dependencies import SessionDep, get_obo_ws, get_session
 from ..models import (
     BshDevice,
     BshDeviceOut,
@@ -18,7 +18,7 @@ router = APIRouter(tags=["bsh-devices"])
 
 
 @router.get("/devices", response_model=List[BshDeviceOut], operation_id="bsh_listDevices")
-def list_devices(db: Annotated[Session, Depends(get_session)], category: str | None = None):
+def list_devices(db: SessionDep, category: str | None = None):
     """List all available device types in the catalog."""
     statement = select(BshDevice)
     if category:
@@ -30,7 +30,7 @@ def list_devices(db: Annotated[Session, Depends(get_session)], category: str | N
 @router.get("/customers/me/devices", response_model=List[BshCustomerDeviceOut], operation_id="bsh_listMyDevices")
 def list_my_devices(
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Get customer's registered devices."""
     databricks_user = obo_ws.current_user.me()
@@ -56,7 +56,7 @@ def list_my_devices(
 def register_device(
     device_data: BshCustomerDeviceIn,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Register a new device for the current customer."""
     databricks_user = obo_ws.current_user.me()
@@ -97,7 +97,7 @@ def register_device(
 def get_my_device(
     device_id: int,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Get details of a registered device."""
     databricks_user = obo_ws.current_user.me()

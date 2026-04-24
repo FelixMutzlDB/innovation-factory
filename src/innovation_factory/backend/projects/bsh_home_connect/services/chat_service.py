@@ -1,7 +1,6 @@
 """Chat service with RAG pipeline for BSH appliance support."""
 from typing import List, Dict, Any, AsyncIterator
 from sqlmodel import Session, select
-import json
 from datetime import datetime
 
 from ..models import (
@@ -78,11 +77,20 @@ Warranty Status: {'Active' if customer_device.warranty_expiry_date and customer_
         self, db: Session, ticket_id: int, user_message: str,
         session_type: str = "customer_support",
     ) -> AsyncIterator[str]:
-        """Stream AI response with RAG."""
+        """Stream AI response with RAG — yields plain text chunks.
+
+        Follows the canonical project-wide streaming protocol (D1):
+        each yield is a plain-text chunk; the surrounding
+        :func:`create_chat_stream` emits the ``data:`` prefix and the
+        final ``[DONE]`` sentinel. No more JSON envelopes — the frontend
+        concatenates chunks verbatim until it sees [DONE].
+        """
         ticket = db.get(BshTicket, ticket_id)
         if not ticket:
-            yield json.dumps({"error": "Ticket not found"})
-            return
+            # The router already returns 404 before we get here, but guard
+            # for direct callers. Raise so create_chat_stream emits an
+            # SSE error event.
+            raise RuntimeError(f"Ticket {ticket_id} not found")
 
         customer_device = db.get(BshCustomerDevice, ticket.customer_device_id)
         device = db.get(BshDevice, customer_device.device_id)  # type: ignore[possibly-missing-attribute]
@@ -121,8 +129,10 @@ Warranty Status: {'Active' if customer_device.warranty_expiry_date and customer_
         db.add(assistant_msg)
         db.commit()
 
-        yield json.dumps({"content": response, "done": False})
-        yield json.dumps({"content": "", "done": True})
+        # Yield the response as a single plain-text chunk. When we swap
+        # the mock out for a real streaming LLM call, replace this with
+        # ``async for chunk in llm_stream: yield chunk``.
+        yield response
 
     def _generate_mock_response(self, user_message: str, device: BshDevice, contexts: list) -> str:
         """Generate mock response for demo."""

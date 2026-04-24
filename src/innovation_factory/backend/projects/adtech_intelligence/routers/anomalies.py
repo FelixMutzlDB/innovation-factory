@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, func, select
 from datetime import datetime, timezone
 
-from ....dependencies import get_session
+from ....dependencies import SessionDep, get_session
 from ..models import (
     AnomalySeverity,
     AnomalyStatus,
@@ -28,7 +28,7 @@ router = APIRouter(tags=["adtech-anomalies"])
     operation_id="at_getAnomalyCounts",
 )
 def get_anomaly_counts(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Return anomaly counts grouped by severity for active anomalies."""
     active_statuses = [AnomalyStatus.new, AnomalyStatus.acknowledged, AnomalyStatus.investigating]
@@ -54,7 +54,7 @@ def get_anomaly_counts(
     operation_id="at_listAnomalies",
 )
 def list_anomalies(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     status: Optional[AnomalyStatus] = None,
     severity: Optional[AnomalySeverity] = None,
     anomaly_type: Optional[AnomalyType] = None,
@@ -83,7 +83,7 @@ def list_anomalies(
 )
 def get_anomaly(
     anomaly_id: int,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     anomaly = db.get(AtAnomaly, anomaly_id)
     if not anomaly:
@@ -99,7 +99,7 @@ def get_anomaly(
 def update_anomaly(
     anomaly_id: int,
     body: AtAnomalyUpdate,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     anomaly = db.get(AtAnomaly, anomaly_id)
     if not anomaly:
@@ -123,6 +123,6 @@ def update_anomaly(
     operation_id="at_listAnomalyRules",
 )
 def list_anomaly_rules(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     return db.exec(select(AtAnomalyRule).order_by(AtAnomalyRule.name)).all()

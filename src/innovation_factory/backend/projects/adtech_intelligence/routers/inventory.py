@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
-from ....dependencies import get_session
+from ....dependencies import SessionDep, get_session
 from ..models import (
     AtAdInventory,
     AtAdInventoryOut,
@@ -22,7 +22,7 @@ router = APIRouter(tags=["adtech-inventory"])
     operation_id="at_listInventory",
 )
 def list_inventory(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     inventory_type: Optional[InventoryType] = None,
     location_type: Optional[LocationType] = None,
     status: Optional[InventoryStatus] = None,
@@ -51,7 +51,7 @@ def list_inventory(
 )
 def get_inventory_item(
     inventory_id: int,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     item = db.get(AtAdInventory, inventory_id)
     if not item:

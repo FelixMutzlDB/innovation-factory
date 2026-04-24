@@ -4,7 +4,7 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, func, select
 
-from ....dependencies import get_session
+from ....dependencies import SessionDep, get_session
 from ..models import (
     AtCampaign,
     AtCampaignIn,
@@ -35,7 +35,7 @@ router = APIRouter(tags=["adtech-campaigns"])
     operation_id="at_getDashboardSummary",
 )
 def get_dashboard_summary(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Return high-level KPIs for the AdTech dashboard."""
     total_campaigns = db.exec(select(func.count(AtCampaign.id))).one()
@@ -89,7 +89,7 @@ def get_dashboard_summary(
     operation_id="at_listCampaigns",
 )
 def list_campaigns(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     status: Optional[CampaignStatus] = None,
     campaign_type: Optional[CampaignType] = None,
     advertiser_id: Optional[int] = None,
@@ -115,7 +115,7 @@ def list_campaigns(
 )
 def get_campaign(
     campaign_id: int,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     campaign = db.get(AtCampaign, campaign_id)
     if not campaign:
@@ -131,7 +131,7 @@ def get_campaign(
 def update_campaign(
     campaign_id: int,
     body: AtCampaignUpdate,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     campaign = db.get(AtCampaign, campaign_id)
     if not campaign:
@@ -154,7 +154,7 @@ def update_campaign(
 )
 def list_placements(
     campaign_id: int,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     stmt = (
         select(AtPlacement)
@@ -171,7 +171,7 @@ def list_placements(
 )
 def get_placement(
     placement_id: int,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     placement = db.get(AtPlacement, placement_id)
     if not placement:

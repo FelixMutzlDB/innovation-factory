@@ -9,7 +9,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session, select
 
-from ....dependencies import get_session, get_runtime
+from ....dependencies import SessionDep, get_runtime, get_session
 from ....pagination import Pagination
 from ....rate_limit import limiter
 from ....runtime import Runtime
@@ -33,7 +33,7 @@ chat_service = ChatService()
 async def send_chat_message(
     request: Request,
     message: AtChatMessageIn,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     runtime: Annotated[Runtime, Depends(get_runtime)],
 ):
     """Send a message to the issue-resolution KA and get a streaming response."""
@@ -54,7 +54,7 @@ async def send_chat_message(
 async def send_mas_chat_message(
     request: Request,
     message: AtChatMessageIn,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     runtime: Annotated[Runtime, Depends(get_runtime)],
 ):
     """Send a message to the Multi-Agent Supervisor and get a streaming response."""
@@ -76,7 +76,7 @@ async def send_mas_chat_message(
     operation_id="at_listChatSessions",
 )
 def list_chat_sessions(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     page: Pagination,
 ):
     """List recent chat sessions, newest first."""
@@ -114,7 +114,7 @@ def list_chat_sessions(
 )
 def get_chat_session(
     session_id: int,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Get a specific chat session with all messages."""
     session = db.get(AtChatSession, session_id)
