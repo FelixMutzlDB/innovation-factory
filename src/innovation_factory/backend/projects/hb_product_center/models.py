@@ -5,6 +5,7 @@ supply chain intelligence, sustainability metrics, and AI chat.
 """
 
 from datetime import date, datetime, timezone
+from ...input_sanitize import LongText
 from enum import Enum
 from typing import Optional
 
@@ -613,7 +614,7 @@ class HbChatSessionCreate(BaseModel):
 
 
 class HbChatMessageIn(BaseModel):
-    content: str
+    content: LongText
     session_id: Optional[int] = None
 
 

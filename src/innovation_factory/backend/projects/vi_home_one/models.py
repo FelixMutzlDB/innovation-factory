@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from ...input_sanitize import LongText
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
 from datetime import datetime, date, timezone
@@ -492,7 +493,7 @@ class VhTicketOut(BaseModel):
 
 # Chat Models
 class VhChatMessageIn(BaseModel):
-    content: str
+    content: LongText
 
 
 class VhChatMessageOut(BaseModel):

@@ -4,6 +4,7 @@ All table names use the ``mac_`` prefix (mol-asm-cockpit).
 """
 
 from datetime import date, datetime, timezone
+from ...input_sanitize import LongText
 from enum import Enum
 from typing import Optional
 
@@ -466,7 +467,7 @@ class MacCustomerContractOut(BaseModel):
 
 
 class MacChatMessageIn(BaseModel):
-    message: str
+    message: LongText
     session_type: str = "issue_resolution"
 
 

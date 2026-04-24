@@ -10,9 +10,10 @@ from typing import Annotated, Optional
 from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, BeforeValidator, Field
 
 from ....dependencies import RuntimeDep
+from ....input_sanitize import sanitize_text
 from ..databricks_config import IMAGE_VOLUME_PATH, MAS_ENDPOINT_NAME, VS_IMAGE_TABLE
 from ..models import (
     HbRecognitionJobCreate,
@@ -60,7 +61,14 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 
 
 class ProductIdentifyRequest(BaseModel):
-    description: str = Field(..., min_length=2, max_length=500)
+    # sanitize_text strips HTML tags + null bytes before min/max_length
+    # constraints apply — so a payload padded to 400 chars with stripped
+    # tags still has to pass min_length=2 on the cleaned value.
+    description: Annotated[
+        str,
+        BeforeValidator(sanitize_text),
+        Field(min_length=2, max_length=500),
+    ]
 
 
 class ProductMatch(BaseModel):
