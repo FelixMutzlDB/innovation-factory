@@ -5,6 +5,15 @@ on:
     branches: [master, main]
   pull_request:
     branches: [master, main]
+  # Manual trigger for opt-in integration runs (require a live Databricks
+  # workspace; we don't want these on every PR).
+  workflow_dispatch:
+    inputs:
+      run_integration:
+        description: "Run @pytest.mark.integration tests (needs DATABRICKS_HOST + DATABRICKS_TOKEN secrets)"
+        required: false
+        type: boolean
+        default: false
 
 # Cancel in-flight runs for the same PR when a new commit is pushed
 concurrency:
@@ -12,22 +21,23 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  lint-and-build:
-    name: Lint + Build
+  # ---------------------------------------------------------------------------
+  # Fast lint + type check. Runs first so a failing ty/tsc short-circuits the
+  # build + test matrix.
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint (ty + tsc)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
 
@@ -35,10 +45,75 @@ jobs:
         run: uv sync --group dev
 
       - name: Run ty + tsc via apx
-        # apx dev check runs both ty (Python) and tsc (TypeScript) checks
         run: uv run apx dev check
 
-      - name: Build (frontend + wheel)
+  # ---------------------------------------------------------------------------
+  # Unit / integration-skipped tests across a Python version matrix. Base
+  # install does NOT include the image-recognition extra (torch + open-clip),
+  # so non-HB tests run fast. A single HB job pulls the extra to confirm
+  # recognition paths import cleanly.
+  # ---------------------------------------------------------------------------
+  tests:
+    name: Pytest (${{ matrix.python }}, ${{ matrix.extras }})
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: "3.11"
+            extras: "base"
+            sync_args: "--group dev"
+          - python: "3.12"
+            extras: "base"
+            sync_args: "--group dev"
+          - python: "3.11"
+            extras: "image-recognition"
+            sync_args: "--group dev --extra image-recognition"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python deps (${{ matrix.extras }})
+        run: uv sync ${{ matrix.sync_args }}
+
+      - name: Run unit tests (skip integration)
+        run: uv run pytest -m "not integration" --tb=short -q
+
+  # ---------------------------------------------------------------------------
+  # Build artifacts. Runs after lint + tests so build failures don't mask
+  # earlier issues.
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build (frontend + wheel)
+    needs: [lint, tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python deps
+        run: uv sync --group dev
+
+      - name: Build
         run: uv run apx build
 
       - name: Verify build outputs
@@ -48,31 +123,33 @@ jobs:
           ls .build/*.whl >/dev/null 2>&1 || (echo "wheel missing" && exit 1)
           echo "Build artifacts OK"
 
-  tests:
-    name: Pytest
+  # ---------------------------------------------------------------------------
+  # Integration tests against a real Databricks workspace. Opt-in via
+  # workflow_dispatch; NEVER runs on PRs (we don't want secrets leaking into
+  # fork runs and we don't want every PR costing warehouse time).
+  # ---------------------------------------------------------------------------
+  integration:
+    name: Integration (@pytest.mark.integration)
+    if: github.event_name == 'workflow_dispatch' && inputs.run_integration
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    # pytest is wired but no tests exist yet; the job is a placeholder that
-    # passes on an empty suite and will start reporting coverage once Batch B
-    # lands. Not marked as required in branch protection until then.
-
+    timeout-minutes: 30
+    environment: integration
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
 
       - name: Install Python deps
-        run: uv sync --group dev
+        run: uv sync --group dev --extra image-recognition
 
-      - name: Run unit tests (skip integration)
-        # "integration" tests require a live Databricks workspace; skip in CI.
-        run: uv run pytest -m "not integration" --tb=short
+      - name: Run integration tests
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: uv run pytest -m integration --tb=short
