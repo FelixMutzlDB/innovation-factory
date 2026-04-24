@@ -14,6 +14,22 @@ resources:
     serving_endpoint:
       name: databricks-claude-sonnet-4
       permission: CAN_QUERY
+  - name: adtech-mas-endpoint
+    serving_endpoint:
+      name: mas-9e45f45a-endpoint
+      permission: CAN_QUERY
+  - name: hb-mas-endpoint
+    serving_endpoint:
+      name: mas-d14be5f2-endpoint
+      permission: CAN_QUERY
+  - name: adtech-issue-resolution-ka
+    serving_endpoint:
+      name: ka-005ebf14-endpoint
+      permission: CAN_QUERY
+  - name: adtech-customer-relations-ka
+    serving_endpoint:
+      name: ka-d29e8002-endpoint
+      permission: CAN_QUERY
 
 env:
   - name: PGHOST
@@ -30,3 +46,39 @@ env:
     value: felix_demo_catalog
   - name: WAREHOUSE_ID
     value: f7cdb11888c4799e
+
+  # Dashboards (Lakeview)
+  - name: ADTECH_DASHBOARD_ID
+    value: 01f13f258d20183894ba2b942833b50e
+  - name: HB_AQ_DASHBOARD_ID
+    value: 01f13f258e021692aa4b7ab85d670c3e
+  - name: HB_SC_DASHBOARD_ID
+    value: 01f13f258ed810858ae5520e9f310f72
+
+  # Genie spaces
+  - name: HB_SC_GENIE_SPACE_ID
+    value: 01f13e6f2a2e1310a6d536bc9d5b3a27
+  - name: HB_AQ_GENIE_SPACE_ID
+    value: 01f13e6f2afa1d54bf7bac95081e572d
+  - name: ADTECH_GENIE_SPACE_ID
+    value: 01f13e6f2b5113ea91267c843877c834
+
+  # Knowledge Assistants (AdTech)
+  - name: ADTECH_ISSUE_RESOLUTION_KA_TILE_ID
+    value: 005ebf14-c32c-4862-a343-b9826ab27c40
+  - name: ADTECH_ISSUE_RESOLUTION_KA_ENDPOINT
+    value: ka-005ebf14-endpoint
+  - name: ADTECH_CUSTOMER_RELATIONS_KA_TILE_ID
+    value: d29e8002-e57e-479b-846e-4c67f2426428
+  - name: ADTECH_CUSTOMER_RELATIONS_KA_ENDPOINT
+    value: ka-d29e8002-endpoint
+
+  # Multi-Agent Supervisors
+  - name: ADTECH_MAS_TILE_ID
+    value: 9e45f45a-66c5-43ec-b749-49f3ee2f1341
+  - name: ADTECH_MAS_ENDPOINT_NAME
+    value: mas-9e45f45a-endpoint
+  - name: HB_MAS_TILE_ID
+    value: d14be5f2-8b23-48d1-a562-f4f470b91ce3
+  - name: HB_MAS_ENDPOINT_NAME
+    value: mas-d14be5f2-endpoint
