@@ -13,10 +13,20 @@ dependencies = [
     "psycopg[binary,pool]>=3.2.11",
     "python-multipart>=0.0.20",
     "sse-starlette>=2.2.1",
-    "torch>=2.0.0",
-    "open-clip-torch>=2.24.0",
     "Pillow>=10.0.0",
     "slowapi>=0.1.9",
+]
+
+[project.optional-dependencies]
+# CLIP-based visual recognition for HB Product Center. torch alone is
+# ~900 MB installed; only pull it in for workspaces that need HB's
+# image similarity (production deploy, HB-focused development, or
+# running HB-tagged pytest). Install via:
+#   uv sync --extra image-recognition
+# The production bundle sets this in databricks.yml.
+image-recognition = [
+    "torch>=2.0.0",
+    "open-clip-torch>=2.24.0",
 ]
 
 [dependency-groups]

@@ -13,7 +13,24 @@ sync:
 
 artifacts:
   default:
-    build: uv run apx build
+    # After apx build produces .build/requirements.txt (pointing at the
+    # wheel), rewrite the wheel reference to request the optional
+    # image-recognition extra so the Databricks App environment installs
+    # torch + open-clip-torch for HB Product Center's CLIP pipeline.
+    # Dev installs (local `uv sync`) skip the extra — 900 MB saved.
+    build: |
+      uv run apx build
+      python3 -c "
+      from pathlib import Path
+      req = Path('.build/requirements.txt')
+      lines = []
+      for line in req.read_text().splitlines():
+          if line.endswith('.whl') and '[' not in line:
+              line = line + '[image-recognition]'
+          lines.append(line)
+      req.write_text('\n'.join(lines) + '\n')
+      print('requirements.txt updated to request [image-recognition]')
+      "
 
 resources:
   apps:
