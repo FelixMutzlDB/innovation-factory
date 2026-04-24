@@ -6,6 +6,7 @@ from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from ....dependencies import RuntimeDep
+from ....pagination import Pagination
 from ..models import (
     DefectSeverity,
     DefectType,
@@ -87,10 +88,9 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 @router.get("/inspections", response_model=list[HbQualityInspectionOut], operation_id="hb_listInspections")
 def list_inspections(
     ws: WsDep,
+    page: Pagination,
     status: Optional[str] = Query(None),
     product_id: Optional[int] = Query(None),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
 ):
     """List quality inspections from Unity Catalog."""
     filters: dict[str, object] = {}
@@ -102,7 +102,7 @@ def list_inspections(
     rows = select_all(
         ws, "hb_quality_inspections", filters=filters,
         order_by_column="created_at", order_desc=True,
-        limit=limit, offset=offset,
+        limit=page.limit, offset=page.skip,
     )
     return [_sanitize_inspection_row(row) for row in rows]
 

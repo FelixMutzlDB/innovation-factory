@@ -6,6 +6,7 @@ from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from ....dependencies import RuntimeDep
+from ....pagination import Pagination
 from ..models import (
     AlertResolution,
     AlertSeverity,
@@ -66,10 +67,9 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 @router.get("/verifications", response_model=list[HbAuthVerificationOut], operation_id="hb_listVerifications")
 def list_verifications(
     ws: WsDep,
+    page: Pagination,
     status: Optional[str] = Query(None),
     requester_type: Optional[str] = Query(None),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
 ):
     """List authenticity verifications from Unity Catalog."""
     filters: dict[str, object] = {}
@@ -81,7 +81,7 @@ def list_verifications(
     rows = select_all(
         ws, "hb_auth_verifications", filters=filters,
         order_by_column="created_at", order_desc=True,
-        limit=limit, offset=offset,
+        limit=page.limit, offset=page.skip,
     )
     return [_sanitize_verification_row(row) for row in rows]
 
@@ -116,9 +116,8 @@ def create_verification(data: HbAuthVerificationCreate, ws: WsDep):
 @router.get("/alerts", response_model=list[HbAuthAlertOut], operation_id="hb_listAlerts")
 def list_alerts(
     ws: WsDep,
+    page: Pagination,
     resolution: Optional[str] = Query(None),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
 ):
     """List authenticity alerts from Unity Catalog."""
     filters: dict[str, object] = {}
@@ -128,7 +127,7 @@ def list_alerts(
     rows = select_all(
         ws, "hb_auth_alerts", filters=filters,
         order_by_column="created_at", order_desc=True,
-        limit=limit, offset=offset,
+        limit=page.limit, offset=page.skip,
     )
     return [_sanitize_alert_row(row) for row in rows]
 

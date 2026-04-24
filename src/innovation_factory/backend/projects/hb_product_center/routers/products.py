@@ -6,6 +6,7 @@ from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from ....dependencies import RuntimeDep
+from ....pagination import Pagination
 from ..models import (
     HbProductImageOut,
     HbProductOut,
@@ -60,12 +61,11 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 @router.get("", response_model=list[HbProductOut], operation_id="hb_listProducts")
 def list_products(
     ws: WsDep,
+    page: Pagination,
     category: Optional[str] = Query(None),
     collection: Optional[str] = Query(None),
     season: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
 ):
     """List products from Unity Catalog.
 
@@ -92,8 +92,8 @@ def list_products(
             filters=filters,
             order_by_column="created_at",
             order_desc=True,
-            limit=limit,
-            offset=offset,
+            limit=page.limit,
+            offset=page.skip,
         )
     else:
         rows = select_all(
@@ -102,8 +102,8 @@ def list_products(
             filters=filters,
             order_by_column="created_at",
             order_desc=True,
-            limit=limit,
-            offset=offset,
+            limit=page.limit,
+            offset=page.skip,
         )
     return [_sanitize_product_row(row) for row in rows]
 

@@ -13,6 +13,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel, BeforeValidator, Field
 
 from ....dependencies import RuntimeDep
+from ....pagination import Pagination
 from ....input_sanitize import sanitize_text
 from ....rate_limit import limiter
 from ..databricks_config import IMAGE_VOLUME_PATH, MAS_ENDPOINT_NAME, VS_IMAGE_TABLE
@@ -169,9 +170,8 @@ async def identify_product(
 @router.get("/jobs", response_model=list[HbRecognitionJobOut], operation_id="hb_listRecognitionJobs")
 def list_recognition_jobs(
     ws: WsDep,
+    page: Pagination,
     status: Optional[str] = Query(None, max_length=50),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
 ):
     """List recognition jobs from Unity Catalog."""
     filters: dict[str, str] | None = None
@@ -183,8 +183,8 @@ def list_recognition_jobs(
         filters=filters,
         order_by_column="created_at",
         order_desc=True,
-        limit=limit,
-        offset=offset,
+        limit=page.limit,
+        offset=page.skip,
     )
     return [_sanitize_job_row(row) for row in rows]
 

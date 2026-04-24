@@ -7,6 +7,7 @@ from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from ....dependencies import RuntimeDep
+from ....pagination import Pagination
 from ..models import (
     ComplianceStatus,
     HbProductJourney,
@@ -80,11 +81,10 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 @router.get("/events", response_model=list[HbSupplyChainEventOut], operation_id="hb_listSupplyChainEvents")
 def list_supply_chain_events(
     ws: WsDep,
+    page: Pagination,
     product_id: Optional[int] = Query(None),
     event_type: Optional[str] = Query(None),
     country: Optional[str] = Query(None),
-    limit: int = Query(100, le=500),
-    offset: int = Query(0),
 ):
     """List supply chain events from Unity Catalog."""
     filters: dict[str, object] = {}
@@ -98,7 +98,7 @@ def list_supply_chain_events(
     rows = select_all(
         ws, "hb_supply_chain_events", filters=filters,
         order_by_column="event_date", order_desc=True,
-        limit=limit, offset=offset,
+        limit=page.limit, offset=page.skip,
     )
     return [_sanitize_event_row(row) for row in rows]
 
@@ -131,11 +131,10 @@ def get_product_journey(product_id: int, ws: WsDep):
 @router.get("/sustainability", response_model=list[HbSustainabilityMetricOut], operation_id="hb_listSustainabilityMetrics")
 def list_sustainability_metrics(
     ws: WsDep,
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
+    page: Pagination,
 ):
     """List sustainability metrics from Unity Catalog."""
-    rows = select_all(ws, "hb_sustainability_metrics", limit=limit, offset=offset)
+    rows = select_all(ws, "hb_sustainability_metrics", limit=page.limit, offset=page.skip)
     return [_sanitize_sustainability_row(row) for row in rows]
 
 @router.get("/sustainability/{product_id}", response_model=HbSustainabilityMetricOut, operation_id="hb_getProductSustainability")
