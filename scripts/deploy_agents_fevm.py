@@ -27,6 +27,10 @@ import sys
 import time
 from datetime import date, datetime, timedelta
 
+# Local import — uc_schema is a sibling module in scripts/
+sys.path.insert(0, os.path.dirname(__file__))
+import uc_schema  # noqa: E402
+
 PROFILE = "fevm-felix-demo"
 HOST = "https://fevm-felix-demo.cloud.databricks.com"
 CATALOG = "felix_demo_catalog"
@@ -172,50 +176,25 @@ def phase_2_upload_ka_docs(state):
 # ===========================================================================
 
 def phase_3_seed_adtech_tables(state):
+    """Create-or-replace the AdTech tables and seed demo rows.
+
+    DDL comes from the canonical :mod:`uc_schema` module — the same
+    definitions every other seeder uses. ``CREATE TABLE IF NOT EXISTS``
+    preserves existing rows on idempotent re-runs; in phase 3 we want
+    fresh tables (this is the seed path, not a migration), so we drop
+    first.
+    """
     random.seed(42)
     SC = f"{CATALOG}.adtech_intelligence"
 
-    ddls = [
-        f"""CREATE OR REPLACE TABLE {SC}.advertisers (
-            id INT, name STRING, industry STRING, contact_name STRING,
-            contact_email STRING, budget_tier STRING, created_at TIMESTAMP
-        )""",
-        f"""CREATE OR REPLACE TABLE {SC}.campaigns (
-            id INT, advertiser_id INT, name STRING, campaign_type STRING,
-            status STRING, budget DOUBLE, spent DOUBLE,
-            start_date DATE, end_date DATE, target_audience STRING
-        )""",
-        f"""CREATE OR REPLACE TABLE {SC}.ad_inventory (
-            id INT, name STRING, inventory_type STRING, location_type STRING,
-            city STRING, region STRING, daily_impressions_est INT,
-            cpm_rate DOUBLE, status STRING, ad_format STRING, media_owner STRING
-        )""",
-        f"""CREATE OR REPLACE TABLE {SC}.performance_metrics (
-            id INT, campaign_id INT, inventory_id INT, metric_date DATE,
-            impressions BIGINT, clicks INT, ctr DOUBLE, conversions INT,
-            spend DOUBLE, viewability_rate DOUBLE
-        )""",
-        f"""CREATE OR REPLACE TABLE {SC}.anomalies (
-            id INT, campaign_id INT, anomaly_type STRING, severity STRING,
-            title STRING, description STRING, status STRING,
-            metric_name STRING, expected_value DOUBLE, actual_value DOUBLE,
-            deviation_pct DOUBLE, detected_at TIMESTAMP
-        )""",
-        f"""CREATE OR REPLACE TABLE {SC}.issues (
-            id INT, campaign_id INT, advertiser_id INT, title STRING,
-            description STRING, category STRING, status STRING, priority STRING,
-            assigned_to STRING, created_at TIMESTAMP, resolved_at TIMESTAMP
-        )""",
-        f"""CREATE OR REPLACE TABLE {SC}.customer_contracts (
-            id INT, advertiser_id INT, contract_number STRING,
-            start_date DATE, end_date DATE, total_value DOUBLE,
-            status STRING, payment_terms STRING, signed_at TIMESTAMP
-        )""",
-    ]
-    for ddl in ddls:
-        tname = ddl.split("TABLE")[1].split("(")[0].strip()
-        print(f"  DDL {tname}...")
-        resp = _sql(ddl)
+    # The canonical DDL uses CREATE IF NOT EXISTS; for seeding we want a
+    # clean slate so drop + create. uc_schema has the column definitions
+    # we trust.
+    for key in uc_schema.tables_for_schema("adtech_intelligence"):
+        table_fq = f"{CATALOG}.{key}"
+        print(f"  DDL {table_fq}...")
+        _sql(f"DROP TABLE IF EXISTS {table_fq}")
+        resp = _sql(uc_schema.create_table_sql(CATALOG, key))
         print(f"    -> {resp.get('status', {}).get('state', '?')}")
 
     # --- Seed data ---
