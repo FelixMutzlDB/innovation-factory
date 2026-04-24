@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import SafeMarkdown from "@/components/safe-markdown";
 import { Suspense, useState, useRef, useEffect, useCallback } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { useHb_getDashboardSummarySuspense } from "@/lib/api";
 import { selector } from "@/lib/selector";
 import {
@@ -329,8 +328,8 @@ function ProductCenterChat() {
                 ) : (
                   <>
                     <div className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
+                      <SafeMarkdown
+                        
                         components={{
                           h1: ({ children }) => (
                             <h1 className="text-lg font-bold mt-4 mb-2 first:mt-0">
@@ -412,7 +411,7 @@ function ProductCenterChat() {
                         }}
                       >
                         {msg.content}
-                      </ReactMarkdown>
+                      </SafeMarkdown>
                     </div>
                     {msg.sources && msg.sources.length > 0 && (
                       <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-border/50">

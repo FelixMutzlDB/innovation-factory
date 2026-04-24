@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import SafeMarkdown from "@/components/safe-markdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -145,9 +144,9 @@ export function ChatInterface({ ticketId, sessionType: _sessionType = "customer_
             <Card className="flex-1 bg-muted/50">
               <CardContent className="pt-4">
                 <div className="prose prose-sm dark:prose-invert max-w-none">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <SafeMarkdown>
                     {streamingContent}
-                  </ReactMarkdown>
+                  </SafeMarkdown>
                 </div>
               </CardContent>
             </Card>
@@ -227,8 +226,8 @@ function ChatMessageComponent({ message }: { message: ChatMessage }) {
               <p className="text-sm whitespace-pre-wrap">{message.content}</p>
             ) : (
               <div className="prose prose-sm dark:prose-invert max-w-none">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
+                <SafeMarkdown
+                  
                   components={{
                     // Customize rendering
                     p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
@@ -247,7 +246,7 @@ function ChatMessageComponent({ message }: { message: ChatMessage }) {
                   }}
                 >
                   {message.content}
-                </ReactMarkdown>
+                </SafeMarkdown>
               </div>
             )}
 

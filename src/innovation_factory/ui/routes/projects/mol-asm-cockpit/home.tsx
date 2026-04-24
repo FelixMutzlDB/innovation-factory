@@ -1,9 +1,8 @@
 import { Suspense, useMemo, useState, useRef, useEffect } from "react";
+import SafeMarkdown from "@/components/safe-markdown";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ErrorBoundary } from "react-error-boundary";
 import { motion } from "motion/react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import {
   useMac_listStationsSuspense,
   useMac_listRegionsSuspense,
@@ -254,8 +253,8 @@ function AsmAssistantChat() {
                     <p className="whitespace-pre-wrap">{msg.content}</p>
                   ) : (
                     <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
+                      <SafeMarkdown
+                        
                         components={{
                           p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
                           ul: ({ children }) => <ul className="mb-2 ml-4 list-disc">{children}</ul>,
@@ -276,7 +275,7 @@ function AsmAssistantChat() {
                         }}
                       >
                         {msg.content}
-                      </ReactMarkdown>
+                      </SafeMarkdown>
                     </div>
                   )}
                 </div>
