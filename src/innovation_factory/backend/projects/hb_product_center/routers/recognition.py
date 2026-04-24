@@ -86,7 +86,7 @@ class ProductIdentifyResponse(BaseModel):
     operation_id="hb_identifyProduct",
 )
 async def identify_product(request: ProductIdentifyRequest, ws: WsDep):
-    """Identify a Hugo Boss product from a visual description using AI."""
+    """Identify a HB product from a visual description using AI."""
     desc = request.description.lower()
 
     # Search products by description keywords using safe LIKE search
@@ -131,7 +131,7 @@ async def identify_product(request: ProductIdentifyRequest, ws: WsDep):
 
     ai_analysis = ""
     try:
-        prompt = f"Briefly analyze this product description and suggest what Hugo Boss product it might be: '{request.description}'. Mention likely category, style, and material. Keep it under 100 words."
+        prompt = f"Briefly analyze this product description and suggest what HB product it might be: '{request.description}'. Mention likely category, style, and material. Keep it under 100 words."
         result = ws.api_client.do(
             "POST",
             f"/serving-endpoints/{MAS_ENDPOINT_NAME}/invocations",

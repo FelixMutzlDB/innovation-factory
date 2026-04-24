@@ -1,4 +1,4 @@
-"""Seed Hugo Boss Product Center data into Unity Catalog tables.
+"""Seed HB Product Center data into Unity Catalog tables.
 
 Run via: python scripts/seed_uc_hb_data.py
 Requires: DATABRICKS_CONFIG_PROFILE=e2-demo-field-eng (or equivalent auth)
@@ -201,7 +201,7 @@ def build_sql():
             sev = _rng.choice(defect_severities)
             loc = _rng.choice(defect_locations)
             conf = round(_rng.uniform(0.7, 0.99), 3)
-            img = f"https://images.hugoboss.com/qc/defect_{insp_idx+1}_{_rng.randint(100,999)}.jpg" if _rng.random() < 0.5 else None
+            img = f"https://images.hb.example/qc/defect_{insp_idx+1}_{_rng.randint(100,999)}.jpg" if _rng.random() < 0.5 else None
             dc = created + timedelta(minutes=_rng.randint(5, 120))
             rows.append(f"({insp_idx+1}, {s(dt)}, {s(sev)}, {s(loc)}, {conf}, {s(img)}, {ts(dc)})")
     if rows:
@@ -224,7 +224,7 @@ def build_sql():
         method = _rng.choice(ver_methods)
         region = _rng.choice(REGIONS)
         notes_val = "Flagged by automated scan." if status == "suspicious" else None
-        img = f"https://uploads.hugoboss.com/auth/{_rng.randint(10000,99999)}.jpg" if _rng.random() < 0.7 else None
+        img = f"https://uploads.hb.example/auth/{_rng.randint(10000,99999)}.jpg" if _rng.random() < 0.7 else None
         ver_data.append((status, region, method, created))
         pid_val = str(pid) if pid else "NULL"
         conf_val = str(conf) if conf is not None else "NULL"
@@ -256,13 +256,13 @@ def build_sql():
         for j in range(n_events):
             loc, country = _rng.choice(LOCATIONS)
             evt_date = base + timedelta(days=j * _rng.randint(2, 14))
-            partner = _rng.choice(MANUFACTURING_PARTNERS + ["Hugo Boss Logistics", "DHL Supply Chain", "Kuehne+Nagel"])
+            partner = _rng.choice(MANUFACTURING_PARTNERS + ["HB Logistics", "DHL Supply Chain", "Kuehne+Nagel"])
             details = f"{event_flow[j].replace('_', ' ').title()} at {loc}"
             rows.append(f"({pid}, {s(event_flow[j])}, {s(loc)}, {s(partner)}, {s(country)}, {s(details)}, {ts(evt_date)}, {ts(evt_date)})")
         if _rng.random() < 0.3:
             sold_date = base + timedelta(days=n_events * 14 + _rng.randint(1, 30))
             loc, country = _rng.choice(LOCATIONS)
-            rows.append(f"({pid}, 'sold', {s(loc)}, {s('Hugo Boss Store ' + loc.split(',')[0])}, {s(country)}, {s(f'Sold at retail store in {loc}')}, {ts(sold_date)}, {ts(sold_date)})")
+            rows.append(f"({pid}, 'sold', {s(loc)}, {s('HB Store ' + loc.split(',')[0])}, {s(country)}, {s(f'Sold at retail store in {loc}')}, {ts(sold_date)}, {ts(sold_date)})")
     stmts.append(f"INSERT INTO {CATALOG}.{SCHEMA}.hb_supply_chain_events (product_id, event_type, location, partner_name, country, details, event_date, created_at) VALUES\n" + ",\n".join(rows))
 
     # Sustainability Metrics

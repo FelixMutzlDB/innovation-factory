@@ -38,7 +38,7 @@ def process_recognition_job(session: Session, job: HbRecognitionJob) -> HbRecogn
         result = HbRecognitionResult(
             job_id=job.id,
             product_id=product.id if product else None,
-            image_url=f"https://uploads.hugoboss.com/recognition/{job.id}_{i}.jpg",
+            image_url=f"https://uploads.hb.example/recognition/{job.id}_{i}.jpg",
             confidence_score=confidence,
             detected_sku=product.sku if product else None,
             detected_color=product.color if product else None,

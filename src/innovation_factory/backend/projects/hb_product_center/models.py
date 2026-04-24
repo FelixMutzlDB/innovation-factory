@@ -1,4 +1,4 @@
-"""Data models for the Hugo Boss Intelligent Product Center.
+"""Data models for the HB Intelligent Product Center.
 
 Covers: products, visual recognition, quality control, authenticity verification,
 supply chain intelligence, sustainability metrics, and AI chat.

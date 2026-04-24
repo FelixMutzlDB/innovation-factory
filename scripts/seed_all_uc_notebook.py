@@ -224,7 +224,7 @@ for insp_idx, (pid, score, status, created) in enumerate(insp_data):
         sev = _rng.choice(defect_severities)
         loc = _rng.choice(defect_locations)
         conf = round(_rng.uniform(0.7, 0.99), 3)
-        img = f"https://images.hugoboss.com/qc/defect_{insp_idx+1}_{_rng.randint(100,999)}.jpg" if _rng.random() < 0.5 else None
+        img = f"https://images.hb.example/qc/defect_{insp_idx+1}_{_rng.randint(100,999)}.jpg" if _rng.random() < 0.5 else None
         dc = created + timedelta(minutes=_rng.randint(5, 120))
         qd_rows.append((did, insp_idx+1, dt, sev, loc, conf, img, dc))
         did += 1
@@ -257,7 +257,7 @@ for i in range(25):
     method = _rng.choice(ver_methods)
     region = _rng.choice(REGIONS)
     notes_val = "Flagged by automated scan." if status == "suspicious" else None
-    img = f"https://uploads.hugoboss.com/auth/{_rng.randint(10000,99999)}.jpg" if _rng.random() < 0.7 else None
+    img = f"https://uploads.hb.example/auth/{_rng.randint(10000,99999)}.jpg" if _rng.random() < 0.7 else None
     ver_data.append((status, region, method, created))
     av_rows.append((i+1, pid, req_type, req_name, f"verify-{_rng.randint(100,999)}@example.com", status, conf, method, img, region, notes_val, created, completed))
 
@@ -313,14 +313,14 @@ for pidx in sampled:
     for j in range(n_events):
         loc, country = _rng.choice(LOCATIONS)
         evt_date = base + timedelta(days=j * _rng.randint(2, 14))
-        partner = _rng.choice(MANUFACTURING_PARTNERS + ["Hugo Boss Logistics", "DHL Supply Chain", "Kuehne+Nagel"])
+        partner = _rng.choice(MANUFACTURING_PARTNERS + ["HB Logistics", "DHL Supply Chain", "Kuehne+Nagel"])
         details = f"{event_flow[j].replace('_', ' ').title()} at {loc}"
         sc_rows.append((eid, pid, event_flow[j], loc, partner, country, details, evt_date, evt_date))
         eid += 1
     if _rng.random() < 0.3:
         sold_date = base + timedelta(days=n_events * 14 + _rng.randint(1, 30))
         loc, country = _rng.choice(LOCATIONS)
-        sc_rows.append((eid, pid, "sold", loc, f"Hugo Boss Store {loc.split(',')[0]}", country, f"Sold at retail store in {loc}", sold_date, sold_date))
+        sc_rows.append((eid, pid, "sold", loc, f"HB Store {loc.split(',')[0]}", country, f"Sold at retail store in {loc}", sold_date, sold_date))
         eid += 1
 
 sc_schema = StructType([
