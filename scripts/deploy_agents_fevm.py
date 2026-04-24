@@ -625,96 +625,157 @@ def phase_7_multi_agent_supervisors(state):
             endpoint = f"mas-{short}-endpoint"
         return tile_id, endpoint
 
-    # --- AdTech MAS ---
+    # ---------------------------------------------------------------------
+    # Naming convention (D3): every sub-agent uses snake_case_lowercase.
+    # The MAS framework derives its tool names from these, and the LLM
+    # routes by referencing them in ``instructions`` by the exact machine
+    # name so the tool_call output is deterministic.
+    # MAS display_name always ends with "Supervisor" so both supervisors
+    # read consistently in the Agent Bricks UI.
+    # ---------------------------------------------------------------------
+
+    def _delete_existing_mas_by_name(display_name: str) -> None:
+        """If a MAS with this display_name exists, delete it.
+
+        GET responses don't echo the `agents` array, so we can't reliably
+        update-in-place — idempotency = delete + recreate.
+        """
+        resp = _api("get", "/api/2.1/supervisor-agents?page_size=100")
+        if not resp:
+            return
+        for entry in resp.get("supervisor_agents", []):
+            if entry.get("display_name") == display_name:
+                tid = entry.get("supervisor_agent_id")
+                if tid:
+                    print(f"    Deleting existing {display_name} ({tid})...")
+                    _api("delete", f"/api/2.1/supervisor-agents/{tid}")
+
+    # --- AdTech MAS -------------------------------------------------------
     adtech_agents = []
     if kas.get("issue_resolution", {}).get("endpoint_name"):
         adtech_agents.append(_build_agent(
-            "Issue_Resolution_Specialist",
+            "issue_resolution",
             "Answers questions about resolving advertising technology issues, "
-            "troubleshooting ad delivery, billing, tracking, and technical incidents. "
-            "Use for any how-to-resolve or troubleshooting question.",
+            "troubleshooting ad delivery, billing, tracking, and technical "
+            "incidents. Use `issue_resolution` for any how-to-resolve or "
+            "troubleshooting question.",
             "ka_endpoint", kas["issue_resolution"]["endpoint_name"]))
     if kas.get("customer_relations", {}).get("endpoint_name"):
         adtech_agents.append(_build_agent(
-            "Customer_Relations_Specialist",
-            "Answers questions about customer relationships, contract management, "
-            "campaign history, and account profiles. Use for customer and contract questions.",
+            "customer_relations",
+            "Answers questions about customer relationships, contract "
+            "management, campaign history, and account profiles. Use "
+            "`customer_relations` for customer and contract questions.",
             "ka_endpoint", kas["customer_relations"]["endpoint_name"]))
     if genies.get("adtech"):
         adtech_agents.append(_build_agent(
-            "Data_Explorer",
-            "Explores and queries advertising data including campaigns, performance metrics, "
-            "inventory, anomalies, and issues. Use for any data analysis or SQL query needs.",
+            "data_explorer",
+            "Explores and queries advertising data including campaigns, "
+            "performance metrics, inventory, anomalies, and issues. Use "
+            "`data_explorer` for any data analysis or SQL query needs.",
             "genie", genies["adtech"]))
 
-    if adtech_agents and not mas.get("adtech", {}).get("tile_id"):
+    # Recreate if the stored phase_7_version doesn't match the current
+    # source (D3 introduced the snake_case sub-agent naming — old MASes
+    # created before D3 land with mixed-case names and need to be
+    # rebuilt). Bump this string when the phase-7 config changes shape.
+    PHASE_7_VERSION = "D3-snake-case-subagents"
+    needs_rebuild = state.get("phase_7_version") != PHASE_7_VERSION
+
+    if adtech_agents and (needs_rebuild or not mas.get("adtech", {}).get("tile_id")):
+        adtech_display = "AdTech Intelligence Supervisor"
+        _delete_existing_mas_by_name(adtech_display)
         body = {
-            "display_name": "AdTech Intelligence Supervisor",
-            "description": "Orchestrates issue resolution, customer relations, and data exploration for AdTech Intelligence.",
+            "display_name": adtech_display,
+            "description": (
+                "Orchestrates issue resolution, customer relations, and data "
+                "exploration for AdTech Intelligence."
+            ),
             "instructions": (
-                "You are the AdTech Intelligence Assistant. "
-                "Route technical issues and troubleshooting to the Issue Resolution Specialist. "
-                "Route customer and contract questions to the Customer Relations Specialist. "
-                "Route data queries and analytics to the Data Explorer."
+                "You are the AdTech Intelligence Supervisor. Route requests "
+                "to exactly one sub-agent by name:\n"
+                "- `issue_resolution` — technical troubleshooting / how-to.\n"
+                "- `customer_relations` — customer / contract questions.\n"
+                "- `data_explorer` — data analysis / SQL / metrics."
             ),
             "agents": adtech_agents,
         }
-        print("  Creating MAS: AdTech Intelligence Supervisor...")
+        print(f"  Creating MAS: {adtech_display}...")
         resp = _api("post", "/api/2.1/supervisor-agents", body)
-        print(f"    Response: {json.dumps(resp, indent=2)[:800] if resp else 'None'}")
+        print(f"    Response: {json.dumps(resp, indent=2)[:500] if resp else 'None'}")
         tile_id, endpoint = _extract_mas(resp)
         if tile_id:
             mas["adtech"] = {"tile_id": tile_id, "endpoint_name": endpoint,
-                              "name": "AdTech Intelligence Supervisor"}
+                              "name": adtech_display}
             save_state(state)
             print(f"    OK: tile_id={tile_id}, endpoint={endpoint}")
 
-    # --- HB MAS ---
+    # --- HB MAS -----------------------------------------------------------
     hb_agents = []
     if genies.get("hb_sc"):
         hb_agents.append(_build_agent(
-            "Supply_Chain_Analyst",
-            "Answers questions about supply chain events, logistics, product journeys "
-            "from manufacturing to retail, sustainability metrics (carbon footprint, "
-            "water usage, recycled content), compliance status, and partner performance.",
+            "supply_chain",
+            "Answers questions about supply chain events, logistics, product "
+            "journeys from manufacturing to retail, sustainability metrics "
+            "(carbon footprint, water usage, recycled content), compliance "
+            "status, and partner performance. Use `supply_chain` for these.",
             "genie", genies["hb_sc"]))
     if genies.get("hb_aq"):
         hb_agents.append(_build_agent(
-            "Quality_And_Auth_Analyst",
-            "Answers questions about product authenticity verifications, counterfeit "
-            "detection alerts, quality control inspections, defect analysis, manufacturing "
-            "partner quality scores, verification methods, and brand protection.",
+            "quality_and_authenticity",
+            "Answers questions about product authenticity verifications, "
+            "counterfeit detection alerts, quality control inspections, "
+            "defect analysis, manufacturing partner quality scores, "
+            "verification methods, and brand protection. Use "
+            "`quality_and_authenticity` for these.",
             "genie", genies["hb_aq"]))
     hb_agents.append(_build_agent(
-        "Product_Identifier",
-        "Identifies HB products from visual descriptions. Given a description of "
-        "a product (color, style, material, category), searches the product catalog and "
-        "returns matching products with confidence levels.",
+        "product_identifier",
+        "Identifies HB products from visual descriptions. Given a description "
+        "of a product (color, style, material, category), searches the "
+        "product catalog and returns matching products with confidence "
+        "levels. Use `product_identifier` for product-lookup requests.",
         "uc_function", f"{CATALOG}.hb_product_center.identify_product"))
 
-    if hb_agents and not mas.get("hb", {}).get("tile_id"):
+    if hb_agents and (needs_rebuild or not mas.get("hb", {}).get("tile_id")):
+        hb_display = "HB Product Center Supervisor"
+        _delete_existing_mas_by_name(hb_display)
+        # Also purge the legacy display name used before D3.
+        _delete_existing_mas_by_name("HB Product Center Intelligence")
         body = {
-            "display_name": "HB Product Center Intelligence",
-            "description": "HB Product Center Intelligence Agent - orchestrates supply chain analytics, "
-                           "authenticity & quality insights, and product identification.",
+            "display_name": hb_display,
+            "description": (
+                "HB Product Center Supervisor — orchestrates supply chain "
+                "analytics, quality & authenticity insights, and product "
+                "identification."
+            ),
             "instructions": (
-                "You are the HB Product Center Intelligence Assistant. "
-                "Route supply chain, logistics, and sustainability questions to the Supply Chain Analyst. "
-                "Route quality control, defect, inspection, and authenticity questions to the Quality & Auth Analyst. "
-                "Route product identification requests to the Product Identifier. "
-                "For general questions, use your best judgment on which agent to route to."
+                "You are the HB Product Center Supervisor. Route each user "
+                "request to exactly one sub-agent by name:\n"
+                "- `supply_chain` — logistics, partners, sustainability, "
+                "manufacturing-to-retail journey questions.\n"
+                "- `quality_and_authenticity` — quality inspections, defects, "
+                "authenticity verifications, counterfeit alerts, brand "
+                "protection.\n"
+                "- `product_identifier` — product lookup by visual / textual "
+                "description."
             ),
             "agents": hb_agents,
         }
-        print("  Creating MAS: HB Product Center Intelligence...")
+        print(f"  Creating MAS: {hb_display}...")
         resp = _api("post", "/api/2.1/supervisor-agents", body)
-        print(f"    Response: {json.dumps(resp, indent=2)[:800] if resp else 'None'}")
+        print(f"    Response: {json.dumps(resp, indent=2)[:500] if resp else 'None'}")
         tile_id, endpoint = _extract_mas(resp)
         if tile_id:
             mas["hb"] = {"tile_id": tile_id, "endpoint_name": endpoint,
-                          "name": "HB Product Center Intelligence"}
+                          "name": hb_display}
             save_state(state)
             print(f"    OK: tile_id={tile_id}, endpoint={endpoint}")
+
+    # Stamp the phase version so re-runs skip the delete+recreate unless
+    # the config changes shape again.
+    state["phase_7_version"] = PHASE_7_VERSION
+    save_state(state)
 
 
 # ===========================================================================
