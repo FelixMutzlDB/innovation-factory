@@ -29,18 +29,19 @@ def get_dashboard_summary(ws: WsDep):
     total_products = count_rows(ws, "hb_products")
     active_products = count_rows(ws, "hb_products", filters={"status": "active"})
 
-    # Recognition jobs
-    # NOTE: inequality filters aren't expressible in the safe `filters` dict,
-    # so we pass the WHERE clause as `where_raw=`. Batch B (WS 2) plans to
-    # remove the deprecated raw path entirely — replace with a date-range
-    # helper at that time.
+    # Recognition jobs — inequality filters use the (op, value) tuple shape.
     today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    jobs_today = count_rows(ws, "hb_recognition_jobs", where_raw=f"created_at >= '{today_str}'")
+    jobs_today = count_rows(
+        ws, "hb_recognition_jobs", filters={"created_at": (">=", today_str)}
+    )
     jobs_total = count_rows(ws, "hb_recognition_jobs")
 
     # Quality inspections
     avg_quality = round(
-        avg_column(ws, "hb_quality_inspections", "overall_score", where_raw="overall_score > 0"),
+        avg_column(
+            ws, "hb_quality_inspections", "overall_score",
+            filters={"overall_score": (">", 0)},
+        ),
         1,
     )
     pending_inspections = count_rows(ws, "hb_quality_inspections", filters={"status": "pending"})

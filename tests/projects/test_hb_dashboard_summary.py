@@ -85,7 +85,7 @@ class TestDashboardSummary:
         `filters` kwarg after the SQL-injection hardening.
         """
         ws = _MockWs()
-        result = get_dashboard_summary(ws)  # should not raise
+        result = get_dashboard_summary(ws)  # type: ignore[invalid-argument-type]  # mock ws
 
         # Sanity: every expected metric has a value.
         assert result.total_products == 42
@@ -109,7 +109,7 @@ class TestDashboardSummary:
         """Equality filters are expressed through the safe `filters` dict,
         so the generated SQL escapes the value with single quotes."""
         ws = _MockWs()
-        get_dashboard_summary(ws)
+        get_dashboard_summary(ws)  # type: ignore[invalid-argument-type]  # mock ws
 
         joined = "\n".join(ws.statement_execution.statements)
         # Each of these should appear exactly as a WHERE clause with a
@@ -122,7 +122,7 @@ class TestDashboardSummary:
     def test_summary_covers_all_kpi_tables(self):
         """Every UC table the dashboard needs is queried at least once."""
         ws = _MockWs()
-        get_dashboard_summary(ws)
+        get_dashboard_summary(ws)  # type: ignore[invalid-argument-type]  # mock ws
 
         joined = "\n".join(ws.statement_execution.statements).lower()
         for table in (

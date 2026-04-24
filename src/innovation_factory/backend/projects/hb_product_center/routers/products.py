@@ -15,7 +15,7 @@ from ..models import (
     ProductSeason,
     ProductStatus,
 )
-from ..services.uc_query_service import select_all, select_by_id
+from ..services.uc_query_service import search_like, select_all, select_by_id
 
 router = APIRouter(prefix="/products", tags=["hb-product-center"])
 
@@ -67,20 +67,44 @@ def list_products(
     limit: int = Query(50, le=200),
     offset: int = Query(0),
 ):
-    """List products from Unity Catalog."""
-    conditions = []
-    if category:
-        conditions.append(f"category = '{category}'")
-    if collection:
-        conditions.append(f"collection = '{collection}'")
-    if season:
-        conditions.append(f"season = '{season}'")
-    if search:
-        escaped = search.replace("'", "''")
-        conditions.append(f"(LOWER(style_name) LIKE '%{escaped.lower()}%' OR LOWER(sku) LIKE '%{escaped.lower()}%')")
+    """List products from Unity Catalog.
 
-    where = " AND ".join(conditions) if conditions else ""
-    rows = select_all(ws, "hb_products", where=where, order_by="created_at DESC", limit=limit, offset=offset)
+    Every filter value is routed through the safe `filters` dict (equality)
+    or through `search_like` (LIKE with escaped wildcards). No raw SQL is
+    built from `search` / `category` / etc. — the SQL-injection regression
+    that traced back here (CVE-style LIKE wildcard bypass) is closed by
+    the allowlist + escape combo inside uc_query_service.
+    """
+    filters: dict[str, object] = {}
+    if category:
+        filters["category"] = category
+    if collection:
+        filters["collection"] = collection
+    if season:
+        filters["season"] = season
+
+    if search:
+        rows = search_like(
+            ws,
+            "hb_products",
+            columns=["style_name", "sku"],
+            term=search,
+            filters=filters,
+            order_by_column="created_at",
+            order_desc=True,
+            limit=limit,
+            offset=offset,
+        )
+    else:
+        rows = select_all(
+            ws,
+            "hb_products",
+            filters=filters,
+            order_by_column="created_at",
+            order_desc=True,
+            limit=limit,
+            offset=offset,
+        )
     return [_sanitize_product_row(row) for row in rows]
 
 @router.get("/{product_id}", response_model=HbProductOut, operation_id="hb_getProduct")
@@ -95,7 +119,7 @@ def get_product(product_id: int, ws: WsDep):
 def get_product_images(product_id: int, ws: WsDep):
     """Get product images from Unity Catalog."""
     try:
-        rows = select_all(ws, "hb_product_images", where=f"product_id = {product_id}")
+        rows = select_all(ws, "hb_product_images", filters={"product_id": product_id})
         return [_sanitize_image_row(row) for row in rows]
     except RuntimeError:
         return []
