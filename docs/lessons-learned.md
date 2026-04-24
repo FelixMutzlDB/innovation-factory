@@ -2,7 +2,7 @@
 
 > Consolidated technical lessons from building the five accelerators (ViDistrictOne, BSH Remote Assist, MOL ASM Cockpit, AdTech Intelligence, HB Product Center) plus the shared platform.
 > Written for future contributors and for AI agents (Claude, Cursor) working on this codebase.
-> Last updated: 2026-04-23.
+> Last updated: 2026-04-24.
 
 The first eight sections are distilled from the MOL ASM Cockpit build (commit `dd01f02`) and remain the single most useful reference for wiring new Databricks resources into this repo. Sections 9+ cover what we learned in every major piece of work since.
 
@@ -209,7 +209,7 @@ In `projects/hb_product_center/services/uc_query_service.py`:
 - `select_all(ws, table, filters={...}, order_by_column=..., ...)` — `filters` is a dict keyed by column name; values escape through `_escape_value()`.
 
 ### Known regression risks
-Always prefer the `filters=` form. The deprecated `where_raw` / `order_by_raw` params still exist for backward compat — they log a warning but still concatenate the string into SQL. **These params should be removed** (see the improvement plan). Any code that calls them with user input is a live injection vector.
+Always prefer the `filters=` form. The deprecated `where_raw` / `order_by_raw` params **were removed** in B2 (`2678cb9`) — the public signature no longer accepts raw-SQL kwargs, which eliminates the injection vector by construction. The payload-based regression suite (`tests/projects/hb_product_center/test_uc_query_security.py`) catches any reintroduction.
 
 ### Takeaway
 Without bind-param support, every SQL string you build must go through an allowlist validator + escaper. Never interpolate user input — not even "numeric" input — without the `filters`/`search_like` helpers. Add a regression test for every escape rule.
@@ -272,11 +272,15 @@ Four out of five projects had their own copies of SSE streaming, error handling,
 - Every streaming endpoint wraps its generator in a try/except that emits an SSE `event: error` before closing — don't let the stream die silently.
 - Use `create_chat_stream(generator, on_complete=persist_messages)` rather than inline `async def event_generator`.
 
-### Known gaps
-Not all projects have migrated. HB Product Center still has an inline generator in its chat router, MOL ASM is synchronous (no stream), BSH yields JSON envelopes instead of plain text. Tracked in the improvement plan.
+### Normalization (D1, `83bd585`)
+All five projects now stream the same way:
+- Plain-text chunks (no JSON envelope) + `[DONE]` sentinel.
+- Every router uses `create_chat_stream(generator, on_complete=persist)` — no inline `event_generator`.
+- Every chat router uses `SessionDep` (not `Annotated[Session, Depends(get_session)]`).
+- `tests/common/test_streaming_protocol.py` has a grep-based regression that catches `yield json.dumps({"content": <var>, ...})` reintroductions.
 
 ### Takeaway
-When you see four copies of a pattern, extract. When a generator can raise, wrap it.
+When you see four copies of a pattern, extract. When a generator can raise, wrap it. When the wrapper is in place, write a grep-based regression test so the next contributor can't accidentally re-open-code it.
 
 ---
 
@@ -300,11 +304,14 @@ Missing `response_model` or `operation_id` is a silent bug. Consider a pre-commi
 ### Problem
 `torch>=2.0.0` and `open-clip-torch` live in the top-level `pyproject.toml`. These are ~900MB of wheels, slow `uv pip install`, slow CI, slow cold-start. Only HB Product Center's CLIP recognition uses them.
 
-### Direction (not yet implemented)
-Move torch + CLIP to `[project.optional-dependencies]` as an `image-recognition` extra, and lazy-import in the HB services. The CLI/tests that don't touch HB should never pull torch.
+### Shipped (C4, `fe7a9b3`)
+torch + open-clip-torch moved to `[project.optional-dependencies.image-recognition]`. HB services lazy-import and raise `RuntimeError("image-recognition extras not installed")` when the extra is absent. The deploy bundle stays unchanged because `apx build` rewrites `.build/requirements.txt` to append `[image-recognition]` to the wheel reference — prod always installs with the extra, local dev-loops don't have to.
+
+### CI implication
+`.github/workflows/ci.yml` (D6, `8aa2e7b`) runs a matrix with and without the extra so both paths are protected: `base` (torch-free, asserts lazy-import error path) and `image-recognition` (torch installed, asserts CLIP module loads).
 
 ### Takeaway
-Whenever a single project needs a heavy dependency, isolate it behind an extras group. Don't make the whole team pay for it.
+Whenever a single project needs a heavy dependency, isolate it behind an extras group. Keep prod unchanged by rewriting the build-time requirements file rather than the public dep list. Add a CI matrix job for the extras-free path so the lazy-import error surface is tested.
 
 ---
 
@@ -422,6 +429,147 @@ When we add CI (workstream 11), pushing the first `.github/workflows/*.yml` file
 
 ---
 
+## 20. Belt-and-suspenders XSS: SafeMarkdown + API-boundary sanitization
+
+### Problem
+LLM responses render via `react-markdown`. Without `rehype-sanitize`, an assistant-generated `<img src=x onerror=...>` executes. Backend validators also used to accept raw HTML in chat/search/notes fields, which meant DB dumps, logs, and any non-React client inherited the hole.
+
+### Solution (B1 `9d4ba1e` + B3+B4 `7a9487e`)
+Two independent layers:
+
+1. **Frontend** — a single `<SafeMarkdown>` wrapper (`ui/components/safe-markdown.tsx`) that pins `rehypePlugins={[rehypeSanitize, ...]}` and exports a typed `PluggableList | undefined` for extension. Every `<ReactMarkdown>` call in the app was migrated to this wrapper.
+2. **Backend** — a reusable `sanitize_text` Pydantic `BeforeValidator` (`backend/validation.py`) applied to every free-text field of every `*In` model. Strips `<…>`, null bytes, control chars, and enforces a max length.
+
+### Test design that stuck
+- **Unit**: `tests/common/test_input_sanitize.py` parameterizes dozens of payloads (`<script>`, `<img onerror=>`, null bytes, CRLF, oversized inputs).
+- **Contract**: a grep-based test rejects any new `<ReactMarkdown` usage outside `SafeMarkdown`.
+
+### Takeaway
+Sanitize at both ends and pick the narrowest reusable wrapper. A regression test that greps for the unsafe pattern is often cheaper than a runtime test and harder to silently bypass.
+
+---
+
+## 21. Rate-limit keying on Databricks Apps: `X-Forwarded-User`, not IP
+
+### Problem
+`slowapi`'s default `get_remote_address` reads `X-Forwarded-For` / socket IP. On Databricks Apps all traffic arrives from the auth proxy, so IP-keyed limits collapse to one global quota — the first user to hit an endpoint burns everyone's budget.
+
+### Solution (C2 `1b4b105`)
+```python
+def rate_limit_key(request: Request) -> str:
+    user = request.headers.get("X-Forwarded-User")
+    if user:
+        return f"user:{user}"
+    return f"ip:{get_remote_address(request)}"  # local dev fallback
+```
+
+Applied per-endpoint (e.g. `@limiter.limit("10/minute")` on `/identify`, `"60/minute"` on chat). Tests set `X-Forwarded-User` explicitly to simulate distinct users and confirm per-user quotas.
+
+### Takeaway
+Proxy-fronted apps need identity-based rate-limit keys. If you're about to put `get_remote_address` behind a proxy, stop and reach for the auth header the proxy is already giving you.
+
+---
+
+## 22. Shared `Pagination` dependency over ad-hoc `Query` params
+
+### Problem
+Every list endpoint re-declared `limit: int = Query(50, le=200)` + `offset: int = Query(0)`. Inconsistent bounds (some had no `le=`, some used `skip` vs `offset`), and the OpenAPI client emitted a different param shape per route.
+
+### Solution (C3 `0f220ad` + D7 `aa06890`)
+`backend/pagination.py` exports a single `Pagination = Annotated[PageParams, Depends(...)]`. Every `GET /list-*` endpoint takes `page: Pagination` and uses `page.limit` / `page.skip`. The dependency caps `limit ≤ 200` centrally.
+
+### Gotcha: default vs non-default ordering
+Python rejects `page: Pagination` (no default) after a `Query(None)` default. Put `page` **before** any default-valued params, or Python will refuse to import.
+
+### Takeaway
+Shared FastAPI dependencies beat parameter-copy-paste. When migrating, fix the param order once and add the import; a grep regression catches new `limit: int = Query(` additions.
+
+---
+
+## 23. Canonical UC DDL: one `TABLES` dict, many consumers
+
+### Problem
+The DDL for each UC table lived in `migrate_full.py`, `deploy_to_workspace.py`, `deploy_agents_fevm.py`, and `scripts/seed_*.py`. Drift was real — some scripts had `product_id INT`, others `BIGINT`; `last_audit_date` was `DATE` in one and `TIMESTAMP` in another. Seeding into a fresh workspace produced schema-mismatched rows.
+
+### Solution (D2 `aefcf6f`)
+`scripts/uc_schema.py` is the single source of truth:
+
+```python
+TABLES: dict[str, dict] = {
+    "hb_product_center.hb_products": {
+        "columns": [("id", "BIGINT GENERATED ALWAYS AS IDENTITY"), ...],
+        "comment": "Products curated for the HB demo.",
+    },
+    ...
+}
+
+def create_table_sql(catalog: str, schema_table: str) -> str: ...
+def tables_for_schema(schema: str) -> list[str]: ...
+```
+
+Every deployer/seeder imports `uc_schema` and calls these helpers. The 11-test coverage in `tests/scripts/test_uc_schema.py` locks down column-name safety (regex), identifier column presence, and SQL shape.
+
+### Takeaway
+If three scripts each have "their own" DDL, you have two copies of a bug waiting to happen. Extract, add schema tests, and forbid inline DDL via code review.
+
+---
+
+## 24. MAS sub-agent naming: snake_case machine name + "Supervisor" suffix
+
+### Problem
+Our first MAS configs mixed sub-agent naming styles — `genie_data_explorer`, `transfer_to_issue_resolution_specialist`, `query_agent`, `call_agent_tool`, `product_identifier_agent`, `query_agent_quality_auth_analyst`. The Agent Bricks UI shows the raw names, so the dashboard looked inconsistent and the LLM's routing was non-deterministic (same capability referenced multiple ways in `instructions`).
+
+### Solution (D3 `5ab16f6`)
+Contract now enforced by `tests/scripts/test_mas_naming_convention.py`:
+
+1. Every sub-agent `name` is `^[a-z][a-z0-9_]*$` (snake_case, no prefixes like `transfer_to_` or `_agent`).
+2. Every MAS `display_name` ends with `"Supervisor"` (e.g. "AdTech Intelligence Supervisor", "HB Product Center Supervisor").
+3. The `instructions` string references every sub-agent by its exact machine name — the test parses each MAS block and fails if a sub-agent name isn't in the instructions it's supposed to be routed by.
+4. Phase 7 in `deploy_agents_fevm.py` is stamped with `PHASE_7_VERSION` in `fevm_agents_state.json` + delete-and-recreate (not PATCH) because the Agent Bricks PATCH doesn't update the `agents` array reliably.
+
+### Takeaway
+When an LLM does tool-call routing from a string, the string is an API — enforce its shape with tests. For Agent Bricks, prefer delete-and-recreate for sub-agent changes; PATCH-with-update_mask is underspecified on the `agents` array today.
+
+---
+
+## 25. Hybrid migration: DAB for declarative, Python for imperative
+
+### Problem
+We kept reinventing the "bootstrap a fresh workspace" story. Databricks Asset Bundles (DAB) handle apps, jobs, warehouses, and (now) some resources declaratively, but don't cover Agent Bricks KAs, MASes, Genie spaces, UC function `identify_product`, KA-doc volume uploads, or the AI/BI embedding allowlist. Terraform was considered and rejected (agent-bricks provider lags).
+
+### Solution (D4 `15a3730`)
+Hybrid split documented and automated:
+
+| Layer | Tool | What it creates |
+|-------|------|-----------------|
+| Declarative | `databricks.yml` + `databricks bundle deploy` | App, Lakebase instance, warehouse binding, DAB resources |
+| Imperative (one-off) | `scripts/bootstrap.py --target <profile>` | UC schemas/volumes, KA docs, Agent Bricks KAs/MASes, Genie spaces, dashboard migration (optional), embedding allowlist |
+| Declarative (second pass) | `databricks bundle deploy` again | App re-deploys with env vars filled from the state file |
+
+`bootstrap.py` runs phases 1-9 of `deploy_agents_fevm.py` in order, configures the AI/BI embedding allowlist (unblocks iframe dashboards — `aws.databricksapps.com` + `databricksapps.com` must be on it), then prints the env-var block to paste back into `databricks.yml`. Idempotent via `scripts/fevm_agents_state.json`.
+
+### Takeaway
+When the declarative tool doesn't cover everything, the hybrid is fine — but write the orchestrator that stitches the two halves together so "fresh workspace in 20 minutes" is true, not aspirational. Make the orchestrator idempotent and its state file gitignored.
+
+---
+
+## 26. CI matrix: Python 3.11 + 3.12, with and without heavy extras
+
+### Problem
+A single CI job on one Python version missed: (a) 3.12-only syntax issues, (b) the `image-recognition`-extra-absent lazy-import path, (c) the extra-present import path.
+
+### Solution (D6 `8aa2e7b`)
+`.github/workflows/ci.yml` now:
+- `lint` job — `ty` + `tsc`, single runner.
+- `tests` matrix — `{ python: [3.11, 3.12] } × { extras: [base] }` plus `{ python: 3.11, extras: image-recognition }`. The matrix catches both the "does the lazy-import RuntimeError fire" and the "does CLIP load when available" paths.
+- `build` — `uv run apx build` on 3.11 only (prod target).
+- `integration` — gated on `workflow_dispatch` + `environment: integration` so Databricks secrets aren't leaked to forks.
+
+### Takeaway
+Matrix breadth matters more than matrix size. One axis (Python version) catches syntax/grammar drift; one axis (extras present/absent) catches packaging drift. A third axis is rarely worth the CI minutes.
+
+---
+
 ## Summary
 
 | # | Topic | One-line lesson |
@@ -462,3 +610,10 @@ When we add CI (workstream 11), pushing the first `.github/workflows/*.yml` file
 | 19.16 | Accessibility | 16px min on inputs; 44×44 CSS px touch targets |
 | 19.17 | Persona UAT | Two conditioned personas per accelerator before each demo |
 | 19.18 | GH workflow scope | `gh auth refresh -s workflow` before pushing first CI file |
+| 20 | XSS defense | `SafeMarkdown` wrapper + Pydantic `sanitize_text` BeforeValidator on every free-text field |
+| 21 | Rate-limit keying | Key off `X-Forwarded-User` on Databricks Apps; IP keying collapses to one global quota |
+| 22 | Shared pagination | One `Pagination` dependency; put it before default-valued params in the signature |
+| 23 | Canonical UC DDL | `scripts/uc_schema.py` with a `TABLES` dict; every seeder imports from it |
+| 24 | MAS naming contract | snake_case sub-agent names, "Supervisor" suffix, machine names in instructions — enforced by test |
+| 25 | Hybrid migration | DAB declarative + `scripts/bootstrap.py` imperative, idempotent via gitignored state file |
+| 26 | CI matrix shape | Python 3.11+3.12 × extras-present/absent; integration tests opt-in via `workflow_dispatch` |

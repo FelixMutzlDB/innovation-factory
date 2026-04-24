@@ -1,7 +1,7 @@
 # Innovation Factory — Cleanup & Improvement Plan
 
 > Built from a four-track investigation: repo hygiene, code quality, security, and test coverage.
-> Status: **draft for user review — do not implement yet.**
+> Status: **Batches A → D all shipped (2026-04-24).** Kept as historical reference for the reasoning behind each workstream. Current outstanding work lives in [docs/TODO.md](TODO.md); the patterns that emerged are captured in [docs/lessons-learned.md](lessons-learned.md) §20-26.
 > Author: Felix Mutzl & Claude. Date: 2026-04-23.
 
 Priorities in this order: **operational efficiency** → **security** → **compliance with coding best practices**.
