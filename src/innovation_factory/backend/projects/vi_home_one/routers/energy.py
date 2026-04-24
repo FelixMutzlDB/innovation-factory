@@ -4,6 +4,7 @@ from sqlmodel import select
 from datetime import datetime, timedelta, timezone
 
 from ....dependencies import SessionDep
+from ....pagination import Pagination
 from ..models import VhEnergyReading, VhEnergyReadingOut
 
 router = APIRouter(prefix="/energy", tags=["vh-energy"])
@@ -13,15 +14,28 @@ router = APIRouter(prefix="/energy", tags=["vh-energy"])
 def get_energy_readings(
     household_id: int,
     db: SessionDep,
+    page: Pagination,
     hours: int = Query(default=24, description="Number of hours of data to retrieve"),
 ):
-    """Get energy readings for a household."""
+    """Get energy readings for a household, newest first.
+
+    A single household produces dozens of readings per hour — the
+    ``hours`` window provides the primary bound; ``skip`` and ``limit``
+    (from Pagination) bound the page size so a 720-hour request still
+    returns a sane payload.
+    """
     start_time = datetime.now(timezone.utc) - timedelta(hours=hours)
 
-    statement = select(VhEnergyReading).where(
-        VhEnergyReading.household_id == household_id,
-        VhEnergyReading.timestamp >= start_time
-    ).order_by(VhEnergyReading.timestamp.desc())  # type: ignore[unresolved-attribute]
+    statement = (
+        select(VhEnergyReading)
+        .where(
+            VhEnergyReading.household_id == household_id,
+            VhEnergyReading.timestamp >= start_time,
+        )
+        .order_by(VhEnergyReading.timestamp.desc())  # type: ignore[unresolved-attribute]
+        .offset(page.skip)
+        .limit(page.limit)
+    )
 
     readings = db.exec(statement).all()
 

@@ -6,6 +6,7 @@ from databricks.sdk import WorkspaceClient
 from datetime import datetime, timezone
 
 from ....dependencies import get_obo_ws, get_session
+from ....pagination import Pagination
 from ..models import (
     BshTicket,
     BshTicketIn,
@@ -96,10 +97,11 @@ def create_ticket(
 def list_tickets(
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],
     db: Annotated[Session, Depends(get_session)],
+    page: Pagination,
     status: BshTicketStatus | None = None,
     role: str | None = None,
 ):
-    """List tickets filtered by role."""
+    """List tickets filtered by role, newest first."""
     databricks_user = obo_ws.current_user.me()
 
     if not role:
@@ -116,7 +118,11 @@ def list_tickets(
 
     if status:
         statement = statement.where(BshTicket.status == status)
-    statement = statement.order_by(BshTicket.created_at.desc())  # type: ignore[unresolved-attribute]
+    statement = (
+        statement.order_by(BshTicket.created_at.desc())  # type: ignore[unresolved-attribute]
+        .offset(page.skip)
+        .limit(page.limit)
+    )
     tickets = db.exec(statement).all()
     return [_build_ticket_out(t, db) for t in tickets]
 
