@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import SafeMarkdown from "@/components/safe-markdown";
 import { Suspense, useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import {
   Select,
   SelectContent,
@@ -112,9 +111,9 @@ function MarkdownViewer({ slug }: { slug: string }) {
   return (
     <Card>
       <CardContent className="prose prose-sm dark:prose-invert max-w-none pt-6">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <SafeMarkdown>
           {doc.content}
-        </ReactMarkdown>
+        </SafeMarkdown>
       </CardContent>
     </Card>
   );

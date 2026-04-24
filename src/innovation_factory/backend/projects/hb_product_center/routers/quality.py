@@ -6,6 +6,7 @@ from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from ....dependencies import RuntimeDep
+from ....pagination import Pagination
 from ..models import (
     DefectSeverity,
     DefectType,
@@ -87,20 +88,22 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 @router.get("/inspections", response_model=list[HbQualityInspectionOut], operation_id="hb_listInspections")
 def list_inspections(
     ws: WsDep,
+    page: Pagination,
     status: Optional[str] = Query(None),
     product_id: Optional[int] = Query(None),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
 ):
     """List quality inspections from Unity Catalog."""
-    conditions = []
+    filters: dict[str, object] = {}
     if status:
-        conditions.append(f"status = '{status}'")
+        filters["status"] = status
     if product_id:
-        conditions.append(f"product_id = {product_id}")
+        filters["product_id"] = product_id
 
-    where = " AND ".join(conditions) if conditions else ""
-    rows = select_all(ws, "hb_quality_inspections", where=where, order_by="created_at DESC", limit=limit, offset=offset)
+    rows = select_all(
+        ws, "hb_quality_inspections", filters=filters,
+        order_by_column="created_at", order_desc=True,
+        limit=page.limit, offset=page.skip,
+    )
     return [_sanitize_inspection_row(row) for row in rows]
 
 @router.get("/inspections/{inspection_id}", response_model=HbInspectionDetailOut, operation_id="hb_getInspection")
@@ -111,7 +114,7 @@ def get_inspection(inspection_id: int, ws: WsDep):
         raise HTTPException(status_code=404, detail="Inspection not found")
 
     sanitized = _sanitize_inspection_row(inspection)
-    defects = select_all(ws, "hb_quality_defects", where=f"inspection_id = {inspection_id}")
+    defects = select_all(ws, "hb_quality_defects", filters={"inspection_id": inspection_id})
     product = select_by_id(ws, "hb_products", inspection["product_id"]) if inspection.get("product_id") else None
 
     return HbInspectionDetailOut(
@@ -144,7 +147,7 @@ def create_inspection(data: HbQualityInspectionCreate, ws: WsDep):
     insert_row(ws, "hb_quality_inspections", inspection_data)
 
     # Return the created inspection
-    rows = select_all(ws, "hb_quality_inspections", order_by="id DESC", limit=1)
+    rows = select_all(ws, "hb_quality_inspections", order_by_column="id", order_desc=True, limit=1)
     return _sanitize_inspection_row(rows[0]) if rows else HbQualityInspectionOut(**inspection_data, id=0)  # type: ignore[arg-type]
 
 @router.patch("/inspections/{inspection_id}", response_model=HbQualityInspectionOut, operation_id="hb_updateInspection")

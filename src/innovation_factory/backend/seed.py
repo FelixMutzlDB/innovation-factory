@@ -85,8 +85,8 @@ def _seed_projects(session: Session):
         {
             "slug": "hb-product-center",
             "name": "HB Product Center",
-            "description": "Intelligent Product Center for visual product recognition, AI-powered quality control, authenticity verification, and supply chain intelligence across the Hugo Boss value chain.",
-            "company": "Hugo Boss",
+            "description": "Intelligent Product Center for visual product recognition, AI-powered quality control, authenticity verification, and supply chain intelligence across the HB value chain.",
+            "company": "HB",
             "icon": "ScanSearch",
             "color": "#1a1a1a",
         },

@@ -8,11 +8,14 @@ import re
 from typing import Annotated, Optional
 
 from databricks.sdk import WorkspaceClient
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, BeforeValidator, Field
 
 from ....dependencies import RuntimeDep
+from ....pagination import Pagination
+from ....input_sanitize import sanitize_text
+from ....rate_limit import limiter
 from ..databricks_config import IMAGE_VOLUME_PATH, MAS_ENDPOINT_NAME, VS_IMAGE_TABLE
 from ..models import (
     HbRecognitionJobCreate,
@@ -60,7 +63,14 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 
 
 class ProductIdentifyRequest(BaseModel):
-    description: str = Field(..., min_length=2, max_length=500)
+    # sanitize_text strips HTML tags + null bytes before min/max_length
+    # constraints apply — so a payload padded to 400 chars with stripped
+    # tags still has to pass min_length=2 on the cleaned value.
+    description: Annotated[
+        str,
+        BeforeValidator(sanitize_text),
+        Field(min_length=2, max_length=500),
+    ]
 
 
 class ProductMatch(BaseModel):
@@ -85,9 +95,19 @@ class ProductIdentifyResponse(BaseModel):
     response_model=ProductIdentifyResponse,
     operation_id="hb_identifyProduct",
 )
-async def identify_product(request: ProductIdentifyRequest, ws: WsDep):
-    """Identify a Hugo Boss product from a visual description using AI."""
-    desc = request.description.lower()
+@limiter.limit("10/minute")
+async def identify_product(
+    request: Request,
+    payload: ProductIdentifyRequest,
+    ws: WsDep,
+):
+    """Identify a HB product from a visual description using AI.
+
+    Note: the first param is named ``request`` (FastAPI/slowapi convention
+    for the limiter key extractor). The ProductIdentifyRequest body is
+    ``payload`` to avoid shadowing.
+    """
+    desc = payload.description.lower()
 
     # Search products by description keywords using safe LIKE search
     search_columns = ["style_name", "category", "color", "material", "collection"]
@@ -131,7 +151,7 @@ async def identify_product(request: ProductIdentifyRequest, ws: WsDep):
 
     ai_analysis = ""
     try:
-        prompt = f"Briefly analyze this product description and suggest what Hugo Boss product it might be: '{request.description}'. Mention likely category, style, and material. Keep it under 100 words."
+        prompt = f"Briefly analyze this product description and suggest what HB product it might be: '{payload.description}'. Mention likely category, style, and material. Keep it under 100 words."
         result = ws.api_client.do(
             "POST",
             f"/serving-endpoints/{MAS_ENDPOINT_NAME}/invocations",
@@ -150,9 +170,8 @@ async def identify_product(request: ProductIdentifyRequest, ws: WsDep):
 @router.get("/jobs", response_model=list[HbRecognitionJobOut], operation_id="hb_listRecognitionJobs")
 def list_recognition_jobs(
     ws: WsDep,
+    page: Pagination,
     status: Optional[str] = Query(None, max_length=50),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
 ):
     """List recognition jobs from Unity Catalog."""
     filters: dict[str, str] | None = None
@@ -164,8 +183,8 @@ def list_recognition_jobs(
         filters=filters,
         order_by_column="created_at",
         order_desc=True,
-        limit=limit,
-        offset=offset,
+        limit=page.limit,
+        offset=page.skip,
     )
     return [_sanitize_job_row(row) for row in rows]
 

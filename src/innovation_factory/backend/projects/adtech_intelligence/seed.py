@@ -144,9 +144,9 @@ def _seed_advertisers(session: Session) -> list[AtAdvertiser]:
             name=name,
             industry=industry,
             contact_name=f"Kontakt {name.split()[0]}",
-            contact_email=f"kontakt@{slug}.de",
+            contact_email=f"kontakt@{slug}.example",
             phone=f"+49 {_rng.randint(30, 89)} {_rng.randint(1000000, 9999999)}",
-            website=f"https://www.{slug}.de",
+            website=f"https://www.{slug}.example",
             budget_tier=tier,
         )
         session.add(adv)

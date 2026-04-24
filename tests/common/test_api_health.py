@@ -34,6 +34,10 @@ class TestIdeaEndpoints:
         assert data["id"] is not None
 
     def test_idea_session_flow(self, client):
+        """Regression: workspace-auth failure in the idea generator must
+        fall through to the template prompt so the flow still completes.
+        Pre-fix, this test exploded because rt.ws was constructed before
+        the try/except in _query_idea_generator."""
         # Create session
         resp = client.post("/api/ideas/sessions")
         session_id = resp.json()["id"]

@@ -7,6 +7,7 @@ from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from ....dependencies import RuntimeDep
+from ....pagination import Pagination
 from ..models import (
     ComplianceStatus,
     HbProductJourney,
@@ -80,24 +81,25 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 @router.get("/events", response_model=list[HbSupplyChainEventOut], operation_id="hb_listSupplyChainEvents")
 def list_supply_chain_events(
     ws: WsDep,
+    page: Pagination,
     product_id: Optional[int] = Query(None),
     event_type: Optional[str] = Query(None),
     country: Optional[str] = Query(None),
-    limit: int = Query(100, le=500),
-    offset: int = Query(0),
 ):
     """List supply chain events from Unity Catalog."""
-    conditions = []
+    filters: dict[str, object] = {}
     if product_id:
-        conditions.append(f"product_id = {product_id}")
+        filters["product_id"] = product_id
     if event_type:
-        conditions.append(f"event_type = '{event_type}'")
+        filters["event_type"] = event_type
     if country:
-        escaped = country.replace("'", "''")
-        conditions.append(f"country = '{escaped}'")
+        filters["country"] = country
 
-    where = " AND ".join(conditions) if conditions else ""
-    rows = select_all(ws, "hb_supply_chain_events", where=where, order_by="event_date DESC", limit=limit, offset=offset)
+    rows = select_all(
+        ws, "hb_supply_chain_events", filters=filters,
+        order_by_column="event_date", order_desc=True,
+        limit=page.limit, offset=page.skip,
+    )
     return [_sanitize_event_row(row) for row in rows]
 
 @router.get("/products/{product_id}/journey", response_model=HbProductJourney, operation_id="hb_getProductJourney")
@@ -109,12 +111,15 @@ def get_product_journey(product_id: int, ws: WsDep):
 
     events = select_all(
         ws, "hb_supply_chain_events",
-        where=f"product_id = {product_id}",
-        order_by="event_date ASC",
-        limit=100
+        filters={"product_id": product_id},
+        order_by_column="event_date",
+        order_desc=False,
+        limit=100,
     )
 
-    sustainability = select_one(ws, "hb_sustainability_metrics", f"product_id = {product_id}")
+    sustainability = select_one(
+        ws, "hb_sustainability_metrics", filters={"product_id": product_id}
+    )
 
     return HbProductJourney(
         product=_sanitize_product_row(product),
@@ -126,17 +131,18 @@ def get_product_journey(product_id: int, ws: WsDep):
 @router.get("/sustainability", response_model=list[HbSustainabilityMetricOut], operation_id="hb_listSustainabilityMetrics")
 def list_sustainability_metrics(
     ws: WsDep,
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
+    page: Pagination,
 ):
     """List sustainability metrics from Unity Catalog."""
-    rows = select_all(ws, "hb_sustainability_metrics", limit=limit, offset=offset)
+    rows = select_all(ws, "hb_sustainability_metrics", limit=page.limit, offset=page.skip)
     return [_sanitize_sustainability_row(row) for row in rows]
 
 @router.get("/sustainability/{product_id}", response_model=HbSustainabilityMetricOut, operation_id="hb_getProductSustainability")
 def get_product_sustainability(product_id: int, ws: WsDep):
     """Get sustainability metrics for a product from Unity Catalog."""
-    metric = select_one(ws, "hb_sustainability_metrics", f"product_id = {product_id}")
+    metric = select_one(
+        ws, "hb_sustainability_metrics", filters={"product_id": product_id}
+    )
     if not metric:
         raise HTTPException(status_code=404, detail="Sustainability metrics not found")
     return _sanitize_sustainability_row(metric)

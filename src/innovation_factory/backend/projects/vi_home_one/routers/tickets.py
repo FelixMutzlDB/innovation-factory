@@ -4,6 +4,7 @@ from sqlmodel import select
 from datetime import datetime, timezone
 
 from ....dependencies import SessionDep
+from ....pagination import Pagination
 from ..models import (
     VhTicket,
     VhTicketStatus,
@@ -20,16 +21,18 @@ router = APIRouter(prefix="/tickets", tags=["vh-tickets"])
 @router.get("", response_model=list[VhTicketOut], operation_id="vh_list_tickets")
 def list_tickets(
     db: SessionDep,
+    page: Pagination,
     household_id: int | None = None,
     status: VhTicketStatus | None = None,
 ):
-    """List support tickets with optional filters."""
+    """List support tickets with optional filters, newest first."""
     query = select(VhTicket)
     if household_id:
         query = query.where(VhTicket.household_id == household_id)
     if status:
         query = query.where(VhTicket.status == status)
     query = query.order_by(VhTicket.created_at.desc())  # type: ignore[unresolved-attribute]
+    query = query.offset(page.skip).limit(page.limit)
     tickets = db.exec(query).all()
     return list(tickets)
 

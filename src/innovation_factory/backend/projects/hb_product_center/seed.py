@@ -1,6 +1,6 @@
-"""Seed script for Hugo Boss Intelligent Product Center.
+"""Seed script for HB Intelligent Product Center.
 
-Generates realistic Hugo Boss product data across categories, collections,
+Generates realistic HB product data across categories, collections,
 and seasons, along with recognition results, quality inspections, authenticity
 verifications, supply chain events, and sustainability metrics.
 """
@@ -141,7 +141,7 @@ PRODUCT_TEMPLATES = [
 
 
 def seed_hb_data(session: Session):
-    """Seed Hugo Boss Product Center data."""
+    """Seed HB Product Center data."""
     existing = session.exec(select(HbProduct)).first()
     if existing:
         return
@@ -158,7 +158,7 @@ def seed_hb_data(session: Session):
     _seed_sustainability_metrics(session, products)
     _seed_chat_sessions(session)
     session.commit()
-    print("  Seeded Hugo Boss Product Center data.")
+    print("  Seeded HB Product Center data.")
 
 
 def _seed_products(session: Session) -> list[HbProduct]:
@@ -235,7 +235,7 @@ def _seed_product_images(session: Session, products: list[HbProduct]):
         for img_type in [ImageType.master, ImageType.lifestyle]:
             session.add(HbProductImage(
                 product_id=p.id,
-                image_url=f"https://images.hugoboss.com/catalog/{p.sku.lower()}_{img_type.value}.jpg",
+                image_url=f"https://images.hb.example/catalog/{p.sku.lower()}_{img_type.value}.jpg",
                 image_type=img_type,
                 uploaded_by="system",
                 created_at=p.created_at,
@@ -243,7 +243,7 @@ def _seed_product_images(session: Session, products: list[HbProduct]):
         if _rng.random() < 0.3:
             session.add(HbProductImage(
                 product_id=p.id,
-                image_url=f"https://images.hugoboss.com/catalog/{p.sku.lower()}_sample.jpg",
+                image_url=f"https://images.hb.example/catalog/{p.sku.lower()}_sample.jpg",
                 image_type=ImageType.sample,
                 uploaded_by=_rng.choice(INSPECTORS),
                 created_at=_past_dt(90),
@@ -289,7 +289,7 @@ def _seed_recognition_results(session: Session, jobs: list[HbRecognitionJob], pr
             session.add(HbRecognitionResult(
                 job_id=job.id,
                 product_id=product.id if product else None,
-                image_url=f"https://uploads.hugoboss.com/recognition/{job.id}_{_rng.randint(1000,9999)}.jpg",
+                image_url=f"https://uploads.hb.example/recognition/{job.id}_{_rng.randint(1000,9999)}.jpg",
                 confidence_score=confidence,
                 detected_sku=product.sku if product else None,
                 detected_color=product.color if product else _rng.choice(["Unknown", "Mixed"]),
@@ -342,7 +342,7 @@ def _seed_quality_defects(session: Session, inspections: list[HbQualityInspectio
                     "Zipper track", "Inner lining", "Waistband",
                 ]),
                 confidence_score=round(_rng.uniform(0.7, 0.99), 3),
-                image_url=f"https://images.hugoboss.com/qc/defect_{insp.id}_{_rng.randint(100,999)}.jpg" if _rng.random() < 0.5 else None,
+                image_url=f"https://images.hb.example/qc/defect_{insp.id}_{_rng.randint(100,999)}.jpg" if _rng.random() < 0.5 else None,
                 created_at=insp.created_at + timedelta(minutes=_rng.randint(5, 120)),
             ))
     session.flush()
@@ -360,11 +360,11 @@ def _seed_auth_verifications(session: Session, products: list[HbProduct]) -> lis
             product_id=product.id if product else None,
             requester_type=_rng.choice(list(RequesterType)),
             requester_name=_rng.choice(["Customer Service", "Retail Partner Berlin", "E-Commerce Team", "Marketplace Compliance", "Partner: Nordstrom", "Partner: Zalando", "Internal Audit"]),
-            requester_email=f"verify-{_rng.randint(100,999)}@hugoboss.com",
+            requester_email=f"verify-{_rng.randint(100,999)}@example.com",
             status=status,
             confidence_score=confidence,
             verification_method=_rng.choice(list(VerificationMethod)),
-            image_url=f"https://uploads.hugoboss.com/auth/{_rng.randint(10000,99999)}.jpg" if _rng.random() < 0.7 else None,
+            image_url=f"https://uploads.hb.example/auth/{_rng.randint(10000,99999)}.jpg" if _rng.random() < 0.7 else None,
             region=_rng.choice(REGIONS),
             notes="Flagged by automated scan." if status == VerificationStatus.suspicious else None,
             created_at=created,
@@ -415,7 +415,7 @@ def _seed_supply_chain_events(session: Session, products: list[HbProduct]):
                 product_id=product.id,
                 event_type=event_flow[j],
                 location=loc,
-                partner_name=_rng.choice(MANUFACTURING_PARTNERS + ["Hugo Boss Logistics", "DHL Supply Chain", "Kuehne+Nagel"]),
+                partner_name=_rng.choice(MANUFACTURING_PARTNERS + ["HB Logistics", "DHL Supply Chain", "Kuehne+Nagel"]),
                 country=country,
                 details=f"{event_flow[j].value.replace('_', ' ').title()} at {loc}",
                 event_date=evt_date,
@@ -428,7 +428,7 @@ def _seed_supply_chain_events(session: Session, products: list[HbProduct]):
                 product_id=product.id,
                 event_type=SupplyChainEventType.sold,
                 location=loc,
-                partner_name="Hugo Boss Store " + loc.split(",")[0],
+                partner_name="HB Store " + loc.split(",")[0],
                 country=country,
                 details=f"Sold at retail store in {loc}",
                 event_date=sold_date,

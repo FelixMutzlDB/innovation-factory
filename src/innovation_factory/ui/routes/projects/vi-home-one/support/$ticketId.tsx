@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
+import SafeMarkdown from "@/components/safe-markdown";
 import { Suspense, useState, useEffect, useRef } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
-import ReactMarkdown from 'react-markdown'
 import {
   Send,
   Bot,
@@ -309,7 +309,7 @@ function ChatMessage({
             <p className="text-sm">{message.content}</p>
           ) : (
             <div className="prose prose-sm dark:prose-invert max-w-none">
-              <ReactMarkdown>{message.content}</ReactMarkdown>
+              <SafeMarkdown>{message.content}</SafeMarkdown>
               {isStreaming && (
                 <span className="inline-block w-2 h-4 bg-current animate-pulse ml-1" />
               )}

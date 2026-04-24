@@ -3,12 +3,13 @@
 import os
 from typing import List
 
-from databricks.sdk import WorkspaceClient
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from sqlmodel import select
 
 from ..dependencies import SessionDep, RuntimeDep
 from ..logger import logger
+from ..rate_limit import limiter
+from ..runtime import Runtime
 from ..models import (
     IdeaSession,
     IdeaSessionOut,
@@ -72,10 +73,12 @@ def get_idea_messages(session_id: int, db: SessionDep):
     return list(messages)
 
 
-def _query_idea_generator(ws: WorkspaceClient, company_name: str, description: str) -> str:
+def _query_idea_generator(rt: Runtime, company_name: str, description: str) -> str:
     """Call the innovation-factory-generator serving endpoint.
 
     Uses the standard chat messages format (``messages`` / ``choices``).
+    Falls back to a template prompt if the endpoint is unset or the workspace
+    client can't be constructed (e.g. in tests without Databricks auth).
     """
     endpoint = IDEA_GENERATOR_ENDPOINT
     if not endpoint:
@@ -87,8 +90,10 @@ def _query_idea_generator(ws: WorkspaceClient, company_name: str, description: s
         f"Description: {description}"
     )
 
+    # Note: rt.ws is deliberately evaluated inside the try so workspace-auth
+    # failures (e.g. in unit tests) also fall back gracefully.
     try:
-        result = ws.api_client.do(
+        result = rt.ws.api_client.do(
             "POST",
             f"/serving-endpoints/{endpoint}/invocations",
             body={"messages": [{"role": "user", "content": prompt}], "max_tokens": 2000},
@@ -104,7 +109,9 @@ def _query_idea_generator(ws: WorkspaceClient, company_name: str, description: s
 
 
 @router.post("/sessions/{session_id}/chat", operation_id="sendIdeaMessage")
+@limiter.limit("20/minute")
 async def send_idea_message(
+    request: Request,
     session_id: int,
     message: IdeaMessageIn,
     db: SessionDep,
@@ -149,7 +156,7 @@ async def send_idea_message(
 
         # Call the Agent Bricks endpoint to generate the idea
         prompt = _query_idea_generator(
-            rt.ws, session.company_name or "", session.description or ""
+            rt, session.company_name or "", session.description or ""
         )
 
         session.generated_prompt = prompt

@@ -1,6 +1,6 @@
-"""Main router for Hugo Boss Product Center, mounting all sub-routers."""
+"""Main router for HB Product Center, mounting all sub-routers."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
 from .databricks_config import (
@@ -27,10 +27,24 @@ class HbDatabricksResourcesOut(BaseModel):
     workspace_url: str
     sc_dashboard_id: str
     sc_dashboard_embed_url: str
+    sc_dashboard_configured: bool = False
     aq_dashboard_id: str
     aq_dashboard_embed_url: str
+    aq_dashboard_configured: bool = False
     sc_genie_space_id: str
     aq_genie_space_id: str
+    configured: bool = False  # workspace URL resolved — kept for backwards compat
+
+
+def _resolve_workspace_url(request: Request) -> str:
+    """Return the workspace URL from config or derive from runtime."""
+    if WORKSPACE_URL:
+        return WORKSPACE_URL
+    try:
+        host = request.app.state.runtime.ws.config.host or ""
+        return host.replace("https://", "").rstrip("/")
+    except Exception:
+        return ""
 
 
 @router.get(
@@ -38,15 +52,21 @@ class HbDatabricksResourcesOut(BaseModel):
     response_model=HbDatabricksResourcesOut,
     operation_id="hb_getDatabricksResources",
 )
-async def get_databricks_resources() -> HbDatabricksResourcesOut:
+async def get_databricks_resources(request: Request) -> HbDatabricksResourcesOut:
     """Return Databricks resource IDs for frontend embedding."""
-    base = f"https://{WORKSPACE_URL}"
+    ws_url = _resolve_workspace_url(request)
+    base = f"https://{ws_url}" if ws_url else ""
+    sc_ready = bool(base and SC_DASHBOARD_ID)
+    aq_ready = bool(base and AQ_DASHBOARD_ID)
     return HbDatabricksResourcesOut(
-        workspace_url=WORKSPACE_URL,
+        workspace_url=ws_url,
         sc_dashboard_id=SC_DASHBOARD_ID,
-        sc_dashboard_embed_url=f"{base}/embed/dashboardsv3/{SC_DASHBOARD_ID}?embed",
+        sc_dashboard_embed_url=f"{base}/embed/dashboardsv3/{SC_DASHBOARD_ID}?embed" if sc_ready else "",
+        sc_dashboard_configured=sc_ready,
         aq_dashboard_id=AQ_DASHBOARD_ID,
-        aq_dashboard_embed_url=f"{base}/embed/dashboardsv3/{AQ_DASHBOARD_ID}?embed",
+        aq_dashboard_embed_url=f"{base}/embed/dashboardsv3/{AQ_DASHBOARD_ID}?embed" if aq_ready else "",
+        aq_dashboard_configured=aq_ready,
         sc_genie_space_id=SC_GENIE_SPACE_ID,
         aq_genie_space_id=AQ_GENIE_SPACE_ID,
+        configured=bool(ws_url),
     )

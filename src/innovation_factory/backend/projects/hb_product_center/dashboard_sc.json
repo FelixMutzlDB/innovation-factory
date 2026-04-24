@@ -28,7 +28,7 @@
           "widgetType": "text",
           "layout": {"x": 0, "y": 0, "width": 6, "height": 1},
           "multilineTextboxSpec": {
-            "lines": [{"type": "text", "content": "Hugo Boss Supply Chain Intelligence"}]
+            "lines": [{"type": "text", "content": "HB Supply Chain Intelligence"}]
           },
           "frame": {"showTitle": false}
         },

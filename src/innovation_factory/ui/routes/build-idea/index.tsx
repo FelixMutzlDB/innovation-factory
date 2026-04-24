@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import SafeMarkdown from "@/components/safe-markdown";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { QueryErrorResetBoundary, useQueryClient } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
@@ -28,8 +29,6 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/build-idea/")({
@@ -187,9 +186,9 @@ function ChatContent({ sessionId }: { sessionId: number }) {
                     <Card className="flex-1 border-primary/20">
                       <CardContent className="pt-4">
                         <div className="prose prose-sm dark:prose-invert max-w-none">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          <SafeMarkdown>
                             {message.content}
-                          </ReactMarkdown>
+                          </SafeMarkdown>
                         </div>
                       </CardContent>
                     </Card>

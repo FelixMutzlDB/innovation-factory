@@ -1,4 +1,5 @@
 from datetime import date, datetime, timezone
+from ...input_sanitize import LongText
 from enum import Enum
 from typing import Optional
 
@@ -392,7 +393,7 @@ class BshTicketOut(BaseModel):
 
 
 class BshChatMessageIn(BaseModel):
-    message: str
+    message: LongText
     session_type: str = "troubleshooting"
 
 

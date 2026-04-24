@@ -1,4 +1,4 @@
--- Hugo Boss Product Center: Lakebase PostgreSQL Grants
+-- HB Product Center: Lakebase PostgreSQL Grants
 -- Run this script BEFORE deploying the app to grant the service principal
 -- access to all hb_ tables in the public schema.
 --

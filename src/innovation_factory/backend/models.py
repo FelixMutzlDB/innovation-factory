@@ -4,6 +4,7 @@ from typing import Optional, List
 from datetime import datetime, timezone
 from enum import Enum
 from .. import __version__
+from .input_sanitize import LongText
 
 
 # ============================================================================
@@ -102,7 +103,7 @@ class IdeaSessionCreate(BaseModel):
 
 
 class IdeaMessageIn(BaseModel):
-    content: str
+    content: LongText
 
 
 class IdeaMessageOut(BaseModel):

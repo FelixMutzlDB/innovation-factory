@@ -6,6 +6,7 @@ customer contracts (CRM), and chat sessions for the issue-resolution agent.
 """
 
 from datetime import date, datetime, timezone
+from ...input_sanitize import LongText
 from enum import Enum
 from typing import Optional
 
@@ -616,7 +617,7 @@ class AtCustomerContractOut(BaseModel):
 
 
 class AtChatMessageIn(BaseModel):
-    message: str
+    message: LongText
     session_id: Optional[int] = None
 
 

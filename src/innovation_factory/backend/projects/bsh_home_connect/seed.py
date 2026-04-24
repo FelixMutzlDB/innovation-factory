@@ -101,11 +101,11 @@ def _seed_customers(session: Session):
 
 def _seed_technicians(session: Session):
     technicians = [
-        {"databricks_user_id": "tech_001", "email": "david.clarke@bsh-service.com", "first_name": "David", "last_name": "Clarke", "specialization": "Cooling Systems", "certification_level": "Senior"},
-        {"databricks_user_id": "tech_002", "email": "anna.weber@bsh-service.com", "first_name": "Anna", "last_name": "Weber", "specialization": "Cooking Appliances", "certification_level": "Expert"},
-        {"databricks_user_id": "tech_003", "email": "carlos.martinez@bsh-service.com", "first_name": "Carlos", "last_name": "Martinez", "specialization": "Dishwashers", "certification_level": "Senior"},
-        {"databricks_user_id": "tech_004", "email": "lisa.bergstrom@bsh-service.com", "first_name": "Lisa", "last_name": "Bergstrom", "specialization": "All Appliances", "certification_level": "Master"},
-        {"databricks_user_id": "tech_005", "email": "thomas.petit@bsh-service.com", "first_name": "Thomas", "last_name": "Petit", "specialization": "Coffee Machines", "certification_level": "Expert"},
+        {"databricks_user_id": "tech_001", "email": "david.clarke@bsh-service.example", "first_name": "David", "last_name": "Clarke", "specialization": "Cooling Systems", "certification_level": "Senior"},
+        {"databricks_user_id": "tech_002", "email": "anna.weber@bsh-service.example", "first_name": "Anna", "last_name": "Weber", "specialization": "Cooking Appliances", "certification_level": "Expert"},
+        {"databricks_user_id": "tech_003", "email": "carlos.martinez@bsh-service.example", "first_name": "Carlos", "last_name": "Martinez", "specialization": "Dishwashers", "certification_level": "Senior"},
+        {"databricks_user_id": "tech_004", "email": "lisa.bergstrom@bsh-service.example", "first_name": "Lisa", "last_name": "Bergstrom", "specialization": "All Appliances", "certification_level": "Master"},
+        {"databricks_user_id": "tech_005", "email": "thomas.petit@bsh-service.example", "first_name": "Thomas", "last_name": "Petit", "specialization": "Coffee Machines", "certification_level": "Expert"},
     ]
     for t in technicians:
         session.add(BshTechnician(**t))

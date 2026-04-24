@@ -1,6 +1,6 @@
-# Hugo Boss Intelligent Product Center
+# HB Intelligent Product Center
 
-The Hugo Boss Intelligent Product Center is the one-stop shop for employees and wholesale partners to quickly gain insights into new and existing products by connecting several systems of record along the value chain.
+The HB Intelligent Product Center is the one-stop shop for employees and wholesale partners to quickly gain insights into new and existing products by connecting several systems of record along the value chain.
 
 ## Modules
 

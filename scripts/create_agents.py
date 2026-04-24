@@ -35,7 +35,7 @@ RETURNS TABLE (
   price DOUBLE,
   confidence STRING
 )
-COMMENT 'Identifies Hugo Boss products based on visual description. Returns matching products from the catalog with confidence levels.'
+COMMENT 'Identifies HB products based on visual description. Returns matching products from the catalog with confidence levels.'
 RETURN
   SELECT
     id as product_id,
@@ -108,7 +108,7 @@ if test_data.get('result', {}).get('data_array'):
 print("\n=== Creating Multi-Agent Supervisor ===")
 mas_body = {
     "display_name": "HB Product Center Intelligence",
-    "description": "Hugo Boss Product Center Intelligence Agent - orchestrates supply chain analytics, authenticity & quality insights, and product identification capabilities.",
+    "description": "HB Product Center Intelligence Agent - orchestrates supply chain analytics, authenticity & quality insights, and product identification capabilities.",
     "agents": [
         {
             "display_name": "Supply Chain Analyst",
@@ -122,11 +122,11 @@ mas_body = {
         },
         {
             "display_name": "Product Identifier",
-            "description": "Identifies Hugo Boss products from visual descriptions. Given a description of a product (color, style, material, category), searches the product catalog and returns matching products with confidence levels. Use this agent when the user wants to identify a product or find products matching certain visual features.",
+            "description": "Identifies HB products from visual descriptions. Given a description of a product (color, style, material, category), searches the product catalog and returns matching products with confidence levels. Use this agent when the user wants to identify a product or find products matching certain visual features.",
             "uc_function_name": "innovation_factory_catalog.hb_product_center.identify_product",
         },
     ],
-    "instructions": "You are the Hugo Boss Product Center Intelligence Assistant. Route supply chain, logistics, and sustainability questions to the Supply Chain Analyst. Route quality control, defect, inspection, and authenticity questions to the Quality & Auth Analyst. Route product identification requests to the Product Identifier. For general questions, use your best judgment on which agent to route to. Always provide clear, professional responses.",
+    "instructions": "You are the HB Product Center Intelligence Assistant. Route supply chain, logistics, and sustainability questions to the Supply Chain Analyst. Route quality control, defect, inspection, and authenticity questions to the Quality & Auth Analyst. Route product identification requests to the Product Identifier. For general questions, use your best judgment on which agent to route to. Always provide clear, professional responses.",
 }
 
 mas_resp = requests.post(

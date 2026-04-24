@@ -6,6 +6,7 @@ from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from ....dependencies import RuntimeDep
+from ....pagination import Pagination
 from ..models import (
     AlertResolution,
     AlertSeverity,
@@ -66,20 +67,22 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 @router.get("/verifications", response_model=list[HbAuthVerificationOut], operation_id="hb_listVerifications")
 def list_verifications(
     ws: WsDep,
+    page: Pagination,
     status: Optional[str] = Query(None),
     requester_type: Optional[str] = Query(None),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
 ):
     """List authenticity verifications from Unity Catalog."""
-    conditions = []
+    filters: dict[str, object] = {}
     if status:
-        conditions.append(f"status = '{status}'")
+        filters["status"] = status
     if requester_type:
-        conditions.append(f"requester_type = '{requester_type}'")
+        filters["requester_type"] = requester_type
 
-    where = " AND ".join(conditions) if conditions else ""
-    rows = select_all(ws, "hb_auth_verifications", where=where, order_by="created_at DESC", limit=limit, offset=offset)
+    rows = select_all(
+        ws, "hb_auth_verifications", filters=filters,
+        order_by_column="created_at", order_desc=True,
+        limit=page.limit, offset=page.skip,
+    )
     return [_sanitize_verification_row(row) for row in rows]
 
 @router.get("/verifications/{verification_id}", response_model=HbAuthVerificationOut, operation_id="hb_getVerification")
@@ -107,23 +110,25 @@ def create_verification(data: HbAuthVerificationCreate, ws: WsDep):
 
     insert_row(ws, "hb_auth_verifications", verification_data)
 
-    rows = select_all(ws, "hb_auth_verifications", order_by="id DESC", limit=1)
+    rows = select_all(ws, "hb_auth_verifications", order_by_column="id", order_desc=True, limit=1)
     return _sanitize_verification_row(rows[0]) if rows else HbAuthVerificationOut(**verification_data, id=0)  # type: ignore[arg-type]
 
 @router.get("/alerts", response_model=list[HbAuthAlertOut], operation_id="hb_listAlerts")
 def list_alerts(
     ws: WsDep,
+    page: Pagination,
     resolution: Optional[str] = Query(None),
-    limit: int = Query(50, le=200),
-    offset: int = Query(0),
 ):
     """List authenticity alerts from Unity Catalog."""
-    conditions = []
+    filters: dict[str, object] = {}
     if resolution:
-        conditions.append(f"resolution = '{resolution}'")
+        filters["resolution"] = resolution
 
-    where = " AND ".join(conditions) if conditions else ""
-    rows = select_all(ws, "hb_auth_alerts", where=where, order_by="created_at DESC", limit=limit, offset=offset)
+    rows = select_all(
+        ws, "hb_auth_alerts", filters=filters,
+        order_by_column="created_at", order_desc=True,
+        limit=page.limit, offset=page.skip,
+    )
     return [_sanitize_alert_row(row) for row in rows]
 
 @router.patch("/alerts/{alert_id}", response_model=HbAuthAlertOut, operation_id="hb_updateAlert")

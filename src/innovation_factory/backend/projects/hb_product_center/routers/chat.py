@@ -9,10 +9,11 @@ Catalog tables — the MAS endpoint manages conversation state internally.
 from typing import Annotated
 
 from databricks.sdk import WorkspaceClient
-from fastapi import APIRouter, Depends
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter, Depends, Request
 
 from ....dependencies import RuntimeDep
+from ....rate_limit import limiter
+from ....services.streaming import create_chat_stream
 from ..models import HbChatMessageIn
 from ..services.chat_service import HbChatService
 
@@ -30,22 +31,24 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 
 
 @router.post("/mas-chat", operation_id="hb_sendMasChatMessage")
+@limiter.limit("30/minute")
 async def send_mas_chat_message(
+    request: Request,
     message: HbChatMessageIn,
     ws: WsDep,
 ):
-    """Send a message to the Product Center Intelligence Agent (streaming)."""
+    """Send a message to the Product Center Intelligence Agent (streaming).
 
-    async def event_generator():
-        async for chunk in _chat_service.stream_response_uc(
-            ws=ws,
-            user_message=message.content,
-            session_id=message.session_id,
-        ):
-            yield f"data: {chunk}\n\n"
-
-    return StreamingResponse(
-        event_generator(),
-        media_type="text/event-stream",
+    Uses the shared create_chat_stream helper so the SSE envelope,
+    error handling, and [DONE] sentinel match every other chat endpoint
+    in the app (D1 normalization).
+    """
+    stream = _chat_service.stream_response_uc(
+        ws=ws,
+        user_message=message.content,
+        session_id=message.session_id,
+    )
+    return await create_chat_stream(
+        stream,
         headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
     )

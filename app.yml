@@ -4,32 +4,38 @@ resources:
   - name: lakebase-db
     postgres:
       branch: projects/innovation-factory/branches/production
-      database: projects/innovation-factory/branches/production/databases/db-pe0w-sbkpizjrbd
+      database: projects/innovation-factory/branches/production/databases/db-e9w7-uyd0a1xns2
       permission: CAN_CONNECT_AND_CREATE
   - name: sql-warehouse
     sql_warehouse:
-      id: 8af6100313039ba2
+      id: f7cdb11888c4799e
       permission: CAN_USE
-  - name: issue-resolution-ka
+  - name: serving-endpoint
     serving_endpoint:
-      name: ka-9b426cbe-endpoint
+      name: databricks-claude-sonnet-4
       permission: CAN_QUERY
-  - name: customer-relations-ka
+  - name: adtech-mas-endpoint
     serving_endpoint:
-      name: ka-1e46e5cf-endpoint
+      name: mas-9e45f45a-endpoint
       permission: CAN_QUERY
-  - name: adtech-mas
+  - name: hb-mas-endpoint
     serving_endpoint:
-      name: mas-6d1add8f-endpoint
+      name: mas-d14be5f2-endpoint
+      permission: CAN_QUERY
+  - name: adtech-issue-resolution-ka
+    serving_endpoint:
+      name: ka-005ebf14-endpoint
+      permission: CAN_QUERY
+  - name: adtech-customer-relations-ka
+    serving_endpoint:
+      name: ka-d29e8002-endpoint
       permission: CAN_QUERY
 
 env:
   - name: PGHOST
-    value: ep-plain-block-d1diw9v5.database.us-west-2.cloud.databricks.com
+    value: ep-raspy-thunder-d7egfk1h.database.eu-central-1.cloud.databricks.com
   - name: PGDATABASE
     value: databricks_postgres
-  - name: PGUSER
-    value: 5da5166f-5929-494a-9d57-ba7bb51a85e3
   - name: PGPORT
     value: 5432
   - name: PGSSLMODE
@@ -37,6 +43,42 @@ env:
   - name: ENDPOINT_NAME
     value: projects/innovation-factory/branches/production/endpoints/primary
   - name: UC_CATALOG
-    value: innovation_factory_catalog
+    value: felix_demo_catalog
   - name: WAREHOUSE_ID
-    value: 8af6100313039ba2
+    value: f7cdb11888c4799e
+
+  # Dashboards (Lakeview)
+  - name: ADTECH_DASHBOARD_ID
+    value: 01f13f258d20183894ba2b942833b50e
+  - name: HB_AQ_DASHBOARD_ID
+    value: 01f13f258e021692aa4b7ab85d670c3e
+  - name: HB_SC_DASHBOARD_ID
+    value: 01f13f258ed810858ae5520e9f310f72
+
+  # Genie spaces
+  - name: HB_SC_GENIE_SPACE_ID
+    value: 01f13e6f2a2e1310a6d536bc9d5b3a27
+  - name: HB_AQ_GENIE_SPACE_ID
+    value: 01f13e6f2afa1d54bf7bac95081e572d
+  - name: ADTECH_GENIE_SPACE_ID
+    value: 01f13e6f2b5113ea91267c843877c834
+
+  # Knowledge Assistants (AdTech)
+  - name: ADTECH_ISSUE_RESOLUTION_KA_TILE_ID
+    value: 005ebf14-c32c-4862-a343-b9826ab27c40
+  - name: ADTECH_ISSUE_RESOLUTION_KA_ENDPOINT
+    value: ka-005ebf14-endpoint
+  - name: ADTECH_CUSTOMER_RELATIONS_KA_TILE_ID
+    value: d29e8002-e57e-479b-846e-4c67f2426428
+  - name: ADTECH_CUSTOMER_RELATIONS_KA_ENDPOINT
+    value: ka-d29e8002-endpoint
+
+  # Multi-Agent Supervisors
+  - name: ADTECH_MAS_TILE_ID
+    value: 9e45f45a-66c5-43ec-b749-49f3ee2f1341
+  - name: ADTECH_MAS_ENDPOINT_NAME
+    value: mas-9e45f45a-endpoint
+  - name: HB_MAS_TILE_ID
+    value: d14be5f2-8b23-48d1-a562-f4f470b91ce3
+  - name: HB_MAS_ENDPOINT_NAME
+    value: mas-d14be5f2-endpoint

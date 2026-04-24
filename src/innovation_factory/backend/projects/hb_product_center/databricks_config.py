@@ -1,35 +1,38 @@
-"""Databricks resource IDs for the HB Product Center project."""
+"""Databricks resource IDs for the HB Product Center project.
 
+Shared values (``WAREHOUSE_ID``, ``UC_CATALOG``) come from global env
+vars. Project-specific values are prefixed with ``HB_``. All resource
+IDs default to empty — set them via env vars or ``app.yml`` for each
+deployment target.
+
+HB has two dashboards / two Genie spaces (Supply Chain + Authenticity &
+Quality) plus a vector-search stack for CLIP-based image recognition.
+"""
 import os
 
-WORKSPACE_URL = os.getenv(
-    "HB_WORKSPACE_URL",
-    "fe-sandbox-felix-demo-sandbox.cloud.databricks.com",
-)
+from .._project_config import ProjectResourceConfig
 
-UC_CATALOG = os.getenv("UC_CATALOG", "innovation_factory_catalog")
-UC_SCHEMA = os.getenv("HB_UC_SCHEMA", "hb_product_center")
+_cfg = ProjectResourceConfig(prefix="HB", default_schema="hb_product_center")
 
-SC_DASHBOARD_ID = os.getenv("HB_SC_DASHBOARD_ID", "01f123992f21169d9ddc821e1dc8c12b")
-AQ_DASHBOARD_ID = os.getenv("HB_AQ_DASHBOARD_ID", "01f1239930521243bc18f567917dd6c0")
+# Shared (unprefixed) values
+WAREHOUSE_ID = _cfg.warehouse_id
+UC_CATALOG = _cfg.uc_catalog
 
-SC_GENIE_SPACE_ID = os.getenv("HB_SC_GENIE_SPACE_ID", "01f10dce917e158093ef87c43e5f66f3")
-AQ_GENIE_SPACE_ID = os.getenv("HB_AQ_GENIE_SPACE_ID", "01f10dcf2ecd1b26a5dd22b98cff8a73")
+# Per-project core resources
+UC_SCHEMA = _cfg.uc_schema
+WORKSPACE_URL = _cfg.workspace_url
+MAS_ENDPOINT_NAME = _cfg.mas_endpoint_name
 
-MAS_ENDPOINT_NAME = os.getenv("HB_MAS_ENDPOINT_NAME", "mas-d6c8b06f-endpoint")
+# HB-specific: two dashboards / two Genies (Supply Chain + Auth/Quality)
+SC_DASHBOARD_ID = _cfg.get("SC_DASHBOARD_ID")
+AQ_DASHBOARD_ID = _cfg.get("AQ_DASHBOARD_ID")
+SC_GENIE_SPACE_ID = _cfg.get("SC_GENIE_SPACE_ID")
+AQ_GENIE_SPACE_ID = _cfg.get("AQ_GENIE_SPACE_ID")
 
-WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "8af6100313039ba2")
-
-VS_ENDPOINT_NAME = os.getenv("VS_ENDPOINT_NAME", "image_similarity_endpoint")
-VS_INDEX_NAME = os.getenv(
-    "VS_INDEX_NAME",
-    "innovation_factory_catalog.image_similarity.image_similarity_index",
-)
-VS_IMAGE_TABLE = os.getenv(
-    "VS_IMAGE_TABLE",
-    "innovation_factory_catalog.image_similarity.image_embeddings",
-)
-IMAGE_VOLUME_PATH = os.getenv(
-    "IMAGE_VOLUME_PATH",
-    "/Volumes/innovation_factory_catalog/image_similarity/images",
-)
+# HB-specific: vector-search stack for CLIP-based image recognition.
+# These env vars are unprefixed because they may be reused by a shared
+# VS client across projects in future.
+VS_ENDPOINT_NAME = os.getenv("VS_ENDPOINT_NAME", "")
+VS_INDEX_NAME = os.getenv("VS_INDEX_NAME", "")
+VS_IMAGE_TABLE = os.getenv("VS_IMAGE_TABLE", "")
+IMAGE_VOLUME_PATH = os.getenv("IMAGE_VOLUME_PATH", "")

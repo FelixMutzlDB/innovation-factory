@@ -6,10 +6,12 @@ Provides two chat endpoints:
 """
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session, select
 
-from ....dependencies import get_session, get_runtime
+from ....dependencies import SessionDep, get_runtime, get_session
+from ....pagination import Pagination
+from ....rate_limit import limiter
 from ....runtime import Runtime
 from ....services.streaming import create_chat_stream
 from ..models import (
@@ -27,9 +29,11 @@ chat_service = ChatService()
 
 
 @router.post("/chat", operation_id="at_sendChatMessage")
+@limiter.limit("30/minute")
 async def send_chat_message(
+    request: Request,
     message: AtChatMessageIn,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     runtime: Annotated[Runtime, Depends(get_runtime)],
 ):
     """Send a message to the issue-resolution KA and get a streaming response."""
@@ -46,9 +50,11 @@ async def send_chat_message(
 
 
 @router.post("/mas-chat", operation_id="at_sendMasChatMessage")
+@limiter.limit("30/minute")
 async def send_mas_chat_message(
+    request: Request,
     message: AtChatMessageIn,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
     runtime: Annotated[Runtime, Depends(get_runtime)],
 ):
     """Send a message to the Multi-Agent Supervisor and get a streaming response."""
@@ -70,11 +76,15 @@ async def send_mas_chat_message(
     operation_id="at_listChatSessions",
 )
 def list_chat_sessions(
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
+    page: Pagination,
 ):
-    """List recent chat sessions."""
+    """List recent chat sessions, newest first."""
     sessions = db.exec(
-        select(AtChatSession).order_by(AtChatSession.started_at.desc()).limit(20)  # type: ignore[unresolved-attribute]
+        select(AtChatSession)
+        .order_by(AtChatSession.started_at.desc())  # type: ignore[unresolved-attribute]
+        .offset(page.skip)
+        .limit(page.limit)
     ).all()
     result = []
     for s in sessions:
@@ -104,7 +114,7 @@ def list_chat_sessions(
 )
 def get_chat_session(
     session_id: int,
-    db: Annotated[Session, Depends(get_session)],
+    db: SessionDep,
 ):
     """Get a specific chat session with all messages."""
     session = db.get(AtChatSession, session_id)

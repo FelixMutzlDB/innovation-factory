@@ -1,0 +1,8 @@
+# Collapse auto-generated and lockfile diffs in review tools
+src/innovation_factory/ui/lib/api.ts linguist-generated=true
+src/innovation_factory/ui/types/routeTree.gen.ts linguist-generated=true
+*.lock linguist-generated=true
+*.lockb linguist-generated=true
+bun.lock linguist-generated=true
+package-lock.json linguist-generated=true
+uv.lock linguist-generated=true

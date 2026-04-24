@@ -27,24 +27,32 @@ def get_dashboard_summary(ws: WsDep):
     """Get dashboard summary metrics from Unity Catalog tables."""
     # Products
     total_products = count_rows(ws, "hb_products")
-    active_products = count_rows(ws, "hb_products", "status = 'active'")
+    active_products = count_rows(ws, "hb_products", filters={"status": "active"})
 
-    # Recognition jobs
+    # Recognition jobs — inequality filters use the (op, value) tuple shape.
     today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    jobs_today = count_rows(ws, "hb_recognition_jobs", f"created_at >= '{today_str}'")
+    jobs_today = count_rows(
+        ws, "hb_recognition_jobs", filters={"created_at": (">=", today_str)}
+    )
     jobs_total = count_rows(ws, "hb_recognition_jobs")
 
     # Quality inspections
-    avg_quality = round(avg_column(ws, "hb_quality_inspections", "overall_score", "overall_score > 0"), 1)
-    pending_inspections = count_rows(ws, "hb_quality_inspections", "status = 'pending'")
+    avg_quality = round(
+        avg_column(
+            ws, "hb_quality_inspections", "overall_score",
+            filters={"overall_score": (">", 0)},
+        ),
+        1,
+    )
+    pending_inspections = count_rows(ws, "hb_quality_inspections", filters={"status": "pending"})
 
     # Auth verifications
     total_verifications = count_rows(ws, "hb_auth_verifications")
-    verified = count_rows(ws, "hb_auth_verifications", "status = 'verified'")
+    verified = count_rows(ws, "hb_auth_verifications", filters={"status": "verified"})
     auth_rate = round(verified / total_verifications * 100, 1) if total_verifications > 0 else 0.0
 
     # Auth alerts
-    open_alerts = count_rows(ws, "hb_auth_alerts", "resolution = 'open'")
+    open_alerts = count_rows(ws, "hb_auth_alerts", filters={"resolution": "open"})
 
     # Supply chain
     sc_events = count_rows(ws, "hb_supply_chain_events")
