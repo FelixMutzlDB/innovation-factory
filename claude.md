@@ -2,7 +2,7 @@
 
 > Last updated: 2026-04-13 | Owner: Felix Mutzl | FEIP: [FEIP-5472](https://databricks.atlassian.net/browse/FEIP-5472)
 > Platform: Multi-accelerator showcase for Databricks Apps (FastAPI + React)
-> Stage: 5 accelerators live, deployed to `fe-sandbox-felix-demo-sandbox`
+> Stage: 5 accelerators live, deployed to `fevm-felix-demo`
 > Tracking: [TODO.md](docs/TODO.md) | Refinement: [docs/tasks/refinement.md](docs/tasks/refinement.md)
 
 ## Current State (2026-04-13)
@@ -10,9 +10,9 @@
 | Area | Status |
 |------|--------|
 | **Accelerators** | 5 live (ViDistrictOne, BSH Remote Assist, MOL ASM Cockpit, AdTech Intelligence, HB Product Center) |
-| **6th accelerator** | AECO Digital Twin — planned ([plan](docs/projects/aeco-digital-twin-plan.md)) |
+| **6th accelerator** | AECO Hub — planned ([plan](docs/projects/aeco-hub-plan.md)) |
 | **Database** | Lakebase Autoscaling (production), PGlite (local dev) |
-| **Workspace** | `fe-sandbox-felix-demo-sandbox` (migrated from `fe-shared-demo`) |
+| **Workspace** | `fevm-felix-demo` (migrated from `fe-sandbox-felix-demo-sandbox` → `fe-shared-demo`) |
 | **Security** | SQL injection fixed (P0); markdown XSS, rate limiting still open — see [TODO.md](docs/TODO.md) |
 | **Tests** | Framework exists, coverage thin; security tests not yet written |
 | **Branch** | `feature/hb-product-center` (merged to master via PR #3) |

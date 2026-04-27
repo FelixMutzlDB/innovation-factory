@@ -414,7 +414,7 @@ Prune `scripts/` and `docs/` of superseded content.
 - `docs/tasks/refinement.md` — keep; the audit this plan consumes from.
 - `docs/development-guide.md` — keep; 12-section reference.
 - `docs/projects/*.md` — keep; per-accelerator design docs.
-- `docs/projects/aeco-digital-twin-plan.md` — keep; planned 6th accelerator.
+- `docs/projects/aeco-hub-plan.md` — keep; planned 6th accelerator.
 - `docs/images/` — audit (not inspected this pass).
 - **Add**: `docs/lessons-learned.md` (already written alongside this plan).
 

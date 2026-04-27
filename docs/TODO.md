@@ -115,11 +115,11 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 
 ---
 
-## New Accelerator — AECO Digital Twin [Phase: Planned]
+## New Accelerator — AECO Hub [Phase: Planned]
 
 | ID | Task | Status | Done | Notes |
 |----|------|--------|------|-------|
-| N1 | Finalize data model & Nemetschek brand mapping | `[ ]` | — | Plan: `docs/projects/aeco-digital-twin-plan.md` |
+| N1 | Finalize data model & AECO tooling-ecosystem mapping | `[ ]` | — | Plan: `docs/projects/aeco-hub-plan.md` |
 | N2 | Backend: project scaffolding + seed data | `[ ]` | — | Follow standard layout in `projects/` |
 | N3 | Frontend: routes + dashboard pages | `[ ]` | — | — |
 | N4 | Databricks integration (dashboards, agents) | `[ ]` | — | — |

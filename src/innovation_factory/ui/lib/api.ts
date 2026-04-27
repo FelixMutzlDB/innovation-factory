@@ -1,6 +1,81 @@
 import { useQuery, useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import type { UseQueryOptions, UseSuspenseQueryOptions, UseMutationOptions } from "@tanstack/react-query";
 
+export const AecoBuildingType = {
+  residential: "residential",
+  office: "office",
+  retail: "retail",
+  mixed_use: "mixed_use",
+  industrial: "industrial",
+  healthcare: "healthcare",
+  education: "education",
+  hospitality: "hospitality",
+  infrastructure: "infrastructure",
+} as const;
+
+export type AecoBuildingType = (typeof AecoBuildingType)[keyof typeof AecoBuildingType];
+
+export interface AecoDatabricksResourcesOut {
+  configured?: boolean;
+  energy_dashboard_configured?: boolean;
+  energy_dashboard_embed_url: string;
+  energy_dashboard_id: string;
+  operations_intelligence_genie_space_id: string;
+  project_analytics_genie_space_id: string;
+  workspace_url: string;
+}
+
+export const AecoMemberRole = {
+  project_manager: "project_manager",
+  architect: "architect",
+  engineer: "engineer",
+  contractor: "contractor",
+  owner: "owner",
+  supplier: "supplier",
+  facility_manager: "facility_manager",
+} as const;
+
+export type AecoMemberRole = (typeof AecoMemberRole)[keyof typeof AecoMemberRole];
+
+export const AecoProjectPhase = {
+  design: "design",
+  build: "build",
+  operate: "operate",
+  demolish: "demolish",
+} as const;
+
+export type AecoProjectPhase = (typeof AecoProjectPhase)[keyof typeof AecoProjectPhase];
+
+export const AecoProjectStatus = {
+  planned: "planned",
+  active: "active",
+  on_hold: "on_hold",
+  completed: "completed",
+  cancelled: "cancelled",
+} as const;
+
+export type AecoProjectStatus = (typeof AecoProjectStatus)[keyof typeof AecoProjectStatus];
+
+export const AecoSpaceType = {
+  office: "office",
+  meeting_room: "meeting_room",
+  apartment: "apartment",
+  retail_unit: "retail_unit",
+  corridor: "corridor",
+  stairwell: "stairwell",
+  bathroom: "bathroom",
+  kitchen: "kitchen",
+  technical: "technical",
+  parking: "parking",
+  storage: "storage",
+  patient_room: "patient_room",
+  operating_theatre: "operating_theatre",
+  warehouse_zone: "warehouse_zone",
+  common_area: "common_area",
+} as const;
+
+export type AecoSpaceType = (typeof AecoSpaceType)[keyof typeof AecoSpaceType];
+
 export const AlertResolution = {
   open: "open",
   investigating: "investigating",
@@ -459,16 +534,6 @@ export const CampaignType = {
 
 export type CampaignType = (typeof CampaignType)[keyof typeof CampaignType];
 
-export const ChatContext = {
-  recognition: "recognition",
-  quality: "quality",
-  authenticity: "authenticity",
-  supply_chain: "supply_chain",
-  general: "general",
-} as const;
-
-export type ChatContext = (typeof ChatContext)[keyof typeof ChatContext];
-
 export const ComplianceStatus = {
   compliant: "compliant",
   non_compliant: "non_compliant",
@@ -504,6 +569,7 @@ export interface DashboardEmbedOut {
 }
 
 export interface DatabricksResourcesOut {
+  configured?: boolean;
   dashboard_embed_url: string;
   dashboard_id: string;
   genie_space_id: string;
@@ -572,6 +638,89 @@ export interface DocListOut {
   slugs: string[];
 }
 
+export interface DtBuildingOut {
+  address: string;
+  building_type: AecoBuildingType;
+  floor_count: number;
+  gross_floor_area_sqm: number;
+  id: number;
+  name: string;
+  project_id: number;
+  year_built?: number | null;
+}
+
+export interface DtFloorOut {
+  area_sqm: number;
+  building_id: number;
+  id: number;
+  level: number;
+  name: string;
+}
+
+export interface DtPortfolioStatsOut {
+  active_projects: number;
+  constructing_projects: number;
+  design_projects: number;
+  operating_projects: number;
+  total_actual_cost_eur: number;
+  total_budget_eur: number;
+  total_buildings: number;
+  total_projects: number;
+}
+
+export interface DtProjectKpiOut {
+  actual_cost_eur: number;
+  budget_eur: number;
+  building_count: number;
+  cost_variance_pct: number;
+  documents_count: number;
+  floor_count: number;
+  member_count: number;
+  open_issues: number;
+  progress_pct: number;
+  project_id: number;
+  space_count: number;
+}
+
+export interface DtProjectMemberOut {
+  email?: string | null;
+  id: number;
+  name: string;
+  organization: string;
+  phone?: string | null;
+  project_id: number;
+  role: AecoMemberRole;
+}
+
+export interface DtProjectOut {
+  actual_completion_date?: string | null;
+  actual_cost_eur: number;
+  budget_eur: number;
+  city: string;
+  client_name: string;
+  code: string;
+  country: string;
+  created_at: string;
+  description: string;
+  id: number;
+  name: string;
+  phase: AecoProjectPhase;
+  progress_pct: number;
+  start_date?: string | null;
+  status: AecoProjectStatus;
+  target_completion_date?: string | null;
+}
+
+export interface DtSpaceOut {
+  area_sqm: number;
+  capacity: number;
+  floor_id: number;
+  id: number;
+  name: string;
+  room_number: string;
+  space_type: AecoSpaceType;
+}
+
 export const FuelType = {
   diesel: "diesel",
   premium_diesel: "premium_diesel",
@@ -634,26 +783,6 @@ export interface HbChatMessageIn {
   session_id?: number | null;
 }
 
-export interface HbChatMessageOut {
-  content: string;
-  created_at: string;
-  id: number;
-  role: string;
-  session_id: number;
-}
-
-export interface HbChatSessionCreate {
-  context?: string;
-  user_role?: string | null;
-}
-
-export interface HbChatSessionOut {
-  context: ChatContext;
-  created_at: string;
-  id: number;
-  user_role?: innovation_factory__backend__projects__hb_product_center__models__UserRole | null;
-}
-
 export interface HbDashboardSummary {
   active_products: number;
   auth_alerts_open: number;
@@ -668,9 +797,12 @@ export interface HbDashboardSummary {
 }
 
 export interface HbDatabricksResourcesOut {
+  aq_dashboard_configured?: boolean;
   aq_dashboard_embed_url: string;
   aq_dashboard_id: string;
   aq_genie_space_id: string;
+  configured?: boolean;
+  sc_dashboard_configured?: boolean;
   sc_dashboard_embed_url: string;
   sc_dashboard_id: string;
   sc_genie_space_id: string;
@@ -1719,6 +1851,11 @@ export interface At_listPlacementsParams {
   campaign_id: number;
 }
 
+export interface At_listChatSessionsParams {
+  skip?: number;
+  limit?: number;
+}
+
 export interface At_getChatSessionParams {
   session_id: number;
 }
@@ -1759,6 +1896,49 @@ export interface At_updateIssueParams {
 
 export interface At_getPlacementParams {
   placement_id: number;
+}
+
+export interface Aeco_getBuildingParams {
+  building_id: number;
+}
+
+export interface Aeco_listFloorsParams {
+  building_id: number;
+}
+
+export interface Aeco_getFloorParams {
+  floor_id: number;
+}
+
+export interface Aeco_listSpacesParams {
+  floor_id: number;
+}
+
+export interface Aeco_listProjectsParams {
+  phase?: AecoProjectPhase | null;
+  status?: AecoProjectStatus | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_getProjectParams {
+  project_id: number;
+}
+
+export interface Aeco_listBuildingsParams {
+  project_id: number;
+}
+
+export interface Aeco_getProjectKpisParams {
+  project_id: number;
+}
+
+export interface Aeco_listProjectMembersParams {
+  project_id: number;
+}
+
+export interface Aeco_getSpaceParams {
+  space_id: number;
 }
 
 export interface Bsh_getCurrentCustomerParams {
@@ -1811,6 +1991,8 @@ export interface Bsh_getTechnicianParams {
 export interface Bsh_listTicketsParams {
   status?: BshTicketStatus | null;
   role?: string | null;
+  skip?: number;
+  limit?: number;
   "X-Forwarded-Access-Token"?: string | null;
 }
 
@@ -1861,8 +2043,8 @@ export interface Bsh_generateShippingLabelParams {
 
 export interface Hb_listAlertsParams {
   resolution?: string | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_updateAlertParams {
@@ -1872,20 +2054,12 @@ export interface Hb_updateAlertParams {
 export interface Hb_listVerificationsParams {
   status?: string | null;
   requester_type?: string | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getVerificationParams {
   verification_id: number;
-}
-
-export interface Hb_getChatMessagesParams {
-  session_id: number;
-}
-
-export interface Hb_sendChatMessageParams {
-  session_id: number;
 }
 
 export interface Hb_listProductsParams {
@@ -1893,8 +2067,8 @@ export interface Hb_listProductsParams {
   collection?: string | null;
   season?: string | null;
   search?: string | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getProductParams {
@@ -1908,8 +2082,8 @@ export interface Hb_getProductImagesParams {
 export interface Hb_listInspectionsParams {
   status?: string | null;
   product_id?: number | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getInspectionParams {
@@ -1926,8 +2100,8 @@ export interface Hb_getRecognitionImageParams {
 
 export interface Hb_listRecognitionJobsParams {
   status?: string | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getRecognitionJobParams {
@@ -1938,8 +2112,8 @@ export interface Hb_listSupplyChainEventsParams {
   product_id?: number | null;
   event_type?: string | null;
   country?: string | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getProductJourneyParams {
@@ -1947,8 +2121,8 @@ export interface Hb_getProductJourneyParams {
 }
 
 export interface Hb_listSustainabilityMetricsParams {
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getProductSustainabilityParams {
@@ -2062,6 +2236,8 @@ export interface Vh_get_current_readingParams {
 export interface Vh_get_energy_readingsParams {
   household_id: number;
   hours?: number;
+  skip?: number;
+  limit?: number;
 }
 
 export interface Vh_get_householdParams {
@@ -2101,6 +2277,8 @@ export interface Vh_compare_providersParams {
 export interface Vh_list_ticketsParams {
   household_id?: number | null;
   status?: VhTicketStatus | null;
+  skip?: number;
+  limit?: number;
 }
 
 export interface Vh_create_ticketParams {
@@ -2551,8 +2729,13 @@ export function useAt_sendChatMessage(options?: { mutation?: UseMutationOptions<
   return useMutation({ mutationFn: (data) => at_sendChatMessage(data), ...options?.mutation });
 }
 
-export const at_listChatSessions = async (options?: RequestInit): Promise<{ data: AtChatHistoryOut[] }> => {
-  const res = await fetch("/api/projects/adtech-intelligence/chat/sessions", { ...options, method: "GET" });
+export const at_listChatSessions = async (params?: At_listChatSessionsParams, options?: RequestInit): Promise<{ data: AtChatHistoryOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/adtech-intelligence/chat/sessions?${queryString}` : `/api/projects/adtech-intelligence/chat/sessions`;
+  const res = await fetch(url, { ...options, method: "GET" });
   if (!res.ok) {
     const body = await res.text();
     let parsed: unknown;
@@ -2562,16 +2745,16 @@ export const at_listChatSessions = async (options?: RequestInit): Promise<{ data
   return { data: await res.json() };
 };
 
-export const at_listChatSessionsKey = () => {
-  return ["/api/projects/adtech-intelligence/chat/sessions"] as const;
+export const at_listChatSessionsKey = (params?: At_listChatSessionsParams) => {
+  return ["/api/projects/adtech-intelligence/chat/sessions", params] as const;
 };
 
-export function useAt_listChatSessions<TData = { data: AtChatHistoryOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: AtChatHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
-  return useQuery({ queryKey: at_listChatSessionsKey(), queryFn: () => at_listChatSessions(), ...options?.query });
+export function useAt_listChatSessions<TData = { data: AtChatHistoryOut[] }>(options?: { params?: At_listChatSessionsParams; query?: Omit<UseQueryOptions<{ data: AtChatHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listChatSessionsKey(options?.params), queryFn: () => at_listChatSessions(options?.params), ...options?.query });
 }
 
-export function useAt_listChatSessionsSuspense<TData = { data: AtChatHistoryOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: AtChatHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
-  return useSuspenseQuery({ queryKey: at_listChatSessionsKey(), queryFn: () => at_listChatSessions(), ...options?.query });
+export function useAt_listChatSessionsSuspense<TData = { data: AtChatHistoryOut[] }>(options?: { params?: At_listChatSessionsParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtChatHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listChatSessionsKey(options?.params), queryFn: () => at_listChatSessions(options?.params), ...options?.query });
 }
 
 export const at_getChatSession = async (params: At_getChatSessionParams, options?: RequestInit): Promise<{ data: AtChatHistoryOut }> => {
@@ -2833,6 +3016,289 @@ export function useAt_getPlacementSuspense<TData = { data: AtPlacementOut }>(opt
   return useSuspenseQuery({ queryKey: at_getPlacementKey(options.params), queryFn: () => at_getPlacement(options.params), ...options?.query });
 }
 
+export const aeco_getBuilding = async (params: Aeco_getBuildingParams, options?: RequestInit): Promise<{ data: DtBuildingOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/buildings/${params.building_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getBuildingKey = (params?: Aeco_getBuildingParams) => {
+  return ["/api/projects/aeco-hub/buildings/{building_id}", params] as const;
+};
+
+export function useAeco_getBuilding<TData = { data: DtBuildingOut }>(options: { params: Aeco_getBuildingParams; query?: Omit<UseQueryOptions<{ data: DtBuildingOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getBuildingKey(options.params), queryFn: () => aeco_getBuilding(options.params), ...options?.query });
+}
+
+export function useAeco_getBuildingSuspense<TData = { data: DtBuildingOut }>(options: { params: Aeco_getBuildingParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtBuildingOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getBuildingKey(options.params), queryFn: () => aeco_getBuilding(options.params), ...options?.query });
+}
+
+export const aeco_listFloors = async (params: Aeco_listFloorsParams, options?: RequestInit): Promise<{ data: DtFloorOut[] }> => {
+  const res = await fetch(`/api/projects/aeco-hub/buildings/${params.building_id}/floors`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listFloorsKey = (params?: Aeco_listFloorsParams) => {
+  return ["/api/projects/aeco-hub/buildings/{building_id}/floors", params] as const;
+};
+
+export function useAeco_listFloors<TData = { data: DtFloorOut[] }>(options: { params: Aeco_listFloorsParams; query?: Omit<UseQueryOptions<{ data: DtFloorOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listFloorsKey(options.params), queryFn: () => aeco_listFloors(options.params), ...options?.query });
+}
+
+export function useAeco_listFloorsSuspense<TData = { data: DtFloorOut[] }>(options: { params: Aeco_listFloorsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtFloorOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listFloorsKey(options.params), queryFn: () => aeco_listFloors(options.params), ...options?.query });
+}
+
+export const aeco_getDatabricksResources = async (options?: RequestInit): Promise<{ data: AecoDatabricksResourcesOut }> => {
+  const res = await fetch("/api/projects/aeco-hub/databricks-resources", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getDatabricksResourcesKey = () => {
+  return ["/api/projects/aeco-hub/databricks-resources"] as const;
+};
+
+export function useAeco_getDatabricksResources<TData = { data: AecoDatabricksResourcesOut }>(options?: { query?: Omit<UseQueryOptions<{ data: AecoDatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getDatabricksResourcesKey(), queryFn: () => aeco_getDatabricksResources(), ...options?.query });
+}
+
+export function useAeco_getDatabricksResourcesSuspense<TData = { data: AecoDatabricksResourcesOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: AecoDatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getDatabricksResourcesKey(), queryFn: () => aeco_getDatabricksResources(), ...options?.query });
+}
+
+export const aeco_getFloor = async (params: Aeco_getFloorParams, options?: RequestInit): Promise<{ data: DtFloorOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/floors/${params.floor_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getFloorKey = (params?: Aeco_getFloorParams) => {
+  return ["/api/projects/aeco-hub/floors/{floor_id}", params] as const;
+};
+
+export function useAeco_getFloor<TData = { data: DtFloorOut }>(options: { params: Aeco_getFloorParams; query?: Omit<UseQueryOptions<{ data: DtFloorOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getFloorKey(options.params), queryFn: () => aeco_getFloor(options.params), ...options?.query });
+}
+
+export function useAeco_getFloorSuspense<TData = { data: DtFloorOut }>(options: { params: Aeco_getFloorParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtFloorOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getFloorKey(options.params), queryFn: () => aeco_getFloor(options.params), ...options?.query });
+}
+
+export const aeco_listSpaces = async (params: Aeco_listSpacesParams, options?: RequestInit): Promise<{ data: DtSpaceOut[] }> => {
+  const res = await fetch(`/api/projects/aeco-hub/floors/${params.floor_id}/spaces`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listSpacesKey = (params?: Aeco_listSpacesParams) => {
+  return ["/api/projects/aeco-hub/floors/{floor_id}/spaces", params] as const;
+};
+
+export function useAeco_listSpaces<TData = { data: DtSpaceOut[] }>(options: { params: Aeco_listSpacesParams; query?: Omit<UseQueryOptions<{ data: DtSpaceOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listSpacesKey(options.params), queryFn: () => aeco_listSpaces(options.params), ...options?.query });
+}
+
+export function useAeco_listSpacesSuspense<TData = { data: DtSpaceOut[] }>(options: { params: Aeco_listSpacesParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtSpaceOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listSpacesKey(options.params), queryFn: () => aeco_listSpaces(options.params), ...options?.query });
+}
+
+export const aeco_getPortfolioStats = async (options?: RequestInit): Promise<{ data: DtPortfolioStatsOut }> => {
+  const res = await fetch("/api/projects/aeco-hub/portfolio/stats", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getPortfolioStatsKey = () => {
+  return ["/api/projects/aeco-hub/portfolio/stats"] as const;
+};
+
+export function useAeco_getPortfolioStats<TData = { data: DtPortfolioStatsOut }>(options?: { query?: Omit<UseQueryOptions<{ data: DtPortfolioStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getPortfolioStatsKey(), queryFn: () => aeco_getPortfolioStats(), ...options?.query });
+}
+
+export function useAeco_getPortfolioStatsSuspense<TData = { data: DtPortfolioStatsOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: DtPortfolioStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getPortfolioStatsKey(), queryFn: () => aeco_getPortfolioStats(), ...options?.query });
+}
+
+export const aeco_listProjects = async (params?: Aeco_listProjectsParams, options?: RequestInit): Promise<{ data: DtProjectOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.phase != null) searchParams.set("phase", String(params?.phase));
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects?${queryString}` : `/api/projects/aeco-hub/projects`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listProjectsKey = (params?: Aeco_listProjectsParams) => {
+  return ["/api/projects/aeco-hub/projects", params] as const;
+};
+
+export function useAeco_listProjects<TData = { data: DtProjectOut[] }>(options?: { params?: Aeco_listProjectsParams; query?: Omit<UseQueryOptions<{ data: DtProjectOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listProjectsKey(options?.params), queryFn: () => aeco_listProjects(options?.params), ...options?.query });
+}
+
+export function useAeco_listProjectsSuspense<TData = { data: DtProjectOut[] }>(options?: { params?: Aeco_listProjectsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtProjectOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listProjectsKey(options?.params), queryFn: () => aeco_listProjects(options?.params), ...options?.query });
+}
+
+export const aeco_getProject = async (params: Aeco_getProjectParams, options?: RequestInit): Promise<{ data: DtProjectOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getProjectKey = (params?: Aeco_getProjectParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}", params] as const;
+};
+
+export function useAeco_getProject<TData = { data: DtProjectOut }>(options: { params: Aeco_getProjectParams; query?: Omit<UseQueryOptions<{ data: DtProjectOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getProjectKey(options.params), queryFn: () => aeco_getProject(options.params), ...options?.query });
+}
+
+export function useAeco_getProjectSuspense<TData = { data: DtProjectOut }>(options: { params: Aeco_getProjectParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtProjectOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getProjectKey(options.params), queryFn: () => aeco_getProject(options.params), ...options?.query });
+}
+
+export const aeco_listBuildings = async (params: Aeco_listBuildingsParams, options?: RequestInit): Promise<{ data: DtBuildingOut[] }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/buildings`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listBuildingsKey = (params?: Aeco_listBuildingsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/buildings", params] as const;
+};
+
+export function useAeco_listBuildings<TData = { data: DtBuildingOut[] }>(options: { params: Aeco_listBuildingsParams; query?: Omit<UseQueryOptions<{ data: DtBuildingOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listBuildingsKey(options.params), queryFn: () => aeco_listBuildings(options.params), ...options?.query });
+}
+
+export function useAeco_listBuildingsSuspense<TData = { data: DtBuildingOut[] }>(options: { params: Aeco_listBuildingsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtBuildingOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listBuildingsKey(options.params), queryFn: () => aeco_listBuildings(options.params), ...options?.query });
+}
+
+export const aeco_getProjectKpis = async (params: Aeco_getProjectKpisParams, options?: RequestInit): Promise<{ data: DtProjectKpiOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/kpis`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getProjectKpisKey = (params?: Aeco_getProjectKpisParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/kpis", params] as const;
+};
+
+export function useAeco_getProjectKpis<TData = { data: DtProjectKpiOut }>(options: { params: Aeco_getProjectKpisParams; query?: Omit<UseQueryOptions<{ data: DtProjectKpiOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getProjectKpisKey(options.params), queryFn: () => aeco_getProjectKpis(options.params), ...options?.query });
+}
+
+export function useAeco_getProjectKpisSuspense<TData = { data: DtProjectKpiOut }>(options: { params: Aeco_getProjectKpisParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtProjectKpiOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getProjectKpisKey(options.params), queryFn: () => aeco_getProjectKpis(options.params), ...options?.query });
+}
+
+export const aeco_listProjectMembers = async (params: Aeco_listProjectMembersParams, options?: RequestInit): Promise<{ data: DtProjectMemberOut[] }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/members`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listProjectMembersKey = (params?: Aeco_listProjectMembersParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/members", params] as const;
+};
+
+export function useAeco_listProjectMembers<TData = { data: DtProjectMemberOut[] }>(options: { params: Aeco_listProjectMembersParams; query?: Omit<UseQueryOptions<{ data: DtProjectMemberOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listProjectMembersKey(options.params), queryFn: () => aeco_listProjectMembers(options.params), ...options?.query });
+}
+
+export function useAeco_listProjectMembersSuspense<TData = { data: DtProjectMemberOut[] }>(options: { params: Aeco_listProjectMembersParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtProjectMemberOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listProjectMembersKey(options.params), queryFn: () => aeco_listProjectMembers(options.params), ...options?.query });
+}
+
+export const aeco_getSpace = async (params: Aeco_getSpaceParams, options?: RequestInit): Promise<{ data: DtSpaceOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/spaces/${params.space_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getSpaceKey = (params?: Aeco_getSpaceParams) => {
+  return ["/api/projects/aeco-hub/spaces/{space_id}", params] as const;
+};
+
+export function useAeco_getSpace<TData = { data: DtSpaceOut }>(options: { params: Aeco_getSpaceParams; query?: Omit<UseQueryOptions<{ data: DtSpaceOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getSpaceKey(options.params), queryFn: () => aeco_getSpace(options.params), ...options?.query });
+}
+
+export function useAeco_getSpaceSuspense<TData = { data: DtSpaceOut }>(options: { params: Aeco_getSpaceParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtSpaceOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getSpaceKey(options.params), queryFn: () => aeco_getSpace(options.params), ...options?.query });
+}
+
 export const bsh_getCurrentCustomer = async (params?: Bsh_getCurrentCustomerParams, options?: RequestInit): Promise<{ data: BshCustomerOut }> => {
   const res = await fetch("/api/projects/bsh-home-connect/customers/me", { ...options, method: "GET", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
   if (!res.ok) {
@@ -3084,6 +3550,8 @@ export const bsh_listTickets = async (params?: Bsh_listTicketsParams, options?: 
   const searchParams = new URLSearchParams();
   if (params?.status != null) searchParams.set("status", String(params?.status));
   if (params?.role != null) searchParams.set("role", String(params?.role));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/bsh-home-connect/tickets?${queryString}` : `/api/projects/bsh-home-connect/tickets`;
   const res = await fetch(url, { ...options, method: "GET", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
@@ -3274,8 +3742,8 @@ export function useBsh_generateShippingLabel(options?: { mutation?: UseMutationO
 export const hb_listAlerts = async (params?: Hb_listAlertsParams, options?: RequestInit): Promise<{ data: HbAuthAlertOut[] }> => {
   const searchParams = new URLSearchParams();
   if (params?.resolution != null) searchParams.set("resolution", String(params?.resolution));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/authenticity/alerts?${queryString}` : `/api/projects/hb-product-center/authenticity/alerts`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3319,8 +3787,8 @@ export const hb_listVerifications = async (params?: Hb_listVerificationsParams, 
   const searchParams = new URLSearchParams();
   if (params?.status != null) searchParams.set("status", String(params?.status));
   if (params?.requester_type != null) searchParams.set("requester_type", String(params?.requester_type));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/authenticity/verifications?${queryString}` : `/api/projects/hb-product-center/authenticity/verifications`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3398,59 +3866,6 @@ export function useHb_sendMasChatMessage(options?: { mutation?: UseMutationOptio
   return useMutation({ mutationFn: (data) => hb_sendMasChatMessage(data), ...options?.mutation });
 }
 
-export const hb_createChatSession = async (data: HbChatSessionCreate, options?: RequestInit): Promise<{ data: HbChatSessionOut }> => {
-  const res = await fetch("/api/projects/hb-product-center/chat/sessions", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
-  if (!res.ok) {
-    const body = await res.text();
-    let parsed: unknown;
-    try { parsed = JSON.parse(body); } catch { parsed = body; }
-    throw new ApiError(res.status, res.statusText, parsed);
-  }
-  return { data: await res.json() };
-};
-
-export function useHb_createChatSession(options?: { mutation?: UseMutationOptions<{ data: HbChatSessionOut }, ApiError, HbChatSessionCreate> }) {
-  return useMutation({ mutationFn: (data) => hb_createChatSession(data), ...options?.mutation });
-}
-
-export const hb_getChatMessages = async (params: Hb_getChatMessagesParams, options?: RequestInit): Promise<{ data: HbChatMessageOut[] }> => {
-  const res = await fetch(`/api/projects/hb-product-center/chat/sessions/${params.session_id}/messages`, { ...options, method: "GET" });
-  if (!res.ok) {
-    const body = await res.text();
-    let parsed: unknown;
-    try { parsed = JSON.parse(body); } catch { parsed = body; }
-    throw new ApiError(res.status, res.statusText, parsed);
-  }
-  return { data: await res.json() };
-};
-
-export const hb_getChatMessagesKey = (params?: Hb_getChatMessagesParams) => {
-  return ["/api/projects/hb-product-center/chat/sessions/{session_id}/messages", params] as const;
-};
-
-export function useHb_getChatMessages<TData = { data: HbChatMessageOut[] }>(options: { params: Hb_getChatMessagesParams; query?: Omit<UseQueryOptions<{ data: HbChatMessageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
-  return useQuery({ queryKey: hb_getChatMessagesKey(options.params), queryFn: () => hb_getChatMessages(options.params), ...options?.query });
-}
-
-export function useHb_getChatMessagesSuspense<TData = { data: HbChatMessageOut[] }>(options: { params: Hb_getChatMessagesParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbChatMessageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
-  return useSuspenseQuery({ queryKey: hb_getChatMessagesKey(options.params), queryFn: () => hb_getChatMessages(options.params), ...options?.query });
-}
-
-export const hb_sendChatMessage = async (params: Hb_sendChatMessageParams, data: HbChatMessageIn, options?: RequestInit): Promise<{ data: HbChatMessageOut }> => {
-  const res = await fetch(`/api/projects/hb-product-center/chat/sessions/${params.session_id}/messages`, { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
-  if (!res.ok) {
-    const body = await res.text();
-    let parsed: unknown;
-    try { parsed = JSON.parse(body); } catch { parsed = body; }
-    throw new ApiError(res.status, res.statusText, parsed);
-  }
-  return { data: await res.json() };
-};
-
-export function useHb_sendChatMessage(options?: { mutation?: UseMutationOptions<{ data: HbChatMessageOut }, ApiError, { params: Hb_sendChatMessageParams; data: HbChatMessageIn }> }) {
-  return useMutation({ mutationFn: (vars) => hb_sendChatMessage(vars.params, vars.data), ...options?.mutation });
-}
-
 export const hb_getDashboardSummary = async (options?: RequestInit): Promise<{ data: HbDashboardSummary }> => {
   const res = await fetch("/api/projects/hb-product-center/dashboard/summary", { ...options, method: "GET" });
   if (!res.ok) {
@@ -3526,8 +3941,8 @@ export const hb_listProducts = async (params?: Hb_listProductsParams, options?: 
   if (params?.collection != null) searchParams.set("collection", String(params?.collection));
   if (params?.season != null) searchParams.set("season", String(params?.season));
   if (params?.search != null) searchParams.set("search", String(params?.search));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/products?${queryString}` : `/api/projects/hb-product-center/products`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3602,8 +4017,8 @@ export const hb_listInspections = async (params?: Hb_listInspectionsParams, opti
   const searchParams = new URLSearchParams();
   if (params?.status != null) searchParams.set("status", String(params?.status));
   if (params?.product_id != null) searchParams.set("product_id", String(params?.product_id));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/quality/inspections?${queryString}` : `/api/projects/hb-product-center/quality/inspections`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3745,8 +4160,8 @@ export function useHb_getRecognitionImageSuspense<TData = { data: unknown }>(opt
 export const hb_listRecognitionJobs = async (params?: Hb_listRecognitionJobsParams, options?: RequestInit): Promise<{ data: HbRecognitionJobOut[] }> => {
   const searchParams = new URLSearchParams();
   if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/recognition/jobs?${queryString}` : `/api/projects/hb-product-center/recognition/jobs`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3844,8 +4259,8 @@ export const hb_listSupplyChainEvents = async (params?: Hb_listSupplyChainEvents
   if (params?.product_id != null) searchParams.set("product_id", String(params?.product_id));
   if (params?.event_type != null) searchParams.set("event_type", String(params?.event_type));
   if (params?.country != null) searchParams.set("country", String(params?.country));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/supply-chain/events?${queryString}` : `/api/projects/hb-product-center/supply-chain/events`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3895,8 +4310,8 @@ export function useHb_getProductJourneySuspense<TData = { data: HbProductJourney
 
 export const hb_listSustainabilityMetrics = async (params?: Hb_listSustainabilityMetricsParams, options?: RequestInit): Promise<{ data: HbSustainabilityMetricOut[] }> => {
   const searchParams = new URLSearchParams();
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/supply-chain/sustainability?${queryString}` : `/api/projects/hb-product-center/supply-chain/sustainability`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -4524,6 +4939,8 @@ export function useVh_get_current_readingSuspense<TData = { data: VhEnergyReadin
 export const vh_get_energy_readings = async (params: Vh_get_energy_readingsParams, options?: RequestInit): Promise<{ data: VhEnergyReadingOut[] }> => {
   const searchParams = new URLSearchParams();
   if (params?.hours != null) searchParams.set("hours", String(params?.hours));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/vi-home-one/energy/households/${params.household_id}/readings?${queryString}` : `/api/projects/vi-home-one/energy/households/${params.household_id}/readings`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -4775,6 +5192,8 @@ export const vh_list_tickets = async (params?: Vh_list_ticketsParams, options?: 
   const searchParams = new URLSearchParams();
   if (params?.household_id != null) searchParams.set("household_id", String(params?.household_id));
   if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/vi-home-one/tickets?${queryString}` : `/api/projects/vi-home-one/tickets`;
   const res = await fetch(url, { ...options, method: "GET" });

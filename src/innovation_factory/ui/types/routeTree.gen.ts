@@ -18,11 +18,13 @@ import { Route as ProjectsViHomeOneRouteRouteImport } from './../routes/projects
 import { Route as ProjectsMolAsmCockpitRouteRouteImport } from './../routes/projects/mol-asm-cockpit/route'
 import { Route as ProjectsHbProductCenterRouteRouteImport } from './../routes/projects/hb-product-center/route'
 import { Route as ProjectsBshHomeConnectRouteRouteImport } from './../routes/projects/bsh-home-connect/route'
+import { Route as ProjectsAecoHubRouteRouteImport } from './../routes/projects/aeco-hub/route'
 import { Route as ProjectsAdtechIntelligenceRouteRouteImport } from './../routes/projects/adtech-intelligence/route'
 import { Route as ProjectsViHomeOneIndexRouteImport } from './../routes/projects/vi-home-one/index'
 import { Route as ProjectsMolAsmCockpitIndexRouteImport } from './../routes/projects/mol-asm-cockpit/index'
 import { Route as ProjectsHbProductCenterIndexRouteImport } from './../routes/projects/hb-product-center/index'
 import { Route as ProjectsBshHomeConnectIndexRouteImport } from './../routes/projects/bsh-home-connect/index'
+import { Route as ProjectsAecoHubIndexRouteImport } from './../routes/projects/aeco-hub/index'
 import { Route as ProjectsAdtechIntelligenceIndexRouteImport } from './../routes/projects/adtech-intelligence/index'
 import { Route as ProjectsViHomeOneProfileRouteImport } from './../routes/projects/vi-home-one/profile'
 import { Route as ProjectsMolAsmCockpitHomeRouteImport } from './../routes/projects/mol-asm-cockpit/home'
@@ -104,6 +106,11 @@ const ProjectsBshHomeConnectRouteRoute =
     path: '/projects/bsh-home-connect',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProjectsAecoHubRouteRoute = ProjectsAecoHubRouteRouteImport.update({
+  id: '/projects/aeco-hub',
+  path: '/projects/aeco-hub',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsAdtechIntelligenceRouteRoute =
   ProjectsAdtechIntelligenceRouteRouteImport.update({
     id: '/projects/adtech-intelligence',
@@ -133,6 +140,11 @@ const ProjectsBshHomeConnectIndexRoute =
     path: '/',
     getParentRoute: () => ProjectsBshHomeConnectRouteRoute,
   } as any)
+const ProjectsAecoHubIndexRoute = ProjectsAecoHubIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProjectsAecoHubRouteRoute,
+} as any)
 const ProjectsAdtechIntelligenceIndexRoute =
   ProjectsAdtechIntelligenceIndexRouteImport.update({
     id: '/',
@@ -335,6 +347,7 @@ const ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
+  '/projects/aeco-hub': typeof ProjectsAecoHubRouteRouteWithChildren
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectRouteRouteWithChildren
   '/projects/hb-product-center': typeof ProjectsHbProductCenterRouteRouteWithChildren
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitRouteRouteWithChildren
@@ -357,6 +370,7 @@ export interface FileRoutesByFullPath {
   '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
   '/projects/adtech-intelligence/': typeof ProjectsAdtechIntelligenceIndexRoute
+  '/projects/aeco-hub/': typeof ProjectsAecoHubIndexRoute
   '/projects/bsh-home-connect/': typeof ProjectsBshHomeConnectIndexRoute
   '/projects/hb-product-center/': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit/': typeof ProjectsMolAsmCockpitIndexRoute
@@ -400,6 +414,7 @@ export interface FileRoutesByTo {
   '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
   '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceIndexRoute
+  '/projects/aeco-hub': typeof ProjectsAecoHubIndexRoute
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectIndexRoute
   '/projects/hb-product-center': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitIndexRoute
@@ -428,6 +443,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_sidebar': typeof SidebarRouteRouteWithChildren
   '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
+  '/projects/aeco-hub': typeof ProjectsAecoHubRouteRouteWithChildren
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectRouteRouteWithChildren
   '/projects/hb-product-center': typeof ProjectsHbProductCenterRouteRouteWithChildren
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitRouteRouteWithChildren
@@ -450,6 +466,7 @@ export interface FileRoutesById {
   '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
   '/projects/adtech-intelligence/': typeof ProjectsAdtechIntelligenceIndexRoute
+  '/projects/aeco-hub/': typeof ProjectsAecoHubIndexRoute
   '/projects/bsh-home-connect/': typeof ProjectsBshHomeConnectIndexRoute
   '/projects/hb-product-center/': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit/': typeof ProjectsMolAsmCockpitIndexRoute
@@ -478,6 +495,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/projects/adtech-intelligence'
+    | '/projects/aeco-hub'
     | '/projects/bsh-home-connect'
     | '/projects/hb-product-center'
     | '/projects/mol-asm-cockpit'
@@ -500,6 +518,7 @@ export interface FileRouteTypes {
     | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
     | '/projects/adtech-intelligence/'
+    | '/projects/aeco-hub/'
     | '/projects/bsh-home-connect/'
     | '/projects/hb-product-center/'
     | '/projects/mol-asm-cockpit/'
@@ -543,6 +562,7 @@ export interface FileRouteTypes {
     | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
     | '/projects/adtech-intelligence'
+    | '/projects/aeco-hub'
     | '/projects/bsh-home-connect'
     | '/projects/hb-product-center'
     | '/projects/mol-asm-cockpit'
@@ -570,6 +590,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_sidebar'
     | '/projects/adtech-intelligence'
+    | '/projects/aeco-hub'
     | '/projects/bsh-home-connect'
     | '/projects/hb-product-center'
     | '/projects/mol-asm-cockpit'
@@ -592,6 +613,7 @@ export interface FileRouteTypes {
     | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
     | '/projects/adtech-intelligence/'
+    | '/projects/aeco-hub/'
     | '/projects/bsh-home-connect/'
     | '/projects/hb-product-center/'
     | '/projects/mol-asm-cockpit/'
@@ -620,6 +642,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SidebarRouteRoute: typeof SidebarRouteRouteWithChildren
   ProjectsAdtechIntelligenceRouteRoute: typeof ProjectsAdtechIntelligenceRouteRouteWithChildren
+  ProjectsAecoHubRouteRoute: typeof ProjectsAecoHubRouteRouteWithChildren
   ProjectsBshHomeConnectRouteRoute: typeof ProjectsBshHomeConnectRouteRouteWithChildren
   ProjectsHbProductCenterRouteRoute: typeof ProjectsHbProductCenterRouteRouteWithChildren
   ProjectsMolAsmCockpitRouteRoute: typeof ProjectsMolAsmCockpitRouteRouteWithChildren
@@ -692,6 +715,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsBshHomeConnectRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/aeco-hub': {
+      id: '/projects/aeco-hub'
+      path: '/projects/aeco-hub'
+      fullPath: '/projects/aeco-hub'
+      preLoaderRoute: typeof ProjectsAecoHubRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects/adtech-intelligence': {
       id: '/projects/adtech-intelligence'
       path: '/projects/adtech-intelligence'
@@ -726,6 +756,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/bsh-home-connect/'
       preLoaderRoute: typeof ProjectsBshHomeConnectIndexRouteImport
       parentRoute: typeof ProjectsBshHomeConnectRouteRoute
+    }
+    '/projects/aeco-hub/': {
+      id: '/projects/aeco-hub/'
+      path: '/'
+      fullPath: '/projects/aeco-hub/'
+      preLoaderRoute: typeof ProjectsAecoHubIndexRouteImport
+      parentRoute: typeof ProjectsAecoHubRouteRoute
     }
     '/projects/adtech-intelligence/': {
       id: '/projects/adtech-intelligence/'
@@ -1004,6 +1041,17 @@ const ProjectsAdtechIntelligenceRouteRouteWithChildren =
     ProjectsAdtechIntelligenceRouteRouteChildren,
   )
 
+interface ProjectsAecoHubRouteRouteChildren {
+  ProjectsAecoHubIndexRoute: typeof ProjectsAecoHubIndexRoute
+}
+
+const ProjectsAecoHubRouteRouteChildren: ProjectsAecoHubRouteRouteChildren = {
+  ProjectsAecoHubIndexRoute: ProjectsAecoHubIndexRoute,
+}
+
+const ProjectsAecoHubRouteRouteWithChildren =
+  ProjectsAecoHubRouteRoute._addFileChildren(ProjectsAecoHubRouteRouteChildren)
+
 interface ProjectsBshHomeConnectRouteRouteChildren {
   ProjectsBshHomeConnectDashboardRoute: typeof ProjectsBshHomeConnectDashboardRoute
   ProjectsBshHomeConnectProfileRoute: typeof ProjectsBshHomeConnectProfileRoute
@@ -1148,6 +1196,7 @@ const rootRouteChildren: RootRouteChildren = {
   SidebarRouteRoute: SidebarRouteRouteWithChildren,
   ProjectsAdtechIntelligenceRouteRoute:
     ProjectsAdtechIntelligenceRouteRouteWithChildren,
+  ProjectsAecoHubRouteRoute: ProjectsAecoHubRouteRouteWithChildren,
   ProjectsBshHomeConnectRouteRoute:
     ProjectsBshHomeConnectRouteRouteWithChildren,
   ProjectsHbProductCenterRouteRoute:

@@ -7,6 +7,7 @@ from .projects.bsh_home_connect.seed import seed_bsh_data
 from .projects.mol_asm_cockpit.seed import seed_mac_data
 from .projects.adtech_intelligence.seed import seed_at_data
 from .projects.hb_product_center.seed import seed_hb_data
+from .projects.aeco_hub.seed import seed_aeco_data
 from .logger import logger
 
 
@@ -27,6 +28,7 @@ def check_and_seed_if_empty(runtime: Runtime):
                 seed_mac_data(session)
                 seed_at_data(session)
                 seed_hb_data(session)
+                seed_aeco_data(session)
                 session.commit()
                 return
         except Exception as e:
@@ -41,6 +43,7 @@ def check_and_seed_if_empty(runtime: Runtime):
         seed_mac_data(session)
         seed_at_data(session)
         seed_hb_data(session)
+        seed_aeco_data(session)
 
         session.commit()
 
@@ -89,6 +92,14 @@ def _seed_projects(session: Session):
             "company": "HB",
             "icon": "ScanSearch",
             "color": "#1a1a1a",
+        },
+        {
+            "slug": "aeco-hub",
+            "name": "AECO Hub",
+            "description": "Building lifecycle digital-twin platform for the AECO industry. Connects BIM geometry, construction progress, IoT sensor feeds, and facility management on a single Databricks Lakehouse.",
+            "company": "AECO",
+            "icon": "Building2",
+            "color": "#F59E0B",
         },
     ]
 
