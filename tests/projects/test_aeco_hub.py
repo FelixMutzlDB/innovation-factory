@@ -418,6 +418,86 @@ class TestPhase2Twin:
 
 
 # ---------------------------------------------------------------------------
+# Phase 5 — relationships graph + force-directed view backend
+# ---------------------------------------------------------------------------
+
+
+class TestPhase5Relationships:
+    def test_graph_returns_nodes_and_edges(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/relationships")
+        assert r.status_code == 200
+        graph = r.json()
+        assert graph["project_id"] == pid
+        assert len(graph["edges"]) > 0
+        assert len(graph["nodes"]) > 0
+        # Every edge's source and target must resolve to a node in the response
+        node_ids = {n["id"] for n in graph["nodes"]}
+        for e in graph["edges"]:
+            assert e["source"] in node_ids, f"orphan edge source: {e['source']}"
+            assert e["target"] in node_ids, f"orphan edge target: {e['target']}"
+
+    def test_relationships_pagination_caps_at_max(self, client):
+        """Regression (plan §13): the relationships endpoint must not return
+        an unbounded edge list. ``limit`` must be capped at MAX_EDGES so the
+        front-end never has to handle more than 1000 edges per response."""
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        # Try to ask for way more than the cap — FastAPI's Query(le=...) should reject
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/relationships?limit=100000")
+        assert r.status_code == 422, "limit > MAX_EDGES must be rejected"
+
+    def test_relationships_truncated_flag(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/relationships?limit=1")
+        graph = r.json()
+        assert graph["total_edges"] >= 1
+        if graph["total_edges"] > 1:
+            assert graph["truncated"] is True
+            assert len(graph["edges"]) == 1
+
+    def test_relationships_filter_by_type(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(
+            f"/api/projects/aeco-hub/projects/{pid}/relationships?relationship_type=contains"
+        )
+        graph = r.json()
+        for e in graph["edges"]:
+            assert e["relationship_type"] == "contains"
+
+    def test_relationships_404(self, client):
+        r = client.get("/api/projects/aeco-hub/projects/999999/relationships")
+        assert r.status_code == 404
+
+
+class TestPhase5Marketplace:
+    def test_list_tools(self, client):
+        seed_aeco_data_via_client(client)
+        r = client.get("/api/projects/aeco-hub/tools")
+        assert r.status_code == 200
+        tools = r.json()
+        assert len(tools) > 0
+        # Every tool must be assigned to a known lifecycle segment
+        valid_segments = {"design", "qa_qc", "requirements", "build", "operate", "visualize"}
+        for t in tools:
+            assert t["lifecycle_segment"] in valid_segments
+
+    def test_marketplace_apps_join_partner_name(self, client):
+        seed_aeco_data_via_client(client)
+        r = client.get("/api/projects/aeco-hub/marketplace/apps")
+        assert r.status_code == 200
+        apps = r.json()
+        assert len(apps) > 0
+        # The partner_name field must always be populated (regression for
+        # missing JOIN — without the JOIN the field comes through empty).
+        for app in apps:
+            assert app["partner_name"], f"Missing partner_name on app {app['id']}"
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 

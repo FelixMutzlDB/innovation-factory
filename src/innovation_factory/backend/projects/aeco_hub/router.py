@@ -11,7 +11,7 @@ from .databricks_config import (
     STANDARDS_COMPLIANCE_KA_ENDPOINT,
     WORKSPACE_URL,
 )
-from .routers import build, chat, design, documents, issues, marketplace, operate, projects
+from .routers import build, chat, design, documents, issues, marketplace, operate, projects, relationships
 
 router = APIRouter(tags=["aeco-hub"])
 
@@ -22,6 +22,7 @@ router.include_router(design.router)
 router.include_router(build.router)
 router.include_router(operate.router)
 router.include_router(marketplace.router)
+router.include_router(relationships.router)
 router.include_router(chat.router)
 
 

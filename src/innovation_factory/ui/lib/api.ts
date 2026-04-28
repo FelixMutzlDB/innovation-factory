@@ -199,6 +199,19 @@ export const AecoProjectStatus = {
 
 export type AecoProjectStatus = (typeof AecoProjectStatus)[keyof typeof AecoProjectStatus];
 
+export const AecoRelationshipType = {
+  contains: "contains",
+  feeds_data_to: "feeds_data_to",
+  depends_on: "depends_on",
+  maintained_by: "maintained_by",
+  designed_by: "designed_by",
+  supplied_by: "supplied_by",
+  monitors: "monitors",
+  controls: "controls",
+} as const;
+
+export type AecoRelationshipType = (typeof AecoRelationshipType)[keyof typeof AecoRelationshipType];
+
 export const AecoScheduleStatus = {
   not_started: "not_started",
   in_progress: "in_progress",
@@ -1122,6 +1135,29 @@ export interface DtProjectOut {
   start_date?: string | null;
   status: AecoProjectStatus;
   target_completion_date?: string | null;
+}
+
+export interface DtRelationshipEdgeOut {
+  id: number;
+  label: string;
+  relationship_type: AecoRelationshipType;
+  source: string;
+  target: string;
+}
+
+export interface DtRelationshipGraphOut {
+  edges: DtRelationshipEdgeOut[];
+  nodes: DtRelationshipNodeOut[];
+  project_id: number;
+  total_edges: number;
+  truncated: boolean;
+}
+
+export interface DtRelationshipNodeOut {
+  id: string;
+  label: string;
+  ref_id: number;
+  type: string;
 }
 
 export interface DtRoomRequirementOut {
@@ -2611,6 +2647,12 @@ export interface Aeco_listSpaceUtilizationParams {
   project_id: number;
   limit?: number;
   offset?: number;
+}
+
+export interface Aeco_getRelationshipGraphParams {
+  project_id: number;
+  limit?: number;
+  relationship_type?: AecoRelationshipType | null;
 }
 
 export interface Aeco_getProjectTwinParams {
@@ -4745,6 +4787,34 @@ export function useAeco_listSpaceUtilization<TData = { data: DtSpaceUtilizationO
 
 export function useAeco_listSpaceUtilizationSuspense<TData = { data: DtSpaceUtilizationOut[] }>(options: { params: Aeco_listSpaceUtilizationParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtSpaceUtilizationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: aeco_listSpaceUtilizationKey(options.params), queryFn: () => aeco_listSpaceUtilization(options.params), ...options?.query });
+}
+
+export const aeco_getRelationshipGraph = async (params: Aeco_getRelationshipGraphParams, options?: RequestInit): Promise<{ data: DtRelationshipGraphOut }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.relationship_type != null) searchParams.set("relationship_type", String(params?.relationship_type));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/relationships?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/relationships`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getRelationshipGraphKey = (params?: Aeco_getRelationshipGraphParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/relationships", params] as const;
+};
+
+export function useAeco_getRelationshipGraph<TData = { data: DtRelationshipGraphOut }>(options: { params: Aeco_getRelationshipGraphParams; query?: Omit<UseQueryOptions<{ data: DtRelationshipGraphOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getRelationshipGraphKey(options.params), queryFn: () => aeco_getRelationshipGraph(options.params), ...options?.query });
+}
+
+export function useAeco_getRelationshipGraphSuspense<TData = { data: DtRelationshipGraphOut }>(options: { params: Aeco_getRelationshipGraphParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtRelationshipGraphOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getRelationshipGraphKey(options.params), queryFn: () => aeco_getRelationshipGraph(options.params), ...options?.query });
 }
 
 export const aeco_getProjectTwin = async (params: Aeco_getProjectTwinParams, options?: RequestInit): Promise<{ data: DtTwinOut }> => {

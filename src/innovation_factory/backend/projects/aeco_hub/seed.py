@@ -1097,10 +1097,28 @@ def _seed_relationships(
     projects: dict[str, DtProject],
     buildings: dict[str, list[DtBuilding]],
 ) -> None:
-    """Seed a small graph of project-level relationships for the Phase 5 graph view."""
+    """Seed the relationship graph for the Phase 5 force-directed view.
+
+    Edge types covered:
+    - project → building (contains)
+    - building → floor (contains)
+    - floor → space (contains)  — sampled to ~3 spaces per floor to keep
+      the graph readable
+    - sensor → space (monitors) — operating projects only
+    - member → project (designed_by / supplied_by / maintained_by)
+
+    We deliberately skip a full 1:1 building → floor → space → asset graph
+    because for ~370 spaces × ~400 assets that quickly blows past the 1000
+    edge cap on the relationships API. Sampling produces a representative
+    topology that renders well in the force-directed view.
+    """
     for spec in PORTFOLIO:
         project = projects[spec["code"]]
+        assert project.id is not None
+
+        # Project → building (every building)
         for bldg in buildings[spec["code"]]:
+            assert bldg.id is not None
             session.add(DtRelationship(
                 project_id=project.id,
                 source_type="project",
@@ -1109,4 +1127,84 @@ def _seed_relationships(
                 target_id=bldg.id,
                 relationship_type=AecoRelationshipType.contains,
                 label=f"{project.name} contains {bldg.name}",
+            ))
+
+            # Building → floor (every floor in this building)
+            floors = list(session.exec(
+                select(DtFloor).where(DtFloor.building_id == bldg.id)
+            ).all())
+            for floor in floors:
+                assert floor.id is not None
+                session.add(DtRelationship(
+                    project_id=project.id,
+                    source_type="building",
+                    source_id=bldg.id,
+                    target_type="floor",
+                    target_id=floor.id,
+                    relationship_type=AecoRelationshipType.contains,
+                    label=f"{bldg.name} contains {floor.name}",
+                ))
+
+                # Floor → space (sample ~3 representative spaces)
+                spaces = list(session.exec(
+                    select(DtSpace).where(DtSpace.floor_id == floor.id).limit(3)
+                ).all())
+                for space in spaces:
+                    assert space.id is not None
+                    session.add(DtRelationship(
+                        project_id=project.id,
+                        source_type="floor",
+                        source_id=floor.id,
+                        target_type="space",
+                        target_id=space.id,
+                        relationship_type=AecoRelationshipType.contains,
+                        label=f"{floor.name} contains {space.name}",
+                    ))
+
+        # Sensor → space (operating projects only — sample to keep graph clean)
+        if spec["phase"] == AecoProjectPhase.operate:
+            sensors = list(session.exec(
+                select(DtSensorDevice)
+                .join(DtBuilding, DtSensorDevice.building_id == DtBuilding.id)  # type: ignore[invalid-argument-type]
+                .where(DtBuilding.project_id == project.id)
+                .where(DtSensorDevice.space_id.is_not(None))  # type: ignore[unresolved-attribute]
+                .limit(20)
+            ).all())
+            for sensor in sensors:
+                if sensor.space_id is None:
+                    continue
+                assert sensor.id is not None
+                session.add(DtRelationship(
+                    project_id=project.id,
+                    source_type="sensor",
+                    source_id=sensor.id,
+                    target_type="space",
+                    target_id=sensor.space_id,
+                    relationship_type=AecoRelationshipType.monitors,
+                    label=f"{sensor.sensor_code} monitors space {sensor.space_id}",
+                ))
+
+        # Member → project (supplied_by / designed_by / maintained_by)
+        members = list(session.exec(
+            select(DtProjectMember).where(DtProjectMember.project_id == project.id)
+        ).all())
+        for member in members:
+            rel_type = {
+                AecoMemberRole.architect: AecoRelationshipType.designed_by,
+                AecoMemberRole.engineer: AecoRelationshipType.designed_by,
+                AecoMemberRole.contractor: AecoRelationshipType.supplied_by,
+                AecoMemberRole.supplier: AecoRelationshipType.supplied_by,
+                AecoMemberRole.facility_manager: AecoRelationshipType.maintained_by,
+                AecoMemberRole.owner: AecoRelationshipType.depends_on,
+                AecoMemberRole.project_manager: AecoRelationshipType.depends_on,
+            }.get(member.role, AecoRelationshipType.depends_on)
+            assert member.id is not None
+            session.add(DtRelationship(
+                project_id=project.id,
+                source_type="member",
+                source_id=member.id,
+                target_type="project",
+                target_id=project.id,
+                relationship_type=rel_type,
+                label=f"{member.name} ({member.role.value})",
             ))

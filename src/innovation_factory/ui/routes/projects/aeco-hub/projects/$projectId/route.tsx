@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PhaseStepper } from "@/components/aeco-hub/phase-stepper";
 
 export const Route = createFileRoute("/projects/aeco-hub/projects/$projectId")({
   component: () => <ProjectLayout />,
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/projects/aeco-hub/projects/$projectId")({
 const TABS = [
   { slug: "", label: "Overview" },
   { slug: "twin", label: "Twin" },
+  { slug: "relationships", label: "Graph" },
   { slug: "design", label: "Design" },
   { slug: "build", label: "Build" },
   { slug: "operate", label: "Operate" },
@@ -79,6 +81,9 @@ function ProjectHeader({ projectId }: { projectId: number }) {
         {project.code} · {project.client_name} · {project.city}, {project.country}
       </p>
       <p className="text-sm text-muted-foreground max-w-3xl">{project.description}</p>
+      <div className="pt-3">
+        <PhaseStepper currentPhase={project.phase} />
+      </div>
       <div className="flex items-center gap-4 pt-2 text-xs">
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground">Progress</span>

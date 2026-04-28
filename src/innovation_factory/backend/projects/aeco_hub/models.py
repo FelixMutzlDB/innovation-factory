@@ -1115,6 +1115,43 @@ class DtPartnerIntegrationOut(BaseModel):
     notes: str
 
 
+# -- Relationships graph ----------------------------------------------
+
+
+class DtRelationshipNodeOut(BaseModel):
+    """One node in the force-directed graph view."""
+
+    id: str  # composite "{type}:{id}"
+    type: str
+    ref_id: int
+    label: str
+
+
+class DtRelationshipEdgeOut(BaseModel):
+    """One edge in the force-directed graph view."""
+
+    id: int
+    source: str  # composite "{source_type}:{source_id}"
+    target: str  # composite "{target_type}:{target_id}"
+    relationship_type: AecoRelationshipType
+    label: str
+
+
+class DtRelationshipGraphOut(BaseModel):
+    """Combined nodes + edges payload for the graph view.
+
+    Bounded by the API's pagination cap (max 1000 edges per response) so
+    the front-end never has to handle an unbounded payload — the regression
+    test ``test_relationships_pagination_caps_at_max`` enforces this cap.
+    """
+
+    project_id: int
+    nodes: list[DtRelationshipNodeOut]
+    edges: list[DtRelationshipEdgeOut]
+    total_edges: int  # the unbounded count, so the UI can show "showing N of M"
+    truncated: bool
+
+
 # -- Live sensor readings (synthesized; not from UC) ------------------
 
 

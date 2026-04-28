@@ -64,6 +64,7 @@ import { Route as ProjectsAecoHubProjectsProjectIdRouteRouteImport } from './../
 import { Route as ProjectsAecoHubProjectsProjectIdIndexRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/index'
 import { Route as ProjectsViHomeOneHouseholdsHouseholdIdHistoryRouteImport } from './../routes/projects/vi-home-one/households/$householdId.history'
 import { Route as ProjectsAecoHubProjectsProjectIdTwinRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/twin'
+import { Route as ProjectsAecoHubProjectsProjectIdRelationshipsRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/relationships'
 import { Route as ProjectsAecoHubProjectsProjectIdOperateRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/operate'
 import { Route as ProjectsAecoHubProjectsProjectIdIssuesRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/issues'
 import { Route as ProjectsAecoHubProjectsProjectIdDocumentsRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/documents'
@@ -388,6 +389,12 @@ const ProjectsAecoHubProjectsProjectIdTwinRoute =
     path: '/twin',
     getParentRoute: () => ProjectsAecoHubProjectsProjectIdRouteRoute,
   } as any)
+const ProjectsAecoHubProjectsProjectIdRelationshipsRoute =
+  ProjectsAecoHubProjectsProjectIdRelationshipsRouteImport.update({
+    id: '/relationships',
+    path: '/relationships',
+    getParentRoute: () => ProjectsAecoHubProjectsProjectIdRouteRoute,
+  } as any)
 const ProjectsAecoHubProjectsProjectIdOperateRoute =
   ProjectsAecoHubProjectsProjectIdOperateRouteImport.update({
     id: '/operate',
@@ -476,6 +483,7 @@ export interface FileRoutesByFullPath {
   '/projects/aeco-hub/projects/$projectId/documents': typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
   '/projects/aeco-hub/projects/$projectId/issues': typeof ProjectsAecoHubProjectsProjectIdIssuesRoute
   '/projects/aeco-hub/projects/$projectId/operate': typeof ProjectsAecoHubProjectsProjectIdOperateRoute
+  '/projects/aeco-hub/projects/$projectId/relationships': typeof ProjectsAecoHubProjectsProjectIdRelationshipsRoute
   '/projects/aeco-hub/projects/$projectId/twin': typeof ProjectsAecoHubProjectsProjectIdTwinRoute
   '/projects/vi-home-one/households/$householdId/history': typeof ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute
   '/projects/aeco-hub/projects/$projectId/': typeof ProjectsAecoHubProjectsProjectIdIndexRoute
@@ -530,6 +538,7 @@ export interface FileRoutesByTo {
   '/projects/aeco-hub/projects/$projectId/documents': typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
   '/projects/aeco-hub/projects/$projectId/issues': typeof ProjectsAecoHubProjectsProjectIdIssuesRoute
   '/projects/aeco-hub/projects/$projectId/operate': typeof ProjectsAecoHubProjectsProjectIdOperateRoute
+  '/projects/aeco-hub/projects/$projectId/relationships': typeof ProjectsAecoHubProjectsProjectIdRelationshipsRoute
   '/projects/aeco-hub/projects/$projectId/twin': typeof ProjectsAecoHubProjectsProjectIdTwinRoute
   '/projects/vi-home-one/households/$householdId/history': typeof ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute
   '/projects/aeco-hub/projects/$projectId': typeof ProjectsAecoHubProjectsProjectIdIndexRoute
@@ -593,6 +602,7 @@ export interface FileRoutesById {
   '/projects/aeco-hub/projects/$projectId/documents': typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
   '/projects/aeco-hub/projects/$projectId/issues': typeof ProjectsAecoHubProjectsProjectIdIssuesRoute
   '/projects/aeco-hub/projects/$projectId/operate': typeof ProjectsAecoHubProjectsProjectIdOperateRoute
+  '/projects/aeco-hub/projects/$projectId/relationships': typeof ProjectsAecoHubProjectsProjectIdRelationshipsRoute
   '/projects/aeco-hub/projects/$projectId/twin': typeof ProjectsAecoHubProjectsProjectIdTwinRoute
   '/projects/vi-home-one/households/$householdId/history': typeof ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute
   '/projects/aeco-hub/projects/$projectId/': typeof ProjectsAecoHubProjectsProjectIdIndexRoute
@@ -656,6 +666,7 @@ export interface FileRouteTypes {
     | '/projects/aeco-hub/projects/$projectId/documents'
     | '/projects/aeco-hub/projects/$projectId/issues'
     | '/projects/aeco-hub/projects/$projectId/operate'
+    | '/projects/aeco-hub/projects/$projectId/relationships'
     | '/projects/aeco-hub/projects/$projectId/twin'
     | '/projects/vi-home-one/households/$householdId/history'
     | '/projects/aeco-hub/projects/$projectId/'
@@ -710,6 +721,7 @@ export interface FileRouteTypes {
     | '/projects/aeco-hub/projects/$projectId/documents'
     | '/projects/aeco-hub/projects/$projectId/issues'
     | '/projects/aeco-hub/projects/$projectId/operate'
+    | '/projects/aeco-hub/projects/$projectId/relationships'
     | '/projects/aeco-hub/projects/$projectId/twin'
     | '/projects/vi-home-one/households/$householdId/history'
     | '/projects/aeco-hub/projects/$projectId'
@@ -772,6 +784,7 @@ export interface FileRouteTypes {
     | '/projects/aeco-hub/projects/$projectId/documents'
     | '/projects/aeco-hub/projects/$projectId/issues'
     | '/projects/aeco-hub/projects/$projectId/operate'
+    | '/projects/aeco-hub/projects/$projectId/relationships'
     | '/projects/aeco-hub/projects/$projectId/twin'
     | '/projects/vi-home-one/households/$householdId/history'
     | '/projects/aeco-hub/projects/$projectId/'
@@ -1176,6 +1189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsAecoHubProjectsProjectIdTwinRouteImport
       parentRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRoute
     }
+    '/projects/aeco-hub/projects/$projectId/relationships': {
+      id: '/projects/aeco-hub/projects/$projectId/relationships'
+      path: '/relationships'
+      fullPath: '/projects/aeco-hub/projects/$projectId/relationships'
+      preLoaderRoute: typeof ProjectsAecoHubProjectsProjectIdRelationshipsRouteImport
+      parentRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRoute
+    }
     '/projects/aeco-hub/projects/$projectId/operate': {
       id: '/projects/aeco-hub/projects/$projectId/operate'
       path: '/operate'
@@ -1263,6 +1283,7 @@ interface ProjectsAecoHubProjectsProjectIdRouteRouteChildren {
   ProjectsAecoHubProjectsProjectIdDocumentsRoute: typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
   ProjectsAecoHubProjectsProjectIdIssuesRoute: typeof ProjectsAecoHubProjectsProjectIdIssuesRoute
   ProjectsAecoHubProjectsProjectIdOperateRoute: typeof ProjectsAecoHubProjectsProjectIdOperateRoute
+  ProjectsAecoHubProjectsProjectIdRelationshipsRoute: typeof ProjectsAecoHubProjectsProjectIdRelationshipsRoute
   ProjectsAecoHubProjectsProjectIdTwinRoute: typeof ProjectsAecoHubProjectsProjectIdTwinRoute
   ProjectsAecoHubProjectsProjectIdIndexRoute: typeof ProjectsAecoHubProjectsProjectIdIndexRoute
 }
@@ -1279,6 +1300,8 @@ const ProjectsAecoHubProjectsProjectIdRouteRouteChildren: ProjectsAecoHubProject
       ProjectsAecoHubProjectsProjectIdIssuesRoute,
     ProjectsAecoHubProjectsProjectIdOperateRoute:
       ProjectsAecoHubProjectsProjectIdOperateRoute,
+    ProjectsAecoHubProjectsProjectIdRelationshipsRoute:
+      ProjectsAecoHubProjectsProjectIdRelationshipsRoute,
     ProjectsAecoHubProjectsProjectIdTwinRoute:
       ProjectsAecoHubProjectsProjectIdTwinRoute,
     ProjectsAecoHubProjectsProjectIdIndexRoute:
