@@ -36,6 +36,10 @@ from ..models import (
     DtProjectOut,
     DtSpace,
     DtSpaceOut,
+    DtTwinBuildingOut,
+    DtTwinFloorOut,
+    DtTwinOut,
+    DtTwinSpaceOut,
 )
 
 router = APIRouter(tags=["aeco-hub"])
@@ -173,6 +177,71 @@ def get_project_kpis(project_id: int, db: SessionDep) -> DtProjectKpiOut:
         budget_eur=project.budget_eur,
         actual_cost_eur=project.actual_cost_eur,
         cost_variance_pct=cost_variance_pct,
+    )
+
+
+@router.get(
+    "/projects/{project_id}/twin",
+    response_model=DtTwinOut,
+    operation_id="aeco_getProjectTwin",
+)
+def get_project_twin(project_id: int, db: SessionDep) -> DtTwinOut:
+    """Full spatial hierarchy for the twin view (project → building → floor → space).
+
+    Single-shot endpoint to avoid N+1 queries from the tree UI. Bounded by
+    the seed-data caps (~3 buildings × ~6 floors × ~14 spaces ≤ 250 nodes).
+    """
+    project = db.get(DtProject, project_id)
+    if not project:
+        raise HTTPException(404, detail="Project not found")
+
+    buildings = list(
+        db.exec(select(DtBuilding).where(DtBuilding.project_id == project_id).order_by(DtBuilding.name)).all()
+    )
+    out_buildings: list[DtTwinBuildingOut] = []
+    for bldg in buildings:
+        floors = list(
+            db.exec(select(DtFloor).where(DtFloor.building_id == bldg.id).order_by(DtFloor.level)).all()  # type: ignore[invalid-argument-type]
+        )
+        out_floors: list[DtTwinFloorOut] = []
+        for floor in floors:
+            spaces = list(
+                db.exec(select(DtSpace).where(DtSpace.floor_id == floor.id).order_by(DtSpace.room_number)).all()
+            )
+            out_floors.append(
+                DtTwinFloorOut(
+                    id=floor.id or 0,
+                    name=floor.name,
+                    level=floor.level,
+                    area_sqm=floor.area_sqm,
+                    spaces=[
+                        DtTwinSpaceOut(
+                            id=s.id or 0,
+                            name=s.name,
+                            space_type=s.space_type,
+                            area_sqm=s.area_sqm,
+                            capacity=s.capacity,
+                            room_number=s.room_number,
+                        )
+                        for s in spaces
+                    ],
+                )
+            )
+        out_buildings.append(
+            DtTwinBuildingOut(
+                id=bldg.id or 0,
+                name=bldg.name,
+                building_type=bldg.building_type,
+                floor_count=bldg.floor_count,
+                gross_floor_area_sqm=bldg.gross_floor_area_sqm,
+                floors=out_floors,
+            )
+        )
+    return DtTwinOut(
+        project_id=project_id,
+        project_name=project.name,
+        project_phase=project.phase,
+        buildings=out_buildings,
     )
 
 

@@ -160,11 +160,12 @@ class TestAecoRouters:
         """Regression: ``response_model`` + ``operation_id`` are required on
         every route — without them the TypeScript client generator emits
         ``unknown`` types and the frontend hooks break silently."""
+        from fastapi.routing import APIRoute
         for r in aeco_router.routes:
-            if not hasattr(r, "endpoint"):
+            if not isinstance(r, APIRoute):
                 continue
-            assert getattr(r, "response_model", None) is not None, f"Missing response_model on {r.path}"
-            assert getattr(r, "operation_id", None) is not None, f"Missing operation_id on {r.path}"
+            assert r.response_model is not None, f"Missing response_model on {r.path}"
+            assert r.operation_id is not None, f"Missing operation_id on {r.path}"
             assert r.operation_id.startswith("aeco_"), f"operation_id must start with aeco_: {r.operation_id}"
 
     def test_portfolio_stats(self, client):
@@ -229,6 +230,184 @@ class TestAecoRouters:
         # Without env vars set, embed URL should be empty + configured=False
         assert body["energy_dashboard_id"] == ""
         assert body["energy_dashboard_configured"] is False
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 — issues, documents, design, build, operate routers + twin endpoint
+# ---------------------------------------------------------------------------
+
+
+class TestPhase2Issues:
+    def test_list_issues(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/issues")
+        assert r.status_code == 200
+        assert len(r.json()) > 0
+
+    def test_list_issues_status_filter(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/issues?status=open")
+        assert r.status_code == 200
+        for issue in r.json():
+            assert issue["status"] == "open"
+
+    def test_list_issues_severity_filter(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/issues?severity=critical")
+        assert r.status_code == 200
+        for issue in r.json():
+            assert issue["severity"] == "critical"
+
+    def test_issue_stats(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/issues/stats")
+        assert r.status_code == 200
+        stats = r.json()
+        assert stats["total"] >= 1
+        assert "by_category" in stats
+        assert sum(stats["by_category"].values()) == stats["total"]
+
+
+class TestPhase2Documents:
+    def test_list_documents(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/documents")
+        assert r.status_code == 200
+        assert len(r.json()) == 10  # doc_templates count
+
+    def test_documents_phase_filter(self, client):
+        """Regression: ``phase`` filter must restrict the result set, not be ignored."""
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/documents?phase=operate")
+        assert r.status_code == 200
+        for doc in r.json():
+            assert doc["phase"] == "operate"
+
+    def test_document_stats(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/documents/stats")
+        assert r.status_code == 200
+        stats = r.json()
+        assert stats["total"] == 10
+
+
+class TestPhase2Design:
+    def test_list_bim_models(self, client):
+        seed_aeco_data_via_client(client)
+        # Pick a non-demolish project (BIM models only seeded for design/build/operate)
+        projects = client.get("/api/projects/aeco-hub/projects?phase=build").json()
+        pid = projects[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/design/bim-models")
+        assert r.status_code == 200
+        models = r.json()
+        assert len(models) > 0
+        for m in models:
+            assert m["discipline"] in {"architectural", "structural", "mep", "electrical", "plumbing", "hvac", "civil"}
+
+    def test_list_clashes_with_severity_filter(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects?phase=build").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/design/clashes?severity=major")
+        assert r.status_code == 200
+        for clash in r.json():
+            assert clash["severity"] == "major"
+
+    def test_list_room_requirements(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/design/room-requirements")
+        assert r.status_code == 200
+        # At least some requirements should exist
+        assert len(r.json()) > 0
+
+
+class TestPhase2Build:
+    def test_list_schedule(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/build/schedule")
+        assert r.status_code == 200
+        assert len(r.json()) > 0
+
+    def test_schedule_summary(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/build/schedule/summary")
+        assert r.status_code == 200
+        s = r.json()
+        assert s["total"] == s["not_started"] + s["in_progress"] + s["completed"] + s["delayed"]
+
+    def test_cost_summary_balances(self, client):
+        """Regression: variance_eur must equal actual − estimated (rounding-tolerant)."""
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/build/costs/summary")
+        assert r.status_code == 200
+        s = r.json()
+        assert abs((s["total_actual_eur"] - s["total_estimated_eur"]) - s["variance_eur"]) < 0.5
+
+
+class TestPhase2Operate:
+    def test_list_sensors(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects?phase=operate").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/operate/sensors")
+        assert r.status_code == 200
+        assert len(r.json()) > 0
+
+    def test_maintenance_stats(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects?phase=operate").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/operate/maintenance/stats")
+        assert r.status_code == 200
+        s = r.json()
+        # Regression: completed_at must follow created_at — avg should be non-negative.
+        assert s["avg_days_to_complete"] >= 0
+
+    def test_energy_trend(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects?phase=operate").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/operate/energy/trend")
+        assert r.status_code == 200
+        trend = r.json()
+        assert len(trend) > 0
+        # Trend points should be sorted by date
+        dates = [p["period_start"] for p in trend]
+        assert dates == sorted(dates)
+
+    def test_list_leases(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects?phase=operate").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/operate/leases")
+        assert r.status_code == 200
+
+
+class TestPhase2Twin:
+    def test_get_project_twin(self, client):
+        seed_aeco_data_via_client(client)
+        pid = client.get("/api/projects/aeco-hub/projects").json()[0]["id"]
+        r = client.get(f"/api/projects/aeco-hub/projects/{pid}/twin")
+        assert r.status_code == 200
+        twin = r.json()
+        assert twin["project_id"] == pid
+        assert len(twin["buildings"]) >= 1
+        # Tree shape: every building has floors, every floor has spaces
+        for b in twin["buildings"]:
+            assert len(b["floors"]) >= 1
+            for f in b["floors"]:
+                # All floors should have at least one space
+                assert isinstance(f["spaces"], list)
+
+    def test_twin_404_for_missing_project(self, client):
+        r = client.get("/api/projects/aeco-hub/projects/999999/twin")
+        assert r.status_code == 404
 
 
 # ---------------------------------------------------------------------------

@@ -9,11 +9,16 @@ from .databricks_config import (
     PROJECT_ANALYTICS_GENIE_SPACE_ID,
     WORKSPACE_URL,
 )
-from .routers import projects
+from .routers import build, design, documents, issues, operate, projects
 
 router = APIRouter(tags=["aeco-hub"])
 
 router.include_router(projects.router)
+router.include_router(issues.router)
+router.include_router(documents.router)
+router.include_router(design.router)
+router.include_router(build.router)
+router.include_router(operate.router)
 
 
 class AecoDatabricksResourcesOut(BaseModel):

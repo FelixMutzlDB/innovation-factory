@@ -57,7 +57,15 @@ import { Route as ProjectsHbProductCenterQualityInspectionIdRouteImport } from '
 import { Route as ProjectsBshHomeConnectTicketsTicketIdRouteImport } from './../routes/projects/bsh-home-connect/tickets/$ticketId'
 import { Route as ProjectsBshHomeConnectDevicesRegisterRouteImport } from './../routes/projects/bsh-home-connect/devices/register'
 import { Route as ProjectsAdtechIntelligenceAnomaliesAnomalyIdRouteImport } from './../routes/projects/adtech-intelligence/anomalies/$anomalyId'
+import { Route as ProjectsAecoHubProjectsProjectIdRouteRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/route'
+import { Route as ProjectsAecoHubProjectsProjectIdIndexRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/index'
 import { Route as ProjectsViHomeOneHouseholdsHouseholdIdHistoryRouteImport } from './../routes/projects/vi-home-one/households/$householdId.history'
+import { Route as ProjectsAecoHubProjectsProjectIdTwinRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/twin'
+import { Route as ProjectsAecoHubProjectsProjectIdOperateRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/operate'
+import { Route as ProjectsAecoHubProjectsProjectIdIssuesRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/issues'
+import { Route as ProjectsAecoHubProjectsProjectIdDocumentsRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/documents'
+import { Route as ProjectsAecoHubProjectsProjectIdDesignRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/design'
+import { Route as ProjectsAecoHubProjectsProjectIdBuildRouteImport } from './../routes/projects/aeco-hub/projects/$projectId/build'
 
 const SidebarRouteRoute = SidebarRouteRouteImport.update({
   id: '/_sidebar',
@@ -337,11 +345,59 @@ const ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute =
     path: '/anomalies/$anomalyId',
     getParentRoute: () => ProjectsAdtechIntelligenceRouteRoute,
   } as any)
+const ProjectsAecoHubProjectsProjectIdRouteRoute =
+  ProjectsAecoHubProjectsProjectIdRouteRouteImport.update({
+    id: '/projects/$projectId',
+    path: '/projects/$projectId',
+    getParentRoute: () => ProjectsAecoHubRouteRoute,
+  } as any)
+const ProjectsAecoHubProjectsProjectIdIndexRoute =
+  ProjectsAecoHubProjectsProjectIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProjectsAecoHubProjectsProjectIdRouteRoute,
+  } as any)
 const ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute =
   ProjectsViHomeOneHouseholdsHouseholdIdHistoryRouteImport.update({
     id: '/history',
     path: '/history',
     getParentRoute: () => ProjectsViHomeOneHouseholdsHouseholdIdRoute,
+  } as any)
+const ProjectsAecoHubProjectsProjectIdTwinRoute =
+  ProjectsAecoHubProjectsProjectIdTwinRouteImport.update({
+    id: '/twin',
+    path: '/twin',
+    getParentRoute: () => ProjectsAecoHubProjectsProjectIdRouteRoute,
+  } as any)
+const ProjectsAecoHubProjectsProjectIdOperateRoute =
+  ProjectsAecoHubProjectsProjectIdOperateRouteImport.update({
+    id: '/operate',
+    path: '/operate',
+    getParentRoute: () => ProjectsAecoHubProjectsProjectIdRouteRoute,
+  } as any)
+const ProjectsAecoHubProjectsProjectIdIssuesRoute =
+  ProjectsAecoHubProjectsProjectIdIssuesRouteImport.update({
+    id: '/issues',
+    path: '/issues',
+    getParentRoute: () => ProjectsAecoHubProjectsProjectIdRouteRoute,
+  } as any)
+const ProjectsAecoHubProjectsProjectIdDocumentsRoute =
+  ProjectsAecoHubProjectsProjectIdDocumentsRouteImport.update({
+    id: '/documents',
+    path: '/documents',
+    getParentRoute: () => ProjectsAecoHubProjectsProjectIdRouteRoute,
+  } as any)
+const ProjectsAecoHubProjectsProjectIdDesignRoute =
+  ProjectsAecoHubProjectsProjectIdDesignRouteImport.update({
+    id: '/design',
+    path: '/design',
+    getParentRoute: () => ProjectsAecoHubProjectsProjectIdRouteRoute,
+  } as any)
+const ProjectsAecoHubProjectsProjectIdBuildRoute =
+  ProjectsAecoHubProjectsProjectIdBuildRouteImport.update({
+    id: '/build',
+    path: '/build',
+    getParentRoute: () => ProjectsAecoHubProjectsProjectIdRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -375,6 +431,7 @@ export interface FileRoutesByFullPath {
   '/projects/hb-product-center/': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit/': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one/': typeof ProjectsViHomeOneIndexRoute
+  '/projects/aeco-hub/projects/$projectId': typeof ProjectsAecoHubProjectsProjectIdRouteRouteWithChildren
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
@@ -392,7 +449,14 @@ export interface FileRoutesByFullPath {
   '/projects/vi-home-one/households/': typeof ProjectsViHomeOneHouseholdsIndexRoute
   '/projects/vi-home-one/neighborhood/': typeof ProjectsViHomeOneNeighborhoodIndexRoute
   '/projects/vi-home-one/support/': typeof ProjectsViHomeOneSupportIndexRoute
+  '/projects/aeco-hub/projects/$projectId/build': typeof ProjectsAecoHubProjectsProjectIdBuildRoute
+  '/projects/aeco-hub/projects/$projectId/design': typeof ProjectsAecoHubProjectsProjectIdDesignRoute
+  '/projects/aeco-hub/projects/$projectId/documents': typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
+  '/projects/aeco-hub/projects/$projectId/issues': typeof ProjectsAecoHubProjectsProjectIdIssuesRoute
+  '/projects/aeco-hub/projects/$projectId/operate': typeof ProjectsAecoHubProjectsProjectIdOperateRoute
+  '/projects/aeco-hub/projects/$projectId/twin': typeof ProjectsAecoHubProjectsProjectIdTwinRoute
   '/projects/vi-home-one/households/$householdId/history': typeof ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute
+  '/projects/aeco-hub/projects/$projectId/': typeof ProjectsAecoHubProjectsProjectIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -436,7 +500,14 @@ export interface FileRoutesByTo {
   '/projects/vi-home-one/households': typeof ProjectsViHomeOneHouseholdsIndexRoute
   '/projects/vi-home-one/neighborhood': typeof ProjectsViHomeOneNeighborhoodIndexRoute
   '/projects/vi-home-one/support': typeof ProjectsViHomeOneSupportIndexRoute
+  '/projects/aeco-hub/projects/$projectId/build': typeof ProjectsAecoHubProjectsProjectIdBuildRoute
+  '/projects/aeco-hub/projects/$projectId/design': typeof ProjectsAecoHubProjectsProjectIdDesignRoute
+  '/projects/aeco-hub/projects/$projectId/documents': typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
+  '/projects/aeco-hub/projects/$projectId/issues': typeof ProjectsAecoHubProjectsProjectIdIssuesRoute
+  '/projects/aeco-hub/projects/$projectId/operate': typeof ProjectsAecoHubProjectsProjectIdOperateRoute
+  '/projects/aeco-hub/projects/$projectId/twin': typeof ProjectsAecoHubProjectsProjectIdTwinRoute
   '/projects/vi-home-one/households/$householdId/history': typeof ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute
+  '/projects/aeco-hub/projects/$projectId': typeof ProjectsAecoHubProjectsProjectIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -471,6 +542,7 @@ export interface FileRoutesById {
   '/projects/hb-product-center/': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit/': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one/': typeof ProjectsViHomeOneIndexRoute
+  '/projects/aeco-hub/projects/$projectId': typeof ProjectsAecoHubProjectsProjectIdRouteRouteWithChildren
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
@@ -488,7 +560,14 @@ export interface FileRoutesById {
   '/projects/vi-home-one/households/': typeof ProjectsViHomeOneHouseholdsIndexRoute
   '/projects/vi-home-one/neighborhood/': typeof ProjectsViHomeOneNeighborhoodIndexRoute
   '/projects/vi-home-one/support/': typeof ProjectsViHomeOneSupportIndexRoute
+  '/projects/aeco-hub/projects/$projectId/build': typeof ProjectsAecoHubProjectsProjectIdBuildRoute
+  '/projects/aeco-hub/projects/$projectId/design': typeof ProjectsAecoHubProjectsProjectIdDesignRoute
+  '/projects/aeco-hub/projects/$projectId/documents': typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
+  '/projects/aeco-hub/projects/$projectId/issues': typeof ProjectsAecoHubProjectsProjectIdIssuesRoute
+  '/projects/aeco-hub/projects/$projectId/operate': typeof ProjectsAecoHubProjectsProjectIdOperateRoute
+  '/projects/aeco-hub/projects/$projectId/twin': typeof ProjectsAecoHubProjectsProjectIdTwinRoute
   '/projects/vi-home-one/households/$householdId/history': typeof ProjectsViHomeOneHouseholdsHouseholdIdHistoryRoute
+  '/projects/aeco-hub/projects/$projectId/': typeof ProjectsAecoHubProjectsProjectIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -523,6 +602,7 @@ export interface FileRouteTypes {
     | '/projects/hb-product-center/'
     | '/projects/mol-asm-cockpit/'
     | '/projects/vi-home-one/'
+    | '/projects/aeco-hub/projects/$projectId'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
@@ -540,7 +620,14 @@ export interface FileRouteTypes {
     | '/projects/vi-home-one/households/'
     | '/projects/vi-home-one/neighborhood/'
     | '/projects/vi-home-one/support/'
+    | '/projects/aeco-hub/projects/$projectId/build'
+    | '/projects/aeco-hub/projects/$projectId/design'
+    | '/projects/aeco-hub/projects/$projectId/documents'
+    | '/projects/aeco-hub/projects/$projectId/issues'
+    | '/projects/aeco-hub/projects/$projectId/operate'
+    | '/projects/aeco-hub/projects/$projectId/twin'
     | '/projects/vi-home-one/households/$householdId/history'
+    | '/projects/aeco-hub/projects/$projectId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -584,7 +671,14 @@ export interface FileRouteTypes {
     | '/projects/vi-home-one/households'
     | '/projects/vi-home-one/neighborhood'
     | '/projects/vi-home-one/support'
+    | '/projects/aeco-hub/projects/$projectId/build'
+    | '/projects/aeco-hub/projects/$projectId/design'
+    | '/projects/aeco-hub/projects/$projectId/documents'
+    | '/projects/aeco-hub/projects/$projectId/issues'
+    | '/projects/aeco-hub/projects/$projectId/operate'
+    | '/projects/aeco-hub/projects/$projectId/twin'
     | '/projects/vi-home-one/households/$householdId/history'
+    | '/projects/aeco-hub/projects/$projectId'
   id:
     | '__root__'
     | '/'
@@ -618,6 +712,7 @@ export interface FileRouteTypes {
     | '/projects/hb-product-center/'
     | '/projects/mol-asm-cockpit/'
     | '/projects/vi-home-one/'
+    | '/projects/aeco-hub/projects/$projectId'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
@@ -635,7 +730,14 @@ export interface FileRouteTypes {
     | '/projects/vi-home-one/households/'
     | '/projects/vi-home-one/neighborhood/'
     | '/projects/vi-home-one/support/'
+    | '/projects/aeco-hub/projects/$projectId/build'
+    | '/projects/aeco-hub/projects/$projectId/design'
+    | '/projects/aeco-hub/projects/$projectId/documents'
+    | '/projects/aeco-hub/projects/$projectId/issues'
+    | '/projects/aeco-hub/projects/$projectId/operate'
+    | '/projects/aeco-hub/projects/$projectId/twin'
     | '/projects/vi-home-one/households/$householdId/history'
+    | '/projects/aeco-hub/projects/$projectId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -988,12 +1090,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRouteImport
       parentRoute: typeof ProjectsAdtechIntelligenceRouteRoute
     }
+    '/projects/aeco-hub/projects/$projectId': {
+      id: '/projects/aeco-hub/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/aeco-hub/projects/$projectId'
+      preLoaderRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRouteImport
+      parentRoute: typeof ProjectsAecoHubRouteRoute
+    }
+    '/projects/aeco-hub/projects/$projectId/': {
+      id: '/projects/aeco-hub/projects/$projectId/'
+      path: '/'
+      fullPath: '/projects/aeco-hub/projects/$projectId/'
+      preLoaderRoute: typeof ProjectsAecoHubProjectsProjectIdIndexRouteImport
+      parentRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRoute
+    }
     '/projects/vi-home-one/households/$householdId/history': {
       id: '/projects/vi-home-one/households/$householdId/history'
       path: '/history'
       fullPath: '/projects/vi-home-one/households/$householdId/history'
       preLoaderRoute: typeof ProjectsViHomeOneHouseholdsHouseholdIdHistoryRouteImport
       parentRoute: typeof ProjectsViHomeOneHouseholdsHouseholdIdRoute
+    }
+    '/projects/aeco-hub/projects/$projectId/twin': {
+      id: '/projects/aeco-hub/projects/$projectId/twin'
+      path: '/twin'
+      fullPath: '/projects/aeco-hub/projects/$projectId/twin'
+      preLoaderRoute: typeof ProjectsAecoHubProjectsProjectIdTwinRouteImport
+      parentRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRoute
+    }
+    '/projects/aeco-hub/projects/$projectId/operate': {
+      id: '/projects/aeco-hub/projects/$projectId/operate'
+      path: '/operate'
+      fullPath: '/projects/aeco-hub/projects/$projectId/operate'
+      preLoaderRoute: typeof ProjectsAecoHubProjectsProjectIdOperateRouteImport
+      parentRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRoute
+    }
+    '/projects/aeco-hub/projects/$projectId/issues': {
+      id: '/projects/aeco-hub/projects/$projectId/issues'
+      path: '/issues'
+      fullPath: '/projects/aeco-hub/projects/$projectId/issues'
+      preLoaderRoute: typeof ProjectsAecoHubProjectsProjectIdIssuesRouteImport
+      parentRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRoute
+    }
+    '/projects/aeco-hub/projects/$projectId/documents': {
+      id: '/projects/aeco-hub/projects/$projectId/documents'
+      path: '/documents'
+      fullPath: '/projects/aeco-hub/projects/$projectId/documents'
+      preLoaderRoute: typeof ProjectsAecoHubProjectsProjectIdDocumentsRouteImport
+      parentRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRoute
+    }
+    '/projects/aeco-hub/projects/$projectId/design': {
+      id: '/projects/aeco-hub/projects/$projectId/design'
+      path: '/design'
+      fullPath: '/projects/aeco-hub/projects/$projectId/design'
+      preLoaderRoute: typeof ProjectsAecoHubProjectsProjectIdDesignRouteImport
+      parentRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRoute
+    }
+    '/projects/aeco-hub/projects/$projectId/build': {
+      id: '/projects/aeco-hub/projects/$projectId/build'
+      path: '/build'
+      fullPath: '/projects/aeco-hub/projects/$projectId/build'
+      preLoaderRoute: typeof ProjectsAecoHubProjectsProjectIdBuildRouteImport
+      parentRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRoute
     }
   }
 }
@@ -1041,12 +1199,48 @@ const ProjectsAdtechIntelligenceRouteRouteWithChildren =
     ProjectsAdtechIntelligenceRouteRouteChildren,
   )
 
+interface ProjectsAecoHubProjectsProjectIdRouteRouteChildren {
+  ProjectsAecoHubProjectsProjectIdBuildRoute: typeof ProjectsAecoHubProjectsProjectIdBuildRoute
+  ProjectsAecoHubProjectsProjectIdDesignRoute: typeof ProjectsAecoHubProjectsProjectIdDesignRoute
+  ProjectsAecoHubProjectsProjectIdDocumentsRoute: typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
+  ProjectsAecoHubProjectsProjectIdIssuesRoute: typeof ProjectsAecoHubProjectsProjectIdIssuesRoute
+  ProjectsAecoHubProjectsProjectIdOperateRoute: typeof ProjectsAecoHubProjectsProjectIdOperateRoute
+  ProjectsAecoHubProjectsProjectIdTwinRoute: typeof ProjectsAecoHubProjectsProjectIdTwinRoute
+  ProjectsAecoHubProjectsProjectIdIndexRoute: typeof ProjectsAecoHubProjectsProjectIdIndexRoute
+}
+
+const ProjectsAecoHubProjectsProjectIdRouteRouteChildren: ProjectsAecoHubProjectsProjectIdRouteRouteChildren =
+  {
+    ProjectsAecoHubProjectsProjectIdBuildRoute:
+      ProjectsAecoHubProjectsProjectIdBuildRoute,
+    ProjectsAecoHubProjectsProjectIdDesignRoute:
+      ProjectsAecoHubProjectsProjectIdDesignRoute,
+    ProjectsAecoHubProjectsProjectIdDocumentsRoute:
+      ProjectsAecoHubProjectsProjectIdDocumentsRoute,
+    ProjectsAecoHubProjectsProjectIdIssuesRoute:
+      ProjectsAecoHubProjectsProjectIdIssuesRoute,
+    ProjectsAecoHubProjectsProjectIdOperateRoute:
+      ProjectsAecoHubProjectsProjectIdOperateRoute,
+    ProjectsAecoHubProjectsProjectIdTwinRoute:
+      ProjectsAecoHubProjectsProjectIdTwinRoute,
+    ProjectsAecoHubProjectsProjectIdIndexRoute:
+      ProjectsAecoHubProjectsProjectIdIndexRoute,
+  }
+
+const ProjectsAecoHubProjectsProjectIdRouteRouteWithChildren =
+  ProjectsAecoHubProjectsProjectIdRouteRoute._addFileChildren(
+    ProjectsAecoHubProjectsProjectIdRouteRouteChildren,
+  )
+
 interface ProjectsAecoHubRouteRouteChildren {
   ProjectsAecoHubIndexRoute: typeof ProjectsAecoHubIndexRoute
+  ProjectsAecoHubProjectsProjectIdRouteRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRouteWithChildren
 }
 
 const ProjectsAecoHubRouteRouteChildren: ProjectsAecoHubRouteRouteChildren = {
   ProjectsAecoHubIndexRoute: ProjectsAecoHubIndexRoute,
+  ProjectsAecoHubProjectsProjectIdRouteRoute:
+    ProjectsAecoHubProjectsProjectIdRouteRouteWithChildren,
 }
 
 const ProjectsAecoHubRouteRouteWithChildren =

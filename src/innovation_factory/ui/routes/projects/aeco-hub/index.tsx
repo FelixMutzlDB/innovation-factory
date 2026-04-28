@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
@@ -134,7 +134,13 @@ function ProjectGrid() {
       <h2 className="text-xl font-semibold mb-3">Portfolio</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects.map((project) => (
-          <Card key={project.id}>
+          <Link
+            key={project.id}
+            to="/projects/aeco-hub/projects/$projectId"
+            params={{ projectId: String(project.id) }}
+            className="block group"
+          >
+            <Card className="transition-shadow hover:shadow-md group-hover:border-amber-500/50">
             <CardHeader>
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-base leading-tight">
@@ -179,7 +185,8 @@ function ProjectGrid() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+            </Card>
+          </Link>
         ))}
       </div>
     </div>

@@ -744,6 +744,279 @@ class DtPortfolioStatsOut(BaseModel):
     total_buildings: int
 
 
+# -- Issues -----------------------------------------------------------
+
+
+class DtIssueOut(BaseModel):
+    id: int
+    project_id: int
+    title: str
+    description: str
+    category: AecoIssueCategory
+    severity: AecoIssueSeverity
+    status: AecoIssueStatus
+    raised_by: str
+    assigned_to: Optional[str] = None
+    space_id: Optional[int] = None
+    created_at: datetime
+    resolved_at: Optional[datetime] = None
+
+
+class DtIssueStatsOut(BaseModel):
+    project_id: int
+    total: int
+    open: int
+    in_progress: int
+    resolved: int
+    critical: int
+    by_category: dict[str, int]
+
+
+# -- Documents --------------------------------------------------------
+
+
+class DtDocumentOut(BaseModel):
+    id: int
+    project_id: int
+    title: str
+    document_type: AecoDocumentType
+    phase: AecoProjectPhase
+    file_url: str
+    author: str
+    version: str
+    created_at: datetime
+
+
+# -- Design phase -----------------------------------------------------
+
+
+class DtBimModelOut(BaseModel):
+    id: int
+    project_id: int
+    building_id: Optional[int] = None
+    name: str
+    discipline: AecoBimDiscipline
+    lod: AecoBimLod
+    version: str
+    file_url: str
+    file_size_mb: float
+    element_count: int
+    uploaded_by: str
+    uploaded_at: datetime
+
+
+class DtClashReportOut(BaseModel):
+    id: int
+    project_id: int
+    bim_model_id: Optional[int] = None
+    title: str
+    discipline_a: AecoBimDiscipline
+    discipline_b: AecoBimDiscipline
+    severity: AecoIssueSeverity
+    status: AecoIssueStatus
+    clash_count: int
+    detected_at: datetime
+
+
+class DtRoomRequirementOut(BaseModel):
+    id: int
+    space_id: int
+    requirement_type: str
+    description: str
+    spec_value: str
+    spec_unit: str
+    is_met: bool
+
+
+# -- Build phase ------------------------------------------------------
+
+
+class DtCostItemOut(BaseModel):
+    id: int
+    project_id: int
+    code: str
+    description: str
+    category: str
+    quantity: float
+    unit: str
+    unit_price_eur: float
+    estimated_eur: float
+    actual_eur: float
+    status: AecoCostStatus
+    created_at: datetime
+
+
+class DtCostSummaryOut(BaseModel):
+    project_id: int
+    total_estimated_eur: float
+    total_actual_eur: float
+    variance_eur: float
+    variance_pct: float
+    item_count: int
+    by_category: dict[str, float]
+
+
+class DtScheduleActivityOut(BaseModel):
+    id: int
+    project_id: int
+    name: str
+    parent_activity_id: Optional[int] = None
+    start_date: date
+    end_date: date
+    progress_pct: float
+    status: AecoScheduleStatus
+    responsible_party: str
+
+
+class DtScheduleSummaryOut(BaseModel):
+    project_id: int
+    total: int
+    not_started: int
+    in_progress: int
+    completed: int
+    delayed: int
+    avg_progress_pct: float
+
+
+class DtSiteReportOut(BaseModel):
+    id: int
+    project_id: int
+    report_type: AecoSiteReportType
+    report_date: date
+    author: str
+    weather: str
+    workforce_count: int
+    summary: str
+    issues_count: int
+    created_at: datetime
+
+
+class DtChangeOrderOut(BaseModel):
+    id: int
+    project_id: int
+    title: str
+    description: str
+    status: AecoChangeOrderStatus
+    cost_impact_eur: float
+    schedule_impact_days: int
+    requested_by: str
+    requested_at: datetime
+    decided_at: Optional[datetime] = None
+
+
+# -- Operate phase ----------------------------------------------------
+
+
+class DtSensorDeviceOut(BaseModel):
+    id: int
+    space_id: Optional[int] = None
+    building_id: int
+    sensor_code: str
+    sensor_type: AecoSensorType
+    manufacturer: str
+    model: str
+    install_date: Optional[date] = None
+    last_seen_at: Optional[datetime] = None
+
+
+class DtMaintenanceOrderOut(BaseModel):
+    id: int
+    asset_id: Optional[int] = None
+    space_id: Optional[int] = None
+    building_id: int
+    title: str
+    description: str
+    priority: AecoMaintenancePriority
+    status: AecoMaintenanceStatus
+    assigned_technician: str
+    due_date: Optional[date] = None
+    completed_at: Optional[datetime] = None
+    created_at: datetime
+
+
+class DtEnergyConsumptionOut(BaseModel):
+    id: int
+    building_id: int
+    meter_code: str
+    period_start: datetime
+    period_end: datetime
+    kwh: float
+    cost_eur: float
+
+
+class DtEnergyDailyPointOut(BaseModel):
+    """Single point on a daily energy trend chart (date as ISO string + kwh)."""
+
+    period_start: datetime
+    kwh: float
+    cost_eur: float
+
+
+class DtSpaceUtilizationOut(BaseModel):
+    id: int
+    space_id: int
+    period_start: datetime
+    period_end: datetime
+    occupancy_pct: float
+    peak_count: int
+
+
+class DtLeaseContractOut(BaseModel):
+    id: int
+    space_id: int
+    tenant_name: str
+    start_date: date
+    end_date: date
+    monthly_rent_eur: float
+    status: AecoLeaseStatus
+
+
+class DtMaintenanceStatsOut(BaseModel):
+    project_id: int
+    total: int
+    open: int
+    in_progress: int
+    completed: int
+    overdue: int
+    avg_days_to_complete: float
+
+
+# -- Twin (spatial hierarchy) -----------------------------------------
+
+
+class DtTwinSpaceOut(BaseModel):
+    id: int
+    name: str
+    space_type: AecoSpaceType
+    area_sqm: float
+    capacity: int
+    room_number: str
+
+
+class DtTwinFloorOut(BaseModel):
+    id: int
+    name: str
+    level: int
+    area_sqm: float
+    spaces: list[DtTwinSpaceOut]
+
+
+class DtTwinBuildingOut(BaseModel):
+    id: int
+    name: str
+    building_type: AecoBuildingType
+    floor_count: int
+    gross_floor_area_sqm: float
+    floors: list[DtTwinFloorOut]
+
+
+class DtTwinOut(BaseModel):
+    project_id: int
+    project_name: str
+    project_phase: AecoProjectPhase
+    buildings: list[DtTwinBuildingOut]
+
+
 # ============================================================================
 # Pydantic Input Models
 # ============================================================================

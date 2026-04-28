@@ -24,24 +24,37 @@ from .models import (
     AecoBimDiscipline,
     AecoBimLod,
     AecoBuildingType,
+    AecoChangeOrderStatus,
+    AecoCostStatus,
     AecoDocumentType,
     AecoIntegrationStatus,
     AecoIssueCategory,
     AecoIssueSeverity,
     AecoIssueStatus,
+    AecoLeaseStatus,
     AecoLifecycleSegment,
+    AecoMaintenancePriority,
+    AecoMaintenanceStatus,
     AecoMemberRole,
     AecoProjectPhase,
     AecoProjectStatus,
     AecoRelationshipType,
+    AecoScheduleStatus,
     AecoSensorType,
+    AecoSiteReportType,
     AecoSpaceType,
     DtAsset,
     DtBimModel,
     DtBuilding,
+    DtChangeOrder,
+    DtClashReport,
+    DtCostItem,
     DtDocument,
+    DtEnergyConsumption,
     DtFloor,
     DtIssue,
+    DtLeaseContract,
+    DtMaintenanceOrder,
     DtMarketplaceApp,
     DtMarketplacePartner,
     DtMilestone,
@@ -50,8 +63,12 @@ from .models import (
     DtProjectMember,
     DtProjectPhase,
     DtRelationship,
+    DtRoomRequirement,
+    DtScheduleActivity,
     DtSensorDevice,
+    DtSiteReport,
     DtSpace,
+    DtSpaceUtilization,
 )
 
 _rng = random.Random(2026)
@@ -268,7 +285,17 @@ def seed_aeco_data(session: Session) -> None:
     _seed_sensors(session, projects_by_code, buildings_by_project, spaces_by_building)
     _seed_documents(session, projects_by_code)
     _seed_issues(session, projects_by_code, spaces_by_building)
-    _seed_bim_models(session, projects_by_code, buildings_by_project)
+    bim_models = _seed_bim_models(session, projects_by_code, buildings_by_project)
+    _seed_clash_reports(session, projects_by_code, bim_models)
+    _seed_room_requirements(session, projects_by_code, spaces_by_building)
+    _seed_cost_items(session, projects_by_code)
+    _seed_schedule_activities(session, projects_by_code)
+    _seed_site_reports(session, projects_by_code)
+    _seed_change_orders(session, projects_by_code)
+    _seed_maintenance_orders(session, projects_by_code, buildings_by_project, spaces_by_building)
+    _seed_energy_consumption(session, projects_by_code, buildings_by_project)
+    _seed_space_utilization(session, projects_by_code, spaces_by_building)
+    _seed_lease_contracts(session, projects_by_code, spaces_by_building)
     partners = _seed_marketplace_partners(session)
     apps = _seed_marketplace_apps(session, partners)
     _seed_partner_integrations(session, projects_by_code, apps)
@@ -574,17 +601,20 @@ def _seed_bim_models(
     session: Session,
     projects: dict[str, DtProject],
     buildings: dict[str, list[DtBuilding]],
-) -> None:
-    """One representative BIM model per discipline per building (lightweight Phase 1)."""
+) -> dict[str, list[DtBimModel]]:
+    """One BIM model per discipline per building. Returns models keyed by project code."""
     disciplines = [AecoBimDiscipline.architectural, AecoBimDiscipline.structural, AecoBimDiscipline.mep]
+    out: dict[str, list[DtBimModel]] = {}
     for spec in PORTFOLIO:
         project = projects[spec["code"]]
+        models: list[DtBimModel] = []
         if project.phase == AecoProjectPhase.demolish:
+            out[spec["code"]] = models
             continue
         for bldg in buildings[spec["code"]]:
             for disc in disciplines:
                 lod = AecoBimLod.lod_300 if project.phase == AecoProjectPhase.design else AecoBimLod.lod_400
-                session.add(DtBimModel(
+                model = DtBimModel(
                     project_id=project.id,
                     building_id=bldg.id,
                     name=f"{bldg.name} — {disc.value.upper()}",
@@ -595,7 +625,412 @@ def _seed_bim_models(
                     file_size_mb=round(_rng.uniform(45.0, 380.0), 1),
                     element_count=_rng.randint(800, 4500),
                     uploaded_by=_rng.choice([m[0] for m in MEMBER_TEMPLATES]),
+                )
+                session.add(model)
+                models.append(model)
+        session.flush()
+        out[spec["code"]] = models
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 seeders — design / build / operate lifecycle tables
+# ---------------------------------------------------------------------------
+
+
+def _seed_clash_reports(
+    session: Session,
+    projects: dict[str, DtProject],
+    bim_models: dict[str, list[DtBimModel]],
+) -> None:
+    discipline_pairs = [
+        (AecoBimDiscipline.architectural, AecoBimDiscipline.mep),
+        (AecoBimDiscipline.structural, AecoBimDiscipline.mep),
+        (AecoBimDiscipline.architectural, AecoBimDiscipline.structural),
+        (AecoBimDiscipline.electrical, AecoBimDiscipline.plumbing),
+        (AecoBimDiscipline.hvac, AecoBimDiscipline.plumbing),
+    ]
+    severities = list(AecoIssueSeverity)
+    statuses = [AecoIssueStatus.open, AecoIssueStatus.in_review, AecoIssueStatus.in_progress, AecoIssueStatus.resolved]
+    for spec in PORTFOLIO:
+        project = projects[spec["code"]]
+        if project.phase in (AecoProjectPhase.demolish, AecoProjectPhase.operate):
+            continue
+        models = bim_models.get(spec["code"], [])
+        # 4-7 clash reports per design/build project
+        for i in range(_rng.randint(4, 7)):
+            disc_a, disc_b = _rng.choice(discipline_pairs)
+            session.add(DtClashReport(
+                project_id=project.id,
+                bim_model_id=models[0].id if models else None,
+                title=f"{disc_a.value.title()} vs {disc_b.value.title()} clash #{i + 1}",
+                discipline_a=disc_a,
+                discipline_b=disc_b,
+                severity=_rng.choice(severities),
+                status=_rng.choice(statuses),
+                clash_count=_rng.randint(1, 25),
+            ))
+
+
+def _seed_room_requirements(
+    session: Session,
+    projects: dict[str, DtProject],
+    spaces_by_building: dict[int, list[DtSpace]],
+) -> None:
+    """Sample room requirements for ~15 spaces per project."""
+    req_templates = [
+        ("Floor area", "min", "sqm", "12"),
+        ("Ventilation rate", "min", "L/s/person", "10"),
+        ("Acoustic rating", "min", "dB", "45"),
+        ("Daylight factor", "min", "%", "2"),
+        ("Lighting level", "min", "lux", "300"),
+    ]
+    for spec in PORTFOLIO:
+        project = projects[spec["code"]]
+        all_spaces: list[DtSpace] = []
+        for bldg in [b for bldg_list in spaces_by_building.values() for b in []]:  # noqa: F841 — placeholder
+            pass
+        # Collect spaces under this project
+        from sqlmodel import select  # local import to avoid name clash above
+        stmt = (
+            select(DtSpace)
+            .join(DtFloor, DtSpace.floor_id == DtFloor.id)  # type: ignore[invalid-argument-type]
+            .join(DtBuilding, DtFloor.building_id == DtBuilding.id)  # type: ignore[invalid-argument-type]
+            .where(DtBuilding.project_id == project.id)
+        )
+        all_spaces = list(session.exec(stmt).all())
+        sample_size = min(15, len(all_spaces))
+        if sample_size == 0:
+            continue
+        sampled = _rng.sample(all_spaces, sample_size)
+        for space in sampled:
+            for req_type, op, unit, value in _rng.sample(req_templates, _rng.randint(2, 4)):
+                session.add(DtRoomRequirement(
+                    space_id=space.id,
+                    requirement_type=req_type,
+                    description=f"{req_type} ({op}) — sourced from room data sheet.",
+                    spec_value=value,
+                    spec_unit=unit,
+                    is_met=_rng.random() < 0.75,
                 ))
+
+
+def _seed_cost_items(
+    session: Session,
+    projects: dict[str, DtProject],
+) -> None:
+    cost_templates = [
+        ("01.10", "Earthworks and excavation", "Earthworks", "m3"),
+        ("02.20", "Concrete foundations", "Structure", "m3"),
+        ("02.30", "Reinforced concrete walls", "Structure", "m3"),
+        ("03.10", "Steel structure", "Structure", "t"),
+        ("04.10", "Roofing membrane", "Envelope", "m2"),
+        ("04.20", "Curtain wall facade", "Envelope", "m2"),
+        ("05.10", "Interior partitions", "Interiors", "m2"),
+        ("05.20", "Drywall and finishes", "Interiors", "m2"),
+        ("06.10", "HVAC ductwork", "MEP", "m"),
+        ("06.20", "Air handling units", "MEP", "unit"),
+        ("06.30", "Chillers", "MEP", "unit"),
+        ("07.10", "Electrical panels", "MEP", "unit"),
+        ("07.20", "Cabling and trays", "MEP", "m"),
+        ("08.10", "Plumbing fixtures", "MEP", "unit"),
+        ("09.10", "Elevators", "Vertical", "unit"),
+        ("10.10", "Site landscaping", "Site", "m2"),
+    ]
+    statuses = list(AecoCostStatus)
+    for spec in PORTFOLIO:
+        project = projects[spec["code"]]
+        # Pick 30-50 cost items per project (with repetition allowed across categories)
+        target = _rng.randint(30, 50)
+        for _ in range(target):
+            code, desc, category, unit = _rng.choice(cost_templates)
+            qty = round(_rng.uniform(10, 2000), 1)
+            unit_price = round(_rng.uniform(50, 5000), 2)
+            estimated = round(qty * unit_price, 2)
+            actual = round(estimated * _rng.uniform(0.85, 1.25), 2)
+            status = _rng.choice(statuses)
+            session.add(DtCostItem(
+                project_id=project.id,
+                code=code,
+                description=desc,
+                category=category,
+                quantity=qty,
+                unit=unit,
+                unit_price_eur=unit_price,
+                estimated_eur=estimated,
+                actual_eur=actual if status in (AecoCostStatus.actual, AecoCostStatus.paid) else 0.0,
+                status=status,
+            ))
+
+
+def _seed_schedule_activities(
+    session: Session,
+    projects: dict[str, DtProject],
+) -> None:
+    activity_templates = [
+        "Site mobilization", "Demolition of existing structures", "Earthworks",
+        "Foundation works", "Substructure", "Superstructure",
+        "Envelope and roofing", "MEP rough-in", "Internal partitions",
+        "Finishes — flooring", "Finishes — painting", "MEP commissioning",
+        "Final inspections", "Handover", "Operations stabilization",
+    ]
+    statuses = list(AecoScheduleStatus)
+    for spec in PORTFOLIO:
+        project = projects[spec["code"]]
+        target = _rng.randint(20, 35)
+        # Rough timeline: spread across project start → start + 600 days
+        base = project.start_date or _past_date(300, 600)
+        for i in range(target):
+            name = _rng.choice(activity_templates) + f" #{i + 1}"
+            start_offset = _rng.randint(0, 540)
+            duration = _rng.randint(7, 90)
+            start = base + timedelta(days=start_offset)
+            end = start + timedelta(days=duration)
+            status = _rng.choice(statuses)
+            progress = {
+                AecoScheduleStatus.not_started: 0.0,
+                AecoScheduleStatus.in_progress: round(_rng.uniform(10, 90), 1),
+                AecoScheduleStatus.completed: 100.0,
+                AecoScheduleStatus.delayed: round(_rng.uniform(20, 80), 1),
+            }[status]
+            session.add(DtScheduleActivity(
+                project_id=project.id,
+                name=name,
+                start_date=start,
+                end_date=end,
+                progress_pct=progress,
+                status=status,
+                responsible_party=_rng.choice([m[1] for m in MEMBER_TEMPLATES]),
+            ))
+
+
+def _seed_site_reports(
+    session: Session,
+    projects: dict[str, DtProject],
+) -> None:
+    weather_options = ["Sunny, 18C", "Partly cloudy, 14C", "Light rain, 11C", "Overcast, 9C", "Hot, 27C"]
+    report_types = list(AecoSiteReportType)
+    for spec in PORTFOLIO:
+        project = projects[spec["code"]]
+        if project.phase in (AecoProjectPhase.design, AecoProjectPhase.operate):
+            target = _rng.randint(5, 15)
+        else:
+            target = _rng.randint(15, 30)
+        for _ in range(target):
+            session.add(DtSiteReport(
+                project_id=project.id,
+                report_type=_rng.choice(report_types),
+                report_date=_past_date(1, 600),
+                author=_rng.choice([m[0] for m in MEMBER_TEMPLATES]),
+                weather=_rng.choice(weather_options),
+                workforce_count=_rng.randint(5, 80),
+                summary="Routine site activity — no major incidents.",
+                issues_count=_rng.randint(0, 5),
+            ))
+
+
+def _seed_change_orders(
+    session: Session,
+    projects: dict[str, DtProject],
+) -> None:
+    titles = [
+        "Add raised access floor in Level 2",
+        "Upgrade HVAC system to higher capacity",
+        "Modify facade panel material",
+        "Add additional electrical outlets in retail unit",
+        "Relocate sprinkler heads",
+        "Increase parking ramp slope",
+        "Replace flooring material in lobby",
+    ]
+    statuses = list(AecoChangeOrderStatus)
+    for spec in PORTFOLIO:
+        project = projects[spec["code"]]
+        for _ in range(_rng.randint(3, 8)):
+            status = _rng.choice(statuses)
+            requested = datetime.now(timezone.utc) - timedelta(days=_rng.randint(30, 500))
+            decided = (
+                requested + timedelta(days=_rng.randint(7, 60))
+                if status != AecoChangeOrderStatus.proposed
+                else None
+            )
+            session.add(DtChangeOrder(
+                project_id=project.id,
+                title=_rng.choice(titles),
+                description="Change requested by stakeholder; cost and schedule impact assessed by project team.",
+                status=status,
+                cost_impact_eur=round(_rng.uniform(-50_000, 250_000), 2),
+                schedule_impact_days=_rng.randint(-5, 30),
+                requested_by=_rng.choice([m[0] for m in MEMBER_TEMPLATES]),
+                requested_at=requested,
+                decided_at=decided,
+            ))
+
+
+def _seed_maintenance_orders(
+    session: Session,
+    projects: dict[str, DtProject],
+    buildings: dict[str, list[DtBuilding]],
+    spaces_by_building: dict[int, list[DtSpace]],
+) -> None:
+    titles = [
+        ("Quarterly HVAC filter replacement", AecoMaintenancePriority.medium),
+        ("Elevator annual inspection", AecoMaintenancePriority.high),
+        ("Lighting fixture replacement", AecoMaintenancePriority.low),
+        ("Boiler pressure check", AecoMaintenancePriority.high),
+        ("Chiller refrigerant top-up", AecoMaintenancePriority.medium),
+        ("Fire alarm testing", AecoMaintenancePriority.high),
+        ("Leak in 3rd floor washroom", AecoMaintenancePriority.urgent),
+        ("Window seal replacement", AecoMaintenancePriority.low),
+    ]
+    statuses = list(AecoMaintenanceStatus)
+    technicians = ["Klaus Berger", "Mehmet Yıldız", "Sara Müller", "Lukas Hoffmann"]
+    for spec in PORTFOLIO:
+        if spec["phase"] != AecoProjectPhase.operate:
+            continue
+        project = projects[spec["code"]]
+        for bldg in buildings[spec["code"]]:
+            assert bldg.id is not None
+            spaces = spaces_by_building.get(bldg.id, [])
+            for _ in range(_rng.randint(8, 20)):
+                title, priority = _rng.choice(titles)
+                status = _rng.choice(statuses)
+                space = _rng.choice(spaces) if spaces else None
+                # For completed orders, created_at must precede completed_at —
+                # backdate creation so realism + ``avg_days_to_complete`` makes sense.
+                completed_offset_days = _rng.randint(1, 60) if status == AecoMaintenanceStatus.completed else 0
+                creation_offset_days = (
+                    completed_offset_days + _rng.randint(2, 30)
+                    if status == AecoMaintenanceStatus.completed
+                    else _rng.randint(1, 90)
+                )
+                created_at = datetime.now(timezone.utc) - timedelta(days=creation_offset_days)
+                completed_at = (
+                    datetime.now(timezone.utc) - timedelta(days=completed_offset_days)
+                    if status == AecoMaintenanceStatus.completed
+                    else None
+                )
+                session.add(DtMaintenanceOrder(
+                    asset_id=None,
+                    space_id=space.id if space else None,
+                    building_id=bldg.id,
+                    title=title,
+                    description=f"{title} — scheduled FM task on {project.name}.",
+                    priority=priority,
+                    status=status,
+                    assigned_technician=_rng.choice(technicians),
+                    due_date=_future_date(1, 60) if status != AecoMaintenanceStatus.completed else _past_date(1, 90),
+                    created_at=created_at,
+                    completed_at=completed_at,
+                ))
+
+
+def _seed_energy_consumption(
+    session: Session,
+    projects: dict[str, DtProject],
+    buildings: dict[str, list[DtBuilding]],
+) -> None:
+    """Seed daily energy aggregates for the last 60 days for operating buildings."""
+    for spec in PORTFOLIO:
+        if spec["phase"] != AecoProjectPhase.operate:
+            continue
+        for bldg in buildings[spec["code"]]:
+            assert bldg.id is not None
+            # 1 meter per building, 30 days of daily aggregates
+            for day_offset in range(30):
+                period_start = datetime.now(timezone.utc) - timedelta(days=day_offset + 1)
+                period_end = period_start + timedelta(days=1)
+                kwh = round(_rng.uniform(800, 4500), 1)
+                cost = round(kwh * _rng.uniform(0.18, 0.32), 2)
+                session.add(DtEnergyConsumption(
+                    building_id=bldg.id,
+                    meter_code=f"M-{bldg.id:03d}-MAIN",
+                    period_start=period_start,
+                    period_end=period_end,
+                    kwh=kwh,
+                    cost_eur=cost,
+                ))
+
+
+def _seed_space_utilization(
+    session: Session,
+    projects: dict[str, DtProject],
+    spaces_by_building: dict[int, list[DtSpace]],
+) -> None:
+    """Seed occupancy aggregates for a sample of spaces over the last 14 days."""
+    for spec in PORTFOLIO:
+        if spec["phase"] != AecoProjectPhase.operate:
+            continue
+        # Sample ~20 spaces from this project
+        all_spaces_for_project: list[DtSpace] = []
+        # collect spaces from buildings of this project — we don't have project lookup
+        # here directly, so we re-derive via spaces_by_building keys on project's bldgs
+        # (passing projects + buildings would be cleaner, but spaces_by_building is by bldg id)
+        # Instead, query the DB for spaces in this project
+        project = projects[spec["code"]]
+        from sqlmodel import select  # local
+        stmt = (
+            select(DtSpace)
+            .join(DtFloor, DtSpace.floor_id == DtFloor.id)  # type: ignore[invalid-argument-type]
+            .join(DtBuilding, DtFloor.building_id == DtBuilding.id)  # type: ignore[invalid-argument-type]
+            .where(DtBuilding.project_id == project.id)
+        )
+        all_spaces_for_project = list(session.exec(stmt).all())
+        sample_size = min(20, len(all_spaces_for_project))
+        if sample_size == 0:
+            continue
+        sampled = _rng.sample(all_spaces_for_project, sample_size)
+        for space in sampled:
+            for day_offset in range(7):
+                period_start = datetime.now(timezone.utc) - timedelta(days=day_offset + 1)
+                period_end = period_start + timedelta(days=1)
+                session.add(DtSpaceUtilization(
+                    space_id=space.id,
+                    period_start=period_start,
+                    period_end=period_end,
+                    occupancy_pct=round(_rng.uniform(0.0, 95.0), 1),
+                    peak_count=_rng.randint(0, max(space.capacity, 1)),
+                ))
+
+
+def _seed_lease_contracts(
+    session: Session,
+    projects: dict[str, DtProject],
+    spaces_by_building: dict[int, list[DtSpace]],
+) -> None:
+    """Lease contracts on a sample of operating-project spaces (apartments + retail units)."""
+    leasable_types = {AecoSpaceType.apartment, AecoSpaceType.retail_unit, AecoSpaceType.office}
+    statuses = list(AecoLeaseStatus)
+    tenant_pool = [
+        "Müller GmbH", "Bayern Cafe", "Kleinhandel Schmid", "Familie Becker",
+        "Familie Lang", "Studio Vogel", "Apotheke Mitte", "Friseur Klassisch",
+        "TechStartup AG", "Familie Hartmann",
+    ]
+    for spec in PORTFOLIO:
+        if spec["phase"] != AecoProjectPhase.operate:
+            continue
+        project = projects[spec["code"]]
+        from sqlmodel import select  # local
+        stmt = (
+            select(DtSpace)
+            .join(DtFloor, DtSpace.floor_id == DtFloor.id)  # type: ignore[invalid-argument-type]
+            .join(DtBuilding, DtFloor.building_id == DtBuilding.id)  # type: ignore[invalid-argument-type]
+            .where(DtBuilding.project_id == project.id)
+        )
+        candidates = [s for s in session.exec(stmt).all() if s.space_type in leasable_types]
+        sample_size = min(15, len(candidates))
+        if sample_size == 0:
+            continue
+        for space in _rng.sample(candidates, sample_size):
+            start = _past_date(60, 1500)
+            end = start + timedelta(days=_rng.randint(365, 2190))
+            session.add(DtLeaseContract(
+                space_id=space.id,
+                tenant_name=_rng.choice(tenant_pool),
+                start_date=start,
+                end_date=end,
+                monthly_rent_eur=round(_rng.uniform(900, 8500), 2),
+                status=_rng.choice(statuses),
+            ))
 
 
 def _seed_marketplace_partners(session: Session) -> list[DtMarketplacePartner]:
