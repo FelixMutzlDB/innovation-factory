@@ -7,7 +7,9 @@ import {
   useAeco_listMaintenanceOrdersSuspense,
   useAeco_getMaintenanceStatsSuspense,
   useAeco_getEnergyTrendSuspense,
+  useAeco_getLiveSensorsSuspense,
   useAeco_listLeaseContractsSuspense,
+  useAeco_getDatabricksResourcesSuspense,
 } from "@/lib/api";
 import { selector } from "@/lib/selector";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -70,6 +72,22 @@ function OperatePage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
+            <Activity size={16} />
+            Live IoT feed (refreshes every 10s)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Wrap>
+            <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+              <LiveSensorsPanel pid={pid} />
+            </Suspense>
+          </Wrap>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
             <Zap size={16} />
             Daily energy consumption (last 30 days)
           </CardTitle>
@@ -94,6 +112,22 @@ function OperatePage() {
           <Wrap>
             <Suspense fallback={<RowSkeleton />}>
               <MaintenanceTable pid={pid} />
+            </Suspense>
+          </Wrap>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Zap size={16} />
+            Energy & Sustainability dashboard (AI/BI)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Wrap>
+            <Suspense fallback={<Skeleton className="h-[600px] w-full" />}>
+              <DashboardEmbed />
             </Suspense>
           </Wrap>
         </CardContent>
@@ -267,6 +301,91 @@ function MaintenanceTable({ pid }: { pid: number }) {
         ))}
       </TableBody>
     </Table>
+  );
+}
+
+function DashboardEmbed() {
+  const { data: resources } = useAeco_getDatabricksResourcesSuspense(selector());
+  if (!resources.energy_dashboard_configured) {
+    return (
+      <div className="p-6 text-center text-sm text-muted-foreground">
+        Energy dashboard ID not configured. Set
+        <code className="mx-1 px-1 bg-muted rounded">AECO_ENERGY_DASHBOARD_ID</code>
+        in app.yml after running the bootstrap.
+      </div>
+    );
+  }
+  return (
+    <iframe
+      src={resources.energy_dashboard_embed_url}
+      title="AECO Hub — Energy & Sustainability dashboard"
+      className="w-full h-[600px] border-0"
+    />
+  );
+}
+
+function LiveSensorsPanel({ pid }: { pid: number }) {
+  const result = useAeco_getLiveSensorsSuspense({
+    params: { project_id: pid },
+    query: {
+      refetchInterval: 10_000,
+      ...selector().query,
+    } as never,
+  });
+  // selector() unwraps `.data` at runtime, but TypeScript can't see through
+  // the `as never` cast we need for the polling option, so cast here.
+  const data = result.data as unknown as import("@/lib/api").DtLiveSensorsOut;
+
+  if (data.series.length === 0) {
+    return (
+      <div className="text-sm text-muted-foreground p-4 text-center">
+        Live IoT feed available only for operating projects.
+      </div>
+    );
+  }
+
+  const SENSOR_COLOR: Record<string, string> = {
+    zone_temp: "#F59E0B",
+    co2_concentration: "#3B82F6",
+    relative_humidity: "#10B981",
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {data.series.map((s) => {
+        const points = s.points.map((p) => ({
+          t: new Date(p.ts).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }),
+          v: p.value,
+        }));
+        const latest = s.points[s.points.length - 1];
+        return (
+          <div key={s.sensor_code} className="space-y-1">
+            <div className="flex items-baseline justify-between">
+              <span className="text-xs uppercase text-muted-foreground tracking-wide">
+                {s.sensor_type.replace(/_/g, " ")}
+              </span>
+              <span className="text-lg font-bold">
+                {latest?.value.toFixed(1)} {s.unit}
+              </span>
+            </div>
+            <div className="h-24">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={points} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+                  <Line
+                    type="monotone"
+                    dataKey="v"
+                    stroke={SENSOR_COLOR[s.sensor_type] ?? "#888"}
+                    strokeWidth={1.5}
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 

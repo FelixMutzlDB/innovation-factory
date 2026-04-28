@@ -130,6 +130,10 @@ def emit_env_vars(state_file: Path) -> None:
     emit("HB_SC_GENIE_SPACE_ID", g.get("hb_sc", ""))
     emit("HB_AQ_GENIE_SPACE_ID", g.get("hb_aq", ""))
     emit("ADTECH_GENIE_SPACE_ID", g.get("adtech", ""))
+    emit("AECO_PROJECT_ANALYTICS_GENIE_SPACE_ID",
+         g.get("aeco_project_analytics", ""))
+    emit("AECO_OPERATIONS_INTELLIGENCE_GENIE_SPACE_ID",
+         g.get("aeco_operations_intelligence", ""))
     emit("ADTECH_ISSUE_RESOLUTION_KA_TILE_ID",
          kas.get("issue_resolution", {}).get("tile_id", ""))
     emit("ADTECH_ISSUE_RESOLUTION_KA_ENDPOINT",
@@ -145,6 +149,7 @@ def emit_env_vars(state_file: Path) -> None:
     emit("ADTECH_DASHBOARD_ID", dbs.get("adtech", ""))
     emit("HB_AQ_DASHBOARD_ID", dbs.get("hb_aq", ""))
     emit("HB_SC_DASHBOARD_ID", dbs.get("hb_sc", ""))
+    emit("AECO_ENERGY_DASHBOARD_ID", dbs.get("aeco_energy", ""))
 
 
 def main() -> None:
@@ -178,10 +183,10 @@ def main() -> None:
             f"{args.target}."
         )
 
-    # Phase 1-7 — UC schemas, volumes, KA docs, AdTech seed data, UC
-    # function, Genie spaces, Knowledge Assistants, Multi-Agent
-    # Supervisors.
-    for phase in ("1", "2", "3", "4", "5", "6", "7"):
+    # Phase 1-7 — UC schemas, volumes, KA docs, AdTech seed data, AECO seed
+    # data, UC function, Genie spaces (incl. AECO Project Analytics + AECO
+    # Operations Intelligence), Knowledge Assistants, Multi-Agent Supervisors.
+    for phase in ("1", "2", "3", "3a", "4", "5", "6", "7"):
         print(f"\n=== Phase {phase} ===")
         run_phase(phase, args.target)
 

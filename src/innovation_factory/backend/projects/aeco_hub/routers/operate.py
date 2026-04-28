@@ -3,8 +3,14 @@
 IoT sensor *readings* live in Unity Catalog (Phase 3) — only sensor *devices*
 (the registry) are stored in Lakebase. Energy is pre-aggregated daily so the
 dashboard can render fast trends without scanning the raw sensor table.
+
+The ``/operate/live-sensors`` endpoint returns synthesized recent readings
+for the dashboard's live-feed chart — querying UC on every poll would be
+slow and expensive, and the demo only needs realistic-looking data.
 """
+import math
 from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
@@ -15,6 +21,7 @@ from ..models import (
     AecoLeaseStatus,
     AecoMaintenancePriority,
     AecoMaintenanceStatus,
+    AecoProjectPhase,
     AecoSensorType,
     DtBuilding,
     DtEnergyConsumption,
@@ -23,6 +30,9 @@ from ..models import (
     DtFloor,
     DtLeaseContract,
     DtLeaseContractOut,
+    DtLiveReadingPointOut,
+    DtLiveSensorSeriesOut,
+    DtLiveSensorsOut,
     DtMaintenanceOrder,
     DtMaintenanceOrderOut,
     DtMaintenanceStatsOut,
@@ -211,6 +221,64 @@ def get_energy_trend(project_id: int, db: SessionDep) -> list[DtEnergyDailyPoint
         )
         for _, v in points
     ]
+
+
+# -- Live sensor stream (synthesized) ---------------------------------
+
+
+_LIVE_SENSOR_SPECS: list[tuple[AecoSensorType, str, float, float]] = [
+    (AecoSensorType.zone_temp, "C", 21.0, 1.5),
+    (AecoSensorType.co2_concentration, "ppm", 700.0, 200.0),
+    (AecoSensorType.relative_humidity, "%RH", 50.0, 8.0),
+]
+
+
+@router.get(
+    "/projects/{project_id}/operate/live-sensors",
+    response_model=DtLiveSensorsOut,
+    operation_id="aeco_getLiveSensors",
+)
+def get_live_sensors(project_id: int, db: SessionDep) -> DtLiveSensorsOut:
+    """Synthesize the last 60 minutes of readings for 3 sensor types.
+
+    Deterministic per-minute (so consecutive polls return *almost* the same
+    series, with a fresh point at the leading edge). Only available for
+    operating projects — design / build / demolish projects return an empty
+    series list.
+    """
+    project = db.get(DtProject, project_id)
+    if not project:
+        raise HTTPException(404, detail="Project not found")
+    now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
+
+    if project.phase != AecoProjectPhase.operate:
+        return DtLiveSensorsOut(project_id=project_id, generated_at=now, series=[])
+
+    series: list[DtLiveSensorSeriesOut] = []
+    for idx, (sensor_type, unit, baseline, amplitude) in enumerate(_LIVE_SENSOR_SPECS):
+        sensor_code = f"S-{project_id:03d}-LIVE-{idx + 1:02d}"
+        points: list[DtLiveReadingPointOut] = []
+        for minute_back in range(60, -1, -1):
+            ts = now - timedelta(minutes=minute_back)
+            # Deterministic-but-wavy: combine sin (slow drift) + sin
+            # (high-freq) + a small offset based on the timestamp.
+            phase = ts.timestamp() / 60.0
+            value = (
+                baseline
+                + amplitude * math.sin(phase / 17.0)
+                + (amplitude * 0.4) * math.sin(phase / 3.7 + project_id)
+            )
+            points.append(DtLiveReadingPointOut(ts=ts, value=round(value, 2)))
+        series.append(
+            DtLiveSensorSeriesOut(
+                sensor_code=sensor_code,
+                sensor_type=sensor_type,
+                unit=unit,
+                points=points,
+            )
+        )
+
+    return DtLiveSensorsOut(project_id=project_id, generated_at=now, series=series)
 
 
 # -- Space utilization -----------------------------------------------

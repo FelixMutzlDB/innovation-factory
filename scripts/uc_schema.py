@@ -396,6 +396,138 @@ TABLES: dict[str, dict] = {
         ],
         "comment": "Anomaly alerts surfaced to the ASM cockpit.",
     },
+
+    # =========================================================================
+    # AECO Hub (schema: aeco_hub)
+    # =========================================================================
+    # UC mirror of the Lakebase ``dt_*`` tables for Genie + Lakeview dashboards.
+    # Sensor *readings* are UC-only (too large for PGlite). Other tables are
+    # subset projections of the Lakebase rows that show up in analytics.
+    "aeco_hub.dt_projects": {
+        "columns": [
+            ("id", "BIGINT"),
+            ("code", "STRING"),
+            ("name", "STRING"),
+            ("client_name", "STRING"),
+            ("city", "STRING"),
+            ("country", "STRING"),
+            ("phase", "STRING"),
+            ("status", "STRING"),
+            ("progress_pct", "DOUBLE"),
+            ("budget_eur", "DOUBLE"),
+            ("actual_cost_eur", "DOUBLE"),
+            ("start_date", "DATE"),
+            ("target_completion_date", "DATE"),
+        ],
+        "comment": "AECO Hub construction projects (UC mirror of Lakebase dt_projects).",
+    },
+    "aeco_hub.dt_buildings": {
+        "columns": [
+            ("id", "BIGINT"),
+            ("project_id", "BIGINT"),
+            ("name", "STRING"),
+            ("building_type", "STRING"),
+            ("floor_count", "INT"),
+            ("gross_floor_area_sqm", "DOUBLE"),
+            ("year_built", "INT"),
+            ("city", "STRING"),
+        ],
+        "comment": "Buildings within AECO Hub projects.",
+    },
+    "aeco_hub.dt_cost_items": {
+        "columns": [
+            ("id", "BIGINT"),
+            ("project_id", "BIGINT"),
+            ("code", "STRING"),
+            ("description", "STRING"),
+            ("category", "STRING"),
+            ("estimated_eur", "DOUBLE"),
+            ("actual_eur", "DOUBLE"),
+            ("status", "STRING"),
+        ],
+        "comment": "Bill-of-quantities cost items per project.",
+    },
+    "aeco_hub.dt_schedule_activities": {
+        "columns": [
+            ("id", "BIGINT"),
+            ("project_id", "BIGINT"),
+            ("name", "STRING"),
+            ("start_date", "DATE"),
+            ("end_date", "DATE"),
+            ("progress_pct", "DOUBLE"),
+            ("status", "STRING"),
+            ("responsible_party", "STRING"),
+        ],
+        "comment": "Construction schedule activities.",
+    },
+    "aeco_hub.dt_issues": {
+        "columns": [
+            ("id", "BIGINT"),
+            ("project_id", "BIGINT"),
+            ("title", "STRING"),
+            ("category", "STRING"),
+            ("severity", "STRING"),
+            ("status", "STRING"),
+            ("raised_by", "STRING"),
+            ("created_at", "TIMESTAMP"),
+            ("resolved_at", "TIMESTAMP"),
+        ],
+        "comment": "Cross-discipline issues (clashes, RFIs, defects, change requests).",
+    },
+    "aeco_hub.dt_sensor_readings": {
+        "columns": [
+            ("reading_id", "BIGINT GENERATED ALWAYS AS IDENTITY"),
+            ("sensor_code", "STRING"),
+            ("sensor_type", "STRING"),
+            ("project_code", "STRING"),
+            ("building_id", "BIGINT"),
+            ("space_id", "BIGINT"),
+            ("reading_ts", "TIMESTAMP"),
+            ("value", "DOUBLE"),
+            ("unit", "STRING"),
+        ],
+        "comment": "IoT sensor time-series — building automation feeds for operating projects.",
+    },
+    "aeco_hub.dt_energy_consumption": {
+        "columns": [
+            ("id", "BIGINT"),
+            ("building_id", "BIGINT"),
+            ("project_code", "STRING"),
+            ("meter_code", "STRING"),
+            ("period_start", "TIMESTAMP"),
+            ("period_end", "TIMESTAMP"),
+            ("kwh", "DOUBLE"),
+            ("cost_eur", "DOUBLE"),
+        ],
+        "comment": "Aggregated daily energy per meter for operating buildings.",
+    },
+    "aeco_hub.dt_maintenance_orders": {
+        "columns": [
+            ("id", "BIGINT"),
+            ("project_id", "BIGINT"),
+            ("building_id", "BIGINT"),
+            ("title", "STRING"),
+            ("priority", "STRING"),
+            ("status", "STRING"),
+            ("assigned_technician", "STRING"),
+            ("due_date", "DATE"),
+            ("completed_at", "TIMESTAMP"),
+            ("created_at", "TIMESTAMP"),
+        ],
+        "comment": "Facility-management maintenance orders.",
+    },
+    "aeco_hub.dt_space_utilization": {
+        "columns": [
+            ("id", "BIGINT"),
+            ("space_id", "BIGINT"),
+            ("project_code", "STRING"),
+            ("period_start", "TIMESTAMP"),
+            ("period_end", "TIMESTAMP"),
+            ("occupancy_pct", "DOUBLE"),
+            ("peak_count", "INT"),
+        ],
+        "comment": "Daily occupancy / utilization per space.",
+    },
 }
 
 

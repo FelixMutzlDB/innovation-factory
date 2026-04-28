@@ -54,6 +54,8 @@ env:
     value: 01f13f258e021692aa4b7ab85d670c3e
   - name: HB_SC_DASHBOARD_ID
     value: 01f13f258ed810858ae5520e9f310f72
+  - name: AECO_ENERGY_DASHBOARD_ID
+    value: 01f1430ffbf61412b006b193720d09b7
 
   # Genie spaces
   - name: HB_SC_GENIE_SPACE_ID
@@ -62,6 +64,10 @@ env:
     value: 01f13e6f2afa1d54bf7bac95081e572d
   - name: ADTECH_GENIE_SPACE_ID
     value: 01f13e6f2b5113ea91267c843877c834
+  - name: AECO_PROJECT_ANALYTICS_GENIE_SPACE_ID
+    value: 01f1430db3eb1149bb724acdbc5d0b15
+  - name: AECO_OPERATIONS_INTELLIGENCE_GENIE_SPACE_ID
+    value: 01f1430db4ec1dab80d76ec994b0d2e4
 
   # Knowledge Assistants (AdTech)
   - name: ADTECH_ISSUE_RESOLUTION_KA_TILE_ID

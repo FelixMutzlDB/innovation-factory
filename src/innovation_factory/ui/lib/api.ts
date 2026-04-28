@@ -936,6 +936,24 @@ export interface DtLeaseContractOut {
   tenant_name: string;
 }
 
+export interface DtLiveReadingPointOut {
+  ts: string;
+  value: number;
+}
+
+export interface DtLiveSensorSeriesOut {
+  points: DtLiveReadingPointOut[];
+  sensor_code: string;
+  sensor_type: AecoSensorType;
+  unit: string;
+}
+
+export interface DtLiveSensorsOut {
+  generated_at: string;
+  project_id: number;
+  series: DtLiveSensorSeriesOut[];
+}
+
 export interface DtMaintenanceOrderOut {
   asset_id?: number | null;
   assigned_technician: string;
@@ -2451,6 +2469,10 @@ export interface Aeco_listLeaseContractsParams {
   status?: AecoLeaseStatus | null;
   limit?: number;
   offset?: number;
+}
+
+export interface Aeco_getLiveSensorsParams {
+  project_id: number;
 }
 
 export interface Aeco_listMaintenanceOrdersParams {
@@ -4335,6 +4357,29 @@ export function useAeco_listLeaseContracts<TData = { data: DtLeaseContractOut[] 
 
 export function useAeco_listLeaseContractsSuspense<TData = { data: DtLeaseContractOut[] }>(options: { params: Aeco_listLeaseContractsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtLeaseContractOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: aeco_listLeaseContractsKey(options.params), queryFn: () => aeco_listLeaseContracts(options.params), ...options?.query });
+}
+
+export const aeco_getLiveSensors = async (params: Aeco_getLiveSensorsParams, options?: RequestInit): Promise<{ data: DtLiveSensorsOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/operate/live-sensors`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getLiveSensorsKey = (params?: Aeco_getLiveSensorsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/operate/live-sensors", params] as const;
+};
+
+export function useAeco_getLiveSensors<TData = { data: DtLiveSensorsOut }>(options: { params: Aeco_getLiveSensorsParams; query?: Omit<UseQueryOptions<{ data: DtLiveSensorsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getLiveSensorsKey(options.params), queryFn: () => aeco_getLiveSensors(options.params), ...options?.query });
+}
+
+export function useAeco_getLiveSensorsSuspense<TData = { data: DtLiveSensorsOut }>(options: { params: Aeco_getLiveSensorsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtLiveSensorsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getLiveSensorsKey(options.params), queryFn: () => aeco_getLiveSensors(options.params), ...options?.query });
 }
 
 export const aeco_listMaintenanceOrders = async (params: Aeco_listMaintenanceOrdersParams, options?: RequestInit): Promise<{ data: DtMaintenanceOrderOut[] }> => {

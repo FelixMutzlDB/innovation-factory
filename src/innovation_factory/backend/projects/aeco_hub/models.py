@@ -1017,6 +1017,31 @@ class DtTwinOut(BaseModel):
     buildings: list[DtTwinBuildingOut]
 
 
+# -- Live sensor readings (synthesized; not from UC) ------------------
+
+
+class DtLiveReadingPointOut(BaseModel):
+    """One point on a synthetic real-time sensor stream."""
+
+    ts: datetime
+    value: float
+
+
+class DtLiveSensorSeriesOut(BaseModel):
+    """One synthetic sensor's readings over the last hour at 1-min resolution."""
+
+    sensor_code: str
+    sensor_type: AecoSensorType
+    unit: str
+    points: list[DtLiveReadingPointOut]
+
+
+class DtLiveSensorsOut(BaseModel):
+    project_id: int
+    generated_at: datetime
+    series: list[DtLiveSensorSeriesOut]
+
+
 # ============================================================================
 # Pydantic Input Models
 # ============================================================================
