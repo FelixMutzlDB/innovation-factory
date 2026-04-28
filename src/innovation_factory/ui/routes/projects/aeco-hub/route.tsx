@@ -1,7 +1,7 @@
 import SidebarLayout from "@/components/apx/sidebar-layout";
 import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, Wrench, Store, Bot } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -16,15 +16,33 @@ export const Route = createFileRoute("/projects/aeco-hub")({
 function Layout() {
   const location = useLocation();
 
-  // Phase 1 nav: Overview only. Phase 2-5 will add Twin, Design, Build,
-  // Operate, Documents, Issues, Relationships, Marketplace, Tools, Agent.
   const navItems = [
     {
       to: "/projects/aeco-hub",
       label: "Overview",
       icon: <LayoutDashboard size={16} />,
       match: (path: string) =>
-        path === "/projects/aeco-hub" || path === "/projects/aeco-hub/",
+        path === "/projects/aeco-hub" ||
+        path === "/projects/aeco-hub/" ||
+        path.startsWith("/projects/aeco-hub/projects/"),
+    },
+    {
+      to: "/projects/aeco-hub/tools",
+      label: "Tool Navigator",
+      icon: <Wrench size={16} />,
+      match: (path: string) => path.startsWith("/projects/aeco-hub/tools"),
+    },
+    {
+      to: "/projects/aeco-hub/marketplace",
+      label: "Marketplace",
+      icon: <Store size={16} />,
+      match: (path: string) => path.startsWith("/projects/aeco-hub/marketplace"),
+    },
+    {
+      to: "/projects/aeco-hub/agent",
+      label: "AI Agent",
+      icon: <Bot size={16} />,
+      match: (path: string) => path.startsWith("/projects/aeco-hub/agent"),
     },
   ];
 

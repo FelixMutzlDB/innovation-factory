@@ -81,10 +81,20 @@ env:
 
   # Multi-Agent Supervisors
   - name: ADTECH_MAS_TILE_ID
-    value: 9e45f45a-66c5-43ec-b749-49f3ee2f1341
+    value: d07b2965-62b2-4b1b-98d4-be87cce45238
   - name: ADTECH_MAS_ENDPOINT_NAME
-    value: mas-9e45f45a-endpoint
+    value: mas-d07b2965-endpoint
   - name: HB_MAS_TILE_ID
-    value: d14be5f2-8b23-48d1-a562-f4f470b91ce3
+    value: be696ff0-91e9-49d1-82e8-4e8829e88a60
   - name: HB_MAS_ENDPOINT_NAME
-    value: mas-d14be5f2-endpoint
+    value: mas-be696ff0-endpoint
+
+  # AECO Hub Knowledge Assistant + Multi-Agent Supervisor
+  - name: AECO_STANDARDS_COMPLIANCE_KA_TILE_ID
+    value: 23429ec7-e769-4d5e-a9c9-38bc68516af4
+  - name: AECO_STANDARDS_COMPLIANCE_KA_ENDPOINT
+    value: ka-23429ec7-endpoint
+  - name: AECO_MAS_TILE_ID
+    value: 7a265c24-4067-41cb-8488-596ea968134b
+  - name: AECO_MAS_ENDPOINT_NAME
+    value: mas-7a265c24-endpoint

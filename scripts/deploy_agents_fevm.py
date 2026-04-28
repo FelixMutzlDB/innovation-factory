@@ -40,6 +40,8 @@ STATE_FILE = os.path.join(os.path.dirname(__file__), "fevm_agents_state.json")
 REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
 KA_DOCS_ROOT = os.path.join(REPO_ROOT, "src", "innovation_factory", "backend",
                             "projects", "adtech_intelligence", "ka_docs")
+AECO_KA_DOCS_ROOT = os.path.join(REPO_ROOT, "src", "innovation_factory", "backend",
+                                  "projects", "aeco_hub", "ka_docs")
 
 # Phase 9 — Dashboard migration defaults. These can be overridden via env vars
 # if we ever need to point at a different source. The catalog rewrite maps any
@@ -156,12 +158,14 @@ def phase_1_schemas_volumes(state):
 # ===========================================================================
 
 def phase_2_upload_ka_docs(state):
+    # AdTech Intelligence KA docs
     mappings = [
-        ("issue_resolution", "issue_resolution_docs"),
-        ("customer_relations", "customer_relations_docs"),
+        (KA_DOCS_ROOT, "issue_resolution", "adtech_intelligence", "issue_resolution_docs"),
+        (KA_DOCS_ROOT, "customer_relations", "adtech_intelligence", "customer_relations_docs"),
+        (AECO_KA_DOCS_ROOT, "standards_compliance", "aeco_hub", "compliance_docs"),
     ]
-    for local_subdir, volume in mappings:
-        local_dir = os.path.join(KA_DOCS_ROOT, local_subdir)
+    for root, local_subdir, schema, volume in mappings:
+        local_dir = os.path.join(root, local_subdir)
         if not os.path.isdir(local_dir):
             print(f"  WARNING: {local_dir} not found, skipping")
             continue
@@ -169,8 +173,8 @@ def phase_2_upload_ka_docs(state):
             local_path = os.path.join(local_dir, fname)
             if not os.path.isfile(local_path):
                 continue
-            remote_path = f"dbfs:/Volumes/{CATALOG}/adtech_intelligence/{volume}/{fname}"
-            print(f"  Uploading {fname} -> {volume}/")
+            remote_path = f"dbfs:/Volumes/{CATALOG}/{schema}/{volume}/{fname}"
+            print(f"  Uploading {fname} -> {schema}.{volume}/")
             res = subprocess.run(
                 ["databricks", "fs", "cp", local_path, remote_path,
                  "--profile", PROFILE, "--overwrite"],
@@ -594,6 +598,11 @@ def phase_6_knowledge_assistants(state):
          "Answers questions about customer relationships, contract management, "
          "campaign history, and account profiles.",
          f"/Volumes/{CATALOG}/adtech_intelligence/customer_relations_docs"),
+        ("aeco_standards_compliance", "AECO Standards & Compliance Assistant",
+         "Answers questions about IFC standards, COBie handover requirements, "
+         "German building regulations, and building automation integration "
+         "for AECO Hub digital twin projects.",
+         f"/Volumes/{CATALOG}/aeco_hub/compliance_docs"),
     ]
     for key, name, desc, volume_path in specs:
         if kas.get(key, {}).get("tile_id"):
@@ -749,7 +758,7 @@ def phase_7_multi_agent_supervisors(state):
     # source (D3 introduced the snake_case sub-agent naming — old MASes
     # created before D3 land with mixed-case names and need to be
     # rebuilt). Bump this string when the phase-7 config changes shape.
-    PHASE_7_VERSION = "D3-snake-case-subagents"
+    PHASE_7_VERSION = "D3-snake-case-subagents+aeco-hub"
     needs_rebuild = state.get("phase_7_version") != PHASE_7_VERSION
 
     if adtech_agents and (needs_rebuild or not mas.get("adtech", {}).get("tile_id")):
@@ -839,6 +848,64 @@ def phase_7_multi_agent_supervisors(state):
         if tile_id:
             mas["hb"] = {"tile_id": tile_id, "endpoint_name": endpoint,
                           "name": hb_display}
+            save_state(state)
+            print(f"    OK: tile_id={tile_id}, endpoint={endpoint}")
+
+    # --- AECO Hub MAS -----------------------------------------------------
+    aeco_agents = []
+    if genies.get("aeco_project_analytics"):
+        aeco_agents.append(_build_agent(
+            "project_analytics",
+            "Answers questions about construction projects, buildings, costs, "
+            "schedule, and issues across the AECO Hub portfolio. Use "
+            "`project_analytics` for any portfolio-level analytics question.",
+            "genie", genies["aeco_project_analytics"]))
+    if genies.get("aeco_operations_intelligence"):
+        aeco_agents.append(_build_agent(
+            "operations_intelligence",
+            "Answers questions about IoT sensor readings, energy consumption, "
+            "maintenance orders, and space utilization for operating projects. "
+            "Use `operations_intelligence` for facility-management and IoT "
+            "questions.",
+            "genie", genies["aeco_operations_intelligence"]))
+    if kas.get("aeco_standards_compliance", {}).get("endpoint_name"):
+        aeco_agents.append(_build_agent(
+            "standards_compliance",
+            "Answers questions about IFC standards, COBie hand-over, German "
+            "building regulations, and building-automation integration. Use "
+            "`standards_compliance` for any standards or regulation question.",
+            "ka_endpoint",
+            kas["aeco_standards_compliance"]["endpoint_name"]))
+
+    if aeco_agents and (needs_rebuild or not mas.get("aeco", {}).get("tile_id")):
+        aeco_display = "AECO Hub Supervisor"
+        _delete_existing_mas_by_name(aeco_display)
+        body = {
+            "display_name": aeco_display,
+            "description": (
+                "AECO Hub Supervisor — orchestrates project analytics, "
+                "operations intelligence, and standards & compliance for the "
+                "building-lifecycle digital twin."
+            ),
+            "instructions": (
+                "You are the AECO Hub Supervisor. Route each user request to "
+                "exactly one sub-agent by name:\n"
+                "- `project_analytics` — portfolio, project, building, cost, "
+                "schedule, issue questions.\n"
+                "- `operations_intelligence` — IoT, energy, maintenance, "
+                "space-utilization questions for operating projects.\n"
+                "- `standards_compliance` — IFC, COBie, building regulations, "
+                "BAS integration questions."
+            ),
+            "agents": aeco_agents,
+        }
+        print(f"  Creating MAS: {aeco_display}...")
+        resp = _api("post", "/api/2.1/supervisor-agents", body)
+        print(f"    Response: {json.dumps(resp, indent=2)[:500] if resp else 'None'}")
+        tile_id, endpoint = _extract_mas(resp)
+        if tile_id:
+            mas["aeco"] = {"tile_id": tile_id, "endpoint_name": endpoint,
+                           "name": aeco_display}
             save_state(state)
             print(f"    OK: tile_id={tile_id}, endpoint={endpoint}")
 

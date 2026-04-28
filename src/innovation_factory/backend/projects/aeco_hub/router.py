@@ -5,11 +5,13 @@ from pydantic import BaseModel
 
 from .databricks_config import (
     ENERGY_DASHBOARD_ID,
+    MAS_ENDPOINT_NAME,
     OPERATIONS_INTELLIGENCE_GENIE_SPACE_ID,
     PROJECT_ANALYTICS_GENIE_SPACE_ID,
+    STANDARDS_COMPLIANCE_KA_ENDPOINT,
     WORKSPACE_URL,
 )
-from .routers import build, design, documents, issues, operate, projects
+from .routers import build, chat, design, documents, issues, marketplace, operate, projects
 
 router = APIRouter(tags=["aeco-hub"])
 
@@ -19,6 +21,8 @@ router.include_router(documents.router)
 router.include_router(design.router)
 router.include_router(build.router)
 router.include_router(operate.router)
+router.include_router(marketplace.router)
+router.include_router(chat.router)
 
 
 class AecoDatabricksResourcesOut(BaseModel):
@@ -28,6 +32,10 @@ class AecoDatabricksResourcesOut(BaseModel):
     energy_dashboard_configured: bool = False
     project_analytics_genie_space_id: str
     operations_intelligence_genie_space_id: str
+    standards_compliance_ka_endpoint: str
+    standards_compliance_ka_configured: bool = False
+    mas_endpoint_name: str
+    mas_configured: bool = False
     configured: bool = False  # workspace URL resolved
 
 
@@ -60,5 +68,9 @@ async def get_databricks_resources(request: Request) -> AecoDatabricksResourcesO
         energy_dashboard_configured=energy_ready,
         project_analytics_genie_space_id=PROJECT_ANALYTICS_GENIE_SPACE_ID,
         operations_intelligence_genie_space_id=OPERATIONS_INTELLIGENCE_GENIE_SPACE_ID,
+        standards_compliance_ka_endpoint=STANDARDS_COMPLIANCE_KA_ENDPOINT,
+        standards_compliance_ka_configured=bool(STANDARDS_COMPLIANCE_KA_ENDPOINT),
+        mas_endpoint_name=MAS_ENDPOINT_NAME,
+        mas_configured=bool(MAS_ENDPOINT_NAME),
         configured=bool(ws_url),
     )

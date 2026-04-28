@@ -46,6 +46,14 @@ export const AecoChangeOrderStatus = {
 
 export type AecoChangeOrderStatus = (typeof AecoChangeOrderStatus)[keyof typeof AecoChangeOrderStatus];
 
+export const AecoChatRole = {
+  user: "user",
+  assistant: "assistant",
+  system: "system",
+} as const;
+
+export type AecoChatRole = (typeof AecoChatRole)[keyof typeof AecoChatRole];
+
 export const AecoCostStatus = {
   estimated: "estimated",
   committed: "committed",
@@ -60,8 +68,12 @@ export interface AecoDatabricksResourcesOut {
   energy_dashboard_configured?: boolean;
   energy_dashboard_embed_url: string;
   energy_dashboard_id: string;
+  mas_configured?: boolean;
+  mas_endpoint_name: string;
   operations_intelligence_genie_space_id: string;
   project_analytics_genie_space_id: string;
+  standards_compliance_ka_configured?: boolean;
+  standards_compliance_ka_endpoint: string;
   workspace_url: string;
 }
 
@@ -77,6 +89,15 @@ export const AecoDocumentType = {
 } as const;
 
 export type AecoDocumentType = (typeof AecoDocumentType)[keyof typeof AecoDocumentType];
+
+export const AecoIntegrationStatus = {
+  connected: "connected",
+  simulated: "simulated",
+  planned: "planned",
+  disconnected: "disconnected",
+} as const;
+
+export type AecoIntegrationStatus = (typeof AecoIntegrationStatus)[keyof typeof AecoIntegrationStatus];
 
 export const AecoIssueCategory = {
   clash: "clash",
@@ -116,6 +137,17 @@ export const AecoLeaseStatus = {
 } as const;
 
 export type AecoLeaseStatus = (typeof AecoLeaseStatus)[keyof typeof AecoLeaseStatus];
+
+export const AecoLifecycleSegment = {
+  design: "design",
+  qa_qc: "qa_qc",
+  requirements: "requirements",
+  build: "build",
+  operate: "operate",
+  visualize: "visualize",
+} as const;
+
+export type AecoLifecycleSegment = (typeof AecoLifecycleSegment)[keyof typeof AecoLifecycleSegment];
 
 export const AecoMaintenancePriority = {
   low: "low",
@@ -820,6 +852,33 @@ export interface DtChangeOrderOut {
   title: string;
 }
 
+export interface DtChatHistoryOut {
+  messages: DtChatMessageOut[];
+  session: DtChatSessionOut;
+}
+
+export interface DtChatMessageIn {
+  message: string;
+  project_id?: number | null;
+  session_id?: number | null;
+}
+
+export interface DtChatMessageOut {
+  content: string;
+  created_at: string;
+  id: number;
+  role: AecoChatRole;
+  session_id: number;
+  sources_json?: Record<string, unknown> | null;
+}
+
+export interface DtChatSessionOut {
+  agent_kind: string;
+  created_at: string;
+  id: number;
+  project_id?: number | null;
+}
+
 export interface DtClashReportOut {
   bim_model_id?: number | null;
   clash_count: number;
@@ -977,6 +1036,38 @@ export interface DtMaintenanceStatsOut {
   overdue: number;
   project_id: number;
   total: number;
+}
+
+export interface DtMarketplaceAppOut {
+  description: string;
+  id: number;
+  is_featured: boolean;
+  lifecycle_segment: AecoLifecycleSegment;
+  logo_url: string;
+  name: string;
+  partner_id: number;
+  partner_name: string;
+}
+
+export interface DtMarketplacePartnerOut {
+  description: string;
+  id: number;
+  lifecycle_segment: AecoLifecycleSegment;
+  logo_url: string;
+  name: string;
+  website: string;
+}
+
+export interface DtPartnerIntegrationOut {
+  activated_at?: string | null;
+  app_id: number;
+  app_name: string;
+  id: number;
+  lifecycle_segment: AecoLifecycleSegment;
+  notes: string;
+  partner_name: string;
+  project_id: number;
+  status: AecoIntegrationStatus;
 }
 
 export interface DtPortfolioStatsOut {
@@ -2331,6 +2422,15 @@ export interface Aeco_listFloorsParams {
   building_id: number;
 }
 
+export interface Aeco_listChatSessionsParams {
+  project_id?: number | null;
+  agent_kind?: string | null;
+}
+
+export interface Aeco_getChatSessionParams {
+  session_id: number;
+}
+
 export interface Aeco_getDocumentParams {
   document_id: number;
 }
@@ -2345,6 +2445,13 @@ export interface Aeco_listSpacesParams {
 
 export interface Aeco_getIssueParams {
   issue_id: number;
+}
+
+export interface Aeco_listMarketplaceAppsParams {
+  lifecycle_segment?: AecoLifecycleSegment | null;
+  featured_only?: boolean;
+  limit?: number;
+  offset?: number;
 }
 
 export interface Aeco_listProjectsParams {
@@ -2432,6 +2539,11 @@ export interface Aeco_getDocumentStatsParams {
   project_id: number;
 }
 
+export interface Aeco_listProjectIntegrationsParams {
+  project_id: number;
+  status?: AecoIntegrationStatus | null;
+}
+
 export interface Aeco_listIssuesParams {
   project_id: number;
   status?: AecoIssueStatus | null;
@@ -2515,6 +2627,10 @@ export interface Aeco_getSpaceParams {
 
 export interface Aeco_listSpaceRoomRequirementsParams {
   space_id: number;
+}
+
+export interface Aeco_listToolsParams {
+  lifecycle_segment?: AecoLifecycleSegment | null;
 }
 
 export interface Bsh_getCurrentCustomerParams {
@@ -3661,6 +3777,72 @@ export function useAeco_listFloorsSuspense<TData = { data: DtFloorOut[] }>(optio
   return useSuspenseQuery({ queryKey: aeco_listFloorsKey(options.params), queryFn: () => aeco_listFloors(options.params), ...options?.query });
 }
 
+export const aeco_sendChatMessage = async (data: DtChatMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch("/api/projects/aeco-hub/chat", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useAeco_sendChatMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, DtChatMessageIn> }) {
+  return useMutation({ mutationFn: (data) => aeco_sendChatMessage(data), ...options?.mutation });
+}
+
+export const aeco_listChatSessions = async (params?: Aeco_listChatSessionsParams, options?: RequestInit): Promise<{ data: DtChatSessionOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.project_id != null) searchParams.set("project_id", String(params?.project_id));
+  if (params?.agent_kind != null) searchParams.set("agent_kind", String(params?.agent_kind));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/chat/sessions?${queryString}` : `/api/projects/aeco-hub/chat/sessions`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listChatSessionsKey = (params?: Aeco_listChatSessionsParams) => {
+  return ["/api/projects/aeco-hub/chat/sessions", params] as const;
+};
+
+export function useAeco_listChatSessions<TData = { data: DtChatSessionOut[] }>(options?: { params?: Aeco_listChatSessionsParams; query?: Omit<UseQueryOptions<{ data: DtChatSessionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listChatSessionsKey(options?.params), queryFn: () => aeco_listChatSessions(options?.params), ...options?.query });
+}
+
+export function useAeco_listChatSessionsSuspense<TData = { data: DtChatSessionOut[] }>(options?: { params?: Aeco_listChatSessionsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtChatSessionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listChatSessionsKey(options?.params), queryFn: () => aeco_listChatSessions(options?.params), ...options?.query });
+}
+
+export const aeco_getChatSession = async (params: Aeco_getChatSessionParams, options?: RequestInit): Promise<{ data: DtChatHistoryOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/chat/sessions/${params.session_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getChatSessionKey = (params?: Aeco_getChatSessionParams) => {
+  return ["/api/projects/aeco-hub/chat/sessions/{session_id}", params] as const;
+};
+
+export function useAeco_getChatSession<TData = { data: DtChatHistoryOut }>(options: { params: Aeco_getChatSessionParams; query?: Omit<UseQueryOptions<{ data: DtChatHistoryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getChatSessionKey(options.params), queryFn: () => aeco_getChatSession(options.params), ...options?.query });
+}
+
+export function useAeco_getChatSessionSuspense<TData = { data: DtChatHistoryOut }>(options: { params: Aeco_getChatSessionParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtChatHistoryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getChatSessionKey(options.params), queryFn: () => aeco_getChatSession(options.params), ...options?.query });
+}
+
 export const aeco_getDatabricksResources = async (options?: RequestInit): Promise<{ data: AecoDatabricksResourcesOut }> => {
   const res = await fetch("/api/projects/aeco-hub/databricks-resources", { ...options, method: "GET" });
   if (!res.ok) {
@@ -3774,6 +3956,51 @@ export function useAeco_getIssue<TData = { data: DtIssueOut }>(options: { params
 
 export function useAeco_getIssueSuspense<TData = { data: DtIssueOut }>(options: { params: Aeco_getIssueParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtIssueOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: aeco_getIssueKey(options.params), queryFn: () => aeco_getIssue(options.params), ...options?.query });
+}
+
+export const aeco_sendKaChatMessage = async (data: DtChatMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch("/api/projects/aeco-hub/ka-chat", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useAeco_sendKaChatMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, DtChatMessageIn> }) {
+  return useMutation({ mutationFn: (data) => aeco_sendKaChatMessage(data), ...options?.mutation });
+}
+
+export const aeco_listMarketplaceApps = async (params?: Aeco_listMarketplaceAppsParams, options?: RequestInit): Promise<{ data: DtMarketplaceAppOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.lifecycle_segment != null) searchParams.set("lifecycle_segment", String(params?.lifecycle_segment));
+  if (params?.featured_only != null) searchParams.set("featured_only", String(params?.featured_only));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/marketplace/apps?${queryString}` : `/api/projects/aeco-hub/marketplace/apps`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listMarketplaceAppsKey = (params?: Aeco_listMarketplaceAppsParams) => {
+  return ["/api/projects/aeco-hub/marketplace/apps", params] as const;
+};
+
+export function useAeco_listMarketplaceApps<TData = { data: DtMarketplaceAppOut[] }>(options?: { params?: Aeco_listMarketplaceAppsParams; query?: Omit<UseQueryOptions<{ data: DtMarketplaceAppOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listMarketplaceAppsKey(options?.params), queryFn: () => aeco_listMarketplaceApps(options?.params), ...options?.query });
+}
+
+export function useAeco_listMarketplaceAppsSuspense<TData = { data: DtMarketplaceAppOut[] }>(options?: { params?: Aeco_listMarketplaceAppsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtMarketplaceAppOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listMarketplaceAppsKey(options?.params), queryFn: () => aeco_listMarketplaceApps(options?.params), ...options?.query });
 }
 
 export const aeco_getPortfolioStats = async (options?: RequestInit): Promise<{ data: DtPortfolioStatsOut }> => {
@@ -4176,6 +4403,33 @@ export function useAeco_getDocumentStats<TData = { data: DtDocumentStatsOut }>(o
 
 export function useAeco_getDocumentStatsSuspense<TData = { data: DtDocumentStatsOut }>(options: { params: Aeco_getDocumentStatsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtDocumentStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: aeco_getDocumentStatsKey(options.params), queryFn: () => aeco_getDocumentStats(options.params), ...options?.query });
+}
+
+export const aeco_listProjectIntegrations = async (params: Aeco_listProjectIntegrationsParams, options?: RequestInit): Promise<{ data: DtPartnerIntegrationOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/integrations?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/integrations`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listProjectIntegrationsKey = (params?: Aeco_listProjectIntegrationsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/integrations", params] as const;
+};
+
+export function useAeco_listProjectIntegrations<TData = { data: DtPartnerIntegrationOut[] }>(options: { params: Aeco_listProjectIntegrationsParams; query?: Omit<UseQueryOptions<{ data: DtPartnerIntegrationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listProjectIntegrationsKey(options.params), queryFn: () => aeco_listProjectIntegrations(options.params), ...options?.query });
+}
+
+export function useAeco_listProjectIntegrationsSuspense<TData = { data: DtPartnerIntegrationOut[] }>(options: { params: Aeco_listProjectIntegrationsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtPartnerIntegrationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listProjectIntegrationsKey(options.params), queryFn: () => aeco_listProjectIntegrations(options.params), ...options?.query });
 }
 
 export const aeco_listIssues = async (params: Aeco_listIssuesParams, options?: RequestInit): Promise<{ data: DtIssueOut[] }> => {
@@ -4583,6 +4837,33 @@ export function useAeco_listSpaceRoomRequirements<TData = { data: DtRoomRequirem
 
 export function useAeco_listSpaceRoomRequirementsSuspense<TData = { data: DtRoomRequirementOut[] }>(options: { params: Aeco_listSpaceRoomRequirementsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtRoomRequirementOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: aeco_listSpaceRoomRequirementsKey(options.params), queryFn: () => aeco_listSpaceRoomRequirements(options.params), ...options?.query });
+}
+
+export const aeco_listTools = async (params?: Aeco_listToolsParams, options?: RequestInit): Promise<{ data: DtMarketplacePartnerOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.lifecycle_segment != null) searchParams.set("lifecycle_segment", String(params?.lifecycle_segment));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/tools?${queryString}` : `/api/projects/aeco-hub/tools`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listToolsKey = (params?: Aeco_listToolsParams) => {
+  return ["/api/projects/aeco-hub/tools", params] as const;
+};
+
+export function useAeco_listTools<TData = { data: DtMarketplacePartnerOut[] }>(options?: { params?: Aeco_listToolsParams; query?: Omit<UseQueryOptions<{ data: DtMarketplacePartnerOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listToolsKey(options?.params), queryFn: () => aeco_listTools(options?.params), ...options?.query });
+}
+
+export function useAeco_listToolsSuspense<TData = { data: DtMarketplacePartnerOut[] }>(options?: { params?: Aeco_listToolsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtMarketplacePartnerOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listToolsKey(options?.params), queryFn: () => aeco_listTools(options?.params), ...options?.query });
 }
 
 export const bsh_getCurrentCustomer = async (params?: Bsh_getCurrentCustomerParams, options?: RequestInit): Promise<{ data: BshCustomerOut }> => {

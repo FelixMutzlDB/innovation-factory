@@ -240,6 +240,14 @@ class AecoLifecycleSegment(str, Enum):
     visualize = "visualize"
 
 
+class AecoChatRole(str, Enum):
+    """Conversation role for AECO Hub chat messages."""
+
+    user = "user"
+    assistant = "assistant"
+    system = "system"
+
+
 # ============================================================================
 # Core Entities
 # ============================================================================
@@ -653,6 +661,31 @@ class DtRelationship(SQLModel, table=True):
 
 
 # ============================================================================
+# Chat (AI agent conversations)
+# ============================================================================
+
+
+class DtChatSession(SQLModel, table=True):
+    __tablename__ = "dt_chat_sessions"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    project_id: Optional[int] = Field(default=None, foreign_key="dt_projects.id", index=True)
+    agent_kind: str = Field(default="mas")  # 'mas' or 'ka'
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class DtChatMessage(SQLModel, table=True):
+    __tablename__ = "dt_chat_messages"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    session_id: int = Field(foreign_key="dt_chat_sessions.id", index=True)
+    role: AecoChatRole
+    content: str = Field(sa_column=Column(Text))
+    sources_json: Optional[dict] = Field(default=None, sa_column=Column(JSON))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# ============================================================================
 # Pydantic Output Models
 # ============================================================================
 
@@ -1015,6 +1048,71 @@ class DtTwinOut(BaseModel):
     project_name: str
     project_phase: AecoProjectPhase
     buildings: list[DtTwinBuildingOut]
+
+
+# -- Chat -------------------------------------------------------------
+
+
+class DtChatMessageIn(BaseModel):
+    message: str
+    session_id: Optional[int] = None
+    project_id: Optional[int] = None
+
+
+class DtChatSessionOut(BaseModel):
+    id: int
+    project_id: Optional[int] = None
+    agent_kind: str
+    created_at: datetime
+
+
+class DtChatMessageOut(BaseModel):
+    id: int
+    session_id: int
+    role: AecoChatRole
+    content: str
+    sources_json: Optional[dict] = None
+    created_at: datetime
+
+
+class DtChatHistoryOut(BaseModel):
+    session: DtChatSessionOut
+    messages: list[DtChatMessageOut]
+
+
+# -- Marketplace ------------------------------------------------------
+
+
+class DtMarketplacePartnerOut(BaseModel):
+    id: int
+    name: str
+    description: str
+    website: str
+    logo_url: str
+    lifecycle_segment: AecoLifecycleSegment
+
+
+class DtMarketplaceAppOut(BaseModel):
+    id: int
+    partner_id: int
+    partner_name: str
+    name: str
+    description: str
+    lifecycle_segment: AecoLifecycleSegment
+    logo_url: str
+    is_featured: bool
+
+
+class DtPartnerIntegrationOut(BaseModel):
+    id: int
+    project_id: int
+    app_id: int
+    app_name: str
+    partner_name: str
+    lifecycle_segment: AecoLifecycleSegment
+    status: AecoIntegrationStatus
+    activated_at: Optional[datetime] = None
+    notes: str
 
 
 # -- Live sensor readings (synthesized; not from UC) ------------------

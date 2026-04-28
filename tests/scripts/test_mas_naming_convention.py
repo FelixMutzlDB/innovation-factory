@@ -97,6 +97,7 @@ class TestMasNamingConvention:
         for var, display_token in [
             ("adtech_agents", "AdTech Intelligence Supervisor"),
             ("hb_agents", "HB Product Center Supervisor"),
+            ("aeco_agents", "AECO Hub Supervisor"),
         ]:
             start = src.find(f"{var} = []")
             assert start >= 0, f"couldn't find {var} block"

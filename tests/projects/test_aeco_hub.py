@@ -159,12 +159,19 @@ class TestAecoRouters:
     def test_every_route_has_response_model_and_operation_id(self):
         """Regression: ``response_model`` + ``operation_id`` are required on
         every route — without them the TypeScript client generator emits
-        ``unknown`` types and the frontend hooks break silently."""
+        ``unknown`` types and the frontend hooks break silently.
+
+        Streaming POST endpoints (chat) are exempt from ``response_model``
+        because they return a ``StreamingResponse`` whose body shape is
+        a JSON-line protocol, not a single Pydantic model.
+        """
         from fastapi.routing import APIRoute
+        STREAMING_PATHS = {"/chat", "/ka-chat"}
         for r in aeco_router.routes:
             if not isinstance(r, APIRoute):
                 continue
-            assert r.response_model is not None, f"Missing response_model on {r.path}"
+            if r.path not in STREAMING_PATHS:
+                assert r.response_model is not None, f"Missing response_model on {r.path}"
             assert r.operation_id is not None, f"Missing operation_id on {r.path}"
             assert r.operation_id.startswith("aeco_"), f"operation_id must start with aeco_: {r.operation_id}"
 

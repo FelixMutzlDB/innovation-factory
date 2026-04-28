@@ -146,6 +146,12 @@ def emit_env_vars(state_file: Path) -> None:
     emit("ADTECH_MAS_ENDPOINT_NAME", mas.get("adtech", {}).get("endpoint_name", ""))
     emit("HB_MAS_TILE_ID", mas.get("hb", {}).get("tile_id", ""))
     emit("HB_MAS_ENDPOINT_NAME", mas.get("hb", {}).get("endpoint_name", ""))
+    emit("AECO_STANDARDS_COMPLIANCE_KA_TILE_ID",
+         kas.get("aeco_standards_compliance", {}).get("tile_id", ""))
+    emit("AECO_STANDARDS_COMPLIANCE_KA_ENDPOINT",
+         kas.get("aeco_standards_compliance", {}).get("endpoint_name", ""))
+    emit("AECO_MAS_TILE_ID", mas.get("aeco", {}).get("tile_id", ""))
+    emit("AECO_MAS_ENDPOINT_NAME", mas.get("aeco", {}).get("endpoint_name", ""))
     emit("ADTECH_DASHBOARD_ID", dbs.get("adtech", ""))
     emit("HB_AQ_DASHBOARD_ID", dbs.get("hb_aq", ""))
     emit("HB_SC_DASHBOARD_ID", dbs.get("hb_sc", ""))

@@ -37,6 +37,9 @@ import { Route as ProjectsHbProductCenterAuthenticityRouteImport } from './../ro
 import { Route as ProjectsBshHomeConnectSupportRouteImport } from './../routes/projects/bsh-home-connect/support'
 import { Route as ProjectsBshHomeConnectProfileRouteImport } from './../routes/projects/bsh-home-connect/profile'
 import { Route as ProjectsBshHomeConnectDashboardRouteImport } from './../routes/projects/bsh-home-connect/dashboard'
+import { Route as ProjectsAecoHubToolsRouteImport } from './../routes/projects/aeco-hub/tools'
+import { Route as ProjectsAecoHubMarketplaceRouteImport } from './../routes/projects/aeco-hub/marketplace'
+import { Route as ProjectsAecoHubAgentRouteImport } from './../routes/projects/aeco-hub/agent'
 import { Route as ProjectsAdtechIntelligenceProfileRouteImport } from './../routes/projects/adtech-intelligence/profile'
 import { Route as ProjectsAdtechIntelligenceIssuesRouteImport } from './../routes/projects/adtech-intelligence/issues'
 import { Route as ProjectsAdtechIntelligenceDashboardRouteImport } from './../routes/projects/adtech-intelligence/dashboard'
@@ -225,6 +228,22 @@ const ProjectsBshHomeConnectDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => ProjectsBshHomeConnectRouteRoute,
   } as any)
+const ProjectsAecoHubToolsRoute = ProjectsAecoHubToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
+  getParentRoute: () => ProjectsAecoHubRouteRoute,
+} as any)
+const ProjectsAecoHubMarketplaceRoute =
+  ProjectsAecoHubMarketplaceRouteImport.update({
+    id: '/marketplace',
+    path: '/marketplace',
+    getParentRoute: () => ProjectsAecoHubRouteRoute,
+  } as any)
+const ProjectsAecoHubAgentRoute = ProjectsAecoHubAgentRouteImport.update({
+  id: '/agent',
+  path: '/agent',
+  getParentRoute: () => ProjectsAecoHubRouteRoute,
+} as any)
 const ProjectsAdtechIntelligenceProfileRoute =
   ProjectsAdtechIntelligenceProfileRouteImport.update({
     id: '/profile',
@@ -414,6 +433,9 @@ export interface FileRoutesByFullPath {
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
   '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
   '/projects/adtech-intelligence/profile': typeof ProjectsAdtechIntelligenceProfileRoute
+  '/projects/aeco-hub/agent': typeof ProjectsAecoHubAgentRoute
+  '/projects/aeco-hub/marketplace': typeof ProjectsAecoHubMarketplaceRoute
+  '/projects/aeco-hub/tools': typeof ProjectsAecoHubToolsRoute
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
@@ -466,6 +488,9 @@ export interface FileRoutesByTo {
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
   '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
   '/projects/adtech-intelligence/profile': typeof ProjectsAdtechIntelligenceProfileRoute
+  '/projects/aeco-hub/agent': typeof ProjectsAecoHubAgentRoute
+  '/projects/aeco-hub/marketplace': typeof ProjectsAecoHubMarketplaceRoute
+  '/projects/aeco-hub/tools': typeof ProjectsAecoHubToolsRoute
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
@@ -525,6 +550,9 @@ export interface FileRoutesById {
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
   '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
   '/projects/adtech-intelligence/profile': typeof ProjectsAdtechIntelligenceProfileRoute
+  '/projects/aeco-hub/agent': typeof ProjectsAecoHubAgentRoute
+  '/projects/aeco-hub/marketplace': typeof ProjectsAecoHubMarketplaceRoute
+  '/projects/aeco-hub/tools': typeof ProjectsAecoHubToolsRoute
   '/projects/bsh-home-connect/dashboard': typeof ProjectsBshHomeConnectDashboardRoute
   '/projects/bsh-home-connect/profile': typeof ProjectsBshHomeConnectProfileRoute
   '/projects/bsh-home-connect/support': typeof ProjectsBshHomeConnectSupportRoute
@@ -585,6 +613,9 @@ export interface FileRouteTypes {
     | '/projects/adtech-intelligence/dashboard'
     | '/projects/adtech-intelligence/issues'
     | '/projects/adtech-intelligence/profile'
+    | '/projects/aeco-hub/agent'
+    | '/projects/aeco-hub/marketplace'
+    | '/projects/aeco-hub/tools'
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
@@ -637,6 +668,9 @@ export interface FileRouteTypes {
     | '/projects/adtech-intelligence/dashboard'
     | '/projects/adtech-intelligence/issues'
     | '/projects/adtech-intelligence/profile'
+    | '/projects/aeco-hub/agent'
+    | '/projects/aeco-hub/marketplace'
+    | '/projects/aeco-hub/tools'
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
@@ -695,6 +729,9 @@ export interface FileRouteTypes {
     | '/projects/adtech-intelligence/dashboard'
     | '/projects/adtech-intelligence/issues'
     | '/projects/adtech-intelligence/profile'
+    | '/projects/aeco-hub/agent'
+    | '/projects/aeco-hub/marketplace'
+    | '/projects/aeco-hub/tools'
     | '/projects/bsh-home-connect/dashboard'
     | '/projects/bsh-home-connect/profile'
     | '/projects/bsh-home-connect/support'
@@ -949,6 +986,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/bsh-home-connect/dashboard'
       preLoaderRoute: typeof ProjectsBshHomeConnectDashboardRouteImport
       parentRoute: typeof ProjectsBshHomeConnectRouteRoute
+    }
+    '/projects/aeco-hub/tools': {
+      id: '/projects/aeco-hub/tools'
+      path: '/tools'
+      fullPath: '/projects/aeco-hub/tools'
+      preLoaderRoute: typeof ProjectsAecoHubToolsRouteImport
+      parentRoute: typeof ProjectsAecoHubRouteRoute
+    }
+    '/projects/aeco-hub/marketplace': {
+      id: '/projects/aeco-hub/marketplace'
+      path: '/marketplace'
+      fullPath: '/projects/aeco-hub/marketplace'
+      preLoaderRoute: typeof ProjectsAecoHubMarketplaceRouteImport
+      parentRoute: typeof ProjectsAecoHubRouteRoute
+    }
+    '/projects/aeco-hub/agent': {
+      id: '/projects/aeco-hub/agent'
+      path: '/agent'
+      fullPath: '/projects/aeco-hub/agent'
+      preLoaderRoute: typeof ProjectsAecoHubAgentRouteImport
+      parentRoute: typeof ProjectsAecoHubRouteRoute
     }
     '/projects/adtech-intelligence/profile': {
       id: '/projects/adtech-intelligence/profile'
@@ -1233,11 +1291,17 @@ const ProjectsAecoHubProjectsProjectIdRouteRouteWithChildren =
   )
 
 interface ProjectsAecoHubRouteRouteChildren {
+  ProjectsAecoHubAgentRoute: typeof ProjectsAecoHubAgentRoute
+  ProjectsAecoHubMarketplaceRoute: typeof ProjectsAecoHubMarketplaceRoute
+  ProjectsAecoHubToolsRoute: typeof ProjectsAecoHubToolsRoute
   ProjectsAecoHubIndexRoute: typeof ProjectsAecoHubIndexRoute
   ProjectsAecoHubProjectsProjectIdRouteRoute: typeof ProjectsAecoHubProjectsProjectIdRouteRouteWithChildren
 }
 
 const ProjectsAecoHubRouteRouteChildren: ProjectsAecoHubRouteRouteChildren = {
+  ProjectsAecoHubAgentRoute: ProjectsAecoHubAgentRoute,
+  ProjectsAecoHubMarketplaceRoute: ProjectsAecoHubMarketplaceRoute,
+  ProjectsAecoHubToolsRoute: ProjectsAecoHubToolsRoute,
   ProjectsAecoHubIndexRoute: ProjectsAecoHubIndexRoute,
   ProjectsAecoHubProjectsProjectIdRouteRoute:
     ProjectsAecoHubProjectsProjectIdRouteRouteWithChildren,
