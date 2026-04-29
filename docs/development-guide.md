@@ -398,6 +398,65 @@ If an enum is specific to one project, prefix it with the project's short name. 
 
 ---
 
+## 13. AECO Hub — Lessons from a 6-phase greenfield build
+
+The AECO Hub accelerator (shipped 2026-04-29) was the first end-to-end build on the platform after the Phase 1-12 hardening above. Five new lessons surfaced.
+
+### 13.1 Server-side `INSERT … SELECT FROM range(N)` for high-volume seeding
+
+Phase 3 needed ~500K synthetic IoT sensor readings in `aeco_hub.dt_sensor_readings`. Streaming 500K rows of `INSERT VALUES` literals over the SQL API would take many minutes. Instead, `scripts/seed_uc_aeco_data.py::_sensor_readings_insert` generates rows server-side:
+
+```sql
+INSERT INTO ...dt_sensor_readings (sensor_code, sensor_type, ...)
+SELECT
+    CONCAT('S-', ...),
+    'zone_temp',
+    ...
+    {mid} + {amplitude} * sin(id / 24.0) +
+        ({amplitude * 0.2}) * (rand({seed}) - 0.5) AS value,
+    'C'
+FROM range({rows_per_building})
+```
+
+The warehouse runs the row generation; the Python client only sends a handful of these statements. 499,992 rows landed in under 2 minutes on a 2X-Small warehouse. Use this pattern any time you need >10K rows of synthetic data into UC.
+
+### 13.2 Catalog-parameterize seed scripts so they work across workspaces
+
+`scripts/seed_uc_aeco_data.py::build_sql(catalog=...)` accepts the catalog as an argument. The deploy orchestrator (`deploy_agents_fevm.py`) passes `felix_demo_catalog` for fevm-felix-demo. A standalone run defaults to `innovation_factory_catalog`. Pre-AECO seed scripts (HB) hard-coded the catalog and only worked in one workspace. **Pattern**: every seed function takes `catalog` as the first argument.
+
+### 13.3 PGlite + psycopg + NullPool = `DuplicatePreparedStatement`
+
+`apx dev start` was failing with `psycopg.errors.DuplicatePreparedStatement: prepared statement "_pg3_0" already exists` during seed. Root cause: psycopg auto-prepares statements after a few executions and names them `_pg3_<n>` per connection; PGlite leaks prepared-statement state across connection resets while NullPool creates a fresh connection per operation. Fix in `runtime.py`:
+
+```python
+if self._is_local_dev:
+    engine = create_engine(
+        self.engine_url,
+        poolclass=NullPool,
+        connect_args={"prepare_threshold": None},  # disable for PGlite
+    )
+```
+
+`prepare_threshold=None` makes psycopg execute statements unprepared. Slower in theory, irrelevant for seed workloads.
+
+### 13.4 Lakeview dashboards: `serialized_dashboard` shape ≠ checked-in JSON shape
+
+Phase 9 in `deploy_agents_fevm.py` migrates dashboards by fetching `serialized_dashboard` from a source workspace and POSTing it to the target. The shape returned by `GET /api/2.0/lakeview/dashboards/{id}` differs from the older "datasets/pages/widgets" JSON layout that some checked-in dashboard files (`dashboard_aq.json`) still use. The actual format:
+
+- `datasets`: `[{name, displayName, queryLines: [string]}]` — `queryLines` is an array of SQL strings, not a single `query.sql`
+- `pages`: `[{name, displayName, pageType, layout: [...]}]` — pages have `layout`, not `widgets`
+- Each `layout` entry: `{widget: {name, queries: [...], spec: {widgetType, ...}}, position: {x, y, width, height}}`
+
+When authoring new dashboards from scratch (Phase 9a in AECO Hub), use the live API shape. The legacy checked-in files were copies that worked only as input to the migration phase, not as templates for fresh creation.
+
+### 13.5 MAS sub-agent naming: snake_case + `_supervisor` suffix (D3, AECO Hub)
+
+D3 introduced the snake_case sub-agent name convention (`issue_resolution`, `customer_relations`). AECO Hub extended it: the supervisor name itself ends with `_supervisor` (`aeco_hub_supervisor`). Sub-agents stay snake_case (`project_analytics`, `operations_intelligence`, `standards_compliance`). The instructions string MUST reference each sub-agent's machine name in backticks — the regression test `tests/scripts/test_mas_naming_convention.py` enforces this.
+
+When adding a new MAS to phase 7 of `deploy_agents_fevm.py`, place its block AFTER the previously-defined `_agents = []` blocks, not BETWEEN them — the regex parser in the convention test scans for `var = []` then the next `_api("post", "/api/2.1/supervisor-agents")`, and an inserted MAS between two existing ones leaks the wrong `instructions` block into the wrong test case.
+
+---
+
 ## Summary
 
 | # | Topic | Key Lesson |
@@ -414,3 +473,4 @@ If an enum is specific to one project, prefix it with the project's short name. 
 | 10 | Merge Conflicts | Multi-project repos have predictable additive conflicts |
 | 11 | Seeding Strategy | Two-tier: lightweight PGlite seeds + full-scale cluster/Lakebase seeds |
 | 12 | Enum Naming | Prefix project enums to avoid OpenAPI schema collisions (e.g., `MacAlertSeverity` not `AlertSeverity`) |
+| 13 | AECO Hub Lessons | Server-side `range()` seeding; catalog-parameterized scripts; `prepare_threshold=None` for PGlite; live Lakeview shape; MAS supervisor block ordering |

@@ -54,11 +54,15 @@ resources:
             permission: CAN_QUERY
         - name: adtech-mas-endpoint
           serving_endpoint:
-            name: mas-9e45f45a-endpoint
+            name: mas-d07b2965-endpoint
             permission: CAN_QUERY
         - name: hb-mas-endpoint
           serving_endpoint:
-            name: mas-d14be5f2-endpoint
+            name: mas-be696ff0-endpoint
+            permission: CAN_QUERY
+        - name: aeco-mas-endpoint
+          serving_endpoint:
+            name: mas-7a265c24-endpoint
             permission: CAN_QUERY
         - name: adtech-issue-resolution-ka
           serving_endpoint:
@@ -67,6 +71,10 @@ resources:
         - name: adtech-customer-relations-ka
           serving_endpoint:
             name: ka-d29e8002-endpoint
+            permission: CAN_QUERY
+        - name: aeco-standards-compliance-ka
+          serving_endpoint:
+            name: ka-23429ec7-endpoint
             permission: CAN_QUERY
       config:
         command: ["uvicorn", "innovation_factory.backend.app:app", "--workers", "2"]
@@ -106,13 +114,27 @@ resources:
           - name: ADTECH_CUSTOMER_RELATIONS_KA_ENDPOINT
             value: ka-d29e8002-endpoint
           - name: ADTECH_MAS_TILE_ID
-            value: 9e45f45a-66c5-43ec-b749-49f3ee2f1341
+            value: d07b2965-62b2-4b1b-98d4-be87cce45238
           - name: ADTECH_MAS_ENDPOINT_NAME
-            value: mas-9e45f45a-endpoint
+            value: mas-d07b2965-endpoint
           - name: HB_MAS_TILE_ID
-            value: d14be5f2-8b23-48d1-a562-f4f470b91ce3
+            value: be696ff0-91e9-49d1-82e8-4e8829e88a60
           - name: HB_MAS_ENDPOINT_NAME
-            value: mas-d14be5f2-endpoint
+            value: mas-be696ff0-endpoint
+          - name: AECO_PROJECT_ANALYTICS_GENIE_SPACE_ID
+            value: 01f1430db3eb1149bb724acdbc5d0b15
+          - name: AECO_OPERATIONS_INTELLIGENCE_GENIE_SPACE_ID
+            value: 01f1430db4ec1dab80d76ec994b0d2e4
+          - name: AECO_ENERGY_DASHBOARD_ID
+            value: 01f1430ffbf61412b006b193720d09b7
+          - name: AECO_STANDARDS_COMPLIANCE_KA_TILE_ID
+            value: 23429ec7-e769-4d5e-a9c9-38bc68516af4
+          - name: AECO_STANDARDS_COMPLIANCE_KA_ENDPOINT
+            value: ka-23429ec7-endpoint
+          - name: AECO_MAS_TILE_ID
+            value: 7a265c24-4067-41cb-8488-596ea968134b
+          - name: AECO_MAS_ENDPOINT_NAME
+            value: mas-7a265c24-endpoint
 
 targets:
   dev:

@@ -1,16 +1,16 @@
 # Innovation Factory
 
-> Last updated: 2026-04-13 | Owner: Felix Mutzl | FEIP: [FEIP-5472](https://databricks.atlassian.net/browse/FEIP-5472)
+> Last updated: 2026-04-29 | Owner: Felix Mutzl | FEIP: [FEIP-5472](https://databricks.atlassian.net/browse/FEIP-5472)
 > Platform: Multi-accelerator showcase for Databricks Apps (FastAPI + React)
-> Stage: 5 accelerators live, deployed to `fevm-felix-demo`
+> Stage: 6 accelerators live, deployed to `fevm-felix-demo`
 > Tracking: [TODO.md](docs/TODO.md) | Refinement: [docs/tasks/refinement.md](docs/tasks/refinement.md)
 
-## Current State (2026-04-13)
+## Current State (2026-04-29)
 
 | Area | Status |
 |------|--------|
-| **Accelerators** | 5 live (ViDistrictOne, BSH Remote Assist, MOL ASM Cockpit, AdTech Intelligence, HB Product Center) |
-| **6th accelerator** | AECO Hub — planned ([plan](docs/projects/aeco-hub-plan.md)) |
+| **Accelerators** | 6 live (ViDistrictOne, BSH Remote Assist, MOL ASM Cockpit, AdTech Intelligence, HB Product Center, AECO Hub) |
+| **AECO Hub plan** | [docs/projects/aeco-hub-plan.md](docs/projects/aeco-hub-plan.md) — Phases 1-6 shipped 2026-04-29 |
 | **Database** | Lakebase Autoscaling (production), PGlite (local dev) |
 | **Workspace** | `fevm-felix-demo` (migrated from `fe-sandbox-felix-demo-sandbox` → `fe-shared-demo`) |
 | **Security** | SQL injection fixed (P0); markdown XSS, rate limiting still open — see [TODO.md](docs/TODO.md) |
@@ -41,6 +41,7 @@ src/innovation_factory/
       mol_asm_cockpit/              # Fuel & Retail (station KPIs, anomalies)
       adtech_intelligence/          # Advertising (campaigns, Genie, MAS)
       hb_product_center/            # Fashion (CLIP recognition, quality, supply chain)
+      aeco_hub/                     # AECO digital twin (BIM, IoT, energy, MAS, KA, graph)
   ui/
     main.tsx                        # React entry (Router, QueryClient)
     routes/                         # TanStack Router file-based routes

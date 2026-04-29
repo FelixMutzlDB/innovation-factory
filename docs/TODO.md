@@ -109,20 +109,29 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 - D2 — `.env.example`
 - D3 — README refresh to list all 5 accelerators
 
+**P5 — backlog (post-AECO Hub):**
+- B1 — delete unused Lakebase dev branch `dev-aeco-hub` on `fevm-felix-demo` (uid `br-dark-sun-d7t7sgls`). Created Phase 1 for schema iteration but the app reads/writes via PGlite locally and Lakebase production; the dev branch never got wired in. Keep until Phase 6 deploy is verified, then drop with `databricks postgres delete-branch projects/innovation-factory/branches/dev-aeco-hub -p fevm-felix-demo`.
+- B2 — `tests/conftest.py` `DATABASE_URL` is missing `?uri=true` so SQLite treats `file:test_shared` as a literal filename, leaking a real `file:test_shared` into the repo root on each `pytest` run. Found Phase 2; deleted the stale file but didn't fix the root cause.
+
 **P4 — lifts the ceiling, not the floor:**
 - A2 — Lakebase config section in development-guide.md
 - T-future — Playwright E2E smoke for each accelerator's golden path
 
 ---
 
-## New Accelerator — AECO Hub [Phase: Planned]
+## New Accelerator — AECO Hub [Phase: Shipped 2026-04-29]
+
+All six phases from `docs/projects/aeco-hub-plan.md` complete:
 
 | ID | Task | Status | Done | Notes |
 |----|------|--------|------|-------|
-| N1 | Finalize data model & AECO tooling-ecosystem mapping | `[ ]` | — | Plan: `docs/projects/aeco-hub-plan.md` |
-| N2 | Backend: project scaffolding + seed data | `[ ]` | — | Follow standard layout in `projects/` |
-| N3 | Frontend: routes + dashboard pages | `[ ]` | — | — |
-| N4 | Databricks integration (dashboards, agents) | `[ ]` | — | — |
+| N1 | Finalize data model & AECO tooling-ecosystem mapping | `[x]` | 2026-04-27 | Plan: `docs/projects/aeco-hub-plan.md` |
+| N2 | Backend: project scaffolding + seed data (Phase 1) | `[x]` | 2026-04-27 | 27 tables, 23 enums, 1.3K-row Lakebase seed |
+| N3 | Backend: lifecycle routers (Phase 2) | `[x]` | 2026-04-27 | 5 routers (issues / docs / design / build / operate) + 25 endpoints |
+| N4 | UC tables + 500K sensor seed + 2 Genies + AI/BI dashboard (Phase 3) | `[x]` | 2026-04-27 | felix_demo_catalog.aeco_hub schema |
+| N5 | KA + MAS supervisor + Tools / Marketplace / Agent UI (Phase 4) | `[x]` | 2026-04-28 | aeco_hub_supervisor (mas-7a265c24-endpoint) |
+| N6 | Relationship graph + force-directed view + phase stepper (Phase 5) | `[x]` | 2026-04-28 | react-force-graph-2d, 227-edge seed |
+| N7 | Deploy bundle to fevm-felix-demo + docs (Phase 6) | `[x]` | 2026-04-29 | App RUNNING at innovation-factory-7474658643170817.aws.databricksapps.com |
 
 ---
 
@@ -137,5 +146,5 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 | P4 Testing | 6 | 4 | 1 open + 1 partial |
 | P5 Documentation | 4 | 1 | 3 |
 | P6 Cleanup | 3 | 3 | 0 |
-| New (AECO) | 4 | 0 | 4 |
-| **Total** | **39** | **25** | **14** |
+| AECO Hub | 7 | 7 | 0 |
+| **Total** | **42** | **32** | **10** |
