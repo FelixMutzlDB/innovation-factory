@@ -173,7 +173,7 @@ async def health_summary(request: Request) -> HealthSummaryOut:
             # that the per-project seed actually committed. Allowlist below
             # is hardcoded; no user input flows into the SQL string.
             for table_name in (
-                "vh_homes", "bsh_appliances", "mac_stations",
+                "vh_neighborhoods", "bsh_devices", "mac_stations",
                 "at_advertisers", "hb_products", "dt_projects",
             ):
                 try:
