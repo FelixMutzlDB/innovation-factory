@@ -58,6 +58,21 @@ def _run_checked(cmd: list[str], *, cwd: Path | None = None) -> None:
         raise SystemExit(f"command exited with {rc}: {' '.join(cmd)}")
 
 
+def grant_lakebase_app_permissions(profile: str) -> None:
+    """Grant the deployed app's SP CREATE on schema public.
+
+    Without this, ``SQLModel.metadata.create_all`` on the next deploy
+    fails to create new tables (the SP only has connect-level access by
+    default). Idempotent — safe to run on every bootstrap.
+    """
+    print("\n=== Lakebase: grant app SP CREATE on schema public ===")
+    _run_checked([
+        sys.executable,
+        str(SCRIPT_DIR / "grant_lakebase_app_permissions.py"),
+        "--profile", profile,
+    ])
+
+
 def configure_embedding(profile: str) -> None:
     """Add Databricks-Apps domains to the embedding allowlist.
 
@@ -206,6 +221,10 @@ def main() -> None:
     # Workspace-level setting — unlock dashboard embedding.
     if not args.skip_embedding_config:
         configure_embedding(args.target)
+
+    # Lakebase grant — the deployed app's SP needs CREATE on schema public
+    # so future deploys can add new tables (Phase 6 follow-up).
+    grant_lakebase_app_permissions(args.target)
 
     # Phase 8 — print the summary.
     print("\n=== Phase 8: summary ===")

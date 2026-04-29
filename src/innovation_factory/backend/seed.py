@@ -1,53 +1,82 @@
-"""Master seed script for the innovation-factory platform."""
+"""Master seed script for the innovation-factory platform.
+
+Each project's seed runs in its own transaction (committed independently)
+so a failure in one project — e.g. AECO Hub's tables don't exist yet on a
+fresh deploy — can't roll back another project's inserts. The earlier
+behaviour was a single big ``session.commit()`` at the end, which on
+Phase 6 deploy caused the platform Project row for ``aeco-hub`` to roll
+back when ``seed_aeco_data`` raised on the missing ``dt_projects`` table.
+
+Each individual seed function is idempotent (it checks for existing rows
+before inserting), so re-running the master seed is safe.
+"""
+from typing import Callable
+
 from sqlmodel import Session, select
-from .runtime import Runtime
-from .models import Project
-from .projects.vi_home_one.seed import seed_vh_data
-from .projects.bsh_home_connect.seed import seed_bsh_data
-from .projects.mol_asm_cockpit.seed import seed_mac_data
-from .projects.adtech_intelligence.seed import seed_at_data
-from .projects.hb_product_center.seed import seed_hb_data
-from .projects.aeco_hub.seed import seed_aeco_data
+
 from .logger import logger
+from .models import Project
+from .projects.adtech_intelligence.seed import seed_at_data
+from .projects.aeco_hub.seed import seed_aeco_data
+from .projects.bsh_home_connect.seed import seed_bsh_data
+from .projects.hb_product_center.seed import seed_hb_data
+from .projects.mol_asm_cockpit.seed import seed_mac_data
+from .projects.vi_home_one.seed import seed_vh_data
+from .runtime import Runtime
+
+
+# (label, seed function). Order doesn't matter functionally — each runs in
+# its own transaction — but matches the historical sequence for easier
+# log scanning.
+_PROJECT_SEEDS: list[tuple[str, Callable[[Session], None]]] = [
+    ("ViDistrictOne", seed_vh_data),
+    ("BSH Home Connect", seed_bsh_data),
+    ("MOL ASM Cockpit", seed_mac_data),
+    ("AdTech Intelligence", seed_at_data),
+    ("HB Product Center", seed_hb_data),
+    ("AECO Hub", seed_aeco_data),
+]
+
+
+def _safe_seed(label: str, fn: Callable[[Session], None], session: Session) -> bool:
+    """Run a seed function and commit its transaction independently.
+
+    Returns ``True`` on success, ``False`` on failure (already rolled back).
+    Captures any exception so subsequent seeds in the master loop continue.
+    """
+    try:
+        fn(session)
+        session.commit()
+        return True
+    except Exception as e:
+        # Rollback the broken transaction so the next seed gets a fresh
+        # transaction state — without this, subsequent .exec() calls
+        # raise InFailedSqlTransaction on the same session.
+        session.rollback()
+        logger.error(f"Seed for {label} failed (continuing with others): {e}")
+        return False
 
 
 def check_and_seed_if_empty(runtime: Runtime):
-    """Check if database is empty and seed if needed.
+    """Run the master seed.
 
-    Always ensures all projects are registered and each project's data exists.
-    Individual seed functions are idempotent (they skip if their data exists).
+    The platform ``if_projects`` row + each per-project seed run in their
+    own transactions. All seeds are idempotent — they no-op when their
+    data is already present — so this can be called on every app start.
     """
+    print("\nStarting database seeding for innovation-factory...")
     with runtime.get_session() as session:
-        try:
-            project = session.exec(select(Project)).first()
-            if project:
-                logger.info("Database has data - checking for missing project seeds")
-                _seed_projects(session)
-                seed_vh_data(session)
-                seed_bsh_data(session)
-                seed_mac_data(session)
-                seed_at_data(session)
-                seed_hb_data(session)
-                seed_aeco_data(session)
-                session.commit()
-                return
-        except Exception as e:
-            logger.error(f"Error checking database: {e}")
+        # Platform-level Project rows always run first — landing-page cards
+        # depend on these. _seed_projects only flushes; we commit here.
+        if _safe_seed("platform projects", _seed_projects, session):
+            logger.info("Platform projects seeded.")
 
-        logger.info("Database is empty - running seed script")
-        print("\nStarting database seeding for innovation-factory...")
+        # Each project seeds its own data in an isolated transaction.
+        for label, fn in _PROJECT_SEEDS:
+            if _safe_seed(label, fn, session):
+                logger.info(f"  {label} seed OK.")
 
-        _seed_projects(session)
-        seed_vh_data(session)
-        seed_bsh_data(session)
-        seed_mac_data(session)
-        seed_at_data(session)
-        seed_hb_data(session)
-        seed_aeco_data(session)
-
-        session.commit()
-
-        print("\nDatabase seeding completed successfully!\n")
+    print("Database seeding completed.\n")
 
 
 def _seed_projects(session: Session):
