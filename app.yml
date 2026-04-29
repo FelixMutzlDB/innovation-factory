@@ -47,17 +47,15 @@ env:
   - name: WAREHOUSE_ID
     value: f7cdb11888c4799e
 
-  # Dashboards (Lakeview)
+  # AECO_AUTOGEN_BEGIN: resource-ids
   - name: ADTECH_DASHBOARD_ID
     value: 01f13f258d20183894ba2b942833b50e
-  - name: HB_AQ_DASHBOARD_ID
-    value: 01f13f258e021692aa4b7ab85d670c3e
   - name: HB_SC_DASHBOARD_ID
     value: 01f13f258ed810858ae5520e9f310f72
+  - name: HB_AQ_DASHBOARD_ID
+    value: 01f13f258e021692aa4b7ab85d670c3e
   - name: AECO_ENERGY_DASHBOARD_ID
     value: 01f1430ffbf61412b006b193720d09b7
-
-  # Genie spaces
   - name: HB_SC_GENIE_SPACE_ID
     value: 01f13e6f2a2e1310a6d536bc9d5b3a27
   - name: HB_AQ_GENIE_SPACE_ID
@@ -68,8 +66,6 @@ env:
     value: 01f1430db3eb1149bb724acdbc5d0b15
   - name: AECO_OPERATIONS_INTELLIGENCE_GENIE_SPACE_ID
     value: 01f1430db4ec1dab80d76ec994b0d2e4
-
-  # Knowledge Assistants (AdTech)
   - name: ADTECH_ISSUE_RESOLUTION_KA_TILE_ID
     value: 005ebf14-c32c-4862-a343-b9826ab27c40
   - name: ADTECH_ISSUE_RESOLUTION_KA_ENDPOINT
@@ -78,8 +74,10 @@ env:
     value: d29e8002-e57e-479b-846e-4c67f2426428
   - name: ADTECH_CUSTOMER_RELATIONS_KA_ENDPOINT
     value: ka-d29e8002-endpoint
-
-  # Multi-Agent Supervisors
+  - name: AECO_STANDARDS_COMPLIANCE_KA_TILE_ID
+    value: 23429ec7-e769-4d5e-a9c9-38bc68516af4
+  - name: AECO_STANDARDS_COMPLIANCE_KA_ENDPOINT
+    value: ka-23429ec7-endpoint
   - name: ADTECH_MAS_TILE_ID
     value: d07b2965-62b2-4b1b-98d4-be87cce45238
   - name: ADTECH_MAS_ENDPOINT_NAME
@@ -88,13 +86,8 @@ env:
     value: be696ff0-91e9-49d1-82e8-4e8829e88a60
   - name: HB_MAS_ENDPOINT_NAME
     value: mas-be696ff0-endpoint
-
-  # AECO Hub Knowledge Assistant + Multi-Agent Supervisor
-  - name: AECO_STANDARDS_COMPLIANCE_KA_TILE_ID
-    value: 23429ec7-e769-4d5e-a9c9-38bc68516af4
-  - name: AECO_STANDARDS_COMPLIANCE_KA_ENDPOINT
-    value: ka-23429ec7-endpoint
   - name: AECO_MAS_TILE_ID
     value: 7a265c24-4067-41cb-8488-596ea968134b
   - name: AECO_MAS_ENDPOINT_NAME
     value: mas-7a265c24-endpoint
+  # AECO_AUTOGEN_END

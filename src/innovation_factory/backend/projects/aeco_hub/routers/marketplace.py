@@ -41,7 +41,7 @@ def list_tools(
     stmt = select(DtMarketplacePartner)
     if lifecycle_segment:
         stmt = stmt.where(DtMarketplacePartner.lifecycle_segment == lifecycle_segment)
-    stmt = stmt.order_by(DtMarketplacePartner.lifecycle_segment, DtMarketplacePartner.name)  # type: ignore[invalid-argument-type]
+    stmt = stmt.order_by(DtMarketplacePartner.lifecycle_segment, DtMarketplacePartner.name)
     return db.exec(stmt).all()
 
 

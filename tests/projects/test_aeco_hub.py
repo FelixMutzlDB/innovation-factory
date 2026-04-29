@@ -161,16 +161,18 @@ class TestAecoRouters:
         every route — without them the TypeScript client generator emits
         ``unknown`` types and the frontend hooks break silently.
 
-        Streaming POST endpoints (chat) are exempt from ``response_model``
-        because they return a ``StreamingResponse`` whose body shape is
-        a JSON-line protocol, not a single Pydantic model.
+        Streaming endpoints (chat) are exempt from ``response_model``
+        because they return a ``StreamingResponse``. We detect them via
+        the ``@streaming_endpoint`` decorator marker rather than a path
+        allowlist, so adding new chat endpoints doesn't require editing
+        this test.
         """
         from fastapi.routing import APIRoute
-        STREAMING_PATHS = {"/chat", "/ka-chat"}
         for r in aeco_router.routes:
             if not isinstance(r, APIRoute):
                 continue
-            if r.path not in STREAMING_PATHS:
+            is_streaming = getattr(r.endpoint, "_innovation_streaming", False)
+            if not is_streaming:
                 assert r.response_model is not None, f"Missing response_model on {r.path}"
             assert r.operation_id is not None, f"Missing operation_id on {r.path}"
             assert r.operation_id.startswith("aeco_"), f"operation_id must start with aeco_: {r.operation_id}"

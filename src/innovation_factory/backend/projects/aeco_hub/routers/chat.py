@@ -16,7 +16,7 @@ from sqlmodel import select
 
 from ....dependencies import RuntimeDep, SessionDep
 from ....rate_limit import limiter
-from ....services.streaming import create_chat_stream
+from ....services.streaming import create_chat_stream, streaming_endpoint
 from ..models import (
     DtChatHistoryOut,
     DtChatMessage,
@@ -34,6 +34,7 @@ _chat_service = ChatService()
 
 @router.post("/chat", operation_id="aeco_sendChatMessage")
 @limiter.limit("30/minute")
+@streaming_endpoint
 async def send_chat_message(
     request: Request,
     message: DtChatMessageIn,
@@ -56,6 +57,7 @@ async def send_chat_message(
 
 @router.post("/ka-chat", operation_id="aeco_sendKaChatMessage")
 @limiter.limit("30/minute")
+@streaming_endpoint
 async def send_ka_chat_message(
     request: Request,
     message: DtChatMessageIn,

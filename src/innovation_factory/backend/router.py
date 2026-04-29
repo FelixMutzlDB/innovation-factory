@@ -165,7 +165,7 @@ async def health_summary(request: Request) -> HealthSummaryOut:
 
     try:
         with Session(runtime.engine) as session:
-            projects = list(session.exec(select(Project).order_by(Project.slug)).all())  # type: ignore[invalid-argument-type]
+            projects = list(session.exec(select(Project).order_by(Project.slug)).all())
             accelerator_slugs = [p.slug for p in projects]
             table_counts["if_projects"] = len(projects)
 
