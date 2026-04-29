@@ -215,8 +215,10 @@ def check_resource_id_drift() -> CheckResult:
     Drift here is a deploy-time landmine — Phase 6 hit this when the MAS
     rebuild left ``app.yml`` referencing the old endpoint name.
     """
+    # ``.env`` is gitignored / per-developer — local overrides are
+    # legitimate and we don't want CI flagging them. Only the checked-in
+    # config files have to agree.
     sources = {
-        ".env": _scan_id_refs(REPO_ROOT / ".env"),
         ".env.example": _scan_id_refs(REPO_ROOT / ".env.example"),
         "app.yml": _scan_id_refs(REPO_ROOT / "app.yml"),
         "databricks.yml": _scan_id_refs(REPO_ROOT / "databricks.yml"),
@@ -355,11 +357,16 @@ def check_dashboard_embedding(profile: str) -> CheckResult:
     required = {"databricksapps.com", "aws.databricksapps.com"}
     missing = required - set(domains)
     if missing:
+        # Demoted to ``warn``: empirically the deployed Databricks Apps
+        # iframe renders the dashboard fine even when this list reports
+        # empty (the workspace seems to apply a default elsewhere). If
+        # you're hitting "Embedding not allowed in this workspace" in
+        # the iframe, this is the lever to pull — re-run bootstrap.
         return CheckResult(
-            "dashboard_embedding", "err",
-            f"Missing approved domains: {sorted(missing)}. "
-            f"Run: python scripts/bootstrap.py --target {profile} --skip-dashboards "
-            f"(re-runs configure_embedding)",
+            "dashboard_embedding", "warn",
+            f"Approved domains list missing: {sorted(missing)}. "
+            f"Iframes may still work via workspace default, but to be safe run: "
+            f"python scripts/bootstrap.py --target {profile} --skip-dashboards",
             detail={"current_domains": domains, "missing": sorted(missing)},
         )
     return CheckResult(
