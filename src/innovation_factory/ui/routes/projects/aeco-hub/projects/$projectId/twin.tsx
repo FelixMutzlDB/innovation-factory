@@ -29,7 +29,7 @@ function TwinPage() {
         <h2 className="text-lg font-semibold">Spatial twin</h2>
         <p className="text-sm text-muted-foreground">
           Drill down through the spatial hierarchy: project → building → floor → space.
-          A force-directed graph view ships in Phase 5.
+          For an entity-relationship view, see the <span className="font-medium">Graph</span> tab.
         </p>
       </div>
 

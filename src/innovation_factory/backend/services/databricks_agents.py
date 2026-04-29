@@ -1,8 +1,29 @@
 """Shared utilities for Databricks Agent Bricks (MAS/KA) serving endpoints."""
 
+import re
+
 from databricks.sdk import WorkspaceClient
 
 from ..logger import logger
+
+
+# Supervisor MAS endpoints emit the routing decision as XML-ish blocks
+# (``<agent_query>...</agent_query>`` or ``<execute_tool>...</execute_tool>``)
+# in the first response turn before they would dispatch to a sub-agent.
+# Today the platform doesn't auto-orchestrate the second turn over our
+# Responses-API integration — see TODO in chat_service — so the dispatch
+# block leaks into the user-visible text. Strip it for now and keep only
+# any natural-language preamble. Long-term: detect the block, call the
+# named sub-agent, and stitch the answer back in.
+_ROUTING_BLOCK_RE = re.compile(
+    r"<(agent_query|execute_tool)\b[^>]*>.*?</\1>",
+    re.DOTALL,
+)
+
+
+def _strip_routing_blocks(text: str) -> str:
+    cleaned = _ROUTING_BLOCK_RE.sub("", text).strip()
+    return cleaned
 
 
 def query_agent_endpoint(
@@ -54,7 +75,7 @@ def extract_agent_text(response: dict | list | str) -> str:
         Extracted text string
     """
     if isinstance(response, str):
-        return response
+        return _strip_routing_blocks(response)
 
     if isinstance(response, dict):
         output = response.get("output")
@@ -69,13 +90,13 @@ def extract_agent_text(response: dict | list | str) -> str:
             texts = []
             for block in content:
                 if isinstance(block, dict) and block.get("type") == "output_text":
-                    texts.append(block.get("text", ""))
-            return "\n".join(texts) if texts else str(response)
+                    texts.append(_strip_routing_blocks(block.get("text", "")))
+            return "\n".join(t for t in texts if t) if texts else str(response)
         if isinstance(content, str):
-            return content
+            return _strip_routing_blocks(content)
         text = response.get("text")
         if isinstance(text, str):
-            return text
+            return _strip_routing_blocks(text)
         return str(response)
 
     if isinstance(response, list):

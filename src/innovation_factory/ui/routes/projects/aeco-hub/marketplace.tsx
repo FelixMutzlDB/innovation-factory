@@ -111,8 +111,8 @@ function AppsGrid({ segment }: { segment: string }) {
                 </div>
                 <div className="text-xs text-muted-foreground">{app.partner_name}</div>
               </div>
-              <Badge variant="outline" className="text-xs capitalize whitespace-nowrap">
-                {app.lifecycle_segment.replace(/_/g, " ")}
+              <Badge variant="outline" className="text-xs whitespace-nowrap">
+                {SEGMENT_LABEL[app.lifecycle_segment] ?? app.lifecycle_segment}
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground line-clamp-3">

@@ -123,3 +123,77 @@ api.include_router(mac_router, prefix="/projects/mol-asm-cockpit")
 api.include_router(at_router, prefix="/projects/adtech-intelligence")
 api.include_router(hb_router, prefix="/projects/hb-product-center")
 api.include_router(aeco_router, prefix="/projects/aeco-hub")
+
+
+# ---------------------------------------------------------------------------
+# Admin / observability — single-call deploy verification
+# ---------------------------------------------------------------------------
+
+class HealthSummaryOut(BaseModel):
+    db_ok: bool
+    accelerators_registered: int
+    accelerator_slugs: list[str]
+    table_counts: dict[str, int]
+    git_sha: str
+    startup_warnings: list[str]
+
+
+@api.get(
+    "/_health",
+    response_model=HealthSummaryOut,
+    operation_id="getHealthSummary",
+)
+async def health_summary(request: Request) -> HealthSummaryOut:
+    """Single-shot snapshot for CI / agent post-deploy verification.
+
+    Returns row counts for the platform tables + per-accelerator key tables
+    so a smoke test can assert ``db_ok=True`` and ``accelerators_registered=N``
+    without making N separate calls.
+    """
+    import os
+
+    from sqlalchemy import text
+    from sqlmodel import Session, select
+
+    from .models import Project
+
+    runtime = request.app.state.runtime
+    warnings: list[str] = list(getattr(request.app.state, "startup_warnings", []))
+    table_counts: dict[str, int] = {}
+    accelerator_slugs: list[str] = []
+    db_ok = True
+
+    try:
+        with Session(runtime.engine) as session:
+            projects = list(session.exec(select(Project).order_by(Project.slug)).all())  # type: ignore[invalid-argument-type]
+            accelerator_slugs = [p.slug for p in projects]
+            table_counts["if_projects"] = len(projects)
+
+            # Per-accelerator landmark tables — count is the cheapest signal
+            # that the per-project seed actually committed. Allowlist below
+            # is hardcoded; no user input flows into the SQL string.
+            for table_name in (
+                "vh_homes", "bsh_appliances", "mac_stations",
+                "at_advertisers", "hb_products", "dt_projects",
+            ):
+                try:
+                    n = session.exec(text(f"SELECT COUNT(*) FROM {table_name}")).one()  # type: ignore[invalid-argument-type]
+                    table_counts[table_name] = int(n[0]) if hasattr(n, "__getitem__") else int(n)
+                except Exception as e:
+                    table_counts[table_name] = -1
+                    warnings.append(f"count({table_name}) failed: {type(e).__name__}")
+                    session.rollback()
+    except Exception as e:
+        db_ok = False
+        warnings.append(f"db connect failed: {type(e).__name__}: {e}")
+
+    git_sha = os.environ.get("GIT_SHA", "unknown")
+
+    return HealthSummaryOut(
+        db_ok=db_ok,
+        accelerators_registered=len(accelerator_slugs),
+        accelerator_slugs=accelerator_slugs,
+        table_counts=table_counts,
+        git_sha=git_sha,
+        startup_warnings=warnings,
+    )

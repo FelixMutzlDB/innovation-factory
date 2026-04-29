@@ -1530,6 +1530,15 @@ export interface HbTrendPoint {
   value: number;
 }
 
+export interface HealthSummaryOut {
+  accelerator_slugs: string[];
+  accelerators_registered: number;
+  db_ok: boolean;
+  git_sha: string;
+  startup_warnings: string[];
+  table_counts: Record<string, number>;
+}
+
 export interface IdeaMessageIn {
   content: string;
 }
@@ -3047,6 +3056,29 @@ export class ApiError extends Error {
     this.statusText = statusText;
     this.body = body;
   }
+}
+
+export const getHealthSummary = async (options?: RequestInit): Promise<{ data: HealthSummaryOut }> => {
+  const res = await fetch("/api/_health", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const getHealthSummaryKey = () => {
+  return ["/api/_health"] as const;
+};
+
+export function useGetHealthSummary<TData = { data: HealthSummaryOut }>(options?: { query?: Omit<UseQueryOptions<{ data: HealthSummaryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: getHealthSummaryKey(), queryFn: () => getHealthSummary(), ...options?.query });
+}
+
+export function useGetHealthSummarySuspense<TData = { data: HealthSummaryOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: HealthSummaryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: getHealthSummaryKey(), queryFn: () => getHealthSummary(), ...options?.query });
 }
 
 export const currentUser = async (params?: CurrentUserParams, options?: RequestInit): Promise<{ data: unknown }> => {
