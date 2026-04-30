@@ -25,6 +25,7 @@
         "react-dom": "19.2.3",
         "react-dropzone": "^14.3.8",
         "react-error-boundary": "6.0.2",
+        "react-force-graph-2d": "^1.29.1",
         "react-leaflet": "^5.0.0",
         "react-markdown": "^10.1.0",
         "recharts": "^2.15.0",

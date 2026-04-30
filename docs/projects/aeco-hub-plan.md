@@ -1,7 +1,7 @@
-# AECO Digital Twin — Project Plan
+# AECO Hub — Project Plan
 
-**Accelerator for Nemetschek Group**
-Built as part of the Innovation Factory on Databricks Lakehouse + Lakebase.
+> Innovation Factory accelerator for the AECO (Architecture, Engineering, Construction, Operations) industry.
+> Built on the Databricks Lakehouse + Lakebase.
 
 ---
 
@@ -9,8 +9,8 @@ Built as part of the Innovation Factory on Databricks Lakehouse + Lakebase.
 
 A **building lifecycle digital twin platform** that acts as the system of record for
 construction projects — from architectural design through construction, operations,
-and eventual demolition. The platform reflects Nemetschek's multi-brand portfolio,
-demonstrating how their tools feed into a unified digital twin powered by Databricks.
+and eventual demolition. The AECO Hub demonstrates how a multi-vendor AECO tooling
+ecosystem can feed a unified digital twin powered by Databricks.
 
 **Key value proposition:** Replace siloed project data with a single, living digital
 twin that connects BIM geometry, construction progress, IoT sensor feeds, and
@@ -18,29 +18,33 @@ facility management — all on the Databricks Lakehouse.
 
 ---
 
-## 2. Nemetschek Brand Integration
+## 2. AECO Tooling Ecosystem
 
-The UI showcases Nemetschek's brand ecosystem as integration touchpoints within the
-digital twin. Each brand is represented as a logo tile that contextually links to the
+The UI showcases the AECO tooling ecosystem as integration touchpoints within the
+digital twin. Each tool is represented as a logo tile that contextually links to the
 relevant lifecycle phase.
 
-### Brand → Lifecycle Mapping
+### Tool → Lifecycle Mapping
 
-| Phase | Brands | Data Flow Into Twin |
-|-------|--------|---------------------|
-| **Design** | Allplan, Archicad (Graphisoft), Vectorworks | IFC models, floor plans, 3D geometry |
+| Phase | Tools | Data Flow Into Twin |
+|-------|-------|---------------------|
+| **Design** | Allplan, Archicad, Vectorworks | IFC models, floor plans, 3D geometry |
 | **QA/QC** | Solibri | Clash detection reports, rule validation results |
 | **Requirements** | dRofus | Room data sheets, equipment specifications |
 | **Build** | Bluebeam, NEVARIS, GoCanvas, 123erfasst | Markups, cost estimates, site reports, progress |
 | **Operate** | Spacewell, Crem Solutions, dTwin | IoT data, space utilization, lease management |
-| **Visualize** | Maxon (Cinema 4D) | Renderings, walkthroughs, marketing assets |
+| **Visualize** | Cinema 4D | Renderings, walkthroughs, marketing assets |
 
-### UI Concept: Brand Navigator
+### UI Concept: Tool Navigator
 
-A horizontal brand bar with logo buttons. Clicking a brand opens a drawer showing:
-- What data this brand contributes to the twin
+A horizontal tool bar with logo buttons. Clicking a tool opens a drawer showing:
+- What data this tool contributes to the twin
 - Current integration status (connected / simulated / planned)
-- Sample data from the brand for the active project
+- Sample data from the tool for the active project
+
+> Tool names are referenced as third-party trademarks of their respective owners. The
+> AECO Hub UI uses these as integration placeholders for demo purposes only — text
+> labels are the default; logo assets ship only after internal review.
 
 ---
 
@@ -48,11 +52,18 @@ A horizontal brand bar with logo buttons. Clicking a brand opens a drawer showin
 
 ### Naming Convention
 
-All tables use the `dt_` prefix (digital twin), following the Innovation Factory convention.
+All tables use the `dt_` prefix (digital twin), following the Innovation Factory
+convention.
+
+### Enum Prefixing
+
+To avoid OpenAPI schema collisions with other accelerators, **all project enums use
+the `Aeco` prefix** (e.g. `AecoProjectPhase`, `AecoIssueSeverity`, `AecoIssueStatus`,
+`AecoSensorType`, `AecoMaintenancePriority`).
 
 ### UC Schema
 
-`innovation_factory_catalog.aeco_digital_twin`
+`innovation_factory_catalog.aeco_hub`
 
 ### Lakebase Tables (PostgreSQL)
 
@@ -81,14 +92,14 @@ dt_issues                — Cross-discipline issues (clashes, RFIs, defects)
 ```
 dt_bim_models            — IFC model metadata (version, discipline, LOD, file ref)
 dt_model_elements        — Key elements extracted from BIM (walls, doors, systems)
-dt_clash_reports         — Solibri-style QA/QC results
-dt_room_requirements     — dRofus-style room data sheets
+dt_clash_reports         — Clash detection / QA-QC results
+dt_room_requirements     — Room data sheets / equipment requirements
 ```
 
 #### Build Phase
 
 ```
-dt_cost_items            — NEVARIS-style bill of quantities / cost breakdown
+dt_cost_items            — Bill of quantities / cost breakdown
 dt_schedule_activities   — Construction schedule tasks with progress
 dt_site_reports          — Daily logs, inspections, safety observations
 dt_change_orders         — Design changes and their cost/schedule impact
@@ -102,7 +113,7 @@ dt_sensor_devices        — Sensor/actuator registry with metadata
 dt_maintenance_orders    — Work orders for preventive/reactive maintenance
 dt_energy_consumption    — Aggregated energy data (hourly/daily per meter)
 dt_space_utilization     — Occupancy and desk booking analytics
-dt_lease_contracts       — Tenant/lease information (Crem Solutions domain)
+dt_lease_contracts       — Tenant/lease information (FM domain)
 ```
 
 #### Marketplace
@@ -134,7 +145,7 @@ Mirror the key Lakebase tables into UC for SQL analytics:
 
 ### Example Customer: "Schuster Bau AG"
 
-A mid-size German general contractor managing a portfolio of 5 projects.
+A fictional mid-size German general contractor managing a portfolio of 5 projects.
 
 ### Projects
 
@@ -166,9 +177,9 @@ A mid-size German general contractor managing a portfolio of 5 projects.
 **Total Lakebase rows:** ~15K (excluding sensor readings)
 **Total UC rows (sensor_readings):** ~515K (via PySpark seeding)
 
-### IoT Simulation (ABB Building Automation)
+### IoT Simulation (Building Automation)
 
-For operating projects, simulate ABB-style IoT signals:
+For operating projects, simulate building-automation-style IoT signals:
 
 | Sensor Type | Signal | Unit | Range | Frequency |
 |-------------|--------|------|-------|-----------|
@@ -189,11 +200,11 @@ For operating projects, simulate ABB-style IoT signals:
 ### Navigation Structure
 
 ```
-/projects/aeco-digital-twin/
+/projects/aeco-hub/
 ├── home                    — Portfolio overview: project cards with phase badges
 ├── projects/$projectId/
 │   ├── overview            — Project dashboard: KPIs, timeline, phase indicator
-│   ├── twin                — 3D-inspired twin view: building → floor → room drilldown
+│   ├── twin                — Twin view: building → floor → room drilldown (tree + graph)
 │   ├── design              — BIM models, clash reports, room requirements
 │   ├── build               — Schedule, cost tracking, site reports, change orders
 │   ├── operate             — Live IoT dashboard, energy, maintenance, space utilization
@@ -201,19 +212,19 @@ For operating projects, simulate ABB-style IoT signals:
 │   └── issues              — Cross-discipline issue tracker
 ├── relationships           — Graph visualization of project entity relationships
 ├── marketplace             — Partner ecosystem browser
-├── brands                  — Nemetschek brand navigator
+├── tools                   — AECO tool navigator
 └── agent                   — AI chat agent (MAS with Genie + KA)
 ```
 
 ### UI Style Concept
 
-- **Dark sidebar** with Nemetschek green (#00A651) accent
-- **Card-based layouts** for project portfolio (similar to existing Innovation Factory gallery)
+- **Dark sidebar** with construction-amber accent (`#F59E0B`)
+- **Card-based layouts** for project portfolio (consistent with the existing Innovation Factory gallery)
 - **Phase timeline** as a horizontal stepper with colored segments (Design=blue, Build=orange, Operate=green, Demo=red)
 - **Building drilldown**: Site → Building → Floor → Room (breadcrumb navigation)
-- **IoT dashboards** using Recharts (already in the project) for real-time sensor data
-- **Graph view** using a force-directed layout (d3-force or react-force-graph) for relationship exploration
-- **Brand bar**: Horizontal strip of Nemetschek brand logos as pill buttons
+- **IoT dashboards** using Recharts (already in the project) for live-looking sensor data
+- **Graph view** using a force-directed layout (`react-force-graph-2d`) for relationship exploration
+- **Tool bar**: Horizontal strip of AECO tool logos (or text labels) as pill buttons
 
 ### Key UI Components
 
@@ -225,7 +236,7 @@ For operating projects, simulate ABB-style IoT signals:
 | IoT charts | Recharts (existing) | Sensor data line/area charts |
 | Graph view | react-force-graph-2d | Entity relationship visualization |
 | Data tables | shadcn Table | Issues, documents, cost items |
-| Brand navigator | Custom (logos + Drawer) | Nemetschek ecosystem showcase |
+| Tool navigator | Custom (logos + Drawer) | AECO ecosystem showcase |
 | Dashboard embed | iframe | AI/BI dashboard for energy analytics |
 
 ---
@@ -235,10 +246,10 @@ For operating projects, simulate ABB-style IoT signals:
 ### Router Structure
 
 ```
-src/innovation_factory/backend/projects/aeco_digital_twin/
+src/innovation_factory/backend/projects/aeco_hub/
 ├── __init__.py
 ├── databricks_config.py         — Resource IDs (Genie, Dashboard, MAS)
-├── models.py                    — SQLModel entities (dt_* tables)
+├── models.py                    — SQLModel entities (dt_* tables, Aeco-prefixed enums)
 ├── router.py                    — Aggregates all sub-routers
 ├── seed.py                      — PGlite-safe seed (~1K rows, no sensor data)
 ├── seed_uc_tables.py            — PySpark seed for sensor readings (~500K rows)
@@ -250,8 +261,8 @@ src/innovation_factory/backend/projects/aeco_digital_twin/
 │   ├── documents.py             — Document management with phase filtering
 │   ├── issues.py                — Issue tracker
 │   ├── marketplace.py           — Partner ecosystem
-│   ├── relationships.py         — Graph data API
-│   ├── brands.py                — Nemetschek brand metadata
+│   ├── relationships.py         — Graph data API (paginated, capped)
+│   ├── tools.py                 — AECO tool metadata
 │   └── chat.py                  — MAS agent endpoint
 └── services/
     ├── chat_service.py          — MAS streaming (reuse platform streaming utility)
@@ -276,24 +287,31 @@ src/innovation_factory/backend/projects/aeco_digital_twin/
 | GET | `/projects/{id}/operate/maintenance` | Maintenance work orders |
 | GET | `/projects/{id}/issues` | Issues with status/severity filter |
 | GET | `/projects/{id}/documents` | Documents with phase filter |
-| GET | `/relationships` | Graph edges for visualization |
+| GET | `/relationships` | Graph edges for visualization (paginated, capped) |
 | GET | `/marketplace` | Partner apps |
-| GET | `/brands` | Nemetschek brand metadata |
+| GET | `/tools` | AECO tool metadata |
 | POST | `/chat/sessions` | Create chat session |
 | POST | `/chat/sessions/{id}/messages` | Stream MAS response |
+
+All routes specify `response_model` and `operation_id` for TypeScript client generation.
 
 ---
 
 ## 7. Databricks Resources
 
+Created via the `bootstrap.py` orchestrator pattern (D4) and existing `scripts/`
+helpers — no ad-hoc resource creation.
+
 ### Genie Spaces (2)
 
-1. **AECO Project Analytics** — Tables: dt_projects, dt_buildings, dt_cost_items, dt_schedule_activities, dt_issues
+1. **AECO Project Analytics** (`aeco_hub_project_analytics_genie`)
+   Tables: dt_projects, dt_buildings, dt_cost_items, dt_schedule_activities, dt_issues
    - "What is the total cost of TechHub Campus?"
    - "Show projects behind schedule"
    - "Compare cost overruns across projects"
 
-2. **AECO Operations Intelligence** — Tables: dt_sensor_readings, dt_energy_consumption, dt_maintenance_orders, dt_space_utilization
+2. **AECO Operations Intelligence** (`aeco_hub_operations_intelligence_genie`)
+   Tables: dt_sensor_readings, dt_energy_consumption, dt_maintenance_orders, dt_space_utilization
    - "What is the average energy consumption per floor?"
    - "Show rooms with CO2 above 1000 ppm"
    - "List overdue maintenance orders"
@@ -308,18 +326,23 @@ src/innovation_factory/backend/projects/aeco_digital_twin/
 
 ### Knowledge Assistant (1)
 
-**AECO Standards & Compliance KA** — Volume: `aeco_digital_twin/compliance_docs`
-- IFC standards guidance
-- COBie handover requirements
-- Building regulations (simplified German examples)
-- ABB integration technical docs
+**AECO Standards & Compliance KA** (`aeco_hub_standards_compliance_ka`)
+Volume: `aeco_hub/compliance_docs`
+Synthetic source documents (generated in Phase 4):
+- IFC standards primer (~3 pages)
+- COBie handover requirements (~4 pages)
+- Building regulations summary (German example, ~5 pages)
+- Building automation integration technical notes (~4 pages)
 
 ### Multi-Agent Supervisor (1)
 
-**AECO Digital Twin Agent** — Orchestrates:
-- Genie: Project Analytics (data questions)
-- Genie: Operations Intelligence (IoT/energy questions)
-- KA: Standards & Compliance (regulatory/standards questions)
+**AECO Hub Supervisor** (`aeco_hub_supervisor`) — Orchestrates:
+- Genie: `aeco_hub_project_analytics_genie` (data questions)
+- Genie: `aeco_hub_operations_intelligence_genie` (IoT/energy questions)
+- KA: `aeco_hub_standards_compliance_ka` (regulatory/standards questions)
+
+> Naming follows the D3 convention: snake_case sub-agent names; `_supervisor` suffix
+> on the supervisor.
 
 ---
 
@@ -328,13 +351,13 @@ src/innovation_factory/backend/projects/aeco_digital_twin/
 Create a **development branch** from production for isolated development:
 
 ```bash
-databricks postgres create-branch projects/innovation-factory dev-aeco-digital-twin \
+databricks postgres create-branch projects/innovation-factory dev-aeco-hub \
   --json '{"spec": {"source_branch": "projects/innovation-factory/branches/production", "no_expiry": true}}' \
-  -p fe-sandbox-felix-demo-sandbox
+  -p fevm-felix-demo
 ```
 
 Development workflow:
-1. All schema changes and seed data go to the `dev-aeco-digital-twin` branch
+1. All schema changes and seed data go to the `dev-aeco-hub` branch
 2. App dev server connects to this branch via `DATABASE_URL` override
 3. Once stable, merge to production by updating `app.yml` env vars
 4. Delete the dev branch after merge
@@ -345,13 +368,14 @@ Development workflow:
 
 ### Phase 1: Foundation (3-4 days)
 
-- [ ] Create git branch `feature/aeco-digital-twin`
-- [ ] Define all SQLModel entities in `models.py`
-- [ ] Create Lakebase dev branch and seed tables
+- [ ] Create git branch `feature/aeco-hub`
+- [ ] Define all SQLModel entities in `models.py` (Aeco-prefixed enums)
+- [ ] Create Lakebase dev branch (`dev-aeco-hub`) and tables
 - [ ] Implement `seed.py` (PGlite-safe, ~1K rows)
 - [ ] Create project router skeleton with CRUD for projects/buildings/floors/spaces
 - [ ] Create frontend route structure and project overview page
 - [ ] Wire up router in `backend/router.py`
+- [ ] Phase 1 unit tests (models, seed, router smoke tests)
 
 ### Phase 2: Core Features (3-4 days)
 
@@ -360,40 +384,44 @@ Development workflow:
 - [ ] Implement operate routers (sensors, energy, maintenance, space utilization)
 - [ ] Create document and issue routers
 - [ ] Build frontend pages for each lifecycle phase
-- [ ] Create the Building Twin drilldown view (site → building → floor → room)
+- [ ] Create the Building Twin drilldown view (site → building → floor → room, tree + graph)
+- [ ] Phase 2 unit tests for new routers and aggregation logic
 
 ### Phase 3: IoT & Analytics (2-3 days)
 
 - [ ] Create `seed_uc_tables.py` for sensor readings (~500K rows via PySpark)
-- [ ] Create IoT dashboard with Recharts (live sensor data, energy trends)
+- [ ] Create IoT dashboard with Recharts (live-looking sensor data, energy trends)
 - [ ] Create Genie Spaces (Project Analytics + Operations Intelligence)
 - [ ] Create AI/BI Dashboard (Energy & Sustainability)
 - [ ] Embed dashboard in Operate view
+- [ ] Integration smoke test: query each Genie space
 
 ### Phase 4: AI & Ecosystem (2-3 days)
 
-- [ ] Create compliance docs volume and upload sample documents
+- [ ] Generate synthetic compliance docs and upload to UC Volume
 - [ ] Create Knowledge Assistant (Standards & Compliance)
-- [ ] Create Multi-Agent Supervisor
+- [ ] Create Multi-Agent Supervisor (`aeco_hub_supervisor`)
 - [ ] Implement chat endpoint using shared streaming utility
-- [ ] Build the Nemetschek Brand Navigator UI
+- [ ] Build the AECO Tool Navigator UI
 - [ ] Build the Marketplace view
+- [ ] Integration smoke test: MAS routes correctly across sub-agents
 
 ### Phase 5: Graph & Polish (1-2 days)
 
-- [ ] Implement relationships API and seed graph edges
-- [ ] Build force-directed graph visualization
+- [ ] Implement relationships API (paginated, capped) and seed graph edges
+- [ ] Build force-directed graph visualization (`react-force-graph-2d`, lazy-loaded)
 - [ ] Implement the phase timeline stepper component
 - [ ] Polish responsive layout, loading states, error boundaries
-- [ ] Final testing and cleanup
+- [ ] Regression tests for SQL safety, oversized chat input, graph pagination caps
 
 ### Phase 6: Deploy & Cleanup (1 day)
 
 - [ ] Merge Lakebase dev branch to production
 - [ ] Deploy to Databricks Apps
-- [ ] Run validation tests
-- [ ] Clean up temporary Databricks artifacts (test jobs, temp notebooks)
+- [ ] Run validation tests (full success-criteria pass)
+- [ ] Clean up temporary Databricks artifacts (test jobs, temp notebooks, unused branches)
 - [ ] Update `development-guide.md` with AECO-specific lessons learned
+- [ ] Update CLAUDE.md current state and TODO.md
 
 ---
 
@@ -401,12 +429,14 @@ Development workflow:
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Graph visualization | `react-force-graph-2d` | Lightweight, interactive, handles 1K+ nodes |
+| Graph visualization | `react-force-graph-2d` (lazy-loaded) | Lightweight, interactive, handles 1K+ nodes |
 | IoT data storage | UC tables (PySpark seed) | Too large for PGlite; Genie needs UC access |
 | Building hierarchy | Lakebase (relational) | Fits naturally into parent-child FK relationships |
-| Brand logos | SVG files in `ui/assets/brands/` | Crisp at any size, small file size |
+| Tool logos | SVG files in `ui/assets/aeco-tools/`; text-fallback by default | Trademark-safe default |
 | Phase indicator | Custom Tailwind component | No good shadcn equivalent; simple to build |
 | Sensor simulation | Deterministic random (seeded) | Reproducible demo data |
+| Enum prefix | `Aeco` | Avoids OpenAPI schema collisions |
+| Resource bootstrap | `bootstrap.py` orchestrator (D4 pattern) | Reproducible, idempotent |
 
 ---
 
@@ -415,10 +445,11 @@ Development workflow:
 | Risk | Likelihood | Mitigation |
 |------|-----------|------------|
 | PGlite crashes with seed data | Medium | Keep PGlite seed under 1K rows; IoT goes to UC only |
-| Graph view performance with many nodes | Low | Limit to project-level relationships; paginate |
-| Nemetschek brand logos / trademarks | Medium | Use text labels as fallback; note this is a demo |
+| Graph view performance with many nodes | Low | Project-scoped edges; pagination; cap node count |
+| Third-party tool trademarks | Medium | Default to text labels; logo assets only ship after internal review |
 | IoT dashboard performance | Low | Pre-aggregate in UC; use 15-min intervals |
 | MAS endpoint provisioning time | Medium | Create early in Phase 4; test with direct Genie first |
+| `react-force-graph-2d` bundle size | Low | ~200KB; lazy-load on the relationships route |
 
 ---
 
@@ -429,10 +460,90 @@ Development workflow:
 - [ ] IoT dashboard shows live-looking sensor data with trends
 - [ ] Energy dashboard embedded from AI/BI
 - [ ] Genie answers project analytics questions correctly
-- [ ] MAS agent routes to correct sub-agent based on question type
+- [ ] MAS supervisor routes to correct sub-agent based on question type
 - [ ] Graph view shows meaningful relationships between entities
 - [ ] Marketplace shows partner ecosystem
-- [ ] Brand navigator displays all Nemetschek brands by segment
+- [ ] Tool navigator displays all AECO tools grouped by lifecycle phase
 - [ ] All endpoints return proper error codes (no raw 500s)
+- [ ] Every API route specifies `response_model` and `operation_id`
 - [ ] PGlite seed runs without memory issues
 - [ ] No SQL injection vulnerabilities (use safe query patterns)
+
+---
+
+## 13. Test Plan
+
+Per CLAUDE.md working mode: tests are designed up front, regression tests are
+mandatory for security fixes, and no P0/P1 fix is "done" without a named automated
+regression test.
+
+### Unit tests (`pytest`, no external deps)
+
+| File | Coverage |
+|------|----------|
+| `tests/projects/aeco_hub/test_models.py` | SQLModel schema validation, enum values, FK relationships |
+| `tests/projects/aeco_hub/test_seed.py` | PGlite seed runs in-memory; row counts match spec |
+| `tests/projects/aeco_hub/test_routers.py` | FastAPI TestClient against in-memory DB; every route exposes `response_model` + `operation_id` |
+| `tests/projects/aeco_hub/test_iot_service.py` | Sensor aggregation logic with synthetic input |
+| `tests/projects/aeco_hub/test_relationships.py` | Graph API edge filtering and pagination cap |
+
+### Integration tests (`pytest -m integration`, live Databricks)
+
+| File | Coverage |
+|------|----------|
+| `tests/integration/test_aeco_hub_genie.py` | Smoke: each Genie space answers a known question with non-empty result |
+| `tests/integration/test_aeco_hub_ka.py` | Smoke: KA returns sources for a known compliance question |
+| `tests/integration/test_aeco_hub_mas.py` | Routing: project-analytics, ops, and standards questions reach the correct sub-agent |
+
+### Regression tests (named after the bug they prevent)
+
+| Test | Prevents |
+|------|----------|
+| `test_no_raw_sql_in_uc_queries` | Reintroduction of f-string SQL in UC paths |
+| `test_chat_endpoint_rejects_oversized_message` | DoS via huge message payload |
+| `test_relationships_pagination_caps_at_max` | Graph API returning unbounded result set |
+| `test_dt_enum_prefixed` | Schema collision with other accelerators |
+
+### UI / E2E (manual via `apx dev start` + browser)
+
+- Portfolio → project → twin drilldown navigates correctly
+- Phase stepper renders correct colors per project status
+- IoT chart re-renders with new data
+- MAS chat streams responses
+- Tool navigator drawer opens for each tool
+- Error boundary catches a forced API failure on the `operate` route
+
+---
+
+## 14. Future Extensions (Backlog)
+
+Items deliberately out of scope for v1, captured for follow-up:
+
+- **3D BIM viewer** — Replace tree+graph twin with three.js / xeokit-based IFC viewer
+  (significant scope; consider as a separate page or plugin)
+- **Live IoT ingest** — Replace seeded sensor data with Zerobus or DLT pipeline driven
+  by a synthetic device simulator
+- **Document AI extraction** — auto-parse uploaded BIM/PDF documents into
+  `dt_documents` metadata via `ai_parse_document`
+- **Real-time collaboration** — multi-user cursor / comments on a shared twin view
+- **Mobile site app** — PWA for site reports and RFI capture from the field
+- **Embodied carbon (LCA)** — calculate embodied carbon from BIM elements + cost
+  items and add it to the Sustainability dashboard
+- **Logo-asset pack** — internal-review process and shipped logo assets for the Tool
+  Navigator (defaults to text labels in v1)
+
+---
+
+## 15. Decisions Locked In
+
+For audit / handover:
+
+- **Naming:** "AECO Hub" throughout; no third-party brand name appears in copy
+- **Twin depth:** tree + force-directed graph (no 3D viewer in v1; see §14)
+- **Compliance docs:** synthetic, generated in Phase 4
+- **Lakebase dev branch:** approved (`dev-aeco-hub`)
+- **Scope:** all six phases in scope (~12-17 days)
+- **New frontend dep:** `react-force-graph-2d` (~200KB, lazy-loaded)
+- **Resource bootstrap:** `bootstrap.py` orchestrator (D4 pattern)
+- **Enum prefix:** `Aeco`
+- **MAS naming:** snake_case sub-agents; `_supervisor` suffix on supervisor (D3)

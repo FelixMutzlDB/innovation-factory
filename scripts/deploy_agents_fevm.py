@@ -30,6 +30,7 @@ from datetime import date, datetime, timedelta
 # Local import — uc_schema is a sibling module in scripts/
 sys.path.insert(0, os.path.dirname(__file__))
 import uc_schema  # noqa: E402
+import seed_uc_aeco_data  # noqa: E402
 
 PROFILE = "fevm-felix-demo"
 HOST = "https://fevm-felix-demo.cloud.databricks.com"
@@ -39,6 +40,8 @@ STATE_FILE = os.path.join(os.path.dirname(__file__), "fevm_agents_state.json")
 REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
 KA_DOCS_ROOT = os.path.join(REPO_ROOT, "src", "innovation_factory", "backend",
                             "projects", "adtech_intelligence", "ka_docs")
+AECO_KA_DOCS_ROOT = os.path.join(REPO_ROOT, "src", "innovation_factory", "backend",
+                                  "projects", "aeco_hub", "ka_docs")
 
 # Phase 9 — Dashboard migration defaults. These can be overridden via env vars
 # if we ever need to point at a different source. The catalog rewrite maps any
@@ -139,18 +142,30 @@ def phase_1_schemas_volumes(state):
         resp = _sql(f"CREATE VOLUME IF NOT EXISTS {vol}")
         print(f"    -> {resp.get('status', {}).get('state', '?')}")
 
+    print("  Creating aeco_hub schema...")
+    _sql(f"CREATE SCHEMA IF NOT EXISTS {CATALOG}.aeco_hub")
+    for vol in [
+        f"{CATALOG}.aeco_hub.compliance_docs",
+        f"{CATALOG}.aeco_hub.bim_models",
+    ]:
+        print(f"  Creating volume {vol}...")
+        resp = _sql(f"CREATE VOLUME IF NOT EXISTS {vol}")
+        print(f"    -> {resp.get('status', {}).get('state', '?')}")
+
 
 # ===========================================================================
 # PHASE 2: Upload KA docs
 # ===========================================================================
 
 def phase_2_upload_ka_docs(state):
+    # AdTech Intelligence KA docs
     mappings = [
-        ("issue_resolution", "issue_resolution_docs"),
-        ("customer_relations", "customer_relations_docs"),
+        (KA_DOCS_ROOT, "issue_resolution", "adtech_intelligence", "issue_resolution_docs"),
+        (KA_DOCS_ROOT, "customer_relations", "adtech_intelligence", "customer_relations_docs"),
+        (AECO_KA_DOCS_ROOT, "standards_compliance", "aeco_hub", "compliance_docs"),
     ]
-    for local_subdir, volume in mappings:
-        local_dir = os.path.join(KA_DOCS_ROOT, local_subdir)
+    for root, local_subdir, schema, volume in mappings:
+        local_dir = os.path.join(root, local_subdir)
         if not os.path.isdir(local_dir):
             print(f"  WARNING: {local_dir} not found, skipping")
             continue
@@ -158,8 +173,8 @@ def phase_2_upload_ka_docs(state):
             local_path = os.path.join(local_dir, fname)
             if not os.path.isfile(local_path):
                 continue
-            remote_path = f"dbfs:/Volumes/{CATALOG}/adtech_intelligence/{volume}/{fname}"
-            print(f"  Uploading {fname} -> {volume}/")
+            remote_path = f"dbfs:/Volumes/{CATALOG}/{schema}/{volume}/{fname}"
+            print(f"  Uploading {fname} -> {schema}.{volume}/")
             res = subprocess.run(
                 ["databricks", "fs", "cp", local_path, remote_path,
                  "--profile", PROFILE, "--overwrite"],
@@ -379,6 +394,38 @@ def phase_3_seed_adtech_tables(state):
 
 
 # ===========================================================================
+# PHASE 3A: Seed AECO Hub UC tables
+# ===========================================================================
+
+def phase_3a_seed_aeco_tables(state):
+    """Drop+recreate the AECO Hub UC tables and seed the Schuster Bau AG
+    portfolio + ~500K synthetic sensor readings.
+
+    Uses :mod:`seed_uc_aeco_data` for the SQL — same pattern as AdTech, but
+    sensor readings are generated server-side via ``INSERT … SELECT FROM
+    range()`` so the warehouse does the heavy lifting.
+    """
+    for key in uc_schema.tables_for_schema("aeco_hub"):
+        table_fq = f"{CATALOG}.{key}"
+        print(f"  DDL {table_fq}...")
+        _sql(f"DROP TABLE IF EXISTS {table_fq}")
+        resp = _sql(uc_schema.create_table_sql(CATALOG, key))
+        print(f"    -> {resp.get('status', {}).get('state', '?')}")
+
+    target_rows = int(os.getenv("AECO_SENSOR_ROWS", "500000"))
+    stmts = seed_uc_aeco_data.build_sql(catalog=CATALOG, target_sensor_rows=target_rows)
+    print(f"  Running {len(stmts)} insert statements (~{target_rows:,} sensor readings)...")
+    for i, stmt in enumerate(stmts, 1):
+        # max_poll bumped because the server-side range() inserts can take
+        # tens of seconds for the larger sensor-reading shards.
+        resp = _sql(stmt, max_poll=900)
+        state_str = resp.get("status", {}).get("state", "?")
+        # Brief progress feedback — full SQL is long, just show table name
+        head = stmt.split("\n", 1)[0][:80]
+        print(f"    [{i}/{len(stmts)}] {state_str}: {head}...")
+
+
+# ===========================================================================
 # PHASE 4: UC function identify_product
 # ===========================================================================
 
@@ -472,6 +519,33 @@ def phase_5_genie_spaces(state):
           "Show anomalies by severity level",
           "Which campaigns have the most open issues?",
           "What is the total contract value by advertiser?"]),
+        ("aeco_project_analytics", "AECO Project Analytics",
+         "Project portfolio analytics for the AECO Hub digital twin — "
+         "construction projects, buildings, costs, schedule, and issues.",
+         [f"{CATALOG}.aeco_hub.dt_projects",
+          f"{CATALOG}.aeco_hub.dt_buildings",
+          f"{CATALOG}.aeco_hub.dt_cost_items",
+          f"{CATALOG}.aeco_hub.dt_schedule_activities",
+          f"{CATALOG}.aeco_hub.dt_issues"],
+         ["What is the total cost of TechHub Campus?",
+          "Show projects behind schedule",
+          "Compare cost overruns across projects",
+          "Which projects have the most critical issues?",
+          "What is the average progress percentage by phase?",
+          "Show the top 5 most expensive cost categories"]),
+        ("aeco_operations_intelligence", "AECO Operations Intelligence",
+         "Operations and IoT analytics for AECO Hub — sensor readings, energy "
+         "consumption, maintenance, and space utilization.",
+         [f"{CATALOG}.aeco_hub.dt_sensor_readings",
+          f"{CATALOG}.aeco_hub.dt_energy_consumption",
+          f"{CATALOG}.aeco_hub.dt_maintenance_orders",
+          f"{CATALOG}.aeco_hub.dt_space_utilization"],
+         ["What is the average energy consumption per building over the last 30 days?",
+          "Show buildings with CO2 readings above 1000 ppm",
+          "List overdue maintenance orders by priority",
+          "What is the average space occupancy by project?",
+          "Which sensor types report the highest variance?",
+          "Show the daily energy cost trend"]),
     ]
     for key, name, desc, tables, questions in specs:
         if spaces.get(key):
@@ -524,6 +598,11 @@ def phase_6_knowledge_assistants(state):
          "Answers questions about customer relationships, contract management, "
          "campaign history, and account profiles.",
          f"/Volumes/{CATALOG}/adtech_intelligence/customer_relations_docs"),
+        ("aeco_standards_compliance", "AECO Standards & Compliance Assistant",
+         "Answers questions about IFC standards, COBie handover requirements, "
+         "German building regulations, and building automation integration "
+         "for AECO Hub digital twin projects.",
+         f"/Volumes/{CATALOG}/aeco_hub/compliance_docs"),
     ]
     for key, name, desc, volume_path in specs:
         if kas.get(key, {}).get("tile_id"):
@@ -679,7 +758,7 @@ def phase_7_multi_agent_supervisors(state):
     # source (D3 introduced the snake_case sub-agent naming — old MASes
     # created before D3 land with mixed-case names and need to be
     # rebuilt). Bump this string when the phase-7 config changes shape.
-    PHASE_7_VERSION = "D3-snake-case-subagents"
+    PHASE_7_VERSION = "D3-snake-case-subagents+aeco-hub"
     needs_rebuild = state.get("phase_7_version") != PHASE_7_VERSION
 
     if adtech_agents and (needs_rebuild or not mas.get("adtech", {}).get("tile_id")):
@@ -772,6 +851,64 @@ def phase_7_multi_agent_supervisors(state):
             save_state(state)
             print(f"    OK: tile_id={tile_id}, endpoint={endpoint}")
 
+    # --- AECO Hub MAS -----------------------------------------------------
+    aeco_agents = []
+    if genies.get("aeco_project_analytics"):
+        aeco_agents.append(_build_agent(
+            "project_analytics",
+            "Answers questions about construction projects, buildings, costs, "
+            "schedule, and issues across the AECO Hub portfolio. Use "
+            "`project_analytics` for any portfolio-level analytics question.",
+            "genie", genies["aeco_project_analytics"]))
+    if genies.get("aeco_operations_intelligence"):
+        aeco_agents.append(_build_agent(
+            "operations_intelligence",
+            "Answers questions about IoT sensor readings, energy consumption, "
+            "maintenance orders, and space utilization for operating projects. "
+            "Use `operations_intelligence` for facility-management and IoT "
+            "questions.",
+            "genie", genies["aeco_operations_intelligence"]))
+    if kas.get("aeco_standards_compliance", {}).get("endpoint_name"):
+        aeco_agents.append(_build_agent(
+            "standards_compliance",
+            "Answers questions about IFC standards, COBie hand-over, German "
+            "building regulations, and building-automation integration. Use "
+            "`standards_compliance` for any standards or regulation question.",
+            "ka_endpoint",
+            kas["aeco_standards_compliance"]["endpoint_name"]))
+
+    if aeco_agents and (needs_rebuild or not mas.get("aeco", {}).get("tile_id")):
+        aeco_display = "AECO Hub Supervisor"
+        _delete_existing_mas_by_name(aeco_display)
+        body = {
+            "display_name": aeco_display,
+            "description": (
+                "AECO Hub Supervisor — orchestrates project analytics, "
+                "operations intelligence, and standards & compliance for the "
+                "building-lifecycle digital twin."
+            ),
+            "instructions": (
+                "You are the AECO Hub Supervisor. Route each user request to "
+                "exactly one sub-agent by name:\n"
+                "- `project_analytics` — portfolio, project, building, cost, "
+                "schedule, issue questions.\n"
+                "- `operations_intelligence` — IoT, energy, maintenance, "
+                "space-utilization questions for operating projects.\n"
+                "- `standards_compliance` — IFC, COBie, building regulations, "
+                "BAS integration questions."
+            ),
+            "agents": aeco_agents,
+        }
+        print(f"  Creating MAS: {aeco_display}...")
+        resp = _api("post", "/api/2.1/supervisor-agents", body)
+        print(f"    Response: {json.dumps(resp, indent=2)[:500] if resp else 'None'}")
+        tile_id, endpoint = _extract_mas(resp)
+        if tile_id:
+            mas["aeco"] = {"tile_id": tile_id, "endpoint_name": endpoint,
+                           "name": aeco_display}
+            save_state(state)
+            print(f"    OK: tile_id={tile_id}, endpoint={endpoint}")
+
     # Stamp the phase version so re-runs skip the delete+recreate unless
     # the config changes shape again.
     state["phase_7_version"] = PHASE_7_VERSION
@@ -812,6 +949,61 @@ def phase_8_summary(state):
     print(f"  HB_SC_DASHBOARD_ID={dbs.get('hb_sc', '')}")
     print(f"  HB_AQ_DASHBOARD_ID={dbs.get('hb_aq', '')}")
     print(f"  ADTECH_DASHBOARD_ID={dbs.get('adtech', '')}")
+
+
+# ===========================================================================
+# PHASE 9A: Create AECO Hub Energy & Sustainability dashboard (from JSON)
+# ===========================================================================
+
+def phase_9a_create_aeco_dashboard(state):
+    """Create the AECO Hub Energy & Sustainability dashboard from the local
+    JSON template. Idempotent — skipped when state already has the id.
+
+    Differs from phase 9 in that we author the dashboard locally instead of
+    migrating from a source workspace, so we don't need cross-workspace auth.
+    """
+    dashboards = state.setdefault("dashboards", {})
+    if dashboards.get("aeco_energy"):
+        print(f"  Already created -> {dashboards['aeco_energy']}")
+        return
+
+    json_path = os.path.join(
+        REPO_ROOT, "src", "innovation_factory", "backend",
+        "projects", "aeco_hub", "dashboard_energy.json",
+    )
+    if not os.path.isfile(json_path):
+        print(f"  ERROR: dashboard JSON not found at {json_path}")
+        return
+
+    with open(json_path, "r", encoding="utf-8") as f:
+        serialized = f.read()
+
+    # Replace template placeholders with the target workspace's values.
+    serialized = serialized.replace("{{CATALOG}}", CATALOG)
+    serialized = serialized.replace("{{WAREHOUSE_ID}}", WAREHOUSE_ID)
+
+    body = {
+        "display_name": "AECO Hub — Energy & Sustainability",
+        "warehouse_id": WAREHOUSE_ID,
+        "serialized_dashboard": serialized,
+    }
+    print("  Creating dashboard...")
+    resp = _api("post", "/api/2.0/lakeview/dashboards", body)
+    if not resp or not resp.get("dashboard_id"):
+        print(f"    FAIL: {resp}")
+        return
+    dashboard_id = resp["dashboard_id"]
+    dashboards["aeco_energy"] = dashboard_id
+    save_state(state)
+    print(f"    Created: {dashboard_id}")
+
+    # Publish so the iframe embed works.
+    pub = _api("post", f"/api/2.0/lakeview/dashboards/{dashboard_id}/published",
+               {"embed_credentials": True})
+    if pub is not None:
+        print(f"    Published with embed credentials")
+    else:
+        print(f"    WARN: publish failed; embed iframe will 404")
 
 
 # ===========================================================================
@@ -912,12 +1104,14 @@ PHASES = {
     "1": ("Schemas + volumes", phase_1_schemas_volumes),
     "2": ("Upload KA docs", phase_2_upload_ka_docs),
     "3": ("Seed AdTech UC tables", phase_3_seed_adtech_tables),
+    "3a": ("Seed AECO Hub UC tables", phase_3a_seed_aeco_tables),
     "4": ("UC function identify_product", phase_4_uc_function),
     "5": ("Create Genie Spaces", phase_5_genie_spaces),
     "6": ("Create Knowledge Assistants", phase_6_knowledge_assistants),
     "7": ("Create Multi-Agent Supervisors", phase_7_multi_agent_supervisors),
     "8": ("Summary", phase_8_summary),
     "9": ("Migrate dashboards from source workspace", phase_9_migrate_dashboards),
+    "9a": ("Create AECO Hub Energy dashboard (from JSON)", phase_9a_create_aeco_dashboard),
 }
 
 

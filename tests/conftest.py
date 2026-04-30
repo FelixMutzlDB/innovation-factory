@@ -9,8 +9,14 @@ from sqlmodel import SQLModel, Session
 # Force local dev mode for testing
 os.environ.pop("PGHOST", None)
 os.environ.pop("ENDPOINT_NAME", None)
-# Use shared in-memory SQLite so app and fixtures use the same DB
-os.environ["DATABASE_URL"] = "sqlite:///file:test_shared?mode=memory&cache=shared"
+# Use shared in-memory SQLite so app and fixtures use the same DB.
+# Plain `sqlite:///:memory:` is enough because the engine fixture is
+# session-scoped and StaticPool reuses one connection — the previous
+# `sqlite:///file:test_shared?mode=memory&cache=shared` was treated by
+# SQLite as a literal filename (no `uri=true`), creating a real
+# `file:test_shared` file in the repo root that persisted DB state
+# across runs (TODO B2 backlog).
+os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
 
 @pytest.fixture(scope="session")
@@ -35,6 +41,7 @@ def engine():
     import innovation_factory.backend.projects.bsh_home_connect.models  # noqa: F401
     import innovation_factory.backend.projects.adtech_intelligence.models  # noqa: F401
     import innovation_factory.backend.projects.mol_asm_cockpit.models  # noqa: F401
+    import innovation_factory.backend.projects.aeco_hub.models  # noqa: F401
 
     SQLModel.metadata.create_all(engine)
     return engine

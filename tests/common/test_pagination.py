@@ -46,15 +46,29 @@ class TestVhTicketsPagination:
     def _seed_tickets(self, session, household_id, count):
         from innovation_factory.backend.projects.vi_home_one.models import (
             VhHousehold,
+            VhNeighborhood,
             VhTicket,
             VhTicketStatus,
         )
 
-        # Ensure the household exists so the FK constraint holds
+        # Ensure the FK chain (neighborhood -> household) exists. Without a
+        # seeded vh_neighborhoods table this test would FK-error against a
+        # clean engine; the previous test infra masked the dep via a
+        # shared-state SQLite file (see TODO B2).
+        nh_id = 9001
+        if not session.get(VhNeighborhood, nh_id):
+            session.add(VhNeighborhood(
+                id=nh_id,
+                name="Pagination-test neighborhood",
+                location="Testville",
+                total_households=1,
+            ))
+            session.flush()
+
         if not session.get(VhHousehold, household_id):
             hh = VhHousehold(
                 id=household_id,
-                neighborhood_id=1,
+                neighborhood_id=nh_id,
                 name="Test household",
                 owner_name="pagination-test",
                 address="pagination@example.test",

@@ -138,6 +138,15 @@ class Runtime:
             engine = create_engine(
                 self.engine_url,
                 poolclass=NullPool,
+                # Disable psycopg's automatic prepared-statement caching for
+                # PGlite. psycopg names prepared statements `_pg3_<n>` per
+                # connection; with NullPool every operation gets a fresh
+                # connection but PGlite leaks the prepared-statement state
+                # across connection resets, so repeats hit DuplicatePreparedStatement.
+                # `prepare_threshold=None` makes psycopg execute statements
+                # in unprepared mode — slower in theory, irrelevant for the
+                # local-dev seed workload.
+                connect_args={"prepare_threshold": None},
             )
         else:
             engine = create_engine(

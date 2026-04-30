@@ -58,6 +58,21 @@ def _run_checked(cmd: list[str], *, cwd: Path | None = None) -> None:
         raise SystemExit(f"command exited with {rc}: {' '.join(cmd)}")
 
 
+def grant_lakebase_app_permissions(profile: str) -> None:
+    """Grant the deployed app's SP CREATE on schema public.
+
+    Without this, ``SQLModel.metadata.create_all`` on the next deploy
+    fails to create new tables (the SP only has connect-level access by
+    default). Idempotent — safe to run on every bootstrap.
+    """
+    print("\n=== Lakebase: grant app SP CREATE on schema public ===")
+    _run_checked([
+        sys.executable,
+        str(SCRIPT_DIR / "grant_lakebase_app_permissions.py"),
+        "--profile", profile,
+    ])
+
+
 def configure_embedding(profile: str) -> None:
     """Add Databricks-Apps domains to the embedding allowlist.
 
@@ -130,6 +145,10 @@ def emit_env_vars(state_file: Path) -> None:
     emit("HB_SC_GENIE_SPACE_ID", g.get("hb_sc", ""))
     emit("HB_AQ_GENIE_SPACE_ID", g.get("hb_aq", ""))
     emit("ADTECH_GENIE_SPACE_ID", g.get("adtech", ""))
+    emit("AECO_PROJECT_ANALYTICS_GENIE_SPACE_ID",
+         g.get("aeco_project_analytics", ""))
+    emit("AECO_OPERATIONS_INTELLIGENCE_GENIE_SPACE_ID",
+         g.get("aeco_operations_intelligence", ""))
     emit("ADTECH_ISSUE_RESOLUTION_KA_TILE_ID",
          kas.get("issue_resolution", {}).get("tile_id", ""))
     emit("ADTECH_ISSUE_RESOLUTION_KA_ENDPOINT",
@@ -142,9 +161,16 @@ def emit_env_vars(state_file: Path) -> None:
     emit("ADTECH_MAS_ENDPOINT_NAME", mas.get("adtech", {}).get("endpoint_name", ""))
     emit("HB_MAS_TILE_ID", mas.get("hb", {}).get("tile_id", ""))
     emit("HB_MAS_ENDPOINT_NAME", mas.get("hb", {}).get("endpoint_name", ""))
+    emit("AECO_STANDARDS_COMPLIANCE_KA_TILE_ID",
+         kas.get("aeco_standards_compliance", {}).get("tile_id", ""))
+    emit("AECO_STANDARDS_COMPLIANCE_KA_ENDPOINT",
+         kas.get("aeco_standards_compliance", {}).get("endpoint_name", ""))
+    emit("AECO_MAS_TILE_ID", mas.get("aeco", {}).get("tile_id", ""))
+    emit("AECO_MAS_ENDPOINT_NAME", mas.get("aeco", {}).get("endpoint_name", ""))
     emit("ADTECH_DASHBOARD_ID", dbs.get("adtech", ""))
     emit("HB_AQ_DASHBOARD_ID", dbs.get("hb_aq", ""))
     emit("HB_SC_DASHBOARD_ID", dbs.get("hb_sc", ""))
+    emit("AECO_ENERGY_DASHBOARD_ID", dbs.get("aeco_energy", ""))
 
 
 def main() -> None:
@@ -178,10 +204,10 @@ def main() -> None:
             f"{args.target}."
         )
 
-    # Phase 1-7 — UC schemas, volumes, KA docs, AdTech seed data, UC
-    # function, Genie spaces, Knowledge Assistants, Multi-Agent
-    # Supervisors.
-    for phase in ("1", "2", "3", "4", "5", "6", "7"):
+    # Phase 1-7 — UC schemas, volumes, KA docs, AdTech seed data, AECO seed
+    # data, UC function, Genie spaces (incl. AECO Project Analytics + AECO
+    # Operations Intelligence), Knowledge Assistants, Multi-Agent Supervisors.
+    for phase in ("1", "2", "3", "3a", "4", "5", "6", "7"):
         print(f"\n=== Phase {phase} ===")
         run_phase(phase, args.target)
 
@@ -195,6 +221,10 @@ def main() -> None:
     # Workspace-level setting — unlock dashboard embedding.
     if not args.skip_embedding_config:
         configure_embedding(args.target)
+
+    # Lakebase grant — the deployed app's SP needs CREATE on schema public
+    # so future deploys can add new tables (Phase 6 follow-up).
+    grant_lakebase_app_permissions(args.target)
 
     # Phase 8 — print the summary.
     print("\n=== Phase 8: summary ===")

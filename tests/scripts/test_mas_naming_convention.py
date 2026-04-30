@@ -82,43 +82,102 @@ class TestMasNamingConvention:
             )
 
     def test_instructions_reference_every_sub_agent_name(self):
-        """Every sub-agent name that phase 7 defines must appear verbatim
-        inside the `instructions` string of its parent MAS, so the LLM
-        can emit a deterministic tool call. We pair each
-        _build_agent("name", ...) with the nearest `"instructions": (...)`
-        block above or below it and check.
+        """Every sub-agent name appended to ``<x>_agents`` must appear
+        verbatim inside the ``instructions`` string of the next POST
+        body to ``/api/2.1/supervisor-agents`` whose ``"agents"`` is
+        bound to that same list.
+
+        Uses an AST visitor (not regex) so re-ordering MAS blocks no
+        longer breaks the test — the previous regex grabbed the first
+        ``"instructions": (...)`` after ``<x>_agents = []``, which
+        leaked the AECO block's text into HB's check when AECO was
+        inserted between them in Phase 4.
         """
+        import ast
+
         src = self._phase_7_source()
+        tree = ast.parse(src)
 
-        # Find the AdTech MAS block and the HB MAS block separately.
-        # Each block starts with `adtech_agents = []` / `hb_agents = []`
-        # and extends through its corresponding `_api("post", "/api/2.1/
-        # supervisor-agents"` call.
-        for var, display_token in [
-            ("adtech_agents", "AdTech Intelligence Supervisor"),
-            ("hb_agents", "HB Product Center Supervisor"),
-        ]:
-            start = src.find(f"{var} = []")
-            assert start >= 0, f"couldn't find {var} block"
-            # Find the end: the next `_api("post", "/api/2.1/supervisor-agents"`
-            end = src.find('"/api/2.1/supervisor-agents"', start)
-            assert end >= 0, f"couldn't find POST for {var}"
-            block = src[start:end + 300]
+        agents_to_names: dict[str, list[str]] = {}
+        agents_to_instructions: dict[str, str] = {}
 
-            names = re.findall(
-                r"_build_agent\(\s*\n?\s*[\"']([^\"']+)[\"']",
-                block,
+        for node in ast.walk(tree):
+            # `<var>_agents.append(_build_agent("name", ...))`
+            if (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Attribute)
+                and node.func.attr == "append"
+                and isinstance(node.func.value, ast.Name)
+                and node.func.value.id.endswith("_agents")
+                and node.args
+                and isinstance(node.args[0], ast.Call)
+                and isinstance(node.args[0].func, ast.Name)
+                and node.args[0].func.id == "_build_agent"
+                and node.args[0].args
+                and isinstance(node.args[0].args[0], ast.Constant)
+                and isinstance(node.args[0].args[0].value, str)
+            ):
+                var = node.func.value.id
+                name = node.args[0].args[0].value
+                agents_to_names.setdefault(var, []).append(name)
+
+            # `_api("post", "/api/2.1/supervisor-agents", body)`
+            # where body is a dict with "instructions" → str and
+            # "agents" → Name reference.
+            if (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "_api"
+                and len(node.args) >= 2
+                and isinstance(node.args[1], ast.Constant)
+                and node.args[1].value == "/api/2.1/supervisor-agents"
+            ):
+                # Body is the next sibling — find ``body`` variable
+                # assigned in the enclosing scope right above.
+                pass
+
+        # Second pass: find dict literals with "instructions" + "agents"
+        # → links variable name to instructions string.
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Assign):
+                continue
+            if not (len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)
+                    and node.targets[0].id == "body"):
+                continue
+            if not isinstance(node.value, ast.Dict):
+                continue
+            keys = [k.value for k in node.value.keys if isinstance(k, ast.Constant)]
+            if "instructions" not in keys or "agents" not in keys:
+                continue
+            kv = dict(zip(keys, node.value.values))
+            agents_node = kv.get("agents")
+            instr_node = kv.get("instructions")
+            if not isinstance(agents_node, ast.Name):
+                continue
+            if instr_node is None:
+                continue
+            # instructions is a parenthesized string-concatenation; we
+            # walk it to collect every Constant string literal value.
+            instr_text = "".join(
+                n.value for n in ast.walk(instr_node)
+                if isinstance(n, ast.Constant) and isinstance(n.value, str)
             )
-            instructions_match = re.search(
-                r'"instructions"\s*:\s*\(([^)]+)\)',
-                block,
-                re.S,
-            )
-            assert instructions_match, f"no instructions block in {var}"
-            instructions = instructions_match.group(1)
+            agents_to_instructions[agents_node.id] = instr_text
 
+        # Now assert every sub-agent name appears in its parent MAS's
+        # instructions.
+        assert agents_to_names, "no _build_agent calls found in any *_agents list"
+        assert agents_to_instructions, (
+            "no MAS body dict with `agents` + `instructions` keys found"
+        )
+        for var, names in agents_to_names.items():
+            assert var in agents_to_instructions, (
+                f"`{var}` is appended to in phase 7 but never referenced "
+                f"as `agents` in a supervisor-agents POST body."
+            )
+            instructions = agents_to_instructions[var]
             for name in names:
                 assert name in instructions, (
-                    f"Sub-agent {name!r} missing from {display_token} "
-                    f"instructions. Routing must reference the machine name."
+                    f"Sub-agent {name!r} missing from instructions for "
+                    f"{var!r}. Routing must reference the machine name."
                 )

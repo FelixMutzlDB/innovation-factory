@@ -1,0 +1,330 @@
+{
+  "datasets": [
+    {
+      "name": "ds_energy",
+      "displayName": "Energy",
+      "queryLines": [
+        "SELECT e.*, b.name AS building_name FROM {{CATALOG}}.aeco_hub.dt_energy_consumption e JOIN {{CATALOG}}.aeco_hub.dt_buildings b ON e.building_id = b.id"
+      ]
+    },
+    {
+      "name": "ds_maintenance",
+      "displayName": "Maintenance",
+      "queryLines": [
+        "SELECT * FROM {{CATALOG}}.aeco_hub.dt_maintenance_orders"
+      ]
+    },
+    {
+      "name": "ds_utilization",
+      "displayName": "Utilization",
+      "queryLines": [
+        "SELECT * FROM {{CATALOG}}.aeco_hub.dt_space_utilization"
+      ]
+    },
+    {
+      "name": "ds_issues",
+      "displayName": "Issues",
+      "queryLines": [
+        "SELECT * FROM {{CATALOG}}.aeco_hub.dt_issues"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "energy",
+      "displayName": "Energy & Sustainability",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layout": [
+        {
+          "widget": {
+            "name": "title-energy",
+            "multilineTextboxSpec": {
+              "lines": ["AECO Hub — Energy & Sustainability"]
+            }
+          },
+          "position": {"x": 0, "y": 0, "width": 6, "height": 1}
+        },
+        {
+          "widget": {
+            "name": "kpi-total-kwh",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_energy",
+                "fields": [{"name": "sum_kwh", "expression": "SUM(`kwh`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "sum_kwh", "displayName": "Total kWh (30d)"}}
+            }
+          },
+          "position": {"x": 0, "y": 1, "width": 2, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-total-cost",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_energy",
+                "fields": [{"name": "sum_cost", "expression": "SUM(`cost_eur`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "sum_cost", "displayName": "Energy cost (€)"}}
+            }
+          },
+          "position": {"x": 2, "y": 1, "width": 2, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-avg-daily",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_energy",
+                "fields": [{"name": "avg_kwh", "expression": "AVG(`kwh`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "avg_kwh", "displayName": "Avg daily kWh / meter"}}
+            }
+          },
+          "position": {"x": 4, "y": 1, "width": 2, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "line-energy-trend",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_energy",
+                "fields": [
+                  {"name": "day", "expression": "DATE_TRUNC('DAY', `period_start`)"},
+                  {"name": "sum_kwh", "expression": "SUM(`kwh`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {"fieldName": "day", "scale": {"type": "temporal"}, "displayName": "Day"},
+                "y": {"fieldName": "sum_kwh", "scale": {"type": "quantitative"}, "displayName": "kWh"}
+              }
+            }
+          },
+          "position": {"x": 0, "y": 4, "width": 6, "height": 5}
+        },
+        {
+          "widget": {
+            "name": "bar-kwh-by-building",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_energy",
+                "fields": [
+                  {"name": "building_name", "expression": "`building_name`"},
+                  {"name": "sum_kwh", "expression": "SUM(`kwh`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "building_name", "scale": {"type": "categorical"}, "displayName": "Building"},
+                "y": {"fieldName": "sum_kwh", "scale": {"type": "quantitative"}, "displayName": "kWh"}
+              }
+            }
+          },
+          "position": {"x": 0, "y": 9, "width": 3, "height": 5}
+        },
+        {
+          "widget": {
+            "name": "bar-cost-by-project",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_energy",
+                "fields": [
+                  {"name": "project_code", "expression": "`project_code`"},
+                  {"name": "sum_cost", "expression": "SUM(`cost_eur`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "project_code", "scale": {"type": "categorical"}, "displayName": "Project"},
+                "y": {"fieldName": "sum_cost", "scale": {"type": "quantitative"}, "displayName": "Cost (€)"}
+              }
+            }
+          },
+          "position": {"x": 3, "y": 9, "width": 3, "height": 5}
+        }
+      ]
+    },
+    {
+      "name": "operations",
+      "displayName": "Operations",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layout": [
+        {
+          "widget": {
+            "name": "title-ops",
+            "multilineTextboxSpec": {
+              "lines": ["Maintenance, utilization, issues"]
+            }
+          },
+          "position": {"x": 0, "y": 0, "width": 6, "height": 1}
+        },
+        {
+          "widget": {
+            "name": "kpi-open-maint",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_maintenance",
+                "fields": [{"name": "count_open", "expression": "COUNT(CASE WHEN `status` IN ('open', 'scheduled', 'in_progress') THEN 1 END)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "count_open", "displayName": "Open orders"}}
+            }
+          },
+          "position": {"x": 0, "y": 1, "width": 2, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-completed-30d",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_maintenance",
+                "fields": [{"name": "count_completed", "expression": "COUNT(CASE WHEN `status` = 'completed' AND `completed_at` >= DATE_SUB(CURRENT_DATE(), 30) THEN 1 END)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "count_completed", "displayName": "Completed (30d)"}}
+            }
+          },
+          "position": {"x": 2, "y": 1, "width": 2, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-critical-issues",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_issues",
+                "fields": [{"name": "count_critical", "expression": "COUNT(CASE WHEN `severity` = 'critical' AND `status` <> 'closed' THEN 1 END)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "count_critical", "displayName": "Critical issues"}}
+            }
+          },
+          "position": {"x": 4, "y": 1, "width": 2, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "bar-maint-priority",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_maintenance",
+                "fields": [
+                  {"name": "priority", "expression": "`priority`"},
+                  {"name": "count_id", "expression": "COUNT(`id`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "priority", "scale": {"type": "categorical"}, "displayName": "Priority"},
+                "y": {"fieldName": "count_id", "scale": {"type": "quantitative"}, "displayName": "Orders"}
+              }
+            }
+          },
+          "position": {"x": 0, "y": 4, "width": 3, "height": 5}
+        },
+        {
+          "widget": {
+            "name": "bar-issues-category",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_issues",
+                "fields": [
+                  {"name": "category", "expression": "`category`"},
+                  {"name": "count_id", "expression": "COUNT(`id`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "category", "scale": {"type": "categorical"}, "displayName": "Category"},
+                "y": {"fieldName": "count_id", "scale": {"type": "quantitative"}, "displayName": "Issues"}
+              }
+            }
+          },
+          "position": {"x": 3, "y": 4, "width": 3, "height": 5}
+        },
+        {
+          "widget": {
+            "name": "line-utilization-trend",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_utilization",
+                "fields": [
+                  {"name": "day", "expression": "DATE_TRUNC('DAY', `period_start`)"},
+                  {"name": "avg_occupancy", "expression": "AVG(`occupancy_pct`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {"fieldName": "day", "scale": {"type": "temporal"}, "displayName": "Day"},
+                "y": {"fieldName": "avg_occupancy", "scale": {"type": "quantitative"}, "displayName": "Occupancy %"}
+              }
+            }
+          },
+          "position": {"x": 0, "y": 9, "width": 6, "height": 5}
+        }
+      ]
+    }
+  ]
+}

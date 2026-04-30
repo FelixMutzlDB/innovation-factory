@@ -25,12 +25,13 @@ def _load_uc_schema():
 
 
 class TestSchemaSurface:
-    def test_tables_cover_three_schemas(self):
+    def test_tables_cover_known_schemas(self):
         mod = _load_uc_schema()
         assert set(mod.schemas()) == {
             "adtech_intelligence",
             "hb_product_center",
             "mac",
+            "aeco_hub",
         }
 
     def test_every_table_has_columns_and_at_least_one_id_or_pk_like(self):
@@ -44,7 +45,7 @@ class TestSchemaSurface:
             assert col_names & {
                 "id", "station_id", "product_id", "campaign_id",
                 "inspection_id", "verification_id", "advertiser_id",
-                "inventory_id",
+                "inventory_id", "reading_id",
             }, f"{name} has no identifier column"
 
     def test_column_names_are_safe_identifiers(self):

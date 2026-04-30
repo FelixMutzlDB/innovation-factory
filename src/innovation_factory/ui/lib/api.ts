@@ -1,6 +1,269 @@
 import { useQuery, useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import type { UseQueryOptions, UseSuspenseQueryOptions, UseMutationOptions } from "@tanstack/react-query";
 
+export const AecoBimDiscipline = {
+  architectural: "architectural",
+  structural: "structural",
+  mep: "mep",
+  electrical: "electrical",
+  plumbing: "plumbing",
+  hvac: "hvac",
+  civil: "civil",
+} as const;
+
+export type AecoBimDiscipline = (typeof AecoBimDiscipline)[keyof typeof AecoBimDiscipline];
+
+export const AecoBimLod = {
+  LOD_100: "LOD_100",
+  LOD_200: "LOD_200",
+  LOD_300: "LOD_300",
+  LOD_400: "LOD_400",
+  LOD_500: "LOD_500",
+} as const;
+
+export type AecoBimLod = (typeof AecoBimLod)[keyof typeof AecoBimLod];
+
+export const AecoBuildingType = {
+  residential: "residential",
+  office: "office",
+  retail: "retail",
+  mixed_use: "mixed_use",
+  industrial: "industrial",
+  healthcare: "healthcare",
+  education: "education",
+  hospitality: "hospitality",
+  infrastructure: "infrastructure",
+} as const;
+
+export type AecoBuildingType = (typeof AecoBuildingType)[keyof typeof AecoBuildingType];
+
+export const AecoChangeOrderStatus = {
+  proposed: "proposed",
+  approved: "approved",
+  rejected: "rejected",
+  implemented: "implemented",
+} as const;
+
+export type AecoChangeOrderStatus = (typeof AecoChangeOrderStatus)[keyof typeof AecoChangeOrderStatus];
+
+export const AecoChatRole = {
+  user: "user",
+  assistant: "assistant",
+  system: "system",
+} as const;
+
+export type AecoChatRole = (typeof AecoChatRole)[keyof typeof AecoChatRole];
+
+export const AecoCostStatus = {
+  estimated: "estimated",
+  committed: "committed",
+  actual: "actual",
+  paid: "paid",
+} as const;
+
+export type AecoCostStatus = (typeof AecoCostStatus)[keyof typeof AecoCostStatus];
+
+export interface AecoDatabricksResourcesOut {
+  configured?: boolean;
+  energy_dashboard_configured?: boolean;
+  energy_dashboard_embed_url: string;
+  energy_dashboard_id: string;
+  mas_configured?: boolean;
+  mas_endpoint_name: string;
+  operations_intelligence_genie_space_id: string;
+  project_analytics_genie_space_id: string;
+  standards_compliance_ka_configured?: boolean;
+  standards_compliance_ka_endpoint: string;
+  workspace_url: string;
+}
+
+export const AecoDocumentType = {
+  bim: "bim",
+  drawing: "drawing",
+  report: "report",
+  permit: "permit",
+  contract: "contract",
+  photo: "photo",
+  cobie: "cobie",
+  other: "other",
+} as const;
+
+export type AecoDocumentType = (typeof AecoDocumentType)[keyof typeof AecoDocumentType];
+
+export const AecoIntegrationStatus = {
+  connected: "connected",
+  simulated: "simulated",
+  planned: "planned",
+  disconnected: "disconnected",
+} as const;
+
+export type AecoIntegrationStatus = (typeof AecoIntegrationStatus)[keyof typeof AecoIntegrationStatus];
+
+export const AecoIssueCategory = {
+  clash: "clash",
+  rfi: "rfi",
+  defect: "defect",
+  change_request: "change_request",
+  safety: "safety",
+  design_issue: "design_issue",
+} as const;
+
+export type AecoIssueCategory = (typeof AecoIssueCategory)[keyof typeof AecoIssueCategory];
+
+export const AecoIssueSeverity = {
+  minor: "minor",
+  moderate: "moderate",
+  major: "major",
+  critical: "critical",
+} as const;
+
+export type AecoIssueSeverity = (typeof AecoIssueSeverity)[keyof typeof AecoIssueSeverity];
+
+export const AecoIssueStatus = {
+  open: "open",
+  in_review: "in_review",
+  in_progress: "in_progress",
+  resolved: "resolved",
+  closed: "closed",
+} as const;
+
+export type AecoIssueStatus = (typeof AecoIssueStatus)[keyof typeof AecoIssueStatus];
+
+export const AecoLeaseStatus = {
+  active: "active",
+  expired: "expired",
+  pending: "pending",
+  terminated: "terminated",
+} as const;
+
+export type AecoLeaseStatus = (typeof AecoLeaseStatus)[keyof typeof AecoLeaseStatus];
+
+export const AecoLifecycleSegment = {
+  design: "design",
+  qa_qc: "qa_qc",
+  requirements: "requirements",
+  build: "build",
+  operate: "operate",
+  visualize: "visualize",
+} as const;
+
+export type AecoLifecycleSegment = (typeof AecoLifecycleSegment)[keyof typeof AecoLifecycleSegment];
+
+export const AecoMaintenancePriority = {
+  low: "low",
+  medium: "medium",
+  high: "high",
+  urgent: "urgent",
+} as const;
+
+export type AecoMaintenancePriority = (typeof AecoMaintenancePriority)[keyof typeof AecoMaintenancePriority];
+
+export const AecoMaintenanceStatus = {
+  open: "open",
+  scheduled: "scheduled",
+  in_progress: "in_progress",
+  completed: "completed",
+  cancelled: "cancelled",
+} as const;
+
+export type AecoMaintenanceStatus = (typeof AecoMaintenanceStatus)[keyof typeof AecoMaintenanceStatus];
+
+export const AecoMemberRole = {
+  project_manager: "project_manager",
+  architect: "architect",
+  engineer: "engineer",
+  contractor: "contractor",
+  owner: "owner",
+  supplier: "supplier",
+  facility_manager: "facility_manager",
+} as const;
+
+export type AecoMemberRole = (typeof AecoMemberRole)[keyof typeof AecoMemberRole];
+
+export const AecoProjectPhase = {
+  design: "design",
+  build: "build",
+  operate: "operate",
+  demolish: "demolish",
+} as const;
+
+export type AecoProjectPhase = (typeof AecoProjectPhase)[keyof typeof AecoProjectPhase];
+
+export const AecoProjectStatus = {
+  planned: "planned",
+  active: "active",
+  on_hold: "on_hold",
+  completed: "completed",
+  cancelled: "cancelled",
+} as const;
+
+export type AecoProjectStatus = (typeof AecoProjectStatus)[keyof typeof AecoProjectStatus];
+
+export const AecoRelationshipType = {
+  contains: "contains",
+  feeds_data_to: "feeds_data_to",
+  depends_on: "depends_on",
+  maintained_by: "maintained_by",
+  designed_by: "designed_by",
+  supplied_by: "supplied_by",
+  monitors: "monitors",
+  controls: "controls",
+} as const;
+
+export type AecoRelationshipType = (typeof AecoRelationshipType)[keyof typeof AecoRelationshipType];
+
+export const AecoScheduleStatus = {
+  not_started: "not_started",
+  in_progress: "in_progress",
+  completed: "completed",
+  delayed: "delayed",
+} as const;
+
+export type AecoScheduleStatus = (typeof AecoScheduleStatus)[keyof typeof AecoScheduleStatus];
+
+export const AecoSensorType = {
+  zone_temp: "zone_temp",
+  supply_air_temp: "supply_air_temp",
+  relative_humidity: "relative_humidity",
+  co2_concentration: "co2_concentration",
+  people_count: "people_count",
+  active_power: "active_power",
+  dimming_level: "dimming_level",
+  damper_position: "damper_position",
+  access_event: "access_event",
+} as const;
+
+export type AecoSensorType = (typeof AecoSensorType)[keyof typeof AecoSensorType];
+
+export const AecoSiteReportType = {
+  daily: "daily",
+  weekly: "weekly",
+  inspection: "inspection",
+  safety: "safety",
+} as const;
+
+export type AecoSiteReportType = (typeof AecoSiteReportType)[keyof typeof AecoSiteReportType];
+
+export const AecoSpaceType = {
+  office: "office",
+  meeting_room: "meeting_room",
+  apartment: "apartment",
+  retail_unit: "retail_unit",
+  corridor: "corridor",
+  stairwell: "stairwell",
+  bathroom: "bathroom",
+  kitchen: "kitchen",
+  technical: "technical",
+  parking: "parking",
+  storage: "storage",
+  patient_room: "patient_room",
+  operating_theatre: "operating_theatre",
+  warehouse_zone: "warehouse_zone",
+  common_area: "common_area",
+} as const;
+
+export type AecoSpaceType = (typeof AecoSpaceType)[keyof typeof AecoSpaceType];
+
 export const AlertResolution = {
   open: "open",
   investigating: "investigating",
@@ -459,16 +722,6 @@ export const CampaignType = {
 
 export type CampaignType = (typeof CampaignType)[keyof typeof CampaignType];
 
-export const ChatContext = {
-  recognition: "recognition",
-  quality: "quality",
-  authenticity: "authenticity",
-  supply_chain: "supply_chain",
-  general: "general",
-} as const;
-
-export type ChatContext = (typeof ChatContext)[keyof typeof ChatContext];
-
 export const ComplianceStatus = {
   compliant: "compliant",
   non_compliant: "non_compliant",
@@ -504,6 +757,7 @@ export interface DashboardEmbedOut {
 }
 
 export interface DatabricksResourcesOut {
+  configured?: boolean;
   dashboard_embed_url: string;
   dashboard_id: string;
   genie_space_id: string;
@@ -572,6 +826,449 @@ export interface DocListOut {
   slugs: string[];
 }
 
+export interface DtBimModelOut {
+  building_id?: number | null;
+  discipline: AecoBimDiscipline;
+  element_count: number;
+  file_size_mb: number;
+  file_url: string;
+  id: number;
+  lod: AecoBimLod;
+  name: string;
+  project_id: number;
+  uploaded_at: string;
+  uploaded_by: string;
+  version: string;
+}
+
+export interface DtBuildingOut {
+  address: string;
+  building_type: AecoBuildingType;
+  floor_count: number;
+  gross_floor_area_sqm: number;
+  id: number;
+  name: string;
+  project_id: number;
+  year_built?: number | null;
+}
+
+export interface DtChangeOrderOut {
+  cost_impact_eur: number;
+  decided_at?: string | null;
+  description: string;
+  id: number;
+  project_id: number;
+  requested_at: string;
+  requested_by: string;
+  schedule_impact_days: number;
+  status: AecoChangeOrderStatus;
+  title: string;
+}
+
+export interface DtChatHistoryOut {
+  messages: DtChatMessageOut[];
+  session: DtChatSessionOut;
+}
+
+export interface DtChatMessageIn {
+  message: string;
+  project_id?: number | null;
+  session_id?: number | null;
+}
+
+export interface DtChatMessageOut {
+  content: string;
+  created_at: string;
+  id: number;
+  role: AecoChatRole;
+  session_id: number;
+  sources_json?: Record<string, unknown> | null;
+}
+
+export interface DtChatSessionOut {
+  agent_kind: string;
+  created_at: string;
+  id: number;
+  project_id?: number | null;
+}
+
+export interface DtClashReportOut {
+  bim_model_id?: number | null;
+  clash_count: number;
+  detected_at: string;
+  discipline_a: AecoBimDiscipline;
+  discipline_b: AecoBimDiscipline;
+  id: number;
+  project_id: number;
+  severity: AecoIssueSeverity;
+  status: AecoIssueStatus;
+  title: string;
+}
+
+export interface DtCostItemOut {
+  actual_eur: number;
+  category: string;
+  code: string;
+  created_at: string;
+  description: string;
+  estimated_eur: number;
+  id: number;
+  project_id: number;
+  quantity: number;
+  status: AecoCostStatus;
+  unit: string;
+  unit_price_eur: number;
+}
+
+export interface DtCostSummaryOut {
+  by_category: Record<string, number>;
+  item_count: number;
+  project_id: number;
+  total_actual_eur: number;
+  total_estimated_eur: number;
+  variance_eur: number;
+  variance_pct: number;
+}
+
+export interface DtDocumentOut {
+  author: string;
+  created_at: string;
+  document_type: AecoDocumentType;
+  file_url: string;
+  id: number;
+  phase: AecoProjectPhase;
+  project_id: number;
+  title: string;
+  version: string;
+}
+
+export interface DtDocumentStatsOut {
+  by_phase: Record<string, number>;
+  by_type: Record<string, number>;
+  project_id: number;
+  total: number;
+}
+
+export interface DtEnergyConsumptionOut {
+  building_id: number;
+  cost_eur: number;
+  id: number;
+  kwh: number;
+  meter_code: string;
+  period_end: string;
+  period_start: string;
+}
+
+export interface DtEnergyDailyPointOut {
+  cost_eur: number;
+  kwh: number;
+  period_start: string;
+}
+
+export interface DtFloorOut {
+  area_sqm: number;
+  building_id: number;
+  id: number;
+  level: number;
+  name: string;
+}
+
+export interface DtIssueOut {
+  assigned_to?: string | null;
+  category: AecoIssueCategory;
+  created_at: string;
+  description: string;
+  id: number;
+  project_id: number;
+  raised_by: string;
+  resolved_at?: string | null;
+  severity: AecoIssueSeverity;
+  space_id?: number | null;
+  status: AecoIssueStatus;
+  title: string;
+}
+
+export interface DtIssueStatsOut {
+  by_category: Record<string, number>;
+  critical: number;
+  in_progress: number;
+  open: number;
+  project_id: number;
+  resolved: number;
+  total: number;
+}
+
+export interface DtLeaseContractOut {
+  end_date: string;
+  id: number;
+  monthly_rent_eur: number;
+  space_id: number;
+  start_date: string;
+  status: AecoLeaseStatus;
+  tenant_name: string;
+}
+
+export interface DtLiveReadingPointOut {
+  ts: string;
+  value: number;
+}
+
+export interface DtLiveSensorSeriesOut {
+  points: DtLiveReadingPointOut[];
+  sensor_code: string;
+  sensor_type: AecoSensorType;
+  unit: string;
+}
+
+export interface DtLiveSensorsOut {
+  generated_at: string;
+  project_id: number;
+  series: DtLiveSensorSeriesOut[];
+}
+
+export interface DtMaintenanceOrderOut {
+  asset_id?: number | null;
+  assigned_technician: string;
+  building_id: number;
+  completed_at?: string | null;
+  created_at: string;
+  description: string;
+  due_date?: string | null;
+  id: number;
+  priority: AecoMaintenancePriority;
+  space_id?: number | null;
+  status: AecoMaintenanceStatus;
+  title: string;
+}
+
+export interface DtMaintenanceStatsOut {
+  avg_days_to_complete: number;
+  completed: number;
+  in_progress: number;
+  open: number;
+  overdue: number;
+  project_id: number;
+  total: number;
+}
+
+export interface DtMarketplaceAppOut {
+  description: string;
+  id: number;
+  is_featured: boolean;
+  lifecycle_segment: AecoLifecycleSegment;
+  logo_url: string;
+  name: string;
+  partner_id: number;
+  partner_name: string;
+}
+
+export interface DtMarketplacePartnerOut {
+  description: string;
+  id: number;
+  lifecycle_segment: AecoLifecycleSegment;
+  logo_url: string;
+  name: string;
+  website: string;
+}
+
+export interface DtPartnerIntegrationOut {
+  activated_at?: string | null;
+  app_id: number;
+  app_name: string;
+  id: number;
+  lifecycle_segment: AecoLifecycleSegment;
+  notes: string;
+  partner_name: string;
+  project_id: number;
+  status: AecoIntegrationStatus;
+}
+
+export interface DtPortfolioStatsOut {
+  active_projects: number;
+  constructing_projects: number;
+  design_projects: number;
+  operating_projects: number;
+  total_actual_cost_eur: number;
+  total_budget_eur: number;
+  total_buildings: number;
+  total_projects: number;
+}
+
+export interface DtProjectKpiOut {
+  actual_cost_eur: number;
+  budget_eur: number;
+  building_count: number;
+  cost_variance_pct: number;
+  documents_count: number;
+  floor_count: number;
+  member_count: number;
+  open_issues: number;
+  progress_pct: number;
+  project_id: number;
+  space_count: number;
+}
+
+export interface DtProjectMemberOut {
+  email?: string | null;
+  id: number;
+  name: string;
+  organization: string;
+  phone?: string | null;
+  project_id: number;
+  role: AecoMemberRole;
+}
+
+export interface DtProjectOut {
+  actual_completion_date?: string | null;
+  actual_cost_eur: number;
+  budget_eur: number;
+  city: string;
+  client_name: string;
+  code: string;
+  country: string;
+  created_at: string;
+  description: string;
+  id: number;
+  name: string;
+  phase: AecoProjectPhase;
+  progress_pct: number;
+  start_date?: string | null;
+  status: AecoProjectStatus;
+  target_completion_date?: string | null;
+}
+
+export interface DtRelationshipEdgeOut {
+  id: number;
+  label: string;
+  relationship_type: AecoRelationshipType;
+  source: string;
+  target: string;
+}
+
+export interface DtRelationshipGraphOut {
+  edges: DtRelationshipEdgeOut[];
+  nodes: DtRelationshipNodeOut[];
+  project_id: number;
+  total_edges: number;
+  truncated: boolean;
+}
+
+export interface DtRelationshipNodeOut {
+  id: string;
+  label: string;
+  ref_id: number;
+  type: string;
+}
+
+export interface DtRoomRequirementOut {
+  description: string;
+  id: number;
+  is_met: boolean;
+  requirement_type: string;
+  space_id: number;
+  spec_unit: string;
+  spec_value: string;
+}
+
+export interface DtScheduleActivityOut {
+  end_date: string;
+  id: number;
+  name: string;
+  parent_activity_id?: number | null;
+  progress_pct: number;
+  project_id: number;
+  responsible_party: string;
+  start_date: string;
+  status: AecoScheduleStatus;
+}
+
+export interface DtScheduleSummaryOut {
+  avg_progress_pct: number;
+  completed: number;
+  delayed: number;
+  in_progress: number;
+  not_started: number;
+  project_id: number;
+  total: number;
+}
+
+export interface DtSensorDeviceOut {
+  building_id: number;
+  id: number;
+  install_date?: string | null;
+  last_seen_at?: string | null;
+  manufacturer: string;
+  model: string;
+  sensor_code: string;
+  sensor_type: AecoSensorType;
+  space_id?: number | null;
+}
+
+export interface DtSiteReportOut {
+  author: string;
+  created_at: string;
+  id: number;
+  issues_count: number;
+  project_id: number;
+  report_date: string;
+  report_type: AecoSiteReportType;
+  summary: string;
+  weather: string;
+  workforce_count: number;
+}
+
+export interface DtSpaceOut {
+  area_sqm: number;
+  capacity: number;
+  floor_id: number;
+  id: number;
+  name: string;
+  room_number: string;
+  space_type: AecoSpaceType;
+}
+
+export interface DtSpaceUtilizationOut {
+  id: number;
+  occupancy_pct: number;
+  peak_count: number;
+  period_end: string;
+  period_start: string;
+  space_id: number;
+}
+
+export interface DtTwinBuildingOut {
+  building_type: AecoBuildingType;
+  floor_count: number;
+  floors: DtTwinFloorOut[];
+  gross_floor_area_sqm: number;
+  id: number;
+  name: string;
+}
+
+export interface DtTwinFloorOut {
+  area_sqm: number;
+  id: number;
+  level: number;
+  name: string;
+  spaces: DtTwinSpaceOut[];
+}
+
+export interface DtTwinOut {
+  buildings: DtTwinBuildingOut[];
+  project_id: number;
+  project_name: string;
+  project_phase: AecoProjectPhase;
+}
+
+export interface DtTwinSpaceOut {
+  area_sqm: number;
+  capacity: number;
+  id: number;
+  name: string;
+  room_number: string;
+  space_type: AecoSpaceType;
+}
+
 export const FuelType = {
   diesel: "diesel",
   premium_diesel: "premium_diesel",
@@ -634,26 +1331,6 @@ export interface HbChatMessageIn {
   session_id?: number | null;
 }
 
-export interface HbChatMessageOut {
-  content: string;
-  created_at: string;
-  id: number;
-  role: string;
-  session_id: number;
-}
-
-export interface HbChatSessionCreate {
-  context?: string;
-  user_role?: string | null;
-}
-
-export interface HbChatSessionOut {
-  context: ChatContext;
-  created_at: string;
-  id: number;
-  user_role?: innovation_factory__backend__projects__hb_product_center__models__UserRole | null;
-}
-
 export interface HbDashboardSummary {
   active_products: number;
   auth_alerts_open: number;
@@ -668,9 +1345,12 @@ export interface HbDashboardSummary {
 }
 
 export interface HbDatabricksResourcesOut {
+  aq_dashboard_configured?: boolean;
   aq_dashboard_embed_url: string;
   aq_dashboard_id: string;
   aq_genie_space_id: string;
+  configured?: boolean;
+  sc_dashboard_configured?: boolean;
   sc_dashboard_embed_url: string;
   sc_dashboard_id: string;
   sc_genie_space_id: string;
@@ -848,6 +1528,15 @@ export interface HbTrendPoint {
   date: string;
   label?: string | null;
   value: number;
+}
+
+export interface HealthSummaryOut {
+  accelerator_slugs: string[];
+  accelerators_registered: number;
+  db_ok: boolean;
+  git_sha: string;
+  startup_warnings: string[];
+  table_counts: Record<string, number>;
 }
 
 export interface IdeaMessageIn {
@@ -1719,6 +2408,11 @@ export interface At_listPlacementsParams {
   campaign_id: number;
 }
 
+export interface At_listChatSessionsParams {
+  skip?: number;
+  limit?: number;
+}
+
 export interface At_getChatSessionParams {
   session_id: number;
 }
@@ -1759,6 +2453,235 @@ export interface At_updateIssueParams {
 
 export interface At_getPlacementParams {
   placement_id: number;
+}
+
+export interface Aeco_getBimModelParams {
+  bim_model_id: number;
+}
+
+export interface Aeco_getBuildingParams {
+  building_id: number;
+}
+
+export interface Aeco_listFloorsParams {
+  building_id: number;
+}
+
+export interface Aeco_listChatSessionsParams {
+  project_id?: number | null;
+  agent_kind?: string | null;
+}
+
+export interface Aeco_getChatSessionParams {
+  session_id: number;
+}
+
+export interface Aeco_getDocumentParams {
+  document_id: number;
+}
+
+export interface Aeco_getFloorParams {
+  floor_id: number;
+}
+
+export interface Aeco_listSpacesParams {
+  floor_id: number;
+}
+
+export interface Aeco_getIssueParams {
+  issue_id: number;
+}
+
+export interface Aeco_listMarketplaceAppsParams {
+  lifecycle_segment?: AecoLifecycleSegment | null;
+  featured_only?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_listProjectsParams {
+  phase?: AecoProjectPhase | null;
+  status?: AecoProjectStatus | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_getProjectParams {
+  project_id: number;
+}
+
+export interface Aeco_listChangeOrdersParams {
+  project_id: number;
+  status?: AecoChangeOrderStatus | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_listCostItemsParams {
+  project_id: number;
+  status?: AecoCostStatus | null;
+  category?: string | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_getCostSummaryParams {
+  project_id: number;
+}
+
+export interface Aeco_listScheduleActivitiesParams {
+  project_id: number;
+  status?: AecoScheduleStatus | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_getScheduleSummaryParams {
+  project_id: number;
+}
+
+export interface Aeco_listSiteReportsParams {
+  project_id: number;
+  report_type?: AecoSiteReportType | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_listBuildingsParams {
+  project_id: number;
+}
+
+export interface Aeco_listBimModelsParams {
+  project_id: number;
+  discipline?: AecoBimDiscipline | null;
+  building_id?: number | null;
+}
+
+export interface Aeco_listClashReportsParams {
+  project_id: number;
+  severity?: AecoIssueSeverity | null;
+  status?: AecoIssueStatus | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_listRoomRequirementsParams {
+  project_id: number;
+  is_met?: boolean | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_listDocumentsParams {
+  project_id: number;
+  phase?: AecoProjectPhase | null;
+  document_type?: AecoDocumentType | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_getDocumentStatsParams {
+  project_id: number;
+}
+
+export interface Aeco_listProjectIntegrationsParams {
+  project_id: number;
+  status?: AecoIntegrationStatus | null;
+}
+
+export interface Aeco_listIssuesParams {
+  project_id: number;
+  status?: AecoIssueStatus | null;
+  severity?: AecoIssueSeverity | null;
+  category?: AecoIssueCategory | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_getIssueStatsParams {
+  project_id: number;
+}
+
+export interface Aeco_getProjectKpisParams {
+  project_id: number;
+}
+
+export interface Aeco_listProjectMembersParams {
+  project_id: number;
+}
+
+export interface Aeco_listEnergyConsumptionParams {
+  project_id: number;
+  building_id?: number | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_getEnergyTrendParams {
+  project_id: number;
+}
+
+export interface Aeco_listLeaseContractsParams {
+  project_id: number;
+  status?: AecoLeaseStatus | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_getLiveSensorsParams {
+  project_id: number;
+}
+
+export interface Aeco_listMaintenanceOrdersParams {
+  project_id: number;
+  status?: AecoMaintenanceStatus | null;
+  priority?: AecoMaintenancePriority | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_getMaintenanceStatsParams {
+  project_id: number;
+}
+
+export interface Aeco_listSensorsParams {
+  project_id: number;
+  sensor_type?: AecoSensorType | null;
+  building_id?: number | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_listSpaceUtilizationParams {
+  project_id: number;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Aeco_getRelationshipGraphParams {
+  project_id: number;
+  limit?: number;
+  relationship_type?: AecoRelationshipType | null;
+}
+
+export interface Aeco_getProjectTwinParams {
+  project_id: number;
+}
+
+export interface Aeco_getSensorParams {
+  sensor_id: number;
+}
+
+export interface Aeco_getSpaceParams {
+  space_id: number;
+}
+
+export interface Aeco_listSpaceRoomRequirementsParams {
+  space_id: number;
+}
+
+export interface Aeco_listToolsParams {
+  lifecycle_segment?: AecoLifecycleSegment | null;
 }
 
 export interface Bsh_getCurrentCustomerParams {
@@ -1811,6 +2734,8 @@ export interface Bsh_getTechnicianParams {
 export interface Bsh_listTicketsParams {
   status?: BshTicketStatus | null;
   role?: string | null;
+  skip?: number;
+  limit?: number;
   "X-Forwarded-Access-Token"?: string | null;
 }
 
@@ -1861,8 +2786,8 @@ export interface Bsh_generateShippingLabelParams {
 
 export interface Hb_listAlertsParams {
   resolution?: string | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_updateAlertParams {
@@ -1872,20 +2797,12 @@ export interface Hb_updateAlertParams {
 export interface Hb_listVerificationsParams {
   status?: string | null;
   requester_type?: string | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getVerificationParams {
   verification_id: number;
-}
-
-export interface Hb_getChatMessagesParams {
-  session_id: number;
-}
-
-export interface Hb_sendChatMessageParams {
-  session_id: number;
 }
 
 export interface Hb_listProductsParams {
@@ -1893,8 +2810,8 @@ export interface Hb_listProductsParams {
   collection?: string | null;
   season?: string | null;
   search?: string | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getProductParams {
@@ -1908,8 +2825,8 @@ export interface Hb_getProductImagesParams {
 export interface Hb_listInspectionsParams {
   status?: string | null;
   product_id?: number | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getInspectionParams {
@@ -1926,8 +2843,8 @@ export interface Hb_getRecognitionImageParams {
 
 export interface Hb_listRecognitionJobsParams {
   status?: string | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getRecognitionJobParams {
@@ -1938,8 +2855,8 @@ export interface Hb_listSupplyChainEventsParams {
   product_id?: number | null;
   event_type?: string | null;
   country?: string | null;
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getProductJourneyParams {
@@ -1947,8 +2864,8 @@ export interface Hb_getProductJourneyParams {
 }
 
 export interface Hb_listSustainabilityMetricsParams {
+  skip?: number;
   limit?: number;
-  offset?: number;
 }
 
 export interface Hb_getProductSustainabilityParams {
@@ -2062,6 +2979,8 @@ export interface Vh_get_current_readingParams {
 export interface Vh_get_energy_readingsParams {
   household_id: number;
   hours?: number;
+  skip?: number;
+  limit?: number;
 }
 
 export interface Vh_get_householdParams {
@@ -2101,6 +3020,8 @@ export interface Vh_compare_providersParams {
 export interface Vh_list_ticketsParams {
   household_id?: number | null;
   status?: VhTicketStatus | null;
+  skip?: number;
+  limit?: number;
 }
 
 export interface Vh_create_ticketParams {
@@ -2135,6 +3056,29 @@ export class ApiError extends Error {
     this.statusText = statusText;
     this.body = body;
   }
+}
+
+export const getHealthSummary = async (options?: RequestInit): Promise<{ data: HealthSummaryOut }> => {
+  const res = await fetch("/api/_health", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const getHealthSummaryKey = () => {
+  return ["/api/_health"] as const;
+};
+
+export function useGetHealthSummary<TData = { data: HealthSummaryOut }>(options?: { query?: Omit<UseQueryOptions<{ data: HealthSummaryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: getHealthSummaryKey(), queryFn: () => getHealthSummary(), ...options?.query });
+}
+
+export function useGetHealthSummarySuspense<TData = { data: HealthSummaryOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: HealthSummaryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: getHealthSummaryKey(), queryFn: () => getHealthSummary(), ...options?.query });
 }
 
 export const currentUser = async (params?: CurrentUserParams, options?: RequestInit): Promise<{ data: unknown }> => {
@@ -2551,8 +3495,13 @@ export function useAt_sendChatMessage(options?: { mutation?: UseMutationOptions<
   return useMutation({ mutationFn: (data) => at_sendChatMessage(data), ...options?.mutation });
 }
 
-export const at_listChatSessions = async (options?: RequestInit): Promise<{ data: AtChatHistoryOut[] }> => {
-  const res = await fetch("/api/projects/adtech-intelligence/chat/sessions", { ...options, method: "GET" });
+export const at_listChatSessions = async (params?: At_listChatSessionsParams, options?: RequestInit): Promise<{ data: AtChatHistoryOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/adtech-intelligence/chat/sessions?${queryString}` : `/api/projects/adtech-intelligence/chat/sessions`;
+  const res = await fetch(url, { ...options, method: "GET" });
   if (!res.ok) {
     const body = await res.text();
     let parsed: unknown;
@@ -2562,16 +3511,16 @@ export const at_listChatSessions = async (options?: RequestInit): Promise<{ data
   return { data: await res.json() };
 };
 
-export const at_listChatSessionsKey = () => {
-  return ["/api/projects/adtech-intelligence/chat/sessions"] as const;
+export const at_listChatSessionsKey = (params?: At_listChatSessionsParams) => {
+  return ["/api/projects/adtech-intelligence/chat/sessions", params] as const;
 };
 
-export function useAt_listChatSessions<TData = { data: AtChatHistoryOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: AtChatHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
-  return useQuery({ queryKey: at_listChatSessionsKey(), queryFn: () => at_listChatSessions(), ...options?.query });
+export function useAt_listChatSessions<TData = { data: AtChatHistoryOut[] }>(options?: { params?: At_listChatSessionsParams; query?: Omit<UseQueryOptions<{ data: AtChatHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: at_listChatSessionsKey(options?.params), queryFn: () => at_listChatSessions(options?.params), ...options?.query });
 }
 
-export function useAt_listChatSessionsSuspense<TData = { data: AtChatHistoryOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: AtChatHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
-  return useSuspenseQuery({ queryKey: at_listChatSessionsKey(), queryFn: () => at_listChatSessions(), ...options?.query });
+export function useAt_listChatSessionsSuspense<TData = { data: AtChatHistoryOut[] }>(options?: { params?: At_listChatSessionsParams; query?: Omit<UseSuspenseQueryOptions<{ data: AtChatHistoryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: at_listChatSessionsKey(options?.params), queryFn: () => at_listChatSessions(options?.params), ...options?.query });
 }
 
 export const at_getChatSession = async (params: At_getChatSessionParams, options?: RequestInit): Promise<{ data: AtChatHistoryOut }> => {
@@ -2833,6 +3782,1192 @@ export function useAt_getPlacementSuspense<TData = { data: AtPlacementOut }>(opt
   return useSuspenseQuery({ queryKey: at_getPlacementKey(options.params), queryFn: () => at_getPlacement(options.params), ...options?.query });
 }
 
+export const aeco_getBimModel = async (params: Aeco_getBimModelParams, options?: RequestInit): Promise<{ data: DtBimModelOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/bim-models/${params.bim_model_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getBimModelKey = (params?: Aeco_getBimModelParams) => {
+  return ["/api/projects/aeco-hub/bim-models/{bim_model_id}", params] as const;
+};
+
+export function useAeco_getBimModel<TData = { data: DtBimModelOut }>(options: { params: Aeco_getBimModelParams; query?: Omit<UseQueryOptions<{ data: DtBimModelOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getBimModelKey(options.params), queryFn: () => aeco_getBimModel(options.params), ...options?.query });
+}
+
+export function useAeco_getBimModelSuspense<TData = { data: DtBimModelOut }>(options: { params: Aeco_getBimModelParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtBimModelOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getBimModelKey(options.params), queryFn: () => aeco_getBimModel(options.params), ...options?.query });
+}
+
+export const aeco_getBuilding = async (params: Aeco_getBuildingParams, options?: RequestInit): Promise<{ data: DtBuildingOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/buildings/${params.building_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getBuildingKey = (params?: Aeco_getBuildingParams) => {
+  return ["/api/projects/aeco-hub/buildings/{building_id}", params] as const;
+};
+
+export function useAeco_getBuilding<TData = { data: DtBuildingOut }>(options: { params: Aeco_getBuildingParams; query?: Omit<UseQueryOptions<{ data: DtBuildingOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getBuildingKey(options.params), queryFn: () => aeco_getBuilding(options.params), ...options?.query });
+}
+
+export function useAeco_getBuildingSuspense<TData = { data: DtBuildingOut }>(options: { params: Aeco_getBuildingParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtBuildingOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getBuildingKey(options.params), queryFn: () => aeco_getBuilding(options.params), ...options?.query });
+}
+
+export const aeco_listFloors = async (params: Aeco_listFloorsParams, options?: RequestInit): Promise<{ data: DtFloorOut[] }> => {
+  const res = await fetch(`/api/projects/aeco-hub/buildings/${params.building_id}/floors`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listFloorsKey = (params?: Aeco_listFloorsParams) => {
+  return ["/api/projects/aeco-hub/buildings/{building_id}/floors", params] as const;
+};
+
+export function useAeco_listFloors<TData = { data: DtFloorOut[] }>(options: { params: Aeco_listFloorsParams; query?: Omit<UseQueryOptions<{ data: DtFloorOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listFloorsKey(options.params), queryFn: () => aeco_listFloors(options.params), ...options?.query });
+}
+
+export function useAeco_listFloorsSuspense<TData = { data: DtFloorOut[] }>(options: { params: Aeco_listFloorsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtFloorOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listFloorsKey(options.params), queryFn: () => aeco_listFloors(options.params), ...options?.query });
+}
+
+export const aeco_sendChatMessage = async (data: DtChatMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch("/api/projects/aeco-hub/chat", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useAeco_sendChatMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, DtChatMessageIn> }) {
+  return useMutation({ mutationFn: (data) => aeco_sendChatMessage(data), ...options?.mutation });
+}
+
+export const aeco_listChatSessions = async (params?: Aeco_listChatSessionsParams, options?: RequestInit): Promise<{ data: DtChatSessionOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.project_id != null) searchParams.set("project_id", String(params?.project_id));
+  if (params?.agent_kind != null) searchParams.set("agent_kind", String(params?.agent_kind));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/chat/sessions?${queryString}` : `/api/projects/aeco-hub/chat/sessions`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listChatSessionsKey = (params?: Aeco_listChatSessionsParams) => {
+  return ["/api/projects/aeco-hub/chat/sessions", params] as const;
+};
+
+export function useAeco_listChatSessions<TData = { data: DtChatSessionOut[] }>(options?: { params?: Aeco_listChatSessionsParams; query?: Omit<UseQueryOptions<{ data: DtChatSessionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listChatSessionsKey(options?.params), queryFn: () => aeco_listChatSessions(options?.params), ...options?.query });
+}
+
+export function useAeco_listChatSessionsSuspense<TData = { data: DtChatSessionOut[] }>(options?: { params?: Aeco_listChatSessionsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtChatSessionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listChatSessionsKey(options?.params), queryFn: () => aeco_listChatSessions(options?.params), ...options?.query });
+}
+
+export const aeco_getChatSession = async (params: Aeco_getChatSessionParams, options?: RequestInit): Promise<{ data: DtChatHistoryOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/chat/sessions/${params.session_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getChatSessionKey = (params?: Aeco_getChatSessionParams) => {
+  return ["/api/projects/aeco-hub/chat/sessions/{session_id}", params] as const;
+};
+
+export function useAeco_getChatSession<TData = { data: DtChatHistoryOut }>(options: { params: Aeco_getChatSessionParams; query?: Omit<UseQueryOptions<{ data: DtChatHistoryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getChatSessionKey(options.params), queryFn: () => aeco_getChatSession(options.params), ...options?.query });
+}
+
+export function useAeco_getChatSessionSuspense<TData = { data: DtChatHistoryOut }>(options: { params: Aeco_getChatSessionParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtChatHistoryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getChatSessionKey(options.params), queryFn: () => aeco_getChatSession(options.params), ...options?.query });
+}
+
+export const aeco_getDatabricksResources = async (options?: RequestInit): Promise<{ data: AecoDatabricksResourcesOut }> => {
+  const res = await fetch("/api/projects/aeco-hub/databricks-resources", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getDatabricksResourcesKey = () => {
+  return ["/api/projects/aeco-hub/databricks-resources"] as const;
+};
+
+export function useAeco_getDatabricksResources<TData = { data: AecoDatabricksResourcesOut }>(options?: { query?: Omit<UseQueryOptions<{ data: AecoDatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getDatabricksResourcesKey(), queryFn: () => aeco_getDatabricksResources(), ...options?.query });
+}
+
+export function useAeco_getDatabricksResourcesSuspense<TData = { data: AecoDatabricksResourcesOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: AecoDatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getDatabricksResourcesKey(), queryFn: () => aeco_getDatabricksResources(), ...options?.query });
+}
+
+export const aeco_getDocument = async (params: Aeco_getDocumentParams, options?: RequestInit): Promise<{ data: DtDocumentOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/documents/${params.document_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getDocumentKey = (params?: Aeco_getDocumentParams) => {
+  return ["/api/projects/aeco-hub/documents/{document_id}", params] as const;
+};
+
+export function useAeco_getDocument<TData = { data: DtDocumentOut }>(options: { params: Aeco_getDocumentParams; query?: Omit<UseQueryOptions<{ data: DtDocumentOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getDocumentKey(options.params), queryFn: () => aeco_getDocument(options.params), ...options?.query });
+}
+
+export function useAeco_getDocumentSuspense<TData = { data: DtDocumentOut }>(options: { params: Aeco_getDocumentParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtDocumentOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getDocumentKey(options.params), queryFn: () => aeco_getDocument(options.params), ...options?.query });
+}
+
+export const aeco_getFloor = async (params: Aeco_getFloorParams, options?: RequestInit): Promise<{ data: DtFloorOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/floors/${params.floor_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getFloorKey = (params?: Aeco_getFloorParams) => {
+  return ["/api/projects/aeco-hub/floors/{floor_id}", params] as const;
+};
+
+export function useAeco_getFloor<TData = { data: DtFloorOut }>(options: { params: Aeco_getFloorParams; query?: Omit<UseQueryOptions<{ data: DtFloorOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getFloorKey(options.params), queryFn: () => aeco_getFloor(options.params), ...options?.query });
+}
+
+export function useAeco_getFloorSuspense<TData = { data: DtFloorOut }>(options: { params: Aeco_getFloorParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtFloorOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getFloorKey(options.params), queryFn: () => aeco_getFloor(options.params), ...options?.query });
+}
+
+export const aeco_listSpaces = async (params: Aeco_listSpacesParams, options?: RequestInit): Promise<{ data: DtSpaceOut[] }> => {
+  const res = await fetch(`/api/projects/aeco-hub/floors/${params.floor_id}/spaces`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listSpacesKey = (params?: Aeco_listSpacesParams) => {
+  return ["/api/projects/aeco-hub/floors/{floor_id}/spaces", params] as const;
+};
+
+export function useAeco_listSpaces<TData = { data: DtSpaceOut[] }>(options: { params: Aeco_listSpacesParams; query?: Omit<UseQueryOptions<{ data: DtSpaceOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listSpacesKey(options.params), queryFn: () => aeco_listSpaces(options.params), ...options?.query });
+}
+
+export function useAeco_listSpacesSuspense<TData = { data: DtSpaceOut[] }>(options: { params: Aeco_listSpacesParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtSpaceOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listSpacesKey(options.params), queryFn: () => aeco_listSpaces(options.params), ...options?.query });
+}
+
+export const aeco_getIssue = async (params: Aeco_getIssueParams, options?: RequestInit): Promise<{ data: DtIssueOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/issues/${params.issue_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getIssueKey = (params?: Aeco_getIssueParams) => {
+  return ["/api/projects/aeco-hub/issues/{issue_id}", params] as const;
+};
+
+export function useAeco_getIssue<TData = { data: DtIssueOut }>(options: { params: Aeco_getIssueParams; query?: Omit<UseQueryOptions<{ data: DtIssueOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getIssueKey(options.params), queryFn: () => aeco_getIssue(options.params), ...options?.query });
+}
+
+export function useAeco_getIssueSuspense<TData = { data: DtIssueOut }>(options: { params: Aeco_getIssueParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtIssueOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getIssueKey(options.params), queryFn: () => aeco_getIssue(options.params), ...options?.query });
+}
+
+export const aeco_sendKaChatMessage = async (data: DtChatMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch("/api/projects/aeco-hub/ka-chat", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useAeco_sendKaChatMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, DtChatMessageIn> }) {
+  return useMutation({ mutationFn: (data) => aeco_sendKaChatMessage(data), ...options?.mutation });
+}
+
+export const aeco_listMarketplaceApps = async (params?: Aeco_listMarketplaceAppsParams, options?: RequestInit): Promise<{ data: DtMarketplaceAppOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.lifecycle_segment != null) searchParams.set("lifecycle_segment", String(params?.lifecycle_segment));
+  if (params?.featured_only != null) searchParams.set("featured_only", String(params?.featured_only));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/marketplace/apps?${queryString}` : `/api/projects/aeco-hub/marketplace/apps`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listMarketplaceAppsKey = (params?: Aeco_listMarketplaceAppsParams) => {
+  return ["/api/projects/aeco-hub/marketplace/apps", params] as const;
+};
+
+export function useAeco_listMarketplaceApps<TData = { data: DtMarketplaceAppOut[] }>(options?: { params?: Aeco_listMarketplaceAppsParams; query?: Omit<UseQueryOptions<{ data: DtMarketplaceAppOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listMarketplaceAppsKey(options?.params), queryFn: () => aeco_listMarketplaceApps(options?.params), ...options?.query });
+}
+
+export function useAeco_listMarketplaceAppsSuspense<TData = { data: DtMarketplaceAppOut[] }>(options?: { params?: Aeco_listMarketplaceAppsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtMarketplaceAppOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listMarketplaceAppsKey(options?.params), queryFn: () => aeco_listMarketplaceApps(options?.params), ...options?.query });
+}
+
+export const aeco_getPortfolioStats = async (options?: RequestInit): Promise<{ data: DtPortfolioStatsOut }> => {
+  const res = await fetch("/api/projects/aeco-hub/portfolio/stats", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getPortfolioStatsKey = () => {
+  return ["/api/projects/aeco-hub/portfolio/stats"] as const;
+};
+
+export function useAeco_getPortfolioStats<TData = { data: DtPortfolioStatsOut }>(options?: { query?: Omit<UseQueryOptions<{ data: DtPortfolioStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getPortfolioStatsKey(), queryFn: () => aeco_getPortfolioStats(), ...options?.query });
+}
+
+export function useAeco_getPortfolioStatsSuspense<TData = { data: DtPortfolioStatsOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: DtPortfolioStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getPortfolioStatsKey(), queryFn: () => aeco_getPortfolioStats(), ...options?.query });
+}
+
+export const aeco_listProjects = async (params?: Aeco_listProjectsParams, options?: RequestInit): Promise<{ data: DtProjectOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.phase != null) searchParams.set("phase", String(params?.phase));
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects?${queryString}` : `/api/projects/aeco-hub/projects`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listProjectsKey = (params?: Aeco_listProjectsParams) => {
+  return ["/api/projects/aeco-hub/projects", params] as const;
+};
+
+export function useAeco_listProjects<TData = { data: DtProjectOut[] }>(options?: { params?: Aeco_listProjectsParams; query?: Omit<UseQueryOptions<{ data: DtProjectOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listProjectsKey(options?.params), queryFn: () => aeco_listProjects(options?.params), ...options?.query });
+}
+
+export function useAeco_listProjectsSuspense<TData = { data: DtProjectOut[] }>(options?: { params?: Aeco_listProjectsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtProjectOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listProjectsKey(options?.params), queryFn: () => aeco_listProjects(options?.params), ...options?.query });
+}
+
+export const aeco_getProject = async (params: Aeco_getProjectParams, options?: RequestInit): Promise<{ data: DtProjectOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getProjectKey = (params?: Aeco_getProjectParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}", params] as const;
+};
+
+export function useAeco_getProject<TData = { data: DtProjectOut }>(options: { params: Aeco_getProjectParams; query?: Omit<UseQueryOptions<{ data: DtProjectOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getProjectKey(options.params), queryFn: () => aeco_getProject(options.params), ...options?.query });
+}
+
+export function useAeco_getProjectSuspense<TData = { data: DtProjectOut }>(options: { params: Aeco_getProjectParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtProjectOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getProjectKey(options.params), queryFn: () => aeco_getProject(options.params), ...options?.query });
+}
+
+export const aeco_listChangeOrders = async (params: Aeco_listChangeOrdersParams, options?: RequestInit): Promise<{ data: DtChangeOrderOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/build/change-orders?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/build/change-orders`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listChangeOrdersKey = (params?: Aeco_listChangeOrdersParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/build/change-orders", params] as const;
+};
+
+export function useAeco_listChangeOrders<TData = { data: DtChangeOrderOut[] }>(options: { params: Aeco_listChangeOrdersParams; query?: Omit<UseQueryOptions<{ data: DtChangeOrderOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listChangeOrdersKey(options.params), queryFn: () => aeco_listChangeOrders(options.params), ...options?.query });
+}
+
+export function useAeco_listChangeOrdersSuspense<TData = { data: DtChangeOrderOut[] }>(options: { params: Aeco_listChangeOrdersParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtChangeOrderOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listChangeOrdersKey(options.params), queryFn: () => aeco_listChangeOrders(options.params), ...options?.query });
+}
+
+export const aeco_listCostItems = async (params: Aeco_listCostItemsParams, options?: RequestInit): Promise<{ data: DtCostItemOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.category != null) searchParams.set("category", String(params?.category));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/build/costs?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/build/costs`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listCostItemsKey = (params?: Aeco_listCostItemsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/build/costs", params] as const;
+};
+
+export function useAeco_listCostItems<TData = { data: DtCostItemOut[] }>(options: { params: Aeco_listCostItemsParams; query?: Omit<UseQueryOptions<{ data: DtCostItemOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listCostItemsKey(options.params), queryFn: () => aeco_listCostItems(options.params), ...options?.query });
+}
+
+export function useAeco_listCostItemsSuspense<TData = { data: DtCostItemOut[] }>(options: { params: Aeco_listCostItemsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtCostItemOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listCostItemsKey(options.params), queryFn: () => aeco_listCostItems(options.params), ...options?.query });
+}
+
+export const aeco_getCostSummary = async (params: Aeco_getCostSummaryParams, options?: RequestInit): Promise<{ data: DtCostSummaryOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/build/costs/summary`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getCostSummaryKey = (params?: Aeco_getCostSummaryParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/build/costs/summary", params] as const;
+};
+
+export function useAeco_getCostSummary<TData = { data: DtCostSummaryOut }>(options: { params: Aeco_getCostSummaryParams; query?: Omit<UseQueryOptions<{ data: DtCostSummaryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getCostSummaryKey(options.params), queryFn: () => aeco_getCostSummary(options.params), ...options?.query });
+}
+
+export function useAeco_getCostSummarySuspense<TData = { data: DtCostSummaryOut }>(options: { params: Aeco_getCostSummaryParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtCostSummaryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getCostSummaryKey(options.params), queryFn: () => aeco_getCostSummary(options.params), ...options?.query });
+}
+
+export const aeco_listScheduleActivities = async (params: Aeco_listScheduleActivitiesParams, options?: RequestInit): Promise<{ data: DtScheduleActivityOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/build/schedule?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/build/schedule`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listScheduleActivitiesKey = (params?: Aeco_listScheduleActivitiesParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/build/schedule", params] as const;
+};
+
+export function useAeco_listScheduleActivities<TData = { data: DtScheduleActivityOut[] }>(options: { params: Aeco_listScheduleActivitiesParams; query?: Omit<UseQueryOptions<{ data: DtScheduleActivityOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listScheduleActivitiesKey(options.params), queryFn: () => aeco_listScheduleActivities(options.params), ...options?.query });
+}
+
+export function useAeco_listScheduleActivitiesSuspense<TData = { data: DtScheduleActivityOut[] }>(options: { params: Aeco_listScheduleActivitiesParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtScheduleActivityOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listScheduleActivitiesKey(options.params), queryFn: () => aeco_listScheduleActivities(options.params), ...options?.query });
+}
+
+export const aeco_getScheduleSummary = async (params: Aeco_getScheduleSummaryParams, options?: RequestInit): Promise<{ data: DtScheduleSummaryOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/build/schedule/summary`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getScheduleSummaryKey = (params?: Aeco_getScheduleSummaryParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/build/schedule/summary", params] as const;
+};
+
+export function useAeco_getScheduleSummary<TData = { data: DtScheduleSummaryOut }>(options: { params: Aeco_getScheduleSummaryParams; query?: Omit<UseQueryOptions<{ data: DtScheduleSummaryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getScheduleSummaryKey(options.params), queryFn: () => aeco_getScheduleSummary(options.params), ...options?.query });
+}
+
+export function useAeco_getScheduleSummarySuspense<TData = { data: DtScheduleSummaryOut }>(options: { params: Aeco_getScheduleSummaryParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtScheduleSummaryOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getScheduleSummaryKey(options.params), queryFn: () => aeco_getScheduleSummary(options.params), ...options?.query });
+}
+
+export const aeco_listSiteReports = async (params: Aeco_listSiteReportsParams, options?: RequestInit): Promise<{ data: DtSiteReportOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.report_type != null) searchParams.set("report_type", String(params?.report_type));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/build/site-reports?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/build/site-reports`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listSiteReportsKey = (params?: Aeco_listSiteReportsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/build/site-reports", params] as const;
+};
+
+export function useAeco_listSiteReports<TData = { data: DtSiteReportOut[] }>(options: { params: Aeco_listSiteReportsParams; query?: Omit<UseQueryOptions<{ data: DtSiteReportOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listSiteReportsKey(options.params), queryFn: () => aeco_listSiteReports(options.params), ...options?.query });
+}
+
+export function useAeco_listSiteReportsSuspense<TData = { data: DtSiteReportOut[] }>(options: { params: Aeco_listSiteReportsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtSiteReportOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listSiteReportsKey(options.params), queryFn: () => aeco_listSiteReports(options.params), ...options?.query });
+}
+
+export const aeco_listBuildings = async (params: Aeco_listBuildingsParams, options?: RequestInit): Promise<{ data: DtBuildingOut[] }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/buildings`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listBuildingsKey = (params?: Aeco_listBuildingsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/buildings", params] as const;
+};
+
+export function useAeco_listBuildings<TData = { data: DtBuildingOut[] }>(options: { params: Aeco_listBuildingsParams; query?: Omit<UseQueryOptions<{ data: DtBuildingOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listBuildingsKey(options.params), queryFn: () => aeco_listBuildings(options.params), ...options?.query });
+}
+
+export function useAeco_listBuildingsSuspense<TData = { data: DtBuildingOut[] }>(options: { params: Aeco_listBuildingsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtBuildingOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listBuildingsKey(options.params), queryFn: () => aeco_listBuildings(options.params), ...options?.query });
+}
+
+export const aeco_listBimModels = async (params: Aeco_listBimModelsParams, options?: RequestInit): Promise<{ data: DtBimModelOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.discipline != null) searchParams.set("discipline", String(params?.discipline));
+  if (params?.building_id != null) searchParams.set("building_id", String(params?.building_id));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/design/bim-models?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/design/bim-models`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listBimModelsKey = (params?: Aeco_listBimModelsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/design/bim-models", params] as const;
+};
+
+export function useAeco_listBimModels<TData = { data: DtBimModelOut[] }>(options: { params: Aeco_listBimModelsParams; query?: Omit<UseQueryOptions<{ data: DtBimModelOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listBimModelsKey(options.params), queryFn: () => aeco_listBimModels(options.params), ...options?.query });
+}
+
+export function useAeco_listBimModelsSuspense<TData = { data: DtBimModelOut[] }>(options: { params: Aeco_listBimModelsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtBimModelOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listBimModelsKey(options.params), queryFn: () => aeco_listBimModels(options.params), ...options?.query });
+}
+
+export const aeco_listClashReports = async (params: Aeco_listClashReportsParams, options?: RequestInit): Promise<{ data: DtClashReportOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.severity != null) searchParams.set("severity", String(params?.severity));
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/design/clashes?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/design/clashes`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listClashReportsKey = (params?: Aeco_listClashReportsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/design/clashes", params] as const;
+};
+
+export function useAeco_listClashReports<TData = { data: DtClashReportOut[] }>(options: { params: Aeco_listClashReportsParams; query?: Omit<UseQueryOptions<{ data: DtClashReportOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listClashReportsKey(options.params), queryFn: () => aeco_listClashReports(options.params), ...options?.query });
+}
+
+export function useAeco_listClashReportsSuspense<TData = { data: DtClashReportOut[] }>(options: { params: Aeco_listClashReportsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtClashReportOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listClashReportsKey(options.params), queryFn: () => aeco_listClashReports(options.params), ...options?.query });
+}
+
+export const aeco_listRoomRequirements = async (params: Aeco_listRoomRequirementsParams, options?: RequestInit): Promise<{ data: DtRoomRequirementOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.is_met != null) searchParams.set("is_met", String(params?.is_met));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/design/room-requirements?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/design/room-requirements`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listRoomRequirementsKey = (params?: Aeco_listRoomRequirementsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/design/room-requirements", params] as const;
+};
+
+export function useAeco_listRoomRequirements<TData = { data: DtRoomRequirementOut[] }>(options: { params: Aeco_listRoomRequirementsParams; query?: Omit<UseQueryOptions<{ data: DtRoomRequirementOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listRoomRequirementsKey(options.params), queryFn: () => aeco_listRoomRequirements(options.params), ...options?.query });
+}
+
+export function useAeco_listRoomRequirementsSuspense<TData = { data: DtRoomRequirementOut[] }>(options: { params: Aeco_listRoomRequirementsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtRoomRequirementOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listRoomRequirementsKey(options.params), queryFn: () => aeco_listRoomRequirements(options.params), ...options?.query });
+}
+
+export const aeco_listDocuments = async (params: Aeco_listDocumentsParams, options?: RequestInit): Promise<{ data: DtDocumentOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.phase != null) searchParams.set("phase", String(params?.phase));
+  if (params?.document_type != null) searchParams.set("document_type", String(params?.document_type));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/documents?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/documents`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listDocumentsKey = (params?: Aeco_listDocumentsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/documents", params] as const;
+};
+
+export function useAeco_listDocuments<TData = { data: DtDocumentOut[] }>(options: { params: Aeco_listDocumentsParams; query?: Omit<UseQueryOptions<{ data: DtDocumentOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listDocumentsKey(options.params), queryFn: () => aeco_listDocuments(options.params), ...options?.query });
+}
+
+export function useAeco_listDocumentsSuspense<TData = { data: DtDocumentOut[] }>(options: { params: Aeco_listDocumentsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtDocumentOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listDocumentsKey(options.params), queryFn: () => aeco_listDocuments(options.params), ...options?.query });
+}
+
+export const aeco_getDocumentStats = async (params: Aeco_getDocumentStatsParams, options?: RequestInit): Promise<{ data: DtDocumentStatsOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/documents/stats`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getDocumentStatsKey = (params?: Aeco_getDocumentStatsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/documents/stats", params] as const;
+};
+
+export function useAeco_getDocumentStats<TData = { data: DtDocumentStatsOut }>(options: { params: Aeco_getDocumentStatsParams; query?: Omit<UseQueryOptions<{ data: DtDocumentStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getDocumentStatsKey(options.params), queryFn: () => aeco_getDocumentStats(options.params), ...options?.query });
+}
+
+export function useAeco_getDocumentStatsSuspense<TData = { data: DtDocumentStatsOut }>(options: { params: Aeco_getDocumentStatsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtDocumentStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getDocumentStatsKey(options.params), queryFn: () => aeco_getDocumentStats(options.params), ...options?.query });
+}
+
+export const aeco_listProjectIntegrations = async (params: Aeco_listProjectIntegrationsParams, options?: RequestInit): Promise<{ data: DtPartnerIntegrationOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/integrations?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/integrations`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listProjectIntegrationsKey = (params?: Aeco_listProjectIntegrationsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/integrations", params] as const;
+};
+
+export function useAeco_listProjectIntegrations<TData = { data: DtPartnerIntegrationOut[] }>(options: { params: Aeco_listProjectIntegrationsParams; query?: Omit<UseQueryOptions<{ data: DtPartnerIntegrationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listProjectIntegrationsKey(options.params), queryFn: () => aeco_listProjectIntegrations(options.params), ...options?.query });
+}
+
+export function useAeco_listProjectIntegrationsSuspense<TData = { data: DtPartnerIntegrationOut[] }>(options: { params: Aeco_listProjectIntegrationsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtPartnerIntegrationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listProjectIntegrationsKey(options.params), queryFn: () => aeco_listProjectIntegrations(options.params), ...options?.query });
+}
+
+export const aeco_listIssues = async (params: Aeco_listIssuesParams, options?: RequestInit): Promise<{ data: DtIssueOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.severity != null) searchParams.set("severity", String(params?.severity));
+  if (params?.category != null) searchParams.set("category", String(params?.category));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/issues?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/issues`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listIssuesKey = (params?: Aeco_listIssuesParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/issues", params] as const;
+};
+
+export function useAeco_listIssues<TData = { data: DtIssueOut[] }>(options: { params: Aeco_listIssuesParams; query?: Omit<UseQueryOptions<{ data: DtIssueOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listIssuesKey(options.params), queryFn: () => aeco_listIssues(options.params), ...options?.query });
+}
+
+export function useAeco_listIssuesSuspense<TData = { data: DtIssueOut[] }>(options: { params: Aeco_listIssuesParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtIssueOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listIssuesKey(options.params), queryFn: () => aeco_listIssues(options.params), ...options?.query });
+}
+
+export const aeco_getIssueStats = async (params: Aeco_getIssueStatsParams, options?: RequestInit): Promise<{ data: DtIssueStatsOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/issues/stats`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getIssueStatsKey = (params?: Aeco_getIssueStatsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/issues/stats", params] as const;
+};
+
+export function useAeco_getIssueStats<TData = { data: DtIssueStatsOut }>(options: { params: Aeco_getIssueStatsParams; query?: Omit<UseQueryOptions<{ data: DtIssueStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getIssueStatsKey(options.params), queryFn: () => aeco_getIssueStats(options.params), ...options?.query });
+}
+
+export function useAeco_getIssueStatsSuspense<TData = { data: DtIssueStatsOut }>(options: { params: Aeco_getIssueStatsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtIssueStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getIssueStatsKey(options.params), queryFn: () => aeco_getIssueStats(options.params), ...options?.query });
+}
+
+export const aeco_getProjectKpis = async (params: Aeco_getProjectKpisParams, options?: RequestInit): Promise<{ data: DtProjectKpiOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/kpis`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getProjectKpisKey = (params?: Aeco_getProjectKpisParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/kpis", params] as const;
+};
+
+export function useAeco_getProjectKpis<TData = { data: DtProjectKpiOut }>(options: { params: Aeco_getProjectKpisParams; query?: Omit<UseQueryOptions<{ data: DtProjectKpiOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getProjectKpisKey(options.params), queryFn: () => aeco_getProjectKpis(options.params), ...options?.query });
+}
+
+export function useAeco_getProjectKpisSuspense<TData = { data: DtProjectKpiOut }>(options: { params: Aeco_getProjectKpisParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtProjectKpiOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getProjectKpisKey(options.params), queryFn: () => aeco_getProjectKpis(options.params), ...options?.query });
+}
+
+export const aeco_listProjectMembers = async (params: Aeco_listProjectMembersParams, options?: RequestInit): Promise<{ data: DtProjectMemberOut[] }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/members`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listProjectMembersKey = (params?: Aeco_listProjectMembersParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/members", params] as const;
+};
+
+export function useAeco_listProjectMembers<TData = { data: DtProjectMemberOut[] }>(options: { params: Aeco_listProjectMembersParams; query?: Omit<UseQueryOptions<{ data: DtProjectMemberOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listProjectMembersKey(options.params), queryFn: () => aeco_listProjectMembers(options.params), ...options?.query });
+}
+
+export function useAeco_listProjectMembersSuspense<TData = { data: DtProjectMemberOut[] }>(options: { params: Aeco_listProjectMembersParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtProjectMemberOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listProjectMembersKey(options.params), queryFn: () => aeco_listProjectMembers(options.params), ...options?.query });
+}
+
+export const aeco_listEnergyConsumption = async (params: Aeco_listEnergyConsumptionParams, options?: RequestInit): Promise<{ data: DtEnergyConsumptionOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.building_id != null) searchParams.set("building_id", String(params?.building_id));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/operate/energy?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/operate/energy`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listEnergyConsumptionKey = (params?: Aeco_listEnergyConsumptionParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/operate/energy", params] as const;
+};
+
+export function useAeco_listEnergyConsumption<TData = { data: DtEnergyConsumptionOut[] }>(options: { params: Aeco_listEnergyConsumptionParams; query?: Omit<UseQueryOptions<{ data: DtEnergyConsumptionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listEnergyConsumptionKey(options.params), queryFn: () => aeco_listEnergyConsumption(options.params), ...options?.query });
+}
+
+export function useAeco_listEnergyConsumptionSuspense<TData = { data: DtEnergyConsumptionOut[] }>(options: { params: Aeco_listEnergyConsumptionParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtEnergyConsumptionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listEnergyConsumptionKey(options.params), queryFn: () => aeco_listEnergyConsumption(options.params), ...options?.query });
+}
+
+export const aeco_getEnergyTrend = async (params: Aeco_getEnergyTrendParams, options?: RequestInit): Promise<{ data: DtEnergyDailyPointOut[] }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/operate/energy/trend`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getEnergyTrendKey = (params?: Aeco_getEnergyTrendParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/operate/energy/trend", params] as const;
+};
+
+export function useAeco_getEnergyTrend<TData = { data: DtEnergyDailyPointOut[] }>(options: { params: Aeco_getEnergyTrendParams; query?: Omit<UseQueryOptions<{ data: DtEnergyDailyPointOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getEnergyTrendKey(options.params), queryFn: () => aeco_getEnergyTrend(options.params), ...options?.query });
+}
+
+export function useAeco_getEnergyTrendSuspense<TData = { data: DtEnergyDailyPointOut[] }>(options: { params: Aeco_getEnergyTrendParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtEnergyDailyPointOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getEnergyTrendKey(options.params), queryFn: () => aeco_getEnergyTrend(options.params), ...options?.query });
+}
+
+export const aeco_listLeaseContracts = async (params: Aeco_listLeaseContractsParams, options?: RequestInit): Promise<{ data: DtLeaseContractOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/operate/leases?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/operate/leases`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listLeaseContractsKey = (params?: Aeco_listLeaseContractsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/operate/leases", params] as const;
+};
+
+export function useAeco_listLeaseContracts<TData = { data: DtLeaseContractOut[] }>(options: { params: Aeco_listLeaseContractsParams; query?: Omit<UseQueryOptions<{ data: DtLeaseContractOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listLeaseContractsKey(options.params), queryFn: () => aeco_listLeaseContracts(options.params), ...options?.query });
+}
+
+export function useAeco_listLeaseContractsSuspense<TData = { data: DtLeaseContractOut[] }>(options: { params: Aeco_listLeaseContractsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtLeaseContractOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listLeaseContractsKey(options.params), queryFn: () => aeco_listLeaseContracts(options.params), ...options?.query });
+}
+
+export const aeco_getLiveSensors = async (params: Aeco_getLiveSensorsParams, options?: RequestInit): Promise<{ data: DtLiveSensorsOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/operate/live-sensors`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getLiveSensorsKey = (params?: Aeco_getLiveSensorsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/operate/live-sensors", params] as const;
+};
+
+export function useAeco_getLiveSensors<TData = { data: DtLiveSensorsOut }>(options: { params: Aeco_getLiveSensorsParams; query?: Omit<UseQueryOptions<{ data: DtLiveSensorsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getLiveSensorsKey(options.params), queryFn: () => aeco_getLiveSensors(options.params), ...options?.query });
+}
+
+export function useAeco_getLiveSensorsSuspense<TData = { data: DtLiveSensorsOut }>(options: { params: Aeco_getLiveSensorsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtLiveSensorsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getLiveSensorsKey(options.params), queryFn: () => aeco_getLiveSensors(options.params), ...options?.query });
+}
+
+export const aeco_listMaintenanceOrders = async (params: Aeco_listMaintenanceOrdersParams, options?: RequestInit): Promise<{ data: DtMaintenanceOrderOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.priority != null) searchParams.set("priority", String(params?.priority));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/operate/maintenance?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/operate/maintenance`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listMaintenanceOrdersKey = (params?: Aeco_listMaintenanceOrdersParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/operate/maintenance", params] as const;
+};
+
+export function useAeco_listMaintenanceOrders<TData = { data: DtMaintenanceOrderOut[] }>(options: { params: Aeco_listMaintenanceOrdersParams; query?: Omit<UseQueryOptions<{ data: DtMaintenanceOrderOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listMaintenanceOrdersKey(options.params), queryFn: () => aeco_listMaintenanceOrders(options.params), ...options?.query });
+}
+
+export function useAeco_listMaintenanceOrdersSuspense<TData = { data: DtMaintenanceOrderOut[] }>(options: { params: Aeco_listMaintenanceOrdersParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtMaintenanceOrderOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listMaintenanceOrdersKey(options.params), queryFn: () => aeco_listMaintenanceOrders(options.params), ...options?.query });
+}
+
+export const aeco_getMaintenanceStats = async (params: Aeco_getMaintenanceStatsParams, options?: RequestInit): Promise<{ data: DtMaintenanceStatsOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/operate/maintenance/stats`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getMaintenanceStatsKey = (params?: Aeco_getMaintenanceStatsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/operate/maintenance/stats", params] as const;
+};
+
+export function useAeco_getMaintenanceStats<TData = { data: DtMaintenanceStatsOut }>(options: { params: Aeco_getMaintenanceStatsParams; query?: Omit<UseQueryOptions<{ data: DtMaintenanceStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getMaintenanceStatsKey(options.params), queryFn: () => aeco_getMaintenanceStats(options.params), ...options?.query });
+}
+
+export function useAeco_getMaintenanceStatsSuspense<TData = { data: DtMaintenanceStatsOut }>(options: { params: Aeco_getMaintenanceStatsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtMaintenanceStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getMaintenanceStatsKey(options.params), queryFn: () => aeco_getMaintenanceStats(options.params), ...options?.query });
+}
+
+export const aeco_listSensors = async (params: Aeco_listSensorsParams, options?: RequestInit): Promise<{ data: DtSensorDeviceOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.sensor_type != null) searchParams.set("sensor_type", String(params?.sensor_type));
+  if (params?.building_id != null) searchParams.set("building_id", String(params?.building_id));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/operate/sensors?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/operate/sensors`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listSensorsKey = (params?: Aeco_listSensorsParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/operate/sensors", params] as const;
+};
+
+export function useAeco_listSensors<TData = { data: DtSensorDeviceOut[] }>(options: { params: Aeco_listSensorsParams; query?: Omit<UseQueryOptions<{ data: DtSensorDeviceOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listSensorsKey(options.params), queryFn: () => aeco_listSensors(options.params), ...options?.query });
+}
+
+export function useAeco_listSensorsSuspense<TData = { data: DtSensorDeviceOut[] }>(options: { params: Aeco_listSensorsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtSensorDeviceOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listSensorsKey(options.params), queryFn: () => aeco_listSensors(options.params), ...options?.query });
+}
+
+export const aeco_listSpaceUtilization = async (params: Aeco_listSpaceUtilizationParams, options?: RequestInit): Promise<{ data: DtSpaceUtilizationOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/operate/utilization?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/operate/utilization`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listSpaceUtilizationKey = (params?: Aeco_listSpaceUtilizationParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/operate/utilization", params] as const;
+};
+
+export function useAeco_listSpaceUtilization<TData = { data: DtSpaceUtilizationOut[] }>(options: { params: Aeco_listSpaceUtilizationParams; query?: Omit<UseQueryOptions<{ data: DtSpaceUtilizationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listSpaceUtilizationKey(options.params), queryFn: () => aeco_listSpaceUtilization(options.params), ...options?.query });
+}
+
+export function useAeco_listSpaceUtilizationSuspense<TData = { data: DtSpaceUtilizationOut[] }>(options: { params: Aeco_listSpaceUtilizationParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtSpaceUtilizationOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listSpaceUtilizationKey(options.params), queryFn: () => aeco_listSpaceUtilization(options.params), ...options?.query });
+}
+
+export const aeco_getRelationshipGraph = async (params: Aeco_getRelationshipGraphParams, options?: RequestInit): Promise<{ data: DtRelationshipGraphOut }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.relationship_type != null) searchParams.set("relationship_type", String(params?.relationship_type));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/projects/${params.project_id}/relationships?${queryString}` : `/api/projects/aeco-hub/projects/${params.project_id}/relationships`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getRelationshipGraphKey = (params?: Aeco_getRelationshipGraphParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/relationships", params] as const;
+};
+
+export function useAeco_getRelationshipGraph<TData = { data: DtRelationshipGraphOut }>(options: { params: Aeco_getRelationshipGraphParams; query?: Omit<UseQueryOptions<{ data: DtRelationshipGraphOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getRelationshipGraphKey(options.params), queryFn: () => aeco_getRelationshipGraph(options.params), ...options?.query });
+}
+
+export function useAeco_getRelationshipGraphSuspense<TData = { data: DtRelationshipGraphOut }>(options: { params: Aeco_getRelationshipGraphParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtRelationshipGraphOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getRelationshipGraphKey(options.params), queryFn: () => aeco_getRelationshipGraph(options.params), ...options?.query });
+}
+
+export const aeco_getProjectTwin = async (params: Aeco_getProjectTwinParams, options?: RequestInit): Promise<{ data: DtTwinOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/projects/${params.project_id}/twin`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getProjectTwinKey = (params?: Aeco_getProjectTwinParams) => {
+  return ["/api/projects/aeco-hub/projects/{project_id}/twin", params] as const;
+};
+
+export function useAeco_getProjectTwin<TData = { data: DtTwinOut }>(options: { params: Aeco_getProjectTwinParams; query?: Omit<UseQueryOptions<{ data: DtTwinOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getProjectTwinKey(options.params), queryFn: () => aeco_getProjectTwin(options.params), ...options?.query });
+}
+
+export function useAeco_getProjectTwinSuspense<TData = { data: DtTwinOut }>(options: { params: Aeco_getProjectTwinParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtTwinOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getProjectTwinKey(options.params), queryFn: () => aeco_getProjectTwin(options.params), ...options?.query });
+}
+
+export const aeco_getSensor = async (params: Aeco_getSensorParams, options?: RequestInit): Promise<{ data: DtSensorDeviceOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/sensors/${params.sensor_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getSensorKey = (params?: Aeco_getSensorParams) => {
+  return ["/api/projects/aeco-hub/sensors/{sensor_id}", params] as const;
+};
+
+export function useAeco_getSensor<TData = { data: DtSensorDeviceOut }>(options: { params: Aeco_getSensorParams; query?: Omit<UseQueryOptions<{ data: DtSensorDeviceOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getSensorKey(options.params), queryFn: () => aeco_getSensor(options.params), ...options?.query });
+}
+
+export function useAeco_getSensorSuspense<TData = { data: DtSensorDeviceOut }>(options: { params: Aeco_getSensorParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtSensorDeviceOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getSensorKey(options.params), queryFn: () => aeco_getSensor(options.params), ...options?.query });
+}
+
+export const aeco_getSpace = async (params: Aeco_getSpaceParams, options?: RequestInit): Promise<{ data: DtSpaceOut }> => {
+  const res = await fetch(`/api/projects/aeco-hub/spaces/${params.space_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_getSpaceKey = (params?: Aeco_getSpaceParams) => {
+  return ["/api/projects/aeco-hub/spaces/{space_id}", params] as const;
+};
+
+export function useAeco_getSpace<TData = { data: DtSpaceOut }>(options: { params: Aeco_getSpaceParams; query?: Omit<UseQueryOptions<{ data: DtSpaceOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_getSpaceKey(options.params), queryFn: () => aeco_getSpace(options.params), ...options?.query });
+}
+
+export function useAeco_getSpaceSuspense<TData = { data: DtSpaceOut }>(options: { params: Aeco_getSpaceParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtSpaceOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_getSpaceKey(options.params), queryFn: () => aeco_getSpace(options.params), ...options?.query });
+}
+
+export const aeco_listSpaceRoomRequirements = async (params: Aeco_listSpaceRoomRequirementsParams, options?: RequestInit): Promise<{ data: DtRoomRequirementOut[] }> => {
+  const res = await fetch(`/api/projects/aeco-hub/spaces/${params.space_id}/room-requirements`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listSpaceRoomRequirementsKey = (params?: Aeco_listSpaceRoomRequirementsParams) => {
+  return ["/api/projects/aeco-hub/spaces/{space_id}/room-requirements", params] as const;
+};
+
+export function useAeco_listSpaceRoomRequirements<TData = { data: DtRoomRequirementOut[] }>(options: { params: Aeco_listSpaceRoomRequirementsParams; query?: Omit<UseQueryOptions<{ data: DtRoomRequirementOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listSpaceRoomRequirementsKey(options.params), queryFn: () => aeco_listSpaceRoomRequirements(options.params), ...options?.query });
+}
+
+export function useAeco_listSpaceRoomRequirementsSuspense<TData = { data: DtRoomRequirementOut[] }>(options: { params: Aeco_listSpaceRoomRequirementsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtRoomRequirementOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listSpaceRoomRequirementsKey(options.params), queryFn: () => aeco_listSpaceRoomRequirements(options.params), ...options?.query });
+}
+
+export const aeco_listTools = async (params?: Aeco_listToolsParams, options?: RequestInit): Promise<{ data: DtMarketplacePartnerOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.lifecycle_segment != null) searchParams.set("lifecycle_segment", String(params?.lifecycle_segment));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/aeco-hub/tools?${queryString}` : `/api/projects/aeco-hub/tools`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const aeco_listToolsKey = (params?: Aeco_listToolsParams) => {
+  return ["/api/projects/aeco-hub/tools", params] as const;
+};
+
+export function useAeco_listTools<TData = { data: DtMarketplacePartnerOut[] }>(options?: { params?: Aeco_listToolsParams; query?: Omit<UseQueryOptions<{ data: DtMarketplacePartnerOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: aeco_listToolsKey(options?.params), queryFn: () => aeco_listTools(options?.params), ...options?.query });
+}
+
+export function useAeco_listToolsSuspense<TData = { data: DtMarketplacePartnerOut[] }>(options?: { params?: Aeco_listToolsParams; query?: Omit<UseSuspenseQueryOptions<{ data: DtMarketplacePartnerOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: aeco_listToolsKey(options?.params), queryFn: () => aeco_listTools(options?.params), ...options?.query });
+}
+
 export const bsh_getCurrentCustomer = async (params?: Bsh_getCurrentCustomerParams, options?: RequestInit): Promise<{ data: BshCustomerOut }> => {
   const res = await fetch("/api/projects/bsh-home-connect/customers/me", { ...options, method: "GET", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
   if (!res.ok) {
@@ -3084,6 +5219,8 @@ export const bsh_listTickets = async (params?: Bsh_listTicketsParams, options?: 
   const searchParams = new URLSearchParams();
   if (params?.status != null) searchParams.set("status", String(params?.status));
   if (params?.role != null) searchParams.set("role", String(params?.role));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/bsh-home-connect/tickets?${queryString}` : `/api/projects/bsh-home-connect/tickets`;
   const res = await fetch(url, { ...options, method: "GET", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
@@ -3274,8 +5411,8 @@ export function useBsh_generateShippingLabel(options?: { mutation?: UseMutationO
 export const hb_listAlerts = async (params?: Hb_listAlertsParams, options?: RequestInit): Promise<{ data: HbAuthAlertOut[] }> => {
   const searchParams = new URLSearchParams();
   if (params?.resolution != null) searchParams.set("resolution", String(params?.resolution));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/authenticity/alerts?${queryString}` : `/api/projects/hb-product-center/authenticity/alerts`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3319,8 +5456,8 @@ export const hb_listVerifications = async (params?: Hb_listVerificationsParams, 
   const searchParams = new URLSearchParams();
   if (params?.status != null) searchParams.set("status", String(params?.status));
   if (params?.requester_type != null) searchParams.set("requester_type", String(params?.requester_type));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/authenticity/verifications?${queryString}` : `/api/projects/hb-product-center/authenticity/verifications`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3398,59 +5535,6 @@ export function useHb_sendMasChatMessage(options?: { mutation?: UseMutationOptio
   return useMutation({ mutationFn: (data) => hb_sendMasChatMessage(data), ...options?.mutation });
 }
 
-export const hb_createChatSession = async (data: HbChatSessionCreate, options?: RequestInit): Promise<{ data: HbChatSessionOut }> => {
-  const res = await fetch("/api/projects/hb-product-center/chat/sessions", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
-  if (!res.ok) {
-    const body = await res.text();
-    let parsed: unknown;
-    try { parsed = JSON.parse(body); } catch { parsed = body; }
-    throw new ApiError(res.status, res.statusText, parsed);
-  }
-  return { data: await res.json() };
-};
-
-export function useHb_createChatSession(options?: { mutation?: UseMutationOptions<{ data: HbChatSessionOut }, ApiError, HbChatSessionCreate> }) {
-  return useMutation({ mutationFn: (data) => hb_createChatSession(data), ...options?.mutation });
-}
-
-export const hb_getChatMessages = async (params: Hb_getChatMessagesParams, options?: RequestInit): Promise<{ data: HbChatMessageOut[] }> => {
-  const res = await fetch(`/api/projects/hb-product-center/chat/sessions/${params.session_id}/messages`, { ...options, method: "GET" });
-  if (!res.ok) {
-    const body = await res.text();
-    let parsed: unknown;
-    try { parsed = JSON.parse(body); } catch { parsed = body; }
-    throw new ApiError(res.status, res.statusText, parsed);
-  }
-  return { data: await res.json() };
-};
-
-export const hb_getChatMessagesKey = (params?: Hb_getChatMessagesParams) => {
-  return ["/api/projects/hb-product-center/chat/sessions/{session_id}/messages", params] as const;
-};
-
-export function useHb_getChatMessages<TData = { data: HbChatMessageOut[] }>(options: { params: Hb_getChatMessagesParams; query?: Omit<UseQueryOptions<{ data: HbChatMessageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
-  return useQuery({ queryKey: hb_getChatMessagesKey(options.params), queryFn: () => hb_getChatMessages(options.params), ...options?.query });
-}
-
-export function useHb_getChatMessagesSuspense<TData = { data: HbChatMessageOut[] }>(options: { params: Hb_getChatMessagesParams; query?: Omit<UseSuspenseQueryOptions<{ data: HbChatMessageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
-  return useSuspenseQuery({ queryKey: hb_getChatMessagesKey(options.params), queryFn: () => hb_getChatMessages(options.params), ...options?.query });
-}
-
-export const hb_sendChatMessage = async (params: Hb_sendChatMessageParams, data: HbChatMessageIn, options?: RequestInit): Promise<{ data: HbChatMessageOut }> => {
-  const res = await fetch(`/api/projects/hb-product-center/chat/sessions/${params.session_id}/messages`, { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
-  if (!res.ok) {
-    const body = await res.text();
-    let parsed: unknown;
-    try { parsed = JSON.parse(body); } catch { parsed = body; }
-    throw new ApiError(res.status, res.statusText, parsed);
-  }
-  return { data: await res.json() };
-};
-
-export function useHb_sendChatMessage(options?: { mutation?: UseMutationOptions<{ data: HbChatMessageOut }, ApiError, { params: Hb_sendChatMessageParams; data: HbChatMessageIn }> }) {
-  return useMutation({ mutationFn: (vars) => hb_sendChatMessage(vars.params, vars.data), ...options?.mutation });
-}
-
 export const hb_getDashboardSummary = async (options?: RequestInit): Promise<{ data: HbDashboardSummary }> => {
   const res = await fetch("/api/projects/hb-product-center/dashboard/summary", { ...options, method: "GET" });
   if (!res.ok) {
@@ -3526,8 +5610,8 @@ export const hb_listProducts = async (params?: Hb_listProductsParams, options?: 
   if (params?.collection != null) searchParams.set("collection", String(params?.collection));
   if (params?.season != null) searchParams.set("season", String(params?.season));
   if (params?.search != null) searchParams.set("search", String(params?.search));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/products?${queryString}` : `/api/projects/hb-product-center/products`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3602,8 +5686,8 @@ export const hb_listInspections = async (params?: Hb_listInspectionsParams, opti
   const searchParams = new URLSearchParams();
   if (params?.status != null) searchParams.set("status", String(params?.status));
   if (params?.product_id != null) searchParams.set("product_id", String(params?.product_id));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/quality/inspections?${queryString}` : `/api/projects/hb-product-center/quality/inspections`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3745,8 +5829,8 @@ export function useHb_getRecognitionImageSuspense<TData = { data: unknown }>(opt
 export const hb_listRecognitionJobs = async (params?: Hb_listRecognitionJobsParams, options?: RequestInit): Promise<{ data: HbRecognitionJobOut[] }> => {
   const searchParams = new URLSearchParams();
   if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/recognition/jobs?${queryString}` : `/api/projects/hb-product-center/recognition/jobs`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3844,8 +5928,8 @@ export const hb_listSupplyChainEvents = async (params?: Hb_listSupplyChainEvents
   if (params?.product_id != null) searchParams.set("product_id", String(params?.product_id));
   if (params?.event_type != null) searchParams.set("event_type", String(params?.event_type));
   if (params?.country != null) searchParams.set("country", String(params?.country));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/supply-chain/events?${queryString}` : `/api/projects/hb-product-center/supply-chain/events`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -3895,8 +5979,8 @@ export function useHb_getProductJourneySuspense<TData = { data: HbProductJourney
 
 export const hb_listSustainabilityMetrics = async (params?: Hb_listSustainabilityMetricsParams, options?: RequestInit): Promise<{ data: HbSustainabilityMetricOut[] }> => {
   const searchParams = new URLSearchParams();
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
-  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/hb-product-center/supply-chain/sustainability?${queryString}` : `/api/projects/hb-product-center/supply-chain/sustainability`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -4524,6 +6608,8 @@ export function useVh_get_current_readingSuspense<TData = { data: VhEnergyReadin
 export const vh_get_energy_readings = async (params: Vh_get_energy_readingsParams, options?: RequestInit): Promise<{ data: VhEnergyReadingOut[] }> => {
   const searchParams = new URLSearchParams();
   if (params?.hours != null) searchParams.set("hours", String(params?.hours));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/vi-home-one/energy/households/${params.household_id}/readings?${queryString}` : `/api/projects/vi-home-one/energy/households/${params.household_id}/readings`;
   const res = await fetch(url, { ...options, method: "GET" });
@@ -4775,6 +6861,8 @@ export const vh_list_tickets = async (params?: Vh_list_ticketsParams, options?: 
   const searchParams = new URLSearchParams();
   if (params?.household_id != null) searchParams.set("household_id", String(params?.household_id));
   if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
   const queryString = searchParams.toString();
   const url = queryString ? `/api/projects/vi-home-one/tickets?${queryString}` : `/api/projects/vi-home-one/tickets`;
   const res = await fetch(url, { ...options, method: "GET" });

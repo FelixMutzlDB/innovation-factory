@@ -22,6 +22,7 @@ brittle than useful.
 from __future__ import annotations
 
 import importlib
+import importlib.util
 import sys
 from unittest.mock import MagicMock
 
@@ -35,11 +36,9 @@ MODULE_PATH = (
 
 
 def _torch_installed() -> bool:
-    try:
-        import torch  # noqa: F401
-    except ImportError:
-        return False
-    return True
+    # Use find_spec rather than ``import torch`` so static type-checkers
+    # don't flag this file when the optional extra isn't installed.
+    return importlib.util.find_spec("torch") is not None
 
 
 def test_module_imports_without_torch():
