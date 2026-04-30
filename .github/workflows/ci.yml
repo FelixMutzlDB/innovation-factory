@@ -134,6 +134,14 @@ jobs:
           echo '<!doctype html><html><body>ci-stub</body></html>' > src/innovation_factory/__dist__/index.html
 
       - name: Run unit tests (skip integration)
+        # Stub Databricks env vars so the AdTech `databricks-resources`
+        # contract test passes — it asserts the API surface returns
+        # populated values when configured. Real values are only
+        # available in the integration job.
+        env:
+          DATABRICKS_HOST: https://stub.cloud.databricks.com
+          ADTECH_DASHBOARD_ID: stub-dashboard-id
+          ADTECH_GENIE_SPACE_ID: stub-genie-id
         run: uv run pytest -m "not integration" --tb=short -q
 
   # ---------------------------------------------------------------------------
