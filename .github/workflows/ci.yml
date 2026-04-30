@@ -57,6 +57,15 @@ jobs:
           restore-keys: |
             bun-${{ runner.os }}-
 
+      # bun.lock references npm-proxy.dev.databricks.com, the internal
+      # Databricks registry. That proxy isn't reachable from public
+      # GitHub-hosted runners — every CI run before this one timed out
+      # while bun install retried against an unreachable host. Rewrite
+      # the proxy URLs to public npm just for CI; developers keep using
+      # the proxy locally because their workstations have access to it.
+      - name: Rewrite internal npm proxy → public npm in lockfile
+        run: sed -i 's|https://npm-proxy.dev.databricks.com/|https://registry.npmjs.org/|g' bun.lock
+
       - name: Install frontend deps (apx-bundled bun)
         run: uv run apx bun install
 
@@ -128,6 +137,17 @@ jobs:
 
       - name: Install Python deps
         run: uv sync --group dev
+
+      - name: Cache bun install
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Rewrite internal npm proxy → public npm in lockfile
+        run: sed -i 's|https://npm-proxy.dev.databricks.com/|https://registry.npmjs.org/|g' bun.lock
 
       - name: Build
         run: uv run apx build
