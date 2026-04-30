@@ -41,7 +41,7 @@ def streaming_endpoint(fn: _F) -> _F:
         async def send(...):
             return await create_chat_stream(...)
     """
-    fn._innovation_streaming = True  # type: ignore[attr-defined]
+    fn._innovation_streaming = True
     return fn
 
 

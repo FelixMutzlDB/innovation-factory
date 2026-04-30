@@ -47,12 +47,7 @@ jobs:
           enable-cache: true
 
       - name: Install Python deps
-        # Include image-recognition (torch + open-clip-torch) so ty can
-        # resolve the optional torch import in
-        # tests/projects/test_hb_image_similarity_optional.py — that
-        # test guards the import with try/except at runtime, but ty
-        # type-checks the file unconditionally.
-        run: uv sync --group dev --extra image-recognition
+        run: uv sync --group dev
 
       - name: Cache bun install
         uses: actions/cache@v4

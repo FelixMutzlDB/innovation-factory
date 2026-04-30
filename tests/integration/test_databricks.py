@@ -97,9 +97,9 @@ class TestIdeaGenerator:
             },
         )
         assert result is not None
-        choices = result.get("choices", [])  # type: ignore[union-attr]
+        choices = result.get("choices", [])
         assert len(choices) > 0
-        content = choices[0].get("message", {}).get("content", "")  # type: ignore[union-attr,index]
+        content = choices[0].get("message", {}).get("content", "")
         assert len(content) > 20
 
 
