@@ -28,7 +28,12 @@ jobs:
   lint:
     name: Lint (ty + tsc)
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # apx dev check runs bun install (frontend node_modules) before tsc.
+    # Cold runs without a bun cache take 5-7 min just for the install,
+    # so the previous 10-minute budget timed out the job. The install +
+    # cache step below makes warm runs fast; the bumped timeout keeps
+    # cold runs (and the first PR commit on a new branch) green.
+    timeout-minutes: 25
 
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +48,17 @@ jobs:
 
       - name: Install Python deps
         run: uv sync --group dev
+
+      - name: Cache bun install
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Install frontend deps (apx-bundled bun)
+        run: uv run apx bun install
 
       - name: Run ty + tsc via apx
         run: uv run apx dev check
