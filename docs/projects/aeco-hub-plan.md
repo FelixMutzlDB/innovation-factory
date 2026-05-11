@@ -2,6 +2,8 @@
 
 > Innovation Factory accelerator for the AECO (Architecture, Engineering, Construction, Operations) industry.
 > Built on the Databricks Lakehouse + Lakebase.
+>
+> **Customer inspiration (obfuscated CI):** Nemetschek Group — apply brand-adjacent colors, typography, and imagery without using protected marks. The multi-vendor AECO tooling ecosystem (Allplan, Archicad, Bluebeam, Solibri, Vectorworks, etc.) maps to the Nemetschek portfolio.
 
 ---
 

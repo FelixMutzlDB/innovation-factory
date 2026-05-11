@@ -1,5 +1,7 @@
 # BSH Remote Assist (bsh-home-connect)
 
+> **Customer inspiration (obfuscated CI):** BSH Hausgeräte (Bosch/Siemens, Home Connect brand) — apply brand-adjacent colors, typography, and imagery without using protected marks.
+
 ## Purpose
 
 AI-powered appliance support platform for Bosch/Siemens kitchen appliances. Enables device registration, support ticket management, knowledge base search, and AI-assisted troubleshooting via chat.

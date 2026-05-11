@@ -1,5 +1,7 @@
 # ASM Cockpit (mol-asm-cockpit)
 
+> **Customer inspiration (obfuscated CI):** MOL Group — apply brand-adjacent colors, typography, and imagery without using protected marks.
+
 ## Purpose
 
 Interactive Area Sales Manager cockpit for retail fuel station networks (MOL Group). Enables station performance monitoring, fuel/non-fuel sales analysis, loyalty tracking, workforce management, competitor pricing, anomaly detection, and AI-powered issue resolution. Designed for the CEE (Central and Eastern Europe) retail fuel market.

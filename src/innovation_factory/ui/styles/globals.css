@@ -2,6 +2,14 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
+/* Per-project brand-adjacent themes (see docs/ci-implementation-plan.md). */
+@import "./themes/vi-home-one.css";
+@import "./themes/bsh-home-connect.css";
+@import "./themes/mol-asm-cockpit.css";
+@import "./themes/adtech-intelligence.css";
+@import "./themes/hb-product-center.css";
+@import "./themes/aeco-hub.css";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {

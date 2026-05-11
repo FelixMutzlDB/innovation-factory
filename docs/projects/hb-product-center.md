@@ -1,5 +1,7 @@
 # HB Intelligent Product Center
 
+> **Customer inspiration (obfuscated CI):** HB / German premium-fashion house — apply brand-adjacent colors, typography, and imagery without using protected marks.
+
 The HB Intelligent Product Center is the one-stop shop for employees and wholesale partners to quickly gain insights into new and existing products by connecting several systems of record along the value chain.
 
 ## Modules
