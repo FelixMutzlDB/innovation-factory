@@ -325,8 +325,9 @@ resources:
       permission: CAN_CONNECT_AND_CREATE
 ```
 
-**Action:** Document this in `development-guide.md` Section 5 (Lakebase Connection)
-and ensure `app.yml` + `databricks.yml` always include the `resources` block.
+**Action:** Document this in `docs/lessons-learned.md` (alongside §5 Env-var config
+and §10 Lakebase OAuth) and ensure `app.yml` + `databricks.yml` always include
+the `resources` block.
 Also document that after adding the resource, you must grant schema-level
 permissions:
 
@@ -421,17 +422,18 @@ def test_lakebase_credential_rotation():
 
 ## P5 — Documentation & DevEx
 
-### D1. Update `development-guide.md`
+### D1. Distribute remaining lessons into `docs/lessons-learned.md`
 
-Add new sections:
+> 2026-05-11 update: `development-guide.md` has been retired; lessons-learned.md
+> is now the canonical reference. Status of the three originally-planned sections:
 
-- **Section 13: App Resources** — Lakebase, SQL warehouse, serving endpoint
-  resource configuration for `app.yml`. Include the `postgres` field names
-  discovered during migration (`branch`, `database` with full path, `CAN_CONNECT_AND_CREATE`).
-- **Section 14: Migration Playbook** — Reference `scripts/archive/migrate_full.py` (archived) and
-  the lesson about `OLD_CATALOG` vs actual catalog name on source workspace.
-- **Section 15: Security Checklist** — SQL injection prevention, input validation,
-  markdown sanitization.
+- **App Resources** (owed) — Lakebase, SQL warehouse, serving endpoint resource
+  configuration for `app.yml`. Include the `postgres` field names discovered
+  during migration (`branch`, `database` with full path, `CAN_CONNECT_AND_CREATE`).
+- **Migration Playbook** (done → §25 Hybrid DAB + Python migration) — references
+  `scripts/archive/migrate_full.py` (archived) and the `OLD_CATALOG` lesson.
+- **Security Checklist** (partial → §9 SQL injection, §20 XSS, §21 rate-limit
+  keying) — full consolidated checklist still owed.
 
 ### D2. Add `.env.example`
 

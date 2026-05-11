@@ -1,11 +1,11 @@
 # Innovation Factory
 
-> Last updated: 2026-04-29 | Owner: Felix Mutzl | FEIP: [FEIP-5472](https://databricks.atlassian.net/browse/FEIP-5472)
+> Last updated: 2026-05-11 | Owner: Felix Mutzl | FEIP: [FEIP-5472](https://databricks.atlassian.net/browse/FEIP-5472)
 > Platform: Multi-accelerator showcase for Databricks Apps (FastAPI + React)
 > Stage: 6 accelerators live, deployed to `fevm-felix-demo`
-> Tracking: [TODO.md](docs/TODO.md) | Refinement: [docs/tasks/refinement.md](docs/tasks/refinement.md)
+> Tracking: [TODO.md](docs/TODO.md) | Refinement: [docs/tasks/refinement.md](docs/tasks/refinement.md) | Revision: [docs/revision-checklist.md](docs/revision-checklist.md)
 
-## Current State (2026-04-29)
+## Current State (2026-05-11)
 
 | Area | Status |
 |------|--------|
@@ -13,9 +13,9 @@
 | **AECO Hub plan** | [docs/projects/aeco-hub-plan.md](docs/projects/aeco-hub-plan.md) — Phases 1-6 shipped 2026-04-29 |
 | **Database** | Lakebase Autoscaling (production), PGlite (local dev) |
 | **Workspace** | `fevm-felix-demo` (migrated from `fe-sandbox-felix-demo-sandbox` → `fe-shared-demo`) |
-| **Security** | SQL injection fixed (P0); markdown XSS, rate limiting still open — see [TODO.md](docs/TODO.md) |
-| **Tests** | Framework exists, coverage thin; security tests not yet written |
-| **Branch** | `feature/hb-product-center` (merged to master via PR #3) |
+| **Security** | SQL injection (§9), XSS (§20), rate limiting (§21) all shipped; router-discipline lint added (D6) |
+| **Tests** | Security tests in place (input sanitize, markdown XSS policy, rate limit, streaming protocol, router discipline); broader coverage still thin |
+| **Branch** | `feature/aeco-hub` |
 
 ## Codebase Tree
 
@@ -55,7 +55,8 @@ src/innovation_factory/
 tests/                              # pytest: common/, projects/, integration/
 scripts/                            # Databricks setup (agents, dashboards, vector search, migration)
 docs/
-  development-guide.md              # 12-section technical reference & lessons learned
+  lessons-learned.md                # 31-section technical reference & lessons learned (canonical)
+  new-project.md                    # 4-phase methodology for spinning up a new accelerator
   tasks/refinement.md               # Full audit findings with prioritized fixes
   projects/                         # Per-accelerator design docs
   TODO.md                           # Outstanding work tracker (status + timestamps)
@@ -150,7 +151,8 @@ pytest                             # Run tests (add -m integration for live Data
 | App deployment config | `app.yml` (resources, env vars) |
 | Bundle deployment | `databricks.yml` |
 | Python deps & apx metadata | `pyproject.toml` |
-| Technical reference (12 topics) | `docs/development-guide.md` |
+| Technical reference (31 topics) | `docs/lessons-learned.md` |
+| New project methodology | `docs/new-project.md` |
 | Audit & refinement plan | `docs/tasks/refinement.md` |
 | Outstanding work | `docs/TODO.md` |
 | Per-accelerator design docs | `docs/projects/*.md` |

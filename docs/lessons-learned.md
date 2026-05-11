@@ -1,10 +1,10 @@
 # Innovation Factory — Lessons Learned
 
-> Consolidated technical lessons from building the five accelerators (ViDistrictOne, BSH Remote Assist, MOL ASM Cockpit, AdTech Intelligence, HB Product Center) plus the shared platform.
+> Consolidated technical lessons from building the six accelerators (ViDistrictOne, BSH Remote Assist, MOL ASM Cockpit, AdTech Intelligence, HB Product Center, AECO Hub) plus the shared platform.
 > Written for future contributors and for AI agents (Claude, Cursor) working on this codebase.
-> Last updated: 2026-04-24.
+> Last updated: 2026-05-11.
 
-The first eight sections are distilled from the MOL ASM Cockpit build (commit `dd01f02`) and remain the single most useful reference for wiring new Databricks resources into this repo. Sections 9+ cover what we learned in every major piece of work since.
+The first eight sections are distilled from the MOL ASM Cockpit build (commit `dd01f02`) and remain the single most useful reference for wiring new Databricks resources into this repo. Sections 9-26 cover lessons from every major piece of work since. Sections 27-31 are the 5 lessons from the AECO Hub greenfield build (Phases 1-6, shipped 2026-04-29). Sections 32-33 came out of the first periodic revision pass (2026-05-11) — meta-patterns for autonomy handoff and CI hardening.
 
 ---
 
@@ -570,6 +570,142 @@ Matrix breadth matters more than matrix size. One axis (Python version) catches 
 
 ---
 
+## 27. Server-side `INSERT … SELECT FROM range(N)` for high-volume seeding (AECO Hub)
+
+### Problem
+AECO Hub Phase 3 needed ~500K synthetic IoT sensor readings in `aeco_hub.dt_sensor_readings`. Streaming 500K rows of `INSERT VALUES` literals over the SQL API would take many minutes.
+
+### Solution
+Generate rows server-side with `range(N)` and `rand()`/`sin()` for shape:
+
+```sql
+INSERT INTO ...dt_sensor_readings (sensor_code, sensor_type, ...)
+SELECT
+    CONCAT('S-', ...),
+    'zone_temp',
+    ...
+    {mid} + {amplitude} * sin(id / 24.0) +
+        ({amplitude * 0.2}) * (rand({seed}) - 0.5) AS value,
+    'C'
+FROM range({rows_per_building})
+```
+
+The warehouse runs row generation; the Python client only sends a handful of statements. 499,992 rows landed in under 2 minutes on a 2X-Small warehouse.
+
+### Takeaway
+Use server-side `range()` generation any time you need >10K rows of synthetic data into UC. See `scripts/seed_uc_aeco_data.py::_sensor_readings_insert` for the canonical example.
+
+---
+
+## 28. Catalog-parameterize seed scripts so they work across workspaces (AECO Hub)
+
+### Problem
+Pre-AECO seed scripts (HB Product Center) hard-coded the catalog name and only worked in one workspace. Switching workspaces meant editing source.
+
+### Solution
+Every seed function takes `catalog` as the first argument. `scripts/seed_uc_aeco_data.py::build_sql(catalog=...)` accepts the catalog; `deploy_agents_fevm.py` passes `felix_demo_catalog` for fevm-felix-demo; a standalone run defaults to `innovation_factory_catalog`.
+
+### Takeaway
+**Pattern**: every seed/DDL function takes `catalog` as the first argument and uses it in every fully-qualified table reference. No hardcoded `innovation_factory_catalog` outside the default-value assignment.
+
+---
+
+## 29. PGlite + psycopg + NullPool = `DuplicatePreparedStatement` (AECO Hub)
+
+### Problem
+`apx dev start` failed with `psycopg.errors.DuplicatePreparedStatement: prepared statement "_pg3_0" already exists` during seed. Root cause: psycopg auto-prepares statements after a few executions and names them `_pg3_<n>` per connection; PGlite leaks prepared-statement state across connection resets while NullPool creates a fresh connection per operation.
+
+### Solution
+In `runtime.py`:
+
+```python
+if self._is_local_dev:
+    engine = create_engine(
+        self.engine_url,
+        poolclass=NullPool,
+        connect_args={"prepare_threshold": None},  # disable for PGlite
+    )
+```
+
+`prepare_threshold=None` makes psycopg execute statements unprepared. Slower in theory, irrelevant for seed workloads.
+
+### Takeaway
+PGlite's connection-reset behavior breaks psycopg's auto-prepare. Set `prepare_threshold=None` in `connect_args` whenever NullPool + PGlite are combined.
+
+---
+
+## 30. Lakeview `serialized_dashboard` live shape ≠ checked-in JSON shape (AECO Hub)
+
+### Problem
+Phase 9 in `deploy_agents_fevm.py` migrates dashboards by fetching `serialized_dashboard` from a source workspace and POSTing to target. The shape returned by `GET /api/2.0/lakeview/dashboards/{id}` differs from the older `datasets/pages/widgets` JSON layout that some checked-in files (`dashboard_aq.json`) still use.
+
+### Live shape (use this for new dashboards)
+- `datasets`: `[{name, displayName, queryLines: [string]}]` — `queryLines` is an array of SQL strings, not a single `query.sql`
+- `pages`: `[{name, displayName, pageType, layout: [...]}]` — pages have `layout`, not `widgets`
+- Each `layout` entry: `{widget: {name, queries: [...], spec: {widgetType, ...}}, position: {x, y, width, height}}`
+
+### Takeaway
+When authoring new dashboards from scratch, use the live API shape (`queryLines` + `layout`). The legacy checked-in files worked as input to the migration phase, not as templates for fresh creation.
+
+---
+
+## 31. MAS sub-agent block ordering in `deploy_agents_fevm.py` (AECO Hub)
+
+### Problem
+Phase 7 of `deploy_agents_fevm.py` builds multiple MAS supervisor configs. The regex parser in `tests/scripts/test_mas_naming_convention.py` scans for `var = []` then the next `_api("post", "/api/2.1/supervisor-agents")` — inserting a new MAS block BETWEEN two existing ones leaks the wrong `instructions` block into the wrong test case and breaks the naming-convention regression.
+
+### Rule
+Place new MAS blocks AFTER all previously-defined `_agents = []` blocks in `deploy_agents_fevm.py`, not between them. Supervisor name itself ends in `_supervisor` (`aeco_hub_supervisor`); sub-agents stay snake_case (`project_analytics`, `operations_intelligence`, `standards_compliance`); the `instructions` string MUST reference each sub-agent's machine name in backticks.
+
+### Takeaway
+When a regression test parses source by structural position, insertion order matters. Append, don't interleave. The naming convention rule itself is enforced by `tests/scripts/test_mas_naming_convention.py`.
+
+---
+
+## 32. Agent-autonomy testing pipeline for accelerator handoff (`fb43b87`)
+
+### Problem
+Handing off a new accelerator to an autonomous coding agent (or a colleague) lacks objective signals about whether the build actually works end-to-end. `apx dev check` (type-check) + `pytest` (unit tests) pass cleanly while the deployed app silently 401s because the service principal lacks `CREATE` on the Lakebase database, or the embedding allowlist doesn't include the workspace, or env vars in `databricks.yml` drifted from the state file.
+
+### Solution
+`scripts/check_all.sh` — a 5-stage pipeline that bundles every objective signal we have, run sequentially with fail-fast semantics:
+
+```
+1. drift-check  — sync_env_from_state.py --check   # databricks.yml vs fevm_agents_state.json
+2. type-check   — apx dev check                    # tsc + ty
+3. unit tests   — pytest --ignore=tests/integration
+4. preflight    — preflight.py                     # Databricks profile + SP perms + embedding allowlist
+5. smoke        — smoke.py against the deployed app
+```
+
+Each stage exits non-zero on failure so the script halts at the first broken signal. The preflight stage is the one most often missing — type-check + tests can't see deployment-time auth/allowlist problems.
+
+### Takeaway
+Every new accelerator should pass `check_all.sh` before being declared "done." When you build the equivalent for a new repo, copy the structure (especially the preflight stage — its existence is half the value). The agent-autonomy framework also doubles as a CI matrix entry for end-to-end verification when run against a staging environment.
+
+---
+
+## 33. CI cold-cache strategy for apx-bundled monorepos
+
+### Problem
+A cluster of 5 separate CI-debug commits in April 2026 (`af422a3`, `8de4587`, `9ee6cd4`, `61cc0ca`, `3505747`, `0822e86`) each fixed a distinct CI gotcha for an apx-bundled FastAPI + React project on a public GitHub runner. None of them were obvious in advance; each cost a CI cycle to discover.
+
+### Gotchas + fixes (the canonical bundle)
+
+| Gotcha | Symptom | Fix |
+|---|---|---|
+| `bun.lock` references internal `npm-proxy.dev.databricks.com` | `bun install` hangs / times out on public runners | sed-rewrite to `registry.npmjs.org` as the first CI step |
+| `apx dev check` cold cost | ~5-7 min for bun install + tsc | Add `actions/cache@v4` on `node_modules`; bump lint job timeout to 25 min |
+| `apx`-generated files not present in CI checkout | Tests fail importing `_metadata.py` / `_version.py` / `__dist__/index.html` | Explicit stub block in the test job that writes the known-static values |
+| Contract tests assume Databricks env vars | Test asserting "returns populated value" fails on CI | Stub `DATABRICKS_HOST` + relevant `ADTECH_*` IDs in the test job env |
+| `try: import torch except ImportError` + stale `# type: ignore` | `ty` flags unused type-ignore after the dep moves to optional | Use `importlib.util.find_spec("torch")` for presence checks; drop the type-ignore comment |
+| Lint job needs to see optional extras | `ty` errors on CLIP-using files when extras aren't installed | Include `--extra image-recognition` in the lint job sync, not just the dedicated test row |
+
+### Takeaway
+Public-runner CI for apx projects needs both extras-matrix breadth (§26) AND apx-artifact stubbing — neither alone is sufficient. When you stand up CI for the next project, copy this whole table on day one; each row already cost a debug cycle here, you don't need to repay it.
+
+---
+
 ## Summary
 
 | # | Topic | One-line lesson |
@@ -617,3 +753,10 @@ Matrix breadth matters more than matrix size. One axis (Python version) catches 
 | 24 | MAS naming contract | snake_case sub-agent names, "Supervisor" suffix, machine names in instructions — enforced by test |
 | 25 | Hybrid migration | DAB declarative + `scripts/bootstrap.py` imperative, idempotent via gitignored state file |
 | 26 | CI matrix shape | Python 3.11+3.12 × extras-present/absent; integration tests opt-in via `workflow_dispatch` |
+| 27 | Server-side seeding | `INSERT … SELECT FROM range(N)` for >10K-row UC seeds — warehouse does the work |
+| 28 | Catalog-parameterized seeds | Every seed/DDL function takes `catalog` as first argument; no hardcoded catalog references |
+| 29 | PGlite + psycopg | `prepare_threshold=None` in `connect_args` when NullPool + PGlite are combined |
+| 30 | Lakeview live shape | New dashboards use `queryLines` + `layout` (live API), not `query` + `widgets` (legacy export) |
+| 31 | MAS block ordering | Append new MAS blocks in `deploy_agents_fevm.py`; never interleave — regression regex parses by position |
+| 32 | Agent-autonomy pipeline | 5-stage `scripts/check_all.sh` (drift → type-check → tests → preflight → smoke) — preflight catches what types and tests can't |
+| 33 | CI cold-cache for apx | Public-runner CI for apx projects needs proxy rewrite + bun cache + apx-artifact stubbing + extras visibility for `ty` — bundle on day one |
