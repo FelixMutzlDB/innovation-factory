@@ -82,7 +82,7 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 | D3 | Update README with current 6-accelerator list | `[x]` | 2026-05-11 | M1.6 of 2026-05 revision: added AECO Hub row. Future accelerators auto-flagged by M1 consistency-auditor. |
 | D4 | Persona-based UAT playbook | `[x]` | 2026-04-23 | Commit `20a3a6d` (D5). `docs/uat-personas.md` — 10 personas, 2 per accelerator |
 | D5 | PR template + per-PR revision checks | `[x]` | 2026-05-11 | `.github/PULL_REQUEST_TEMPLATE.md`; 5-item checklist from `docs/revision-checklist.md` |
-| D6 | Router discipline CI lint + clear KNOWN_DEBT allowlist | `[~]` | 2026-05-11 | `tests/common/test_router_discipline.py` is decorator-aware (skips routes marked `@streaming_endpoint` from `services/streaming.py`, introduced in `fb43b87`). Lands green with **10** routes allowlisted: 5 legacy streaming chat endpoints (migrate to `@streaming_endpoint`), 3 file/binary endpoints (add `response_class` or `responses=`), 1 untyped JSON dict (`get_anomaly_counts` — add `response_model=dict[str,int]`). Target: 2026-Q3 |
+| D6 | Router discipline CI lint + clear KNOWN_DEBT allowlist | `[x]` | 2026-05-11 | `tests/common/test_router_discipline.py` decorator-aware (skips `@streaming_endpoint`). All 10 originally-seeded debt entries cleared in the 2026-Q2 revision pass: 5 SSE chat routes migrated to `@streaming_endpoint`; 1 idea-chat + 3 file-upload + 1 anomaly-counts route typed via `response_model=dict[...]`. `KNOWN_DEBT` set is now empty; next violation fails CI immediately. |
 
 ## P6 — Migration Cleanup
 

@@ -13,7 +13,7 @@ from ....dependencies import SessionDep, get_runtime, get_session
 from ....pagination import Pagination
 from ....rate_limit import limiter
 from ....runtime import Runtime
-from ....services.streaming import create_chat_stream
+from ....services.streaming import create_chat_stream, streaming_endpoint
 from ..models import (
     AtChatHistoryOut,
     AtChatMessage,
@@ -30,6 +30,7 @@ chat_service = ChatService()
 
 @router.post("/chat", operation_id="at_sendChatMessage")
 @limiter.limit("30/minute")
+@streaming_endpoint
 async def send_chat_message(
     request: Request,
     message: AtChatMessageIn,
@@ -51,6 +52,7 @@ async def send_chat_message(
 
 @router.post("/mas-chat", operation_id="at_sendMasChatMessage")
 @limiter.limit("30/minute")
+@streaming_endpoint
 async def send_mas_chat_message(
     request: Request,
     message: AtChatMessageIn,

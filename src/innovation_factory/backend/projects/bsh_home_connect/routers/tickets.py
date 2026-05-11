@@ -224,7 +224,11 @@ def list_ticket_notes(
     return list(db.exec(statement).all())
 
 
-@router.post("/tickets/{ticket_id}/media", operation_id="bsh_uploadTicketMedia")
+@router.post(
+    "/tickets/{ticket_id}/media",
+    operation_id="bsh_uploadTicketMedia",
+    response_model=dict[str, str],
+)
 async def upload_ticket_media(
     ticket_id: int,
     file: UploadFile = File(...),
@@ -254,7 +258,11 @@ async def upload_ticket_media(
     return {"message": "Media uploaded successfully", "file_url": file_url}
 
 
-@router.post("/tickets/{ticket_id}/shipping-label", operation_id="bsh_generateShippingLabel")
+@router.post(
+    "/tickets/{ticket_id}/shipping-label",
+    operation_id="bsh_generateShippingLabel",
+    response_model=dict[str, str],
+)
 def generate_shipping_label(
     ticket_id: int,
     obo_ws: Annotated[WorkspaceClient, Depends(get_obo_ws)],

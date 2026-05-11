@@ -88,7 +88,11 @@ def update_ticket(ticket_id: int, ticket_update: VhTicketUpdate, db: SessionDep)
     return ticket
 
 
-@router.post("/{ticket_id}/media", operation_id="vh_upload_ticket_media")
+@router.post(
+    "/{ticket_id}/media",
+    operation_id="vh_upload_ticket_media",
+    response_model=dict[str, object],
+)
 async def upload_ticket_media(ticket_id: int, db: SessionDep, file: UploadFile = File(...)):
     """Upload media file for a ticket."""
     ticket = db.get(VhTicket, ticket_id)

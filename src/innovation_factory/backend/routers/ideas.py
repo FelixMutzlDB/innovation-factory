@@ -108,7 +108,11 @@ def _query_idea_generator(rt: Runtime, company_name: str, description: str) -> s
         return _fallback_prompt(company_name, description)
 
 
-@router.post("/sessions/{session_id}/chat", operation_id="sendIdeaMessage")
+@router.post(
+    "/sessions/{session_id}/chat",
+    operation_id="sendIdeaMessage",
+    response_model=dict[str, object],
+)
 @limiter.limit("20/minute")
 async def send_idea_message(
     request: Request,

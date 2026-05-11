@@ -35,32 +35,18 @@ ROUTE_METHODS = {"get", "post", "patch", "delete", "put"}
 RESPONSE_KWARGS = {"response_model", "response_class", "responses"}
 STREAMING_DECORATOR = "streaming_endpoint"
 
-# Routes that pre-date this lint (2026-05-11). Each entry is
-# (relative_path, function_name) — declaring a route here means it's known
-# debt; the test will only fail when *new* violations land.
-#
-# To clear an entry: either add `@streaming_endpoint` (preferred for SSE
-# chat endpoints) or `response_class=StreamingResponse` /
-# `response_model=...` / `responses={...}`. Then delete the line below.
-#
-# Tracked as TODO.md D6 (added 2026-05-11). Cleanup target: 2026-Q3.
-KNOWN_DEBT: set[tuple[str, str]] = {
-    # Streaming chat endpoints predating the @streaming_endpoint decorator
-    # introduced in commit fb43b87 (AECO Hub uses it; these don't yet).
-    ("src/innovation_factory/backend/routers/ideas.py", "send_idea_message"),
-    ("src/innovation_factory/backend/projects/hb_product_center/routers/chat.py", "send_mas_chat_message"),
-    ("src/innovation_factory/backend/projects/vi_home_one/routers/chat.py", "send_chat_message"),
-    ("src/innovation_factory/backend/projects/bsh_home_connect/routers/chat.py", "send_chat_message"),
-    ("src/innovation_factory/backend/projects/adtech_intelligence/routers/chat.py", "send_chat_message"),
-    ("src/innovation_factory/backend/projects/adtech_intelligence/routers/chat.py", "send_mas_chat_message"),
-    # File-upload endpoints — fix with `response_class=PlainTextResponse`
-    # or `responses={200: {"content": {"application/json": {}}}}`.
-    ("src/innovation_factory/backend/projects/vi_home_one/routers/tickets.py", "upload_ticket_media"),
-    ("src/innovation_factory/backend/projects/bsh_home_connect/routers/tickets.py", "upload_ticket_media"),
-    ("src/innovation_factory/backend/projects/bsh_home_connect/routers/tickets.py", "generate_shipping_label"),
-    # Plain JSON dict return — should declare `response_model=dict[str, int]`.
-    ("src/innovation_factory/backend/projects/adtech_intelligence/routers/anomalies.py", "get_anomaly_counts"),
-}
+# Known router-discipline debt. Empty as of 2026-05-11 quarterly revision —
+# all 10 originally-seeded entries cleared in the same session:
+#   - 5 SSE chat routes migrated to @streaming_endpoint decorator
+#   - 1 idea-session chat route given `response_model=dict[str, object]`
+#     (it returns JSON envelopes, not a stream)
+#   - 3 file-upload routes given `response_model=dict[...]` (they return
+#     JSON ack envelopes; binary uploads aren't a thing here)
+#   - 1 untyped anomaly-counts endpoint typed as `response_model=dict[str, int]`
+# When a NEW route needs to land before its response shape is settled, add
+# a (relative_path, function_name) tuple here with a TODO comment naming
+# the ticket / PR that will resolve it.
+KNOWN_DEBT: set[tuple[str, str]] = set()
 
 
 def _is_router_decorator(node: ast.expr) -> tuple[bool, str | None]:

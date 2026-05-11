@@ -8,7 +8,7 @@ from databricks.sdk import WorkspaceClient
 
 from ....dependencies import SessionDep, get_obo_ws, get_session
 from ....rate_limit import limiter
-from ....services.streaming import create_chat_stream
+from ....services.streaming import create_chat_stream, streaming_endpoint
 from ..models import (
     BshTicket,
     BshChatMessageIn,
@@ -25,6 +25,7 @@ chat_service = ChatService()
 
 @router.post("/tickets/{ticket_id}/chat", operation_id="bsh_sendChatMessage")
 @limiter.limit("30/minute")
+@streaming_endpoint
 async def send_chat_message(
     request: Request,
     ticket_id: int,
