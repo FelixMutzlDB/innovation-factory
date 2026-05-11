@@ -4,7 +4,7 @@
 > Written for future contributors and for AI agents (Claude, Cursor) working on this codebase.
 > Last updated: 2026-05-11.
 
-The first eight sections are distilled from the MOL ASM Cockpit build (commit `dd01f02`) and remain the single most useful reference for wiring new Databricks resources into this repo. Sections 9-26 cover lessons from every major piece of work since. Sections 27-31 are the 5 lessons from the AECO Hub greenfield build (Phases 1-6, shipped 2026-04-29). Sections 32-33 came out of the first periodic revision pass (2026-05-11) — meta-patterns for autonomy handoff and CI hardening.
+The first eight sections are distilled from the MOL ASM Cockpit build (commit `dd01f02`) and remain the single most useful reference for wiring new Databricks resources into this repo. Sections 9-26 cover lessons from every major piece of work since. Sections 27-31 are the 5 lessons from the AECO Hub greenfield build (Phases 1-6, shipped 2026-04-29). Sections 32-33 came out of the first monthly revision pass (2026-05-11) — meta-patterns for autonomy handoff and CI hardening. Section 34 came out of the first quarterly revision pass (also 2026-05-11) — the `KNOWN_DEBT` pattern for incremental lint adoption, exercised by clearing the §13 router-discipline debt.
 
 ---
 
@@ -706,6 +706,46 @@ Public-runner CI for apx projects needs both extras-matrix breadth (§26) AND ap
 
 ---
 
+## 34. Incremental lint adoption via `KNOWN_DEBT` allowlist
+
+### Problem
+When promoting a previously-aspirational convention (e.g. "every route has `response_model` + `operation_id`") to a hard CI lint, the codebase has accumulated violations. Hard-breaking on day one is unacceptable; deferring the lint indefinitely is worse.
+
+### Solution
+Land the lint with an explicit `KNOWN_DEBT: set[tuple[str, str]]` allowlist of pre-existing offenders. The lint:
+
+1. **Catches new violations** on every PR (the actual goal of the lint).
+2. **Preserves existing ones** by skipping anything in `KNOWN_DEBT`.
+3. **Fails when a `KNOWN_DEBT` entry is no longer in violation** — this forces the allowlist to stay accurate. Someone fixes a route, removes their entry from the set, and lands one less line of debt.
+
+```python
+# tests/common/test_router_discipline.py (excerpt)
+KNOWN_DEBT: set[tuple[str, str]] = {
+    ("src/path/to/file.py", "function_name"),
+    ...
+}
+
+def test_contract():
+    all_violations = _collect_violations()
+    new_violations = [v for v in all_violations if (v.path, v.fn) not in KNOWN_DEBT]
+    cleared = [e for e in KNOWN_DEBT if not any(matches(e, v) for v in all_violations)]
+    if cleared:
+        pytest.fail("Remove these from KNOWN_DEBT — they no longer violate: ...")
+    if new_violations:
+        pytest.fail("New violation(s): ...")
+```
+
+### Schedule
+Clear debt entries in a dedicated quarterly revision pass. Don't chip away ad-hoc — batch the cleanup so the diff tells one story.
+
+### Example
+`tests/common/test_router_discipline.py` shipped 2026-05-11 with 10 allowlisted routes for the §13 contract (`response_model` + `operation_id`). The 2026-Q2 revision pass cleared all 10 entries — 5 SSE routes migrated to `@streaming_endpoint`, 5 routes typed via `response_model=dict[...]`. Allowlist is now empty; next violation fails CI immediately.
+
+### Takeaway
+Use this pattern for any new convention check that would otherwise produce a wall of failures. Floor goes up incrementally; never break the ceiling. The bi-directional check (catch new AND prune stale) is what makes the allowlist self-maintaining.
+
+---
+
 ## Summary
 
 | # | Topic | One-line lesson |
@@ -760,3 +800,4 @@ Public-runner CI for apx projects needs both extras-matrix breadth (§26) AND ap
 | 31 | MAS block ordering | Append new MAS blocks in `deploy_agents_fevm.py`; never interleave — regression regex parses by position |
 | 32 | Agent-autonomy pipeline | 5-stage `scripts/check_all.sh` (drift → type-check → tests → preflight → smoke) — preflight catches what types and tests can't |
 | 33 | CI cold-cache for apx | Public-runner CI for apx projects needs proxy rewrite + bun cache + apx-artifact stubbing + extras visibility for `ty` — bundle on day one |
+| 34 | Incremental lint adoption | New convention lints land with `KNOWN_DEBT` allowlist; test catches new violations AND prunes stale entries; clear in quarterly revision |

@@ -505,22 +505,6 @@ class AtPlacementOut(BaseModel):
     inventory: Optional[AtAdInventoryOut] = None
 
 
-# -- Performance Metrics --
-
-
-class AtPerformanceMetricOut(BaseModel):
-    id: int
-    placement_id: int
-    metric_date: date
-    impressions: int
-    clicks: int
-    ctr: float
-    conversions: int
-    spend: float
-    viewability_rate: float
-    created_at: datetime
-
-
 # -- Anomalies --
 
 

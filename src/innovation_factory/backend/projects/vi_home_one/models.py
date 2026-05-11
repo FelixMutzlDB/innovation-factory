@@ -323,12 +323,6 @@ class VhNeighborhoodSummaryOut(BaseModel):
 
 
 # Household Models
-class VhHouseholdIn(BaseModel):
-    owner_name: str
-    address: str
-    optimization_mode: OptimizationMode = OptimizationMode.energy_saver
-
-
 class VhHouseholdOut(BaseModel):
     id: int
     neighborhood_id: int
@@ -384,16 +378,6 @@ class VhHouseholdCockpitOut(BaseModel):
 
 
 # Energy Device Models
-class VhEnergyDeviceIn(BaseModel):
-    device_type: DeviceType
-    brand: str
-    model: str
-    capacity_kw: Optional[float] = None
-    installation_date: date
-    serial_number: Optional[str] = None
-    specifications: Optional[str] = None
-
-
 class VhEnergyDeviceOut(BaseModel):
     id: int
     household_id: int
@@ -509,11 +493,3 @@ class VhChatHistoryOut(BaseModel):
     messages: List[VhChatMessageOut]
 
 
-# Knowledge Base Models
-class VhKnowledgeArticleOut(BaseModel):
-    id: int
-    title: str
-    content: str
-    category: str
-    tags: Optional[str] = None
-    helpful_count: int

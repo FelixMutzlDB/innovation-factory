@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, Request
 
 from ....dependencies import RuntimeDep
 from ....rate_limit import limiter
-from ....services.streaming import create_chat_stream
+from ....services.streaming import create_chat_stream, streaming_endpoint
 from ..models import HbChatMessageIn
 from ..services.chat_service import HbChatService
 
@@ -32,6 +32,7 @@ WsDep = Annotated[WorkspaceClient, Depends(get_ws)]
 
 @router.post("/mas-chat", operation_id="hb_sendMasChatMessage")
 @limiter.limit("30/minute")
+@streaming_endpoint
 async def send_mas_chat_message(
     request: Request,
     message: HbChatMessageIn,

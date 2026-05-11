@@ -26,6 +26,7 @@ router = APIRouter(tags=["adtech-anomalies"])
 @router.get(
     "/anomalies/counts",
     operation_id="at_getAnomalyCounts",
+    response_model=dict[str, int],
 )
 def get_anomaly_counts(
     db: SessionDep,

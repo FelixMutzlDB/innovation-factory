@@ -4,7 +4,7 @@ from sqlmodel import select
 
 from ....dependencies import SessionDep
 from ....rate_limit import limiter
-from ....services.streaming import create_chat_stream
+from ....services.streaming import create_chat_stream, streaming_endpoint
 from ..models import (
     VhTicket,
     VhChatSession,
@@ -23,6 +23,7 @@ chat_service = ChatService()
 
 @router.post("/tickets/{ticket_id}/chat", operation_id="vh_send_chat_message")
 @limiter.limit("30/minute")
+@streaming_endpoint
 async def send_chat_message(request: Request, ticket_id: int, message: VhChatMessageIn, db: SessionDep):
     """Send a chat message and get streaming AI response."""
     ticket = db.get(VhTicket, ticket_id)
