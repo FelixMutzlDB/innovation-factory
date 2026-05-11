@@ -1,5 +1,7 @@
 # AdTech Intelligence (adtech-intelligence)
 
+> **Customer inspiration (obfuscated CI):** Ströer SE — apply brand-adjacent colors, typography, and imagery without using protected marks.
+
 ## Purpose
 
 AI-powered advertising operations platform for managing online and outdoor (OOH/DOOH) advertising campaigns across Germany. Features demand/inventory exploration, campaign management, rule-based anomaly detection, issue tracking, and AI agents (Multi-Agent Supervisor + Knowledge Assistant) powered by Databricks Agent Bricks.

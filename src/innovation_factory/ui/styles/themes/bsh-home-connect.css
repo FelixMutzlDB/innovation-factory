@@ -1,0 +1,12 @@
+/*
+ * bsh-home-connect — brand-adjacent theme (P1 stub).
+ * Reference customer: BSH Hausgeräte (coral-orange + near-black, post-2018 redesign).
+ * Source: docs/ci-implementation-plan.md §3.2
+ *
+ * Placeholder — P1 will fill in token overrides (#FF6840-adjacent + #1A1A1A).
+ */
+
+[data-project-theme="bsh-home-connect"] {
+  /* P1: tokens go here */
+  font-family: var(--brand-font-family, "Inter"), system-ui, sans-serif;
+}

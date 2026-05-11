@@ -1,0 +1,10 @@
+/*
+ * adtech-intelligence — brand-adjacent theme (P1 stub).
+ * Reference customer: Ströer SE (navy + orange, OOH/DOOH).
+ * Source: docs/ci-implementation-plan.md §3.4
+ */
+
+[data-project-theme="adtech-intelligence"] {
+  /* P1: tokens go here */
+  font-family: var(--brand-font-family, "Space Grotesk"), system-ui, sans-serif;
+}

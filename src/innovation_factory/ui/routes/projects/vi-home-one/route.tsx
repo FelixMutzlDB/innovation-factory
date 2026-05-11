@@ -1,4 +1,5 @@
 import SidebarLayout from "@/components/apx/sidebar-layout";
+import { ProjectThemeScope } from "@/components/apx/project-theme-scope";
 import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { Home, MapPin, HeadphonesIcon, User } from "lucide-react";
@@ -50,29 +51,31 @@ function Layout() {
   ];
 
   return (
-    <SidebarLayout>
-      <SidebarGroup>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {navItems.map((item) => (
-              <SidebarMenuItem key={item.to}>
-                <Link
-                  to={item.to}
-                  className={cn(
-                    "flex items-center gap-2 p-2 rounded-lg",
-                    item.match(location.pathname)
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                  )}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-    </SidebarLayout>
+    <ProjectThemeScope slug="vi-home-one">
+      <SidebarLayout>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.to}>
+                  <Link
+                    to={item.to}
+                    className={cn(
+                      "flex items-center gap-2 p-2 rounded-lg",
+                      item.match(location.pathname)
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    )}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </Link>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarLayout>
+    </ProjectThemeScope>
   );
 }

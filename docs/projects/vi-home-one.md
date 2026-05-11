@@ -1,5 +1,7 @@
 # ViDistrictOne (vi-home-one)
 
+> **Customer inspiration (obfuscated CI):** Viessmann — apply brand-adjacent colors, typography, and imagery without using protected marks.
+
 ## Purpose
 
 Smart neighborhood energy management system by Viessmann. Manages households with heat pumps, PV panels, batteries, and EVs; supports energy optimization, provider comparison, maintenance alerts, and support tickets with AI chat.

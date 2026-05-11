@@ -1,0 +1,10 @@
+/*
+ * mol-asm-cockpit — brand-adjacent theme (P1 stub).
+ * Reference customer: MOL Group (red + green, "energy of positive change").
+ * Source: docs/ci-implementation-plan.md §3.3
+ */
+
+[data-project-theme="mol-asm-cockpit"] {
+  /* P1: tokens go here */
+  font-family: var(--brand-font-family, "Manrope"), system-ui, sans-serif;
+}

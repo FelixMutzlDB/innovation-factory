@@ -1,0 +1,10 @@
+/*
+ * aeco-hub — brand-adjacent theme (P1 stub).
+ * Reference customer: Nemetschek Group (dark gray + tech blue, AEC software).
+ * Source: docs/ci-implementation-plan.md §3.6
+ */
+
+[data-project-theme="aeco-hub"] {
+  /* P1: tokens go here */
+  font-family: var(--brand-font-family, "Inter"), system-ui, sans-serif;
+}

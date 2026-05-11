@@ -1,0 +1,10 @@
+/*
+ * hb-product-center — brand-adjacent theme (P1 stub).
+ * Reference customer: HB (German premium-fashion brand) — monochrome with optional champagne accent.
+ * Source: docs/ci-implementation-plan.md §3.5
+ */
+
+[data-project-theme="hb-product-center"] {
+  /* P1: tokens go here */
+  font-family: var(--brand-font-family, "Inter"), system-ui, sans-serif;
+}
