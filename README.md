@@ -37,6 +37,7 @@ The Innovation Factory ships as a single Databricks App containing a curated gal
 | **AdTech Intelligence** | Advertising & Media | AI/BI dashboards, Genie-powered inventory exploration, multi-agent issue resolution, anomaly detection |
 | **MOL ASM Cockpit** | Fuel & Retail | Area Sales Manager station analytics, fuel/nonfuel KPIs, anomaly detection, Genie-powered exploration |
 | **HB Product Center** | Fashion & Luxury | Visual product recognition, supply chain tracking, authenticity verification, quality control, AI agent orchestration |
+| **AECO Hub** | Architecture, Engineering & Construction | BIM digital-twin platform, multi-vendor tooling integration, IoT sensor ingestion, energy analytics, MAS + Knowledge Assistant |
 
 Each accelerator demonstrates a different facet of the Databricks platform — from Genie Spaces for natural-language data exploration to Multi-Agent Supervisors orchestrating complex workflows.
 
