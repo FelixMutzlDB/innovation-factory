@@ -44,7 +44,7 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 | ID | Task | Status | Done | Notes |
 |----|------|--------|------|-------|
 | Q1 | Extract shared chat streaming utility | `[x]` | 2026-03-28 | Commit `a960d14`. `backend/services/streaming.py` created |
-| Q2 | Remove dead chat code in HB Product Center | `[ ]` | — | Session-based CRUD endpoints reference non-existent UC tables |
+| Q2 | Remove dead chat code in HB Product Center | `[x]` | 2026-05-11 | Q1 codebase grooming pass: dropped `HbChatSessionOut`, `HbChatMessageOut`, `HbChatSessionCreate` from `models.py`. Routes themselves were already removed earlier (HB chat router only exposes the MAS streaming endpoint). |
 | Q3 | Deduplicate `databricks_config.py` shared values | `[x]` | 2026-04-23 | Commit `eaea634` (C1). `ProjectResourceConfig` collapses the five configs |
 | Q4 | Reduce blanket `type: ignore` comments (~99 total) | `[ ]` | — | Replace with specific rule names; update `pyproject.toml` suppressions |
 | Q5 | Normalize chat streaming across all 5 projects | `[x]` | 2026-04-23 | Commit `83bd585` (D1). Plain-text SSE + `[DONE]` sentinel + `SessionDep` everywhere |
@@ -98,7 +98,6 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 
 **P1 — nice to close next:**
 - E3 — mol_asm/stations.py: return 400 on invalid `region_id`/`station_type`
-- Q2 — delete dead HB chat CRUD endpoints referencing non-existent UC tables
 
 **P2 — quality of life:**
 - Q4 — replace blanket `# type: ignore` comments with named rules
@@ -110,12 +109,19 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 - D1 — App Resources section owed in `docs/lessons-learned.md` (Migration Playbook → §25; Security Checklist → §9 + §20 + §21 — App Resources still open)
 
 **P5 — backlog (post-AECO Hub):**
-- B1 — delete unused Lakebase dev branch `dev-aeco-hub` on `fevm-felix-demo` (uid `br-dark-sun-d7t7sgls`). Created Phase 1 for schema iteration but the app reads/writes via PGlite locally and Lakebase production; the dev branch never got wired in. Keep until Phase 6 deploy is verified, then drop with `databricks postgres delete-branch projects/innovation-factory/branches/dev-aeco-hub -p fevm-felix-demo`.
+- B1 — delete unused Lakebase dev branch `dev-aeco-hub` on `fevm-felix-demo` (uid `br-dark-sun-d7t7sgls`). **READY TO DELETE** (Phase 6 merged to master 2026-05-11 via PR #5). Run: `databricks auth login --profile fevm-felix-demo && databricks postgres delete-branch projects/innovation-factory/branches/dev-aeco-hub -p fevm-felix-demo`.
 - B2 — `tests/conftest.py` `DATABASE_URL` is missing `?uri=true` so SQLite treats `file:test_shared` as a literal filename, leaking a real `file:test_shared` into the repo root on each `pytest` run. Found Phase 2; deleted the stale file but didn't fix the root cause.
 
 **P4 — lifts the ceiling, not the floor:**
 - A2 — Lakebase app-resource config section owed in `docs/lessons-learned.md`
 - T-future — Playwright E2E smoke for each accelerator's golden path
+
+**P6 — Q3 operational-drift follow-ups (2026-05-11 quarterly revision):**
+- O1 — Verify no other orphan Lakebase branches: `databricks postgres list-branches projects/innovation-factory -p fevm-felix-demo`.
+- O2 — Diff live UC tables vs `scripts/uc_schema.py::TABLES` (32 canonical). Drop orphan tables, add missing-schema tables. See `docs/revision-checklist.md` Q3 for the diff one-liner.
+- O3 — Confirm deployed app `source_code_path` revision matches `master` HEAD. `databricks apps list -p fevm-felix-demo` and inspect.
+- O4 — Audit `scripts/fevm_agents_state.json` (dashboards / genies / kas / mas) against live Databricks workspace IDs — any that 404 are orphans on disk.
+- O5 — Run `uv tool run --from pip-audit pip-audit --skip-editable` from a network-enabled shell (this session couldn't reach PyPI). Capture any High/Critical findings as a separate P0 issue.
 
 ---
 
@@ -141,10 +147,10 @@ All six phases from `docs/projects/aeco-hub-plan.md` complete:
 |----------|-------|------|----------------|
 | P0 Security | 6 | 6 | 0 |
 | P1 Error Handling | 3 | 2 | 1 |
-| P2 Code Quality | 7 | 5 | 2 |
+| P2 Code Quality | 7 | 6 | 1 (Q4 type:ignore audit) |
 | P3 Architecture | 6 | 4 | 1 open + 1 partial |
 | P4 Testing | 6 | 4 | 1 open + 1 partial |
-| P5 Documentation | 6 | 4 | 2 (D1, D6 partial) |
+| P5 Documentation | 6 | 5 | 1 (D1 App Resources section) |
 | P6 Cleanup | 3 | 3 | 0 |
 | AECO Hub | 7 | 7 | 0 |
-| **Total** | **44** | **35** | **9** |
+| **Total** | **44** | **37** | **7** |

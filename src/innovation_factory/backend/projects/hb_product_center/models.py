@@ -539,39 +539,9 @@ class HbSustainabilityMetricOut(BaseModel):
     created_at: datetime
 
 
-class HbChatSessionOut(BaseModel):
-    id: int
-    user_role: Optional[UserRole] = None
-    context: ChatContext
-    created_at: datetime
-
-
-class HbChatMessageOut(BaseModel):
-    id: int
-    session_id: int
-    role: str
-    content: str
-    created_at: datetime
-
-
 # ============================================================================
 # Pydantic Input Models
 # ============================================================================
-
-
-class HbProductCreate(BaseModel):
-    sku: str
-    style_name: str
-    color: str
-    color_code: str
-    size: str
-    category: str
-    collection: str
-    season: str
-    material: str
-    price: float
-    country_of_origin: str = ""
-    supplier_name: str = ""
 
 
 class HbRecognitionJobCreate(BaseModel):
@@ -606,11 +576,6 @@ class HbAuthVerificationCreate(BaseModel):
 class HbAuthAlertUpdate(BaseModel):
     resolution: Optional[str] = None
     investigated_by: Optional[str] = None
-
-
-class HbChatSessionCreate(BaseModel):
-    user_role: Optional[str] = None
-    context: str = "general"
 
 
 class HbChatMessageIn(BaseModel):

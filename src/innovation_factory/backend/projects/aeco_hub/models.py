@@ -1182,25 +1182,3 @@ class DtLiveSensorsOut(BaseModel):
 # ============================================================================
 
 
-class DtProjectCreate(BaseModel):
-    code: str
-    name: str
-    description: str = ""
-    client_name: str = ""
-    city: str = ""
-    country: str = ""
-    phase: AecoProjectPhase = AecoProjectPhase.design
-    status: AecoProjectStatus = AecoProjectStatus.active
-    budget_eur: float = 0.0
-    start_date: Optional[date] = None
-    target_completion_date: Optional[date] = None
-
-
-class DtBuildingCreate(BaseModel):
-    project_id: int
-    name: str
-    building_type: AecoBuildingType
-    floor_count: int = 1
-    gross_floor_area_sqm: float = 0.0
-    year_built: Optional[int] = None
-    address: str = ""
