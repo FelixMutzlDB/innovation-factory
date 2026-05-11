@@ -2,6 +2,10 @@
 
 > Innovation Factory accelerator for the AECO (Architecture, Engineering, Construction, Operations) industry.
 > Built on the Databricks Lakehouse + Lakebase.
+>
+> **Status:** SHIPPED 2026-04-29 (Phases 1-6 complete — see `TODO.md` N1-N7 for the canonical status; this plan is preserved as a historical artifact and its phase checkboxes are intentionally not flipped).
+>
+> **Customer inspiration (obfuscated CI):** Nemetschek Group — apply brand-adjacent colors, typography, and imagery without using protected marks. The multi-vendor AECO tooling ecosystem (Allplan, Archicad, Bluebeam, Solibri, Vectorworks, etc.) maps to the Nemetschek portfolio.
 
 ---
 
@@ -420,7 +424,7 @@ Development workflow:
 - [ ] Deploy to Databricks Apps
 - [ ] Run validation tests (full success-criteria pass)
 - [ ] Clean up temporary Databricks artifacts (test jobs, temp notebooks, unused branches)
-- [ ] Update `development-guide.md` with AECO-specific lessons learned
+- [x] Update lessons-learned doc with AECO-specific lessons learned (2026-05-11: merged 5 lessons as `docs/lessons-learned.md` §27-31; `development-guide.md` retired)
 - [ ] Update CLAUDE.md current state and TODO.md
 
 ---

@@ -412,7 +412,7 @@ Prune `scripts/` and `docs/` of superseded content.
 ### `docs/` review
 - `docs/TODO.md` — keep; active tracker.
 - `docs/tasks/refinement.md` — keep; the audit this plan consumes from.
-- `docs/development-guide.md` — keep; 12-section reference.
+- ~~`docs/development-guide.md`~~ — retired 2026-05-11; content merged into `docs/lessons-learned.md` §27-31 (AECO Hub lessons). Lesson references 1-12 already lived in lessons-learned.md.
 - `docs/projects/*.md` — keep; per-accelerator design docs.
 - `docs/projects/aeco-hub-plan.md` — keep; planned 6th accelerator.
 - `docs/images/` — audit (not inspected this pass).

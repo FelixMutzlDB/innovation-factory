@@ -1,7 +1,7 @@
 # Innovation Factory — Outstanding Work
 
 > FEIP: [FEIP-5472](https://databricks.atlassian.net/browse/FEIP-5472)
-> Last reviewed: 2026-04-24
+> Last reviewed: 2026-05-11
 > Source: [docs/tasks/refinement.md](tasks/refinement.md) (full audit details)
 > Batch plan (now shipped): [docs/cleanup-and-improvement-plan.md](cleanup-and-improvement-plan.md)
 
@@ -56,7 +56,7 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 | ID | Task | Status | Done | Notes |
 |----|------|--------|------|-------|
 | A1 | Make `torch`/`open-clip` optional dependency | `[x]` | 2026-04-23 | Commit `fe7a9b3` (C4). `[image-recognition]` extras group; build-time requirements rewrite keeps prod deploy unchanged |
-| A2 | Document Lakebase app resource configuration | `[~]` | 2026-03-28 | `app.yml` has resources; `development-guide.md` needs Section 13 |
+| A2 | Document Lakebase app resource configuration | `[~]` | 2026-03-28 | `app.yml` has resources; App Resources section still owed in `docs/lessons-learned.md` (alongside §5 + §10) |
 | A3 | Add rate limiting (`slowapi`) on expensive endpoints | `[x]` | 2026-04-23 | Commit `1b4b105` (C2). Per-user keying via `X-Forwarded-User`, IP fallback for local dev |
 | A4 | Add request logging middleware | `[ ]` | — | Structured logging: endpoint, method, user identity, status, latency |
 | A5 | Shared pagination dependency on list endpoints | `[x]` | 2026-04-23 | Commits `0f220ad` (C3) + `aa06890` (D7). All HB list endpoints now take `Pagination` |
@@ -77,10 +77,12 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 
 | ID | Task | Status | Done | Notes |
 |----|------|--------|------|-------|
-| D1 | Update `development-guide.md` (Sections 13-15) | `[ ]` | — | App Resources, Migration Playbook, Security Checklist |
-| D2 | Add `.env.example` with all required variables | `[ ]` | — | Currently only `.env` exists (gitignored) |
-| D3 | Update README with current 5-accelerator list | `[ ]` | — | README only lists 3 accelerators |
+| D1 | Distribute App Resources / Migration Playbook / Security Checklist into `docs/lessons-learned.md` | `[~]` | 2026-05-11 | Migration Playbook covered in §25 (hybrid DAB + Python); Security Checklist partially covered in §9, §20, §21; App Resources section still owed |
+| D2 | Add `.env.example` with all required variables | `[x]` | 2026-05-11 | `.env.example` tracked at repo root; M1.8 of 2026-05 revision added the 4 HB vector-search vars. New env vars must be added when new accelerators land (caught by M1 env-diff check). |
+| D3 | Update README with current 6-accelerator list | `[x]` | 2026-05-11 | M1.6 of 2026-05 revision: added AECO Hub row. Future accelerators auto-flagged by M1 consistency-auditor. |
 | D4 | Persona-based UAT playbook | `[x]` | 2026-04-23 | Commit `20a3a6d` (D5). `docs/uat-personas.md` — 10 personas, 2 per accelerator |
+| D5 | PR template + per-PR revision checks | `[x]` | 2026-05-11 | `.github/PULL_REQUEST_TEMPLATE.md`; 5-item checklist from `docs/revision-checklist.md` |
+| D6 | Router discipline CI lint + clear KNOWN_DEBT allowlist | `[~]` | 2026-05-11 | `tests/common/test_router_discipline.py` is decorator-aware (skips routes marked `@streaming_endpoint` from `services/streaming.py`, introduced in `fb43b87`). Lands green with **10** routes allowlisted: 5 legacy streaming chat endpoints (migrate to `@streaming_endpoint`), 3 file/binary endpoints (add `response_class` or `responses=`), 1 untyped JSON dict (`get_anomaly_counts` — add `response_model=dict[str,int]`). Target: 2026-Q3 |
 
 ## P6 — Migration Cleanup
 
@@ -105,16 +107,14 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 - T4 — Lakebase credential-rotation integration test
 
 **P3 — documentation debt:**
-- D1 — development-guide.md Sections 13 (App Resources), 14 (Migration Playbook), 15 (Security Checklist)
-- D2 — `.env.example`
-- D3 — README refresh to list all 5 accelerators
+- D1 — App Resources section owed in `docs/lessons-learned.md` (Migration Playbook → §25; Security Checklist → §9 + §20 + §21 — App Resources still open)
 
 **P5 — backlog (post-AECO Hub):**
 - B1 — delete unused Lakebase dev branch `dev-aeco-hub` on `fevm-felix-demo` (uid `br-dark-sun-d7t7sgls`). Created Phase 1 for schema iteration but the app reads/writes via PGlite locally and Lakebase production; the dev branch never got wired in. Keep until Phase 6 deploy is verified, then drop with `databricks postgres delete-branch projects/innovation-factory/branches/dev-aeco-hub -p fevm-felix-demo`.
 - B2 — `tests/conftest.py` `DATABASE_URL` is missing `?uri=true` so SQLite treats `file:test_shared` as a literal filename, leaking a real `file:test_shared` into the repo root on each `pytest` run. Found Phase 2; deleted the stale file but didn't fix the root cause.
 
 **P4 — lifts the ceiling, not the floor:**
-- A2 — Lakebase config section in development-guide.md
+- A2 — Lakebase app-resource config section owed in `docs/lessons-learned.md`
 - T-future — Playwright E2E smoke for each accelerator's golden path
 
 ---
@@ -144,7 +144,7 @@ All six phases from `docs/projects/aeco-hub-plan.md` complete:
 | P2 Code Quality | 7 | 5 | 2 |
 | P3 Architecture | 6 | 4 | 1 open + 1 partial |
 | P4 Testing | 6 | 4 | 1 open + 1 partial |
-| P5 Documentation | 4 | 1 | 3 |
+| P5 Documentation | 6 | 4 | 2 (D1, D6 partial) |
 | P6 Cleanup | 3 | 3 | 0 |
 | AECO Hub | 7 | 7 | 0 |
-| **Total** | **42** | **32** | **10** |
+| **Total** | **44** | **35** | **9** |
