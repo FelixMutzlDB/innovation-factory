@@ -61,3 +61,6 @@ file:test_shared
 # Deploy state (regenerated on demand; contains workspace IDs)
 scripts/migration_state.json
 scripts/fevm_agents_state.json
+
+# Personal tmux dev-loop helper
+/tmux-cockpit.sh
