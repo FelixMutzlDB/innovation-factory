@@ -14,18 +14,21 @@ import { Route as IndexRouteImport } from './../routes/index'
 import { Route as BuildIdeaIndexRouteImport } from './../routes/build-idea/index'
 import { Route as SidebarProfileRouteImport } from './../routes/_sidebar/profile'
 import { Route as SidebarDocumentationRouteImport } from './../routes/_sidebar/documentation'
+import { Route as ProjectsYardProRouteRouteImport } from './../routes/projects/yard-pro/route'
 import { Route as ProjectsViHomeOneRouteRouteImport } from './../routes/projects/vi-home-one/route'
 import { Route as ProjectsMolAsmCockpitRouteRouteImport } from './../routes/projects/mol-asm-cockpit/route'
 import { Route as ProjectsHbProductCenterRouteRouteImport } from './../routes/projects/hb-product-center/route'
 import { Route as ProjectsBshHomeConnectRouteRouteImport } from './../routes/projects/bsh-home-connect/route'
 import { Route as ProjectsAecoHubRouteRouteImport } from './../routes/projects/aeco-hub/route'
 import { Route as ProjectsAdtechIntelligenceRouteRouteImport } from './../routes/projects/adtech-intelligence/route'
+import { Route as ProjectsYardProIndexRouteImport } from './../routes/projects/yard-pro/index'
 import { Route as ProjectsViHomeOneIndexRouteImport } from './../routes/projects/vi-home-one/index'
 import { Route as ProjectsMolAsmCockpitIndexRouteImport } from './../routes/projects/mol-asm-cockpit/index'
 import { Route as ProjectsHbProductCenterIndexRouteImport } from './../routes/projects/hb-product-center/index'
 import { Route as ProjectsBshHomeConnectIndexRouteImport } from './../routes/projects/bsh-home-connect/index'
 import { Route as ProjectsAecoHubIndexRouteImport } from './../routes/projects/aeco-hub/index'
 import { Route as ProjectsAdtechIntelligenceIndexRouteImport } from './../routes/projects/adtech-intelligence/index'
+import { Route as ProjectsYardProCoachRouteImport } from './../routes/projects/yard-pro/coach'
 import { Route as ProjectsViHomeOneProfileRouteImport } from './../routes/projects/vi-home-one/profile'
 import { Route as ProjectsMolAsmCockpitHomeRouteImport } from './../routes/projects/mol-asm-cockpit/home'
 import { Route as ProjectsMolAsmCockpitExplorerRouteImport } from './../routes/projects/mol-asm-cockpit/explorer'
@@ -95,6 +98,11 @@ const SidebarDocumentationRoute = SidebarDocumentationRouteImport.update({
   path: '/documentation',
   getParentRoute: () => SidebarRouteRoute,
 } as any)
+const ProjectsYardProRouteRoute = ProjectsYardProRouteRouteImport.update({
+  id: '/projects/yard-pro',
+  path: '/projects/yard-pro',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsViHomeOneRouteRoute = ProjectsViHomeOneRouteRouteImport.update({
   id: '/projects/vi-home-one',
   path: '/projects/vi-home-one',
@@ -129,6 +137,11 @@ const ProjectsAdtechIntelligenceRouteRoute =
     path: '/projects/adtech-intelligence',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProjectsYardProIndexRoute = ProjectsYardProIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProjectsYardProRouteRoute,
+} as any)
 const ProjectsViHomeOneIndexRoute = ProjectsViHomeOneIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -163,6 +176,11 @@ const ProjectsAdtechIntelligenceIndexRoute =
     path: '/',
     getParentRoute: () => ProjectsAdtechIntelligenceRouteRoute,
   } as any)
+const ProjectsYardProCoachRoute = ProjectsYardProCoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
+  getParentRoute: () => ProjectsYardProRouteRoute,
+} as any)
 const ProjectsViHomeOneProfileRoute =
   ProjectsViHomeOneProfileRouteImport.update({
     id: '/profile',
@@ -434,6 +452,7 @@ export interface FileRoutesByFullPath {
   '/projects/hb-product-center': typeof ProjectsHbProductCenterRouteRouteWithChildren
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
+  '/projects/yard-pro': typeof ProjectsYardProRouteRouteWithChildren
   '/documentation': typeof SidebarDocumentationRoute
   '/profile': typeof SidebarProfileRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
@@ -454,12 +473,14 @@ export interface FileRoutesByFullPath {
   '/projects/mol-asm-cockpit/explorer': typeof ProjectsMolAsmCockpitExplorerRoute
   '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
+  '/projects/yard-pro/coach': typeof ProjectsYardProCoachRoute
   '/projects/adtech-intelligence/': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/aeco-hub/': typeof ProjectsAecoHubIndexRoute
   '/projects/bsh-home-connect/': typeof ProjectsBshHomeConnectIndexRoute
   '/projects/hb-product-center/': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit/': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one/': typeof ProjectsViHomeOneIndexRoute
+  '/projects/yard-pro/': typeof ProjectsYardProIndexRoute
   '/projects/aeco-hub/projects/$projectId': typeof ProjectsAecoHubProjectsProjectIdRouteRouteWithChildren
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
@@ -510,12 +531,14 @@ export interface FileRoutesByTo {
   '/projects/mol-asm-cockpit/explorer': typeof ProjectsMolAsmCockpitExplorerRoute
   '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
+  '/projects/yard-pro/coach': typeof ProjectsYardProCoachRoute
   '/projects/adtech-intelligence': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/aeco-hub': typeof ProjectsAecoHubIndexRoute
   '/projects/bsh-home-connect': typeof ProjectsBshHomeConnectIndexRoute
   '/projects/hb-product-center': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one': typeof ProjectsViHomeOneIndexRoute
+  '/projects/yard-pro': typeof ProjectsYardProIndexRoute
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
   '/projects/bsh-home-connect/tickets/$ticketId': typeof ProjectsBshHomeConnectTicketsTicketIdRoute
@@ -553,6 +576,7 @@ export interface FileRoutesById {
   '/projects/hb-product-center': typeof ProjectsHbProductCenterRouteRouteWithChildren
   '/projects/mol-asm-cockpit': typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
+  '/projects/yard-pro': typeof ProjectsYardProRouteRouteWithChildren
   '/_sidebar/documentation': typeof SidebarDocumentationRoute
   '/_sidebar/profile': typeof SidebarProfileRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
@@ -573,12 +597,14 @@ export interface FileRoutesById {
   '/projects/mol-asm-cockpit/explorer': typeof ProjectsMolAsmCockpitExplorerRoute
   '/projects/mol-asm-cockpit/home': typeof ProjectsMolAsmCockpitHomeRoute
   '/projects/vi-home-one/profile': typeof ProjectsViHomeOneProfileRoute
+  '/projects/yard-pro/coach': typeof ProjectsYardProCoachRoute
   '/projects/adtech-intelligence/': typeof ProjectsAdtechIntelligenceIndexRoute
   '/projects/aeco-hub/': typeof ProjectsAecoHubIndexRoute
   '/projects/bsh-home-connect/': typeof ProjectsBshHomeConnectIndexRoute
   '/projects/hb-product-center/': typeof ProjectsHbProductCenterIndexRoute
   '/projects/mol-asm-cockpit/': typeof ProjectsMolAsmCockpitIndexRoute
   '/projects/vi-home-one/': typeof ProjectsViHomeOneIndexRoute
+  '/projects/yard-pro/': typeof ProjectsYardProIndexRoute
   '/projects/aeco-hub/projects/$projectId': typeof ProjectsAecoHubProjectsProjectIdRouteRouteWithChildren
   '/projects/adtech-intelligence/anomalies/$anomalyId': typeof ProjectsAdtechIntelligenceAnomaliesAnomalyIdRoute
   '/projects/bsh-home-connect/devices/register': typeof ProjectsBshHomeConnectDevicesRegisterRoute
@@ -617,6 +643,7 @@ export interface FileRouteTypes {
     | '/projects/hb-product-center'
     | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
+    | '/projects/yard-pro'
     | '/documentation'
     | '/profile'
     | '/build-idea/'
@@ -637,12 +664,14 @@ export interface FileRouteTypes {
     | '/projects/mol-asm-cockpit/explorer'
     | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
+    | '/projects/yard-pro/coach'
     | '/projects/adtech-intelligence/'
     | '/projects/aeco-hub/'
     | '/projects/bsh-home-connect/'
     | '/projects/hb-product-center/'
     | '/projects/mol-asm-cockpit/'
     | '/projects/vi-home-one/'
+    | '/projects/yard-pro/'
     | '/projects/aeco-hub/projects/$projectId'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
@@ -693,12 +722,14 @@ export interface FileRouteTypes {
     | '/projects/mol-asm-cockpit/explorer'
     | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
+    | '/projects/yard-pro/coach'
     | '/projects/adtech-intelligence'
     | '/projects/aeco-hub'
     | '/projects/bsh-home-connect'
     | '/projects/hb-product-center'
     | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
+    | '/projects/yard-pro'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
     | '/projects/bsh-home-connect/tickets/$ticketId'
@@ -735,6 +766,7 @@ export interface FileRouteTypes {
     | '/projects/hb-product-center'
     | '/projects/mol-asm-cockpit'
     | '/projects/vi-home-one'
+    | '/projects/yard-pro'
     | '/_sidebar/documentation'
     | '/_sidebar/profile'
     | '/build-idea/'
@@ -755,12 +787,14 @@ export interface FileRouteTypes {
     | '/projects/mol-asm-cockpit/explorer'
     | '/projects/mol-asm-cockpit/home'
     | '/projects/vi-home-one/profile'
+    | '/projects/yard-pro/coach'
     | '/projects/adtech-intelligence/'
     | '/projects/aeco-hub/'
     | '/projects/bsh-home-connect/'
     | '/projects/hb-product-center/'
     | '/projects/mol-asm-cockpit/'
     | '/projects/vi-home-one/'
+    | '/projects/yard-pro/'
     | '/projects/aeco-hub/projects/$projectId'
     | '/projects/adtech-intelligence/anomalies/$anomalyId'
     | '/projects/bsh-home-connect/devices/register'
@@ -799,6 +833,7 @@ export interface RootRouteChildren {
   ProjectsHbProductCenterRouteRoute: typeof ProjectsHbProductCenterRouteRouteWithChildren
   ProjectsMolAsmCockpitRouteRoute: typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   ProjectsViHomeOneRouteRoute: typeof ProjectsViHomeOneRouteRouteWithChildren
+  ProjectsYardProRouteRoute: typeof ProjectsYardProRouteRouteWithChildren
   BuildIdeaIndexRoute: typeof BuildIdeaIndexRoute
 }
 
@@ -838,6 +873,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/documentation'
       preLoaderRoute: typeof SidebarDocumentationRouteImport
       parentRoute: typeof SidebarRouteRoute
+    }
+    '/projects/yard-pro': {
+      id: '/projects/yard-pro'
+      path: '/projects/yard-pro'
+      fullPath: '/projects/yard-pro'
+      preLoaderRoute: typeof ProjectsYardProRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/projects/vi-home-one': {
       id: '/projects/vi-home-one'
@@ -881,6 +923,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsAdtechIntelligenceRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/yard-pro/': {
+      id: '/projects/yard-pro/'
+      path: '/'
+      fullPath: '/projects/yard-pro/'
+      preLoaderRoute: typeof ProjectsYardProIndexRouteImport
+      parentRoute: typeof ProjectsYardProRouteRoute
+    }
     '/projects/vi-home-one/': {
       id: '/projects/vi-home-one/'
       path: '/'
@@ -922,6 +971,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/adtech-intelligence/'
       preLoaderRoute: typeof ProjectsAdtechIntelligenceIndexRouteImport
       parentRoute: typeof ProjectsAdtechIntelligenceRouteRoute
+    }
+    '/projects/yard-pro/coach': {
+      id: '/projects/yard-pro/coach'
+      path: '/coach'
+      fullPath: '/projects/yard-pro/coach'
+      preLoaderRoute: typeof ProjectsYardProCoachRouteImport
+      parentRoute: typeof ProjectsYardProRouteRoute
     }
     '/projects/vi-home-one/profile': {
       id: '/projects/vi-home-one/profile'
@@ -1472,6 +1528,19 @@ const ProjectsViHomeOneRouteRouteWithChildren =
     ProjectsViHomeOneRouteRouteChildren,
   )
 
+interface ProjectsYardProRouteRouteChildren {
+  ProjectsYardProCoachRoute: typeof ProjectsYardProCoachRoute
+  ProjectsYardProIndexRoute: typeof ProjectsYardProIndexRoute
+}
+
+const ProjectsYardProRouteRouteChildren: ProjectsYardProRouteRouteChildren = {
+  ProjectsYardProCoachRoute: ProjectsYardProCoachRoute,
+  ProjectsYardProIndexRoute: ProjectsYardProIndexRoute,
+}
+
+const ProjectsYardProRouteRouteWithChildren =
+  ProjectsYardProRouteRoute._addFileChildren(ProjectsYardProRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SidebarRouteRoute: SidebarRouteRouteWithChildren,
@@ -1484,6 +1553,7 @@ const rootRouteChildren: RootRouteChildren = {
     ProjectsHbProductCenterRouteRouteWithChildren,
   ProjectsMolAsmCockpitRouteRoute: ProjectsMolAsmCockpitRouteRouteWithChildren,
   ProjectsViHomeOneRouteRoute: ProjectsViHomeOneRouteRouteWithChildren,
+  ProjectsYardProRouteRoute: ProjectsYardProRouteRouteWithChildren,
   BuildIdeaIndexRoute: BuildIdeaIndexRoute,
 }
 export const routeTree = rootRouteImport

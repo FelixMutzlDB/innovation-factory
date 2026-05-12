@@ -1,0 +1,64 @@
+/*
+ * yard-pro — brand-adjacent theme.
+ * Reference customer: Stihl (outdoor power equipment, gardening/landscaping).
+ * Source: docs/yard-pro-plan.md §7.5
+ *   Primary  ~ #D9541F (red-shifted orange, ~6° lower hue than Stihl #F46717)
+ *   Secondary ~ #2B2F33 (cooler graphite, bluer than RAL 7016)
+ *   Tertiary ~ #F5F2EC (warm off-white, used to break primary/secondary pairings)
+ *
+ * Color conversion notes (oklch):
+ *   #D9541F → oklch(0.53 0.19 35)
+ *   #2B2F33 → oklch(0.19 0.01 256)
+ *   #F5F2EC → oklch(0.96 0.01 90)
+ */
+
+[data-project-theme="yard-pro"] {
+  --primary: oklch(0.53 0.19 35);
+  --primary-foreground: oklch(0.98 0.01 0);
+
+  --accent: oklch(0.95 0.02 90);
+  --accent-foreground: oklch(0.40 0.12 35);
+
+  --ring: oklch(0.53 0.19 35);
+
+  --sidebar-primary: oklch(0.19 0.01 256);
+  --sidebar-primary-foreground: oklch(0.98 0.01 0);
+  --sidebar-accent: oklch(0.53 0.19 35);
+  --sidebar-accent-foreground: oklch(0.98 0.01 0);
+  --sidebar-ring: oklch(0.53 0.19 35);
+
+  --chart-1: oklch(0.53 0.19 35);
+  --chart-2: oklch(0.40 0.14 35);
+  --chart-3: oklch(0.65 0.10 35);
+  --chart-4: oklch(0.75 0.06 35);
+  --chart-5: oklch(0.85 0.04 35);
+
+  font-family: var(--brand-font-family, "Inter"), system-ui, sans-serif;
+}
+
+[data-project-theme="yard-pro"] h1,
+[data-project-theme="yard-pro"] h2,
+[data-project-theme="yard-pro"] h3,
+[data-project-theme="yard-pro"] h4,
+[data-project-theme="yard-pro"] h5,
+[data-project-theme="yard-pro"] h6 {
+  font-family: var(--brand-font-display, "Saira Condensed"), system-ui, sans-serif;
+  font-weight: 700;
+}
+
+.dark [data-project-theme="yard-pro"],
+[data-project-theme="yard-pro"].dark {
+  --primary: oklch(0.78 0.15 35);
+  --primary-foreground: oklch(0.12 0.01 0);
+
+  --accent: oklch(0.25 0.01 90);
+  --accent-foreground: oklch(0.88 0.08 35);
+
+  --ring: oklch(0.78 0.15 35);
+
+  --sidebar-primary: oklch(0.88 0.01 0);
+  --sidebar-primary-foreground: oklch(0.19 0.01 256);
+  --sidebar-accent: oklch(0.78 0.15 35);
+  --sidebar-accent-foreground: oklch(0.12 0.01 0);
+  --sidebar-ring: oklch(0.78 0.15 35);
+}

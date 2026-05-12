@@ -75,6 +75,15 @@ export const BRAND_THEMES: Record<string, BrandTheme> = {
     secondaryHex: "#00A0E0",
     fontUi: "Inter",
   },
+  "yard-pro": {
+    slug: "yard-pro",
+    displayName: "yard-pro",
+    customerRef: "Stihl",
+    primaryHex: "#D9541F",
+    secondaryHex: "#2B2F33",
+    fontUi: "Inter",
+    fontDisplay: "Saira Condensed",
+  },
 };
 
 export type BrandThemeSlug = keyof typeof BRAND_THEMES;

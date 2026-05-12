@@ -9,6 +9,7 @@
 @import "./themes/adtech-intelligence.css";
 @import "./themes/hb-product-center.css";
 @import "./themes/aeco-hub.css";
+@import "./themes/yard-pro.css";
 
 @custom-variant dark (&:is(.dark *));
 

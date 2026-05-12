@@ -39,7 +39,7 @@ Researched via corporate sites and brand-color aggregators (encycolorpedia.com, 
 
 BSH's current corporate identity (post-2018 redesign by wirDesign) is built on a vibrant coral-orange and near-black palette — distinct from parent Bosch's red. Hex values below were lifted directly from bsh-group.com's compiled CSS bundle.
 
-- **Primary:** BSH Orange `#FF6840` — vibrant coral-orange (verified via `bsh-group.com/corporate-design` CSS)
+- **Primary:** BSH Orange `#FF6840` — vibrant coral-orange (verified via `bsh-group.com/corporate-design` CSS). For implementation we use `oklch(0.66 0.22 42)` (≈ `#E5602C`): a touch deeper than the raw brand hex so white text on primary meets WCAG AA Large Text / UI 3:1 (raw `#FF6840` only reaches 2.81:1 with white), and shifted slightly toward orange (hue 42° vs Viessmann's 35°) so the two warm-red themes stay visually distinct in the sidebar.
 - **Primary hover / deep variant:** `#D74000`
 - **Secondary:** Near-black `#1A1A1A`
 - **Accent / tint scale:** `#FF8666`, `#FFC3B3`, `#FFD2C6`, `#FFE1D9`, `#FFF0EC` (use for surfaces, hovers, light backgrounds)
