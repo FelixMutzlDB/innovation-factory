@@ -191,7 +191,7 @@ Storage-optimized endpoint. Sources in `ka_docs/`:
 | Phase | Scope | Demoable on its own? | Dependencies |
 |-------|-------|----------------------|--------------|
 | **P1 — Foundation** | Lakebase schema (`yp_*`), seed (Martin's Stuttgart yard, 5 tools, 12 plants, 30-day action log), CRUD APIs, backend router registered under `/api/projects/yard-pro` | Yes — `apx dev start` shows seeded data via API docs | None |
-| **P2 — Consumer UI surfaces (mocked AI)** | Cockpit (UC1) showing tools+plants+action log+telemetry; coach chat UI shell (UC2, fixed-string responses); snap-and-diagnose UI with seeded fixed responses (UC3) | **Internal only.** Clickable prototype for UX validation; the three AI moments return seeded fixed responses. Do NOT show P2 to a customer cold — P3 is the first customer-grade demo. | P1 |
+| **P2 — Consumer UI surfaces (mocked AI)** | **Two routes only.** Cockpit (UC1) consolidates calendar (UC2) + inventory (UC5) + diagnose-result (UC3) as cards within the same route; coach chat (UC2) is the second route with fixed-string responses. Diagnose photo upload opens as a modal from the cockpit, no separate URL. | **Internal only.** Clickable prototype for UX validation; the three AI moments return seeded fixed responses. Do NOT show P2 to a customer cold — P3 is the first customer-grade demo. | P1 |
 | **P3 — AI live** | KA over gardening corpus (FM API + KA endpoint); vision endpoint (Mosaic AI Serving) wired to UC3; coach prompts include yard context + weather; calendar regeneration (UC2) on action-log writes | Yes — the headline AI moments now work end-to-end. **This is the first phase you'd put in front of a customer.** | P1, P2 |
 | **P4 — Connected telemetry & nudges** | Telemetry synthesizer producing battery/blade/usage events into `yp_tool_readiness` + `yard_pro_bronze.telemetry_events`; readiness nudges (UC4); consumables suggestions (UC5); cockpit shows live tool state | Yes — completes the consumer demo loop | P1-P3 |
 | **P5 — Dealer panel (UC6, P2 priority)** | Dealer-relationship table, consent endpoint, anonymization pipeline (Lakebase → Delta Bronze → Silver → Gold), Genie space deployed against `yard_pro_gold.dealer_customer_summary`, dealer admin route | Yes — adds the B2B2C narrative for OEM customer conversations. **Depends on P4 specifically because** `yard_pro_gold.dealer_customer_summary` rolls up real-shape telemetry; if P4 ships only a synthesizer the rollup still works, but the Klaus demo's credibility hinges on the rollup looking like a real fleet would produce. | P1-P4 |
@@ -240,14 +240,18 @@ src/innovation_factory/backend/projects/yard_pro/
 src/innovation_factory/ui/
   routes/projects/yard-pro/
     route.tsx                       # layout: <ProjectThemeScope slug="yard-pro">
-    index.tsx                       # cockpit (UC1)
-    coach.tsx                       # UC2 chat
-    diagnose.tsx                    # UC3 photo upload + result card
-    calendar.tsx                    # UC2 calendar
-    inventory.tsx                   # UC5
-    dealer/                         # P5
+    index.tsx                       # cockpit (UC1) — consolidates UC2 calendar +
+                                    # UC3 diagnose-result + UC5 inventory as cards
+    coach.tsx                       # UC2 chat (the only second route)
+    dealer/                         # P5 — separate route subtree
       route.tsx
       index.tsx
+  components/yard-pro/              # NEW — cockpit's child cards
+    calendar-card.tsx               # UC2 personalized calendar
+    inventory-card.tsx              # UC5 tools + consumables
+    diagnose-modal.tsx              # UC3 — opened from cockpit "Snap a photo" button
+    advisory-chip.tsx               # "AI-generated, advisory only" chip (Art. 50, EU AI Act)
+    mark-as-done.tsx                # human_confirmed_at affordance (Art. 22 invariant)
   styles/themes/
     yard-pro.css                    # NEW — Stihl-adjacent token overrides (light + dark)
   lib/
@@ -443,4 +447,128 @@ Findings below are intentional pre-build threat model; each cites the §8 row th
 
 ---
 
-<!-- Phase 4 (§11-12 Use-case map/Final ordering) appears below as it's drafted. -->
+## 11. Use Case Coverage Map
+
+Every use case from §2 mapped here. No silent omissions.
+
+| # | Use case from §2 | Plan phase | Status | Simplification / deferral notes |
+|---|------------------|-----------|--------|---------------------------------|
+| 1 | State-of-the-yard cockpit | P1 (data) + P2 (UI) | **In scope, complete — consolidates calendar (UC2) + inventory (UC5) + diagnose-result (UC3) as cards within the same route** | First customer-grade demo lands when P3 ships. Phase 1 dissent resolved by consolidation, not by cutting (see below). |
+| 2 | Personalized seasonal coach | P3 (AI live) | **In scope, complete** | Requires the 20 hand-authored seed answers from §7 KA-risk callout *before* P3 wiring |
+| 3 | Snap-and-diagnose | P3 (AI live) | **In scope, complete — opens as a modal from the cockpit, not a separate route** | Confidence floor + co-equal "second opinion" CTA in P0; ensemble plausibility deferred to P1 (demo photo is seeded — ensemble is over-engineering for a controlled demo) |
+| 4 | Tool-readiness nudges | P4 | **In scope, simplified — notifications only** | **Reshaped by Phase 3 Art. 22 invariant.** Nudges are notifications with a Mark-as-done click, never auto-actions. The "we silently maintained your tools for you" framing is out. |
+| 5 | Inventory & consumables | P1 (data) + P2 (cockpit card) | **In scope, complete** | Lightweight; surfaces as a cockpit card, not a separate route |
+| 6 | Dealer "talk to your data" Genie space | P5 | **In scope, P2 priority** | Anonymization pipeline + consent state machine + Genie space. Requires P4 telemetry shape. Note: founder chose to keep the Bronze/Silver/Gold Delta scaffolding in P0 so the analytical-pipeline story is *visible* during a P3 customer demo even before Klaus's screen exists. |
+| 7 | Multi-user / household sharing | — | **Deferred** | Adds auth/permissions; out of P0-P5 scope |
+| 8 | Direct dealer-network booking | — | **Deferred** | Real B2B2C integration; future phase |
+| 9 | Voice-first ("Hey yard-pro …") | — | **Deferred** | Cool but not load-bearing for the core pain |
+| — | **US launch (CCPA / state-level US privacy)** | — | **Deferred** | yard-pro v1 is EU-only (Stuttgart pilot per §8). Future scope item logged in `docs/TODO.md` |
+| — | **Real Edge / Zerobus integration** | — | **Deferred** | P4 ships the in-process synthesizer; real Zerobus gRPC client deferred until a SIM customer is in the loop |
+| — | **Batched-inference 100× scale path** | — | **Deferred** | Re-scope conversation, not a Phase 5 item. UC3 success criterion (<15 s) is the SLA at P0-P5; 100× breaks it (Phase 3 §10) |
+
+### Phase 1 UC1 dissent — Phase 4 verdict
+
+**Phase 1's Skeptical PM proposed cutting UC1 as a primary surface and folding the cockpit into the coach screen as a sidebar.** Phase 4 EM re-tested and recommended a different resolution: **keep UC1 as the anchor, but consolidate calendar + inventory + diagnose-result *into* it as cards rather than as sibling routes.** Both critiques were right:
+- The Skeptical PM was right that four sibling pages (cockpit, calendar, diagnose, inventory) is overscoped.
+- The founder was right that the "state of your yard" anchor screen is load-bearing for the OEM narrative.
+
+Consolidation wins both arguments. The yard-pro consumer app ships **two** routes only: cockpit (the anchor) and coach (the chat). Diagnose is a modal opened from the cockpit's "Snap a photo" button.
+
+## 12. Open Questions & Final Ordering
+
+### Open questions / decisions
+
+The Phase 4 EM sub-agent reclassified the original 9 questions; most were decisions or punts disguised as research. Final list:
+
+| # | Question | Class | Status |
+|---|----------|-------|--------|
+| Q1 | Foundation Model API default + fallback model IDs | **Decision** | Default `databricks-meta-llama-3-3-70b`, fallback `databricks-claude-sonnet-4`. Confirmed P0. |
+| Q2 | Lakebase scale-to-zero Saturday-morning surge — does the 09:00 wake fit UC2 <5 s coach-answer SLA? | **Research** | **Punt for P0** (demo isn't Saturday 09:00 in production). Build the `canary_cold_start.py` script as a deliverable, run it at P4 acceptance. |
+| Q3 | KA corpus total size beyond the 20 seed answers | **Decision** | P0 floor: 20 hand-authored seed answers. Beyond 20 is P1 work, scoped after retrieval validation. |
+| Q4 | Photo retention default (180 days) | **Punt** | 180 days for v1 privacy notice. User-override deferred to P3 backlog. |
+| Q5 | Single Lakebase + RLS vs per-tenant instances | **Punt** | Stays as documented "revisit at scale". |
+| Q6 | Same Databricks Apps deployment for consumer + dealer, or separate | **Decision** | Same deployment, sub-route `/dealer/*`, separate service-principal UC grants for Klaus. |
+| Q7 | Saira Condensed self-host vs CDN | **Decision** | CDN (Google Fonts) for P0; self-host fallback deferred to P1. |
+| Q8 | Vision endpoint no fallback — comfortable? | **Decision** | Yes. Tier-2 diagnose queue deferred to P1 (demo never sees Vision down). |
+| Q9 | Genie space provisioning timing — fallback if a customer demo needs the dealer angle before P5 lands | **Decision** | Static screenshot. No engineered fallback. |
+
+**True open at P0 start:** Q2 alone, and it's a benchmark — not a blocker.
+
+### Implementation ordering (P0 → P3)
+
+**P0 — must-have for first customer-grade demo (end of plan-phase P3):**
+
+| Item | Source non-negotiable / use case | Cost |
+|------|----------------------------------|------|
+| Lakebase schema (`yp_*`) + UC catalog DDL (`yard_pro_bronze/silver/gold` skeleton) seeded with Martin's Stuttgart yard | UC1, UC5; §5 | M |
+| Lakehouse Sync configured Lakebase → Delta Bronze + visible Bronze/Silver/Gold layers seeded (~10k synthetic telemetry rows for a believable "analytical pipeline" story during demo) | OEM differentiator narrative §3; founder's call to keep | M |
+| Backend routers (yards, plants, tools, inventory, actions, coach, diagnose) with `response_model` + `operation_id` | All P0 UCs; §13 discipline | M |
+| `yard_context_service` typed `YardContext` | UC2/UC3 share state; §4 | S |
+| Cockpit route (UC1) with `<ProjectThemeScope slug="yard-pro">` + calendar/inventory/diagnose-result child cards | UC1 + UC2 + UC5 + brand-adjacency NN | M |
+| Coach route (UC2) — SSE streaming + provenance enforcement (citations required on recommendation turns) + "AI-generated, advisory only" chip | UC2 + diagnostic-honesty NN + EU AI Act NN | M |
+| Snap-and-diagnose endpoint + confidence floor < 0.6 → "unsure" + co-equal "second opinion" CTA (NO ensemble plausibility yet — that's P1) + "advisory only" chip | UC3 + diagnostic-honesty NN | M |
+| Calendar regeneration on action-log write | UC2 success criterion #4 | S |
+| KA corpus (20 hand-authored seed answers minimum) + Vector Search index `yard_pro_gardening_kb` | UC2 + #11 risk callout | L |
+| GDPR Art. 22 invariant: `human_confirmed_at` enforced on all `source != 'user'` writes; `<MarkAsDone>` component is the only path | Art. 22 NN | S |
+| GDPR Art. 17 delete — happy-path only (delete one yard's `yp_*` rows + photo prefix + cascade to Delta within sync interval) | GDPR NN | S |
+| Brand-adjacent theme (`yard-pro.css` + `brand-themes.ts` entry) + `test_no_customer_ref_in_dom.tsx` | Brand-adjacency NN | S |
+| Cross-household isolation test (`test_cross_household_isolation.py`) — full enumeration | RT-016 Critical | S |
+| Lakebase RLS by `yard_id` derived from `X-Forwarded-User` | RT-016 Critical | S |
+| Structured-logger field exclusion (no log-canary CI test yet — that's P1) | RT-024 partial mitigation | S |
+| `scripts/check_all.sh` per-phase gate (lessons §32) | Cross-phase | S |
+| Single default circuit breaker (per-dependency tuning is P1 work) | §9 simplified | S |
+| Idempotency-Key column + UNIQUE partial index (schema only; 24h cache-replay logic is P1) | §8 + §9 simplified | S |
+
+**P1 — next sprint (extends to plan-phase P4):**
+
+| Item | Notes |
+|------|-------|
+| Telemetry synthesizer + `yp_tool_readiness` upsert flow | UC4 backend; in-process at P1, real Zerobus deferred |
+| Tool-readiness nudges as notifications (UC4) | Notifications-only per Art. 22 invariant |
+| Consumables reorder hints (UC5 polish) | Surface in cockpit + dealer panel |
+| Advisory feedback loop (`yp_coach_feedback`) | Closes diagnostic-honesty rail; auto-flag at 5 % thumbs-down / 100 |
+| **Ensemble plausibility check on `confidence ≥ 0.8`** | Deferred from P0 — demo photo is seeded, real users motivate this |
+| **Idempotency-Key 24h cache-replay enforcement** | Deferred from P0 — schema in place, logic activated when first double-fire is observed |
+| **Per-dependency circuit-breaker thresholds** | Deferred from P0 — tune once we have real failure latency data |
+| **Tier-2 diagnose-queue degradation path** | Deferred from P0 — demo never sees Vision down |
+| **Log-canary CI test (`test_log_pipeline_no_pii.py`)** | Deferred from P0 — demo has no real PII; promote before any real-user rollout |
+| KA-extraction canary nightly job + verbatim cap | RT-008 + §8 AI security |
+| `canary_cold_start.py` benchmark (closes Q2) | Lakebase scale-to-zero Saturday-surge research |
+
+**P2 — production hardening / dealer (extends to plan-phase P5):**
+
+| Item | Notes |
+|------|-------|
+| Dealer panel UI (`/projects/yard-pro/dealer/*`) | UC6 |
+| Anonymization pipeline (Lakebase → Delta Silver → Gold) production-grade | UC6 + dealer-consent NN. (Bronze layer already exists from P0 founder-keep call.) |
+| Consent state machine (`yp_dealer_relationships`) end-to-end | UC6 |
+| Genie space over `yard_pro_gold.dealer_customer_summary` | UC6 |
+| **GDPR Art. 15 (access) + Art. 20 (portability) export endpoints** | Deferred from P0 — a SAR isn't exercised during demo; production-launch necessity |
+| **Log PII regex post-filter + canary CI** | RT-024 production hardening |
+| Retention/partition jobs for `yp_action_log` + Delta tables | §5 retention rules; demo dataset is 30 rows |
+| Lakebase connection-pool sizing + `canary_cold_start.py` results applied | Open Q2 closed |
+| **Saira Condensed self-host fallback** | Deferred from P0 — CDN works for demo; self-host is production-quality |
+
+**P3 — deferred / depends on real customer:**
+
+| Item | Notes |
+|------|-------|
+| Real Edge / Zerobus integration | Replaces the synthesizer |
+| Multi-user / household sharing | UC #7 deferred |
+| Voice-first | UC #9 deferred |
+| Direct dealer-network booking | UC #8 deferred |
+| Batched-inference path for 100× scale | Re-scope conversation, not engineering |
+| US launch (CCPA / state-level privacy) | Out of EU-only v1 scope |
+| Premium-tier real-time vision at 100× | Business-model conversation |
+| Photo retention user-override | Q4 graduated from punt to backlog |
+
+### Demo script — the 5-minute version that ships at end of P0
+
+1. Open the cockpit (UC1). One screen with calendar / inventory / diagnose cards. "Hedge cutting today: 1.5 h, battery topped up, blade fine. Apple tree fungus check overdue 4 days." rendered from the seeded 2026-05-08 row. **< 1 s first paint.**
+2. Click coach. Type "what should I do this weekend?" Personalized answer streams in, **< 5 s end-to-end**, with the "AI-generated, advisory only" chip and inline citations from `ka_docs/regional_almanac/stuttgart_may.md`.
+3. Back to cockpit. Tap "Snap a photo" — modal opens. Upload the seeded yellowing-lawn-patch photo. Diagnosis returns in **< 15 s**: "Fusarium blight, 0.82 confidence" + a co-equal "Get a second opinion (free dealer chat)" CTA.
+4. Tap "Mark as done" on a queued coach recommendation (Art. 22 affordance). Cockpit recomputes; **≥ 2 calendar entries shift by ≥ 1 day**; the `human_confirmed_at` write happens.
+5. *(architecture tour, not a screen)* Open Databricks workspace, show `yard_pro_bronze.coach_transcripts` and `yard_pro_silver.tool_health` populated. "This is where the OEM analytical layer lives. When the dealer panel ships in P5, Klaus's Genie space reads from `yard_pro_gold.dealer_customer_summary` — same lakehouse, different audience."
+6. *(optional, if P5 is live)* Switch to the dealer panel. Klaus types "which customers have a robotic mower 4+ years old and no service this season?" Genie returns **≥ 3 anonymized rows in < 10 s**. No `yard_id` visible; only `yard_id_hash`.
+
+Anything that isn't in that demo script and isn't blocking a non-negotiable is a candidate for cut before P0 lands.
