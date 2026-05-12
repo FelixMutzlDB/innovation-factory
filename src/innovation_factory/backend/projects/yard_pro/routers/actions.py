@@ -25,11 +25,17 @@ without a migration when the cache turns on.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Header, HTTPException, Request
+from fastapi import APIRouter, Header, HTTPException, Request, Response
 from sqlmodel import select
+
+# Replay window for the Idempotency-Key cache. Same key + same yard
+# within this window returns the cached 2xx response instead of writing
+# a new row. Plan §9 + §12 P1 list: column shipped in P0, replay logic
+# activated here in P1.
+_IDEMPOTENCY_WINDOW = timedelta(hours=24)
 
 from ....dependencies import SessionDep
 from ....input_sanitize import sanitize_text
@@ -121,6 +127,7 @@ def log_action(
     request: Request,
     payload: YpActionLogCreate,
     db: SessionDep,
+    response: Response,
     idempotency_key: Annotated[
         Optional[str], Header(alias="Idempotency-Key")
     ] = None,
@@ -151,6 +158,28 @@ def log_action(
 
     yard = get_caller_yard(request, db)
 
+    # Idempotency-Key 24h cache-replay (plan §9, plan §12 P1).
+    # If the caller sent a key (header or body) and the same key was
+    # used for the same yard within the last 24h, return the original
+    # response with status 200 — never re-execute the write. Outside
+    # the window the same key is treated as fresh.
+    resolved_idempotency_key = idempotency_key or payload.idempotency_key
+    if resolved_idempotency_key:
+        replay_cutoff = datetime.now(timezone.utc) - _IDEMPOTENCY_WINDOW
+        existing = db.exec(
+            select(YpActionLog)
+            .where(YpActionLog.yard_id == yard.id)
+            .where(YpActionLog.idempotency_key == resolved_idempotency_key)
+            .where(YpActionLog.created_at >= replay_cutoff)
+            .order_by(YpActionLog.created_at.desc())  # type: ignore[unresolved-attribute]
+            .limit(1)
+        ).first()
+        if existing is not None:
+            # Cached replay — same body the client got the first time,
+            # but 200 (not 201) because the resource already existed.
+            response.status_code = 200
+            return _to_action_out(existing)
+
     # Cross-household isolation for FK references — a coach turn could
     # try to attach the action to a plant/tool/consumable that belongs
     # to another household. Verify ownership before commit (RT-016).
@@ -166,11 +195,6 @@ def log_action(
         cons = db.get(YpConsumable, payload.consumable_id)
         if cons is None or cons.yard_id != yard.id:
             raise HTTPException(status_code=404, detail="Consumable not found")
-
-    # The header takes precedence over the body-supplied key — clients
-    # generally set the header (lessons §9 idempotency-replay convention)
-    # but accept either for flexibility.
-    resolved_idempotency_key = idempotency_key or payload.idempotency_key
 
     entry = YpActionLog(
         yard_id=yard.id or 0,

@@ -12,7 +12,7 @@ Plan §8 security rails enforced here (defense-in-depth at the HTTP edge):
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import (
@@ -22,6 +22,7 @@ from fastapi import (
     HTTPException,
     Query,
     Request,
+    Response,
     UploadFile,
 )
 from pydantic import BaseModel
@@ -46,6 +47,39 @@ router = APIRouter(tags=["yard-pro"])
 
 _MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 _ALLOWED_MIME = {"image/jpeg", "image/png", "image/heic"}
+
+# Same Idempotency-Key + same yard within this window returns the cached
+# response instead of re-running the vision endpoint. Plan §9 + §12 P1.
+_IDEMPOTENCY_WINDOW = timedelta(hours=24)
+
+
+def _diagnosis_to_post_out(
+    d: YpDiagnosis, second_opinion_cta: str = "Get a second opinion (free dealer chat)"
+) -> "YpDiagnosePostOut":
+    """Project a persisted diagnosis row into the POST response shape.
+
+    Used both on first-write and on idempotency-replay. The replay path
+    can't recover the original ``response_id`` (it's not stored), so we
+    derive a stable one from the row id; the ``unsure`` flag is recovered
+    from the persisted ``top_label`` (the classify service sets it to
+    "unsure" when below the 0.6 confidence floor).
+    """
+    return YpDiagnosePostOut(
+        id=d.id or 0,
+        yard_id=d.yard_id,
+        photo_uri=d.photo_uri,
+        model_version=d.model_version,
+        predictions=d.predictions,
+        top_label=d.top_label,
+        top_confidence=d.top_confidence,
+        accepted_label=d.accepted_label,
+        status=d.status,
+        created_at=d.created_at,
+        advisory=True,
+        second_opinion_cta=second_opinion_cta,
+        unsure=(d.top_label == "unsure"),
+        response_id=f"replay-{d.id}" if d.id is not None else "replay-0",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -95,6 +129,7 @@ async def diagnose(
     request: Request,
     db: SessionDep,
     runtime: RuntimeDep,
+    response: Response,
     file: UploadFile = File(...),
     idempotency_key: Optional[str] = Header(default=None, alias="Idempotency-Key"),
 ):
@@ -137,6 +172,23 @@ async def diagnose(
 
     # 4. Resolve yard before running inference so a bad caller fails fast.
     yard = _resolve_yard(db, request)
+
+    # 4b. Idempotency-Key 24h cache-replay (plan §9, plan §12 P1).
+    # Skips both the vision-endpoint call AND the DB write when the
+    # caller is retrying a recent request with the same key.
+    if idempotency_key:
+        replay_cutoff = datetime.now(timezone.utc) - _IDEMPOTENCY_WINDOW
+        existing = db.exec(
+            select(YpDiagnosis)
+            .where(YpDiagnosis.yard_id == yard.id)
+            .where(YpDiagnosis.idempotency_key == idempotency_key)
+            .where(YpDiagnosis.created_at >= replay_cutoff)
+            .order_by(YpDiagnosis.created_at.desc())  # type: ignore[union-attr]
+            .limit(1)
+        ).first()
+        if existing is not None:
+            response.status_code = 200
+            return _diagnosis_to_post_out(existing)
 
     # 5. Run classification, mapping "not configured" to a structured 503.
     # ``runtime.ws`` constructs a WorkspaceClient on first access — only
