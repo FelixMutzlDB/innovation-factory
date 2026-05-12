@@ -1,11 +1,12 @@
 """Brand-adjacent theme scaffold regression tests.
 
-Verifies the per-project theming infrastructure introduced in P0:
+Verifies the per-project theming infrastructure introduced in P0 and
+hardened in P1:
   - Every project listed in `brand-themes.ts` has a matching CSS file.
   - Every theme CSS file uses the `[data-project-theme="<slug>"]` selector.
-  - The pilot project (vi-home-one) has actual token overrides (--primary),
-    not just an empty stub.
-  - The pilot project's route file wraps with `<ProjectThemeScope>`.
+  - Every theme overrides `--primary` (no empty stubs) in both light and
+    dark mode.
+  - Every project's route.tsx wraps with `<ProjectThemeScope slug="...">`.
   - The customer-inspiration callout is still present in each project plan
     (obfuscation regression guard).
 
@@ -81,12 +82,18 @@ def test_theme_css_has_attribute_selector(slug: str) -> None:
     )
 
 
-def test_pilot_theme_has_primary_token() -> None:
-    """vi-home-one is the P0 pilot — it must actually override --primary."""
-    css = (THEMES_DIR / "vi-home-one.css").read_text(encoding="utf-8")
-    assert re.search(r"--primary\s*:\s*oklch", css), (
-        "vi-home-one.css must override --primary with an oklch value "
-        "(the Vitorange-adjacent palette). Other projects are P1 stubs."
+@pytest.mark.parametrize("slug", EXPECTED_SLUGS)
+def test_theme_overrides_primary_in_light_and_dark(slug: str) -> None:
+    """Every theme must override --primary in both light and dark mode.
+
+    P0 only required this for the vi-home-one pilot; P1 requires it for
+    all six themes (no empty stubs left).
+    """
+    css = (THEMES_DIR / f"{slug}.css").read_text(encoding="utf-8")
+    primary_occurrences = re.findall(r"--primary\s*:\s*oklch", css)
+    assert len(primary_occurrences) >= 2, (
+        f"{slug}.css must override --primary in both light and dark mode "
+        f"(found {len(primary_occurrences)} oklch override(s))."
     )
 
 
@@ -101,16 +108,17 @@ def test_globals_imports_all_themes() -> None:
         )
 
 
-def test_pilot_route_uses_project_theme_scope() -> None:
-    """vi-home-one route must wrap its layout with <ProjectThemeScope>."""
+@pytest.mark.parametrize("slug", EXPECTED_SLUGS)
+def test_route_uses_project_theme_scope(slug: str) -> None:
+    """Every project's route.tsx must wrap its layout with <ProjectThemeScope>."""
     route = (
-        UI_ROOT / "routes" / "projects" / "vi-home-one" / "route.tsx"
+        UI_ROOT / "routes" / "projects" / slug / "route.tsx"
     ).read_text(encoding="utf-8")
     assert "ProjectThemeScope" in route, (
-        "vi-home-one route.tsx must import ProjectThemeScope."
+        f"{slug}/route.tsx must import ProjectThemeScope."
     )
-    assert 'slug="vi-home-one"' in route, (
-        "vi-home-one route.tsx must use <ProjectThemeScope slug=\"vi-home-one\">."
+    assert f'slug="{slug}"' in route, (
+        f'{slug}/route.tsx must use <ProjectThemeScope slug="{slug}">.'
     )
 
 

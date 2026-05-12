@@ -5,13 +5,13 @@
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>innovation-factory | Created via apx</title>
-    <!-- Brand-adjacent project fonts. P0 ships DM Sans (vi-home-one);
-         additional fonts (Inter, Manrope, Space Grotesk, Playfair Display)
-         land in P1 with each project's token fill. -->
+    <!-- Brand-adjacent project fonts. Each project's CSS in styles/themes/
+         picks its family via `var(--brand-font-family, ...)`. Loaded as a
+         single combined request to amortize the preconnect. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>

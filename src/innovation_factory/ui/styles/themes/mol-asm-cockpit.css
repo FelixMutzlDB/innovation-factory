@@ -1,10 +1,48 @@
 /*
- * mol-asm-cockpit — brand-adjacent theme (P1 stub).
- * Reference customer: MOL Group (red + green, "energy of positive change").
+ * mol-asm-cockpit — brand-adjacent theme.
+ * Reference customer: MOL Group ("Energy of positive change" red + green).
  * Source: docs/ci-implementation-plan.md §3.3
+ *   Primary  ~ #DA1A26 (red)
+ *   Accent   ~ #6CB52D (green)
  */
 
 [data-project-theme="mol-asm-cockpit"] {
-  /* P1: tokens go here */
+  --primary: oklch(0.57 0.22 25);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --accent: oklch(0.94 0.04 135);
+  --accent-foreground: oklch(0.40 0.16 135);
+
+  --ring: oklch(0.57 0.22 25);
+
+  --sidebar-primary: oklch(0.57 0.22 25);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.95 0.04 135);
+  --sidebar-accent-foreground: oklch(0.40 0.16 135);
+  --sidebar-ring: oklch(0.57 0.22 25);
+
+  --chart-1: oklch(0.57 0.22 25);
+  --chart-2: oklch(0.71 0.18 135);
+  --chart-3: oklch(0.78 0.15 65);
+  --chart-4: oklch(0.48 0.12 25);
+  --chart-5: oklch(0.55 0.14 135);
+
   font-family: var(--brand-font-family, "Manrope"), system-ui, sans-serif;
+}
+
+.dark [data-project-theme="mol-asm-cockpit"],
+[data-project-theme="mol-asm-cockpit"].dark {
+  --primary: oklch(0.64 0.22 25);
+  --primary-foreground: oklch(0.16 0 0);
+
+  --accent: oklch(0.40 0.12 135);
+  --accent-foreground: oklch(0.96 0.04 135);
+
+  --ring: oklch(0.64 0.22 25);
+
+  --sidebar-primary: oklch(0.64 0.22 25);
+  --sidebar-primary-foreground: oklch(0.16 0 0);
+  --sidebar-accent: oklch(0.38 0.12 135);
+  --sidebar-accent-foreground: oklch(0.96 0.04 135);
+  --sidebar-ring: oklch(0.64 0.22 25);
 }
