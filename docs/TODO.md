@@ -111,6 +111,7 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 **P5 — backlog (post-AECO Hub):**
 - B1 — delete unused Lakebase dev branch `dev-aeco-hub` on `fevm-felix-demo` (uid `br-dark-sun-d7t7sgls`). **READY TO DELETE** (Phase 6 merged to master 2026-05-11 via PR #5). Run: `databricks auth login --profile fevm-felix-demo && databricks postgres delete-branch projects/innovation-factory/branches/dev-aeco-hub -p fevm-felix-demo`.
 - B2 — `tests/conftest.py` `DATABASE_URL` is missing `?uri=true` so SQLite treats `file:test_shared` as a literal filename, leaking a real `file:test_shared` into the repo root on each `pytest` run. Found Phase 2; deleted the stale file but didn't fix the root cause.
+- B3 — Refactor `aeco_hub` + `hb_product_center` UC seed scripts to per-project pattern (mirror `mol_asm_cockpit/seed_uc_tables.py`). Today aeco/hb keep their UC seed in top-level `scripts/seed_uc_aeco_data.py` + `scripts/seed_uc_hb_data.py`; mol_asm and the new yard-pro accelerator use a per-project `projects/<slug>/seed_uc_tables.py`. Standardize on the per-project pattern so each project folder is self-contained. Decision logged 2026-05-12 during yard-pro Phase 2 planning.
 
 **P4 — lifts the ceiling, not the floor:**
 - A2 — Lakebase app-resource config section owed in `docs/lessons-learned.md`
