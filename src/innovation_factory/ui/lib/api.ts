@@ -2302,6 +2302,19 @@ export interface VhTicketUpdate {
   status?: VhTicketStatus | null;
 }
 
+export interface YardProDatabricksResourcesOut {
+  coach_ka_configured?: boolean;
+  coach_ka_endpoint: string;
+  coach_model: string;
+  coach_model_fallback: string;
+  configured?: boolean;
+  dealer_genie_configured?: boolean;
+  dealer_genie_space_id: string;
+  vision_configured?: boolean;
+  vision_endpoint: string;
+  workspace_url: string;
+}
+
 export const innovation_factory__backend__projects__bsh_home_connect__models__UserRole = {
   customer: "customer",
   technician: "technician",
@@ -3188,7 +3201,7 @@ export function useGetIdeaSessionSuspense<TData = { data: IdeaSessionOut }>(opti
   return useSuspenseQuery({ queryKey: getIdeaSessionKey(options.params), queryFn: () => getIdeaSession(options.params), ...options?.query });
 }
 
-export const sendIdeaMessage = async (params: SendIdeaMessageParams, data: IdeaMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
+export const sendIdeaMessage = async (params: SendIdeaMessageParams, data: IdeaMessageIn, options?: RequestInit): Promise<{ data: Record<string, unknown> }> => {
   const res = await fetch(`/api/ideas/sessions/${params.session_id}/chat`, { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
   if (!res.ok) {
     const body = await res.text();
@@ -3199,7 +3212,7 @@ export const sendIdeaMessage = async (params: SendIdeaMessageParams, data: IdeaM
   return { data: await res.json() };
 };
 
-export function useSendIdeaMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: SendIdeaMessageParams; data: IdeaMessageIn }> }) {
+export function useSendIdeaMessage(options?: { mutation?: UseMutationOptions<{ data: Record<string, unknown> }, ApiError, { params: SendIdeaMessageParams; data: IdeaMessageIn }> }) {
   return useMutation({ mutationFn: (vars) => sendIdeaMessage(vars.params, vars.data), ...options?.mutation });
 }
 
@@ -3304,7 +3317,7 @@ export function useAt_listAnomaliesSuspense<TData = { data: AtAnomalyOut[] }>(op
   return useSuspenseQuery({ queryKey: at_listAnomaliesKey(options?.params), queryFn: () => at_listAnomalies(options?.params), ...options?.query });
 }
 
-export const at_getAnomalyCounts = async (options?: RequestInit): Promise<{ data: unknown }> => {
+export const at_getAnomalyCounts = async (options?: RequestInit): Promise<{ data: Record<string, number> }> => {
   const res = await fetch("/api/projects/adtech-intelligence/anomalies/counts", { ...options, method: "GET" });
   if (!res.ok) {
     const body = await res.text();
@@ -3319,11 +3332,11 @@ export const at_getAnomalyCountsKey = () => {
   return ["/api/projects/adtech-intelligence/anomalies/counts"] as const;
 };
 
-export function useAt_getAnomalyCounts<TData = { data: unknown }>(options?: { query?: Omit<UseQueryOptions<{ data: unknown }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+export function useAt_getAnomalyCounts<TData = { data: Record<string, number> }>(options?: { query?: Omit<UseQueryOptions<{ data: Record<string, number> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useQuery({ queryKey: at_getAnomalyCountsKey(), queryFn: () => at_getAnomalyCounts(), ...options?.query });
 }
 
-export function useAt_getAnomalyCountsSuspense<TData = { data: unknown }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: unknown }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+export function useAt_getAnomalyCountsSuspense<TData = { data: Record<string, number> }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: Record<string, number> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: at_getAnomalyCountsKey(), queryFn: () => at_getAnomalyCounts(), ...options?.query });
 }
 
@@ -5340,7 +5353,7 @@ export function useBsh_getChatHistorySuspense<TData = { data: BshChatHistoryOut 
   return useSuspenseQuery({ queryKey: bsh_getChatHistoryKey(options.params), queryFn: () => bsh_getChatHistory(options.params), ...options?.query });
 }
 
-export const bsh_uploadTicketMedia = async (params: Bsh_uploadTicketMediaParams, data: FormData, options?: RequestInit): Promise<{ data: unknown }> => {
+export const bsh_uploadTicketMedia = async (params: Bsh_uploadTicketMediaParams, data: FormData, options?: RequestInit): Promise<{ data: Record<string, string> }> => {
   const res = await fetch(`/api/projects/bsh-home-connect/tickets/${params.ticket_id}/media`, { ...options, method: "POST", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers }, body: data });
   if (!res.ok) {
     const body = await res.text();
@@ -5351,7 +5364,7 @@ export const bsh_uploadTicketMedia = async (params: Bsh_uploadTicketMediaParams,
   return { data: await res.json() };
 };
 
-export function useBsh_uploadTicketMedia(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: Bsh_uploadTicketMediaParams; data: FormData }> }) {
+export function useBsh_uploadTicketMedia(options?: { mutation?: UseMutationOptions<{ data: Record<string, string> }, ApiError, { params: Bsh_uploadTicketMediaParams; data: FormData }> }) {
   return useMutation({ mutationFn: (vars) => bsh_uploadTicketMedia(vars.params, vars.data), ...options?.mutation });
 }
 
@@ -5393,7 +5406,7 @@ export function useBsh_addTicketNote(options?: { mutation?: UseMutationOptions<{
   return useMutation({ mutationFn: (vars) => bsh_addTicketNote(vars.params, vars.data), ...options?.mutation });
 }
 
-export const bsh_generateShippingLabel = async (params: Bsh_generateShippingLabelParams, options?: RequestInit): Promise<{ data: unknown }> => {
+export const bsh_generateShippingLabel = async (params: Bsh_generateShippingLabelParams, options?: RequestInit): Promise<{ data: Record<string, string> }> => {
   const res = await fetch(`/api/projects/bsh-home-connect/tickets/${params.ticket_id}/shipping-label`, { ...options, method: "POST", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
   if (!res.ok) {
     const body = await res.text();
@@ -5404,7 +5417,7 @@ export const bsh_generateShippingLabel = async (params: Bsh_generateShippingLabe
   return { data: await res.json() };
 };
 
-export function useBsh_generateShippingLabel(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: Bsh_generateShippingLabelParams }> }) {
+export function useBsh_generateShippingLabel(options?: { mutation?: UseMutationOptions<{ data: Record<string, string> }, ApiError, { params: Bsh_generateShippingLabelParams }> }) {
   return useMutation({ mutationFn: (vars) => bsh_generateShippingLabel(vars.params), ...options?.mutation });
 }
 
@@ -6944,7 +6957,7 @@ export function useVh_update_ticket(options?: { mutation?: UseMutationOptions<{ 
   return useMutation({ mutationFn: (vars) => vh_update_ticket(vars.params, vars.data), ...options?.mutation });
 }
 
-export const vh_upload_ticket_media = async (params: Vh_upload_ticket_mediaParams, data: FormData, options?: RequestInit): Promise<{ data: unknown }> => {
+export const vh_upload_ticket_media = async (params: Vh_upload_ticket_mediaParams, data: FormData, options?: RequestInit): Promise<{ data: Record<string, unknown> }> => {
   const res = await fetch(`/api/projects/vi-home-one/tickets/${params.ticket_id}/media`, { ...options, method: "POST", headers: { ...options?.headers }, body: data });
   if (!res.ok) {
     const body = await res.text();
@@ -6955,8 +6968,31 @@ export const vh_upload_ticket_media = async (params: Vh_upload_ticket_mediaParam
   return { data: await res.json() };
 };
 
-export function useVh_upload_ticket_media(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: Vh_upload_ticket_mediaParams; data: FormData }> }) {
+export function useVh_upload_ticket_media(options?: { mutation?: UseMutationOptions<{ data: Record<string, unknown> }, ApiError, { params: Vh_upload_ticket_mediaParams; data: FormData }> }) {
   return useMutation({ mutationFn: (vars) => vh_upload_ticket_media(vars.params, vars.data), ...options?.mutation });
+}
+
+export const yp_getDatabricksResources = async (options?: RequestInit): Promise<{ data: YardProDatabricksResourcesOut }> => {
+  const res = await fetch("/api/projects/yard-pro/databricks-resources", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_getDatabricksResourcesKey = () => {
+  return ["/api/projects/yard-pro/databricks-resources"] as const;
+};
+
+export function useYp_getDatabricksResources<TData = { data: YardProDatabricksResourcesOut }>(options?: { query?: Omit<UseQueryOptions<{ data: YardProDatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_getDatabricksResourcesKey(), queryFn: () => yp_getDatabricksResources(), ...options?.query });
+}
+
+export function useYp_getDatabricksResourcesSuspense<TData = { data: YardProDatabricksResourcesOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YardProDatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_getDatabricksResourcesKey(), queryFn: () => yp_getDatabricksResources(), ...options?.query });
 }
 
 export const getProject = async (params: GetProjectParams, options?: RequestInit): Promise<{ data: ProjectOut }> => {
