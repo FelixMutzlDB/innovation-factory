@@ -21,6 +21,10 @@
   --sidebar-accent-foreground: oklch(0.45 0.16 50);
   --sidebar-ring: oklch(0.25 0.10 268);
 
+  /* Chart palette (rooted in Ströer navy + orange):
+   *   1 = navy primary                2 = orange secondary
+   *   3 = mid blue analogue           4 = soft orange
+   *   5 = deep navy-blue                                              */
   --chart-1: oklch(0.25 0.10 268);
   --chart-2: oklch(0.66 0.18 50);
   --chart-3: oklch(0.50 0.14 240);
@@ -45,4 +49,11 @@
   --sidebar-accent: oklch(0.36 0.12 50);
   --sidebar-accent-foreground: oklch(0.96 0.05 50);
   --sidebar-ring: oklch(0.45 0.15 268);
+
+  /* Chart slots tuned for dark background — primary lifts so navy isn't lost. */
+  --chart-1: oklch(0.65 0.16 268);
+  --chart-2: oklch(0.72 0.18 50);
+  --chart-3: oklch(0.78 0.14 240);
+  --chart-4: oklch(0.85 0.12 50);
+  --chart-5: oklch(0.55 0.10 268);
 }
