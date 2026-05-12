@@ -1,6 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 9001;
+// Default to 9001 (the canonical apx dev port). Override with PW_PORT=NNNN
+// when running against a sibling worktree on a different port (apx allocates
+// 9000/9001/... based on first free port, so parallel checkouts collide).
+const PORT = Number(process.env.PW_PORT) || 9001;
 const BASE_URL = `http://localhost:${PORT}`;
 
 export default defineConfig({
