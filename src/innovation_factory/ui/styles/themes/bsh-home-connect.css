@@ -7,21 +7,21 @@
  */
 
 [data-project-theme="bsh-home-connect"] {
-  --primary: oklch(0.71 0.20 35);
+  --primary: oklch(0.66 0.22 42);
   --primary-foreground: oklch(0.99 0 0);
 
   --accent: oklch(0.95 0.04 35);
   --accent-foreground: oklch(0.45 0.18 35);
 
-  --ring: oklch(0.71 0.20 35);
+  --ring: oklch(0.66 0.22 42);
 
-  --sidebar-primary: oklch(0.71 0.20 35);
+  --sidebar-primary: oklch(0.66 0.22 42);
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: oklch(0.96 0.025 35);
   --sidebar-accent-foreground: oklch(0.45 0.18 35);
-  --sidebar-ring: oklch(0.71 0.20 35);
+  --sidebar-ring: oklch(0.66 0.22 42);
 
-  --chart-1: oklch(0.71 0.20 35);
+  --chart-1: oklch(0.66 0.22 42);
   --chart-2: oklch(0.40 0 0);
   --chart-3: oklch(0.82 0.18 45);
   --chart-4: oklch(0.55 0.04 35);
