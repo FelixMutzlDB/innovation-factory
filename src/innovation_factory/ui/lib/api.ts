@@ -2484,6 +2484,15 @@ export interface YpConsumableOut {
   yard_id: number;
 }
 
+export interface YpDeleteYardOut {
+  consent_revocations: number;
+  deleted: boolean;
+  dry_run: boolean;
+  photos_purged: number;
+  tables_purged: Record<string, number>;
+  yard_id: number;
+}
+
 export interface YpDiagnosePostOut {
   accepted_label: string | null;
   advisory?: boolean;
@@ -3363,6 +3372,12 @@ export interface Yp_updateToolParams {
 
 export interface Yp_deleteToolParams {
   tool_id: number;
+}
+
+export interface Yp_deleteYardParams {
+  yard_id: number;
+  dry_run?: boolean;
+  "X-Forwarded-Access-Token"?: string | null;
 }
 
 export interface Yp_getCockpitParams {
@@ -7768,6 +7783,25 @@ export function useYp_getMyYard<TData = { data: YpYardOut }>(options?: { query?:
 
 export function useYp_getMyYardSuspense<TData = { data: YpYardOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpYardOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: yp_getMyYardKey(), queryFn: () => yp_getMyYard(), ...options?.query });
+}
+
+export const yp_deleteYard = async (params: Yp_deleteYardParams, options?: RequestInit): Promise<{ data: YpDeleteYardOut }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.dry_run != null) searchParams.set("dry_run", String(params?.dry_run));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/yard-pro/yards/${params.yard_id}?${queryString}` : `/api/projects/yard-pro/yards/${params.yard_id}`;
+  const res = await fetch(url, { ...options, method: "DELETE", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_deleteYard(options?: { mutation?: UseMutationOptions<{ data: YpDeleteYardOut }, ApiError, { params: Yp_deleteYardParams }> }) {
+  return useMutation({ mutationFn: (vars) => yp_deleteYard(vars.params), ...options?.mutation });
 }
 
 export const yp_getCockpit = async (params: Yp_getCockpitParams, options?: RequestInit): Promise<{ data: YpCockpitOut }> => {

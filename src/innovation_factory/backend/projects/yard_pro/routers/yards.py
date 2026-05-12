@@ -13,10 +13,13 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Request
+from databricks.sdk import WorkspaceClient
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
 from sqlmodel import select
 
-from ....dependencies import SessionDep
+from ....dependencies import SessionDep, get_obo_ws
+from ..services.gdpr_service import delete_yard_cascade
 from ..models import (
     YardProActionType,
     YardProCalendarStatus,
@@ -39,6 +42,34 @@ from ..models import (
 )
 
 router = APIRouter(tags=["yard-pro"])
+
+
+# ---------------------------------------------------------------------------
+# GDPR Art. 17 response shape — see services/gdpr_service.py for the cascade.
+# ---------------------------------------------------------------------------
+
+
+class YpDeleteYardOut(BaseModel):
+    """Response payload for ``DELETE /yards/{yard_id}``.
+
+    - ``deleted``: ``true`` on a real delete; ``false`` on a dry-run.
+    - ``tables_purged``: per-table row counts that were (or would be)
+      removed by the cascade — derived from ``SQLModel.metadata`` so
+      future ``yp_*`` tables are auto-covered (RT-025 mitigation).
+    - ``photos_purged``: UC Volume photo files removed under
+      ``<PHOTOS_VOLUME_PATH>/<yard_id>/``. Zero when the volume path is
+      not configured (local dev).
+    - ``consent_revocations``: ``yp_dealer_relationships`` rows that were
+      transitioned to ``consent_state=revoked`` before deletion.
+    - ``dry_run``: echoes the request flag.
+    """
+
+    yard_id: int
+    deleted: bool
+    tables_purged: dict[str, int]
+    photos_purged: int
+    consent_revocations: int
+    dry_run: bool
 
 
 # ---------------------------------------------------------------------------
@@ -300,6 +331,60 @@ def get_cockpit(yard_id: int, request: Request, db: SessionDep) -> YpCockpitOut:
             )
             for d in recent_diagnoses
         ],
+    )
+
+
+@router.delete(
+    "/yards/{yard_id}",
+    response_model=YpDeleteYardOut,
+    operation_id="yp_deleteYard",
+)
+def delete_yard(
+    yard_id: int,
+    request: Request,
+    db: SessionDep,
+    ws: WorkspaceClient = Depends(get_obo_ws),
+    dry_run: bool = False,
+) -> YpDeleteYardOut:
+    """GDPR Art. 17 (right to be forgotten) — delete one yard's data.
+
+    Cascade detail and out-of-scope boundary live in
+    :func:`services.gdpr_service.delete_yard_cascade`. Summary:
+
+    - Lakebase: every ``yp_*`` row referencing this yard (enumerated
+      from ``SQLModel.metadata.tables`` — RT-025 mitigation).
+    - UC Volume: ``<PHOTOS_VOLUME_PATH>/<yard_id>/`` prefix (no-op when
+      ``PHOTOS_VOLUME_PATH`` is unset in local dev).
+    - Consent: ``yp_dealer_relationships`` rows are tombstoned to
+      ``consent_state=revoked`` (with ``revoked_at``) and flushed
+      BEFORE the row is deleted, so the transition is visible to any
+      downstream Lakehouse Sync.
+    - Out of scope here: Delta Bronze/Silver/Gold propagation — handled
+      by Lakehouse Sync within the sync interval.
+
+    RLS: only the yard's owner can delete it. Cross-tenant attempts
+    return 404 (never 403 — leak as little as possible about other
+    households' yard IDs; same convention as
+    :func:`assert_yard_owned_by_caller`).
+
+    Idempotency: a second DELETE on the same yard returns 404 because
+    the row no longer exists.
+
+    ``?dry_run=true`` returns the same response shape with the row
+    counts that *would* be deleted, plus ``dry_run=true`` and
+    ``deleted=false``. No DB writes occur and no volume files are
+    removed.
+    """
+    yard = assert_yard_owned_by_caller(request, db, yard_id)
+    assert yard.id is not None  # narrowed by the helper
+    result = delete_yard_cascade(db, ws, yard.id, dry_run=dry_run)
+    return YpDeleteYardOut(
+        yard_id=result.yard_id,
+        deleted=not result.dry_run,
+        tables_purged=result.tables_purged,
+        photos_purged=result.photos_purged,
+        consent_revocations=result.consent_revocations,
+        dry_run=result.dry_run,
     )
 
 
