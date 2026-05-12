@@ -31,6 +31,20 @@ resources:
       name: ka-d29e8002-endpoint
       permission: CAN_QUERY
 
+  # YARD_PRO resources. Endpoint names below are placeholders the operator
+  # replaces with the real values after running scripts/yard_pro/deploy_ka.py
+  # (KA) and deploy_vision.py (Vision). See scripts/yard_pro/RUNBOOK.md.
+  # If the endpoints do not exist yet, leave the corresponding env vars
+  # empty (lessons §18 — the UI renders a 'not configured' card, never 500s).
+  - name: yard-pro-coach-ka
+    serving_endpoint:
+      name: yard-pro-coach-ka
+      permission: CAN_QUERY
+  - name: yard-pro-vision
+    serving_endpoint:
+      name: yard-pro-vision-v1
+      permission: CAN_QUERY
+
 env:
   - name: PGHOST
     value: ep-raspy-thunder-d7egfk1h.database.eu-central-1.cloud.databricks.com
@@ -91,3 +105,22 @@ env:
   - name: AECO_MAS_ENDPOINT_NAME
     value: mas-7a265c24-endpoint
   # AECO_AUTOGEN_END
+
+  # YARD_PRO_AUTOGEN_BEGIN: resource-ids
+  # These are MANUALLY set after running scripts/yard_pro/deploy_ka.py and
+  # scripts/yard_pro/deploy_vision.py. Leave empty until the endpoints exist —
+  # the cockpit renders a 'not configured' state, never 500 (lessons §18).
+  # See scripts/yard_pro/RUNBOOK.md for the full deploy flow.
+  - name: YARD_PRO_UC_SCHEMA
+    value: yard_pro
+  - name: YARD_PRO_COACH_KA_ENDPOINT
+    value: yard-pro-coach-ka
+  - name: YARD_PRO_COACH_KA_TILE_ID
+    value: ""
+  - name: YARD_PRO_VISION_ENDPOINT
+    value: yard-pro-vision-v1
+  - name: YARD_PRO_DEALER_GENIE_SPACE_ID
+    value: ""
+  - name: YARD_PRO_PHOTOS_VOLUME_PATH
+    value: "/Volumes/felix_demo_catalog/yard_pro/photos"
+  # YARD_PRO_AUTOGEN_END

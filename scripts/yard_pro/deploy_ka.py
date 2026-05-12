@@ -1,44 +1,47 @@
-"""Deploy the yard-pro Knowledge Assistant + Vector Search index.
+"""Deploy the yard-pro Knowledge Assistant.
 
-Creates:
+Recommended (production) path — what the coach actually hits:
 
-  * UC Volume ``{catalog}.yard_pro.ka_docs`` (if missing) to hold the
-    chunked KA source documents.
-  * Vector Search endpoint ``yard_pro_gardening_kb`` (storage-optimized
-    per plan §5).
-  * Vector Search index of the same name, sourcing the chunks Delta
-    table.
-  * Knowledge Assistant endpoint ``yard-pro-coach-ka`` referencing the
-    index, with the curated ``ka_docs/`` corpus as its knowledge source.
+  * UC Schema ``{catalog}.yard_pro`` (created if missing)
+  * UC Volume ``{catalog}.yard_pro.ka_docs`` (created if missing)
+  * Upload of ``ka_docs/**/*.md`` (skipping INDEX.md) into the volume,
+    with subdirs flattened (``plant_care/apple.md`` →
+    ``plant_care__apple.md``) so the KA's ``files`` source treats each
+    as a separate document.
+  * Knowledge Assistant via ``POST /api/2.1/knowledge-assistants``
+    (lessons §11; falls back to ``/api/2.0/agent-bricks/...`` on older
+    workspaces).
+  * ``files`` knowledge source attached to the volume.
+  * ``knowledge-sources:sync`` triggered.
 
-The script reads ``ka_docs/INDEX.md`` from
-``src/innovation_factory/backend/projects/yard_pro/ka_docs/`` and chunks
-each listed Markdown file (one chunk per ``##`` section, capped at
-~1200 chars). Each chunk carries:
+Pass ``--skip-vs`` to use only the recommended path. The default still
+builds an orphan Vector Search index over a chunks Delta table for
+ad-hoc retrieval-quality probing — preserved for backwards compatibility
+with the Stream B4 design but NOT what production queries hit (the KA
+owns embedding + indexing internally; lessons §11 confirms this is the
+proven pattern from AECO + AdTech).
 
-  * ``chunk_id`` — sha256(uri + section).hex[:16]
-  * ``source_path`` — relative path inside ``ka_docs/`` (e.g.
-    ``plant_care/apple.md``)
-  * ``doc_type`` — from the YAML frontmatter (plant_care | almanac |
-    consumables | playbook)
-  * ``content`` — the chunk text
-  * ``content_vector`` — populated by the Vector Search managed-embedding
-    pipeline
+Dry-run mode (``--dry-run``) parses ``ka_docs/INDEX.md``, chunks every
+listed document, and prints a histogram by ``doc_type`` — useful for the
+plan §7 risk-callout retrieval-readiness gate before standing up the
+live endpoint.
 
-The yard-pro coach service (``services/coach_service.py``) queries the
-Vector Search index directly for chunks, so the KA endpoint's role here
-is primarily to give Databricks a managed surface for the corpus — the
-index itself is what powers retrieval.
+CLI (lessons §28 catalog-parameterized):
 
-CLI (lessons §28 catalog-parameterization):
-
+  # Recommended: KA-only deploy
   python -m scripts.yard_pro.deploy_ka \\
       --catalog felix_demo_catalog \\
-      --workspace-url https://fevm-felix-demo.cloud.databricks.com
+      --profile fevm-felix-demo \\
+      --skip-vs
 
-Apx MCP skills used here when available: ``databricks-vector-search``,
-``databricks-agent-bricks``. The script is designed to also run with
-only the ``databricks-sdk`` + ``requests`` Python deps.
+  # Full (legacy) path including orphan VS index:
+  python -m scripts.yard_pro.deploy_ka \\
+      --catalog felix_demo_catalog \\
+      --profile fevm-felix-demo
+
+After success, paste the printed ``ka-<tile>-endpoint`` into ``app.yml``
+under ``YARD_PRO_COACH_KA_ENDPOINT`` (or re-run
+``scripts/sync_env_from_state.py`` if that wires up).
 """
 from __future__ import annotations
 
@@ -47,6 +50,7 @@ import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -382,14 +386,64 @@ def _ensure_vs_index(ws, *, catalog: str, schema: str, source_table: str,
     print(f"  VS index '{full_index}' creation initiated")
 
 
+def _upload_ka_docs_to_volume(*, profile: str | None, catalog: str,
+                              schema: str, volume: str) -> int:
+    """Upload every ``ka_docs/**/*.md`` (skipping INDEX.md) into the UC Volume
+    using the ``databricks fs cp`` CLI — same approach as
+    ``deploy_agents_fevm.py`` phase 2. Returns the number of files uploaded.
+
+    Subdirectory paths (``plant_care/apple.md``) are flattened to
+    ``plant_care__apple.md`` because the KA's ``files`` source treats one
+    file as one document and doesn't recurse on every workspace.
+    """
+    if not KA_DOCS_ROOT.exists():
+        raise FileNotFoundError(f"ka_docs root missing: {KA_DOCS_ROOT}")
+    uploaded = 0
+    for md_path in sorted(KA_DOCS_ROOT.rglob("*.md")):
+        rel = md_path.relative_to(KA_DOCS_ROOT).as_posix()
+        if rel == "INDEX.md":
+            continue
+        flat = rel.replace("/", "__").replace("\\", "__")
+        remote = f"dbfs:/Volumes/{catalog}/{schema}/{volume}/{flat}"
+        cmd = ["databricks", "fs", "cp", str(md_path), remote, "--overwrite"]
+        if profile:
+            cmd += ["--profile", profile]
+        print(f"  Uploading {rel} -> {flat}")
+        try:
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        except FileNotFoundError:
+            print("    FAIL: 'databricks' CLI not on PATH — install or set $PATH")
+            return uploaded
+        if res.returncode != 0:
+            print(f"    FAIL: {res.stderr[:400] or res.stdout[:400]}")
+            continue
+        uploaded += 1
+    return uploaded
+
+
 def _ensure_ka_endpoint(ws, *, ka_endpoint_name: str,
-                        index_full_name: str) -> str | None:
-    """Create or upsert the Knowledge Assistant referencing the VS index.
+                        index_full_name: str,
+                        volume_path: str | None = None) -> str | None:
+    """Create or upsert the Knowledge Assistant.
 
     Returns the KA endpoint name on success (matches
     ``YARD_PRO_COACH_KA_ENDPOINT`` env var consumed by the coach
     service), or None if the workspace doesn't support the
     Agent-Bricks KA REST API.
+
+    BUG FIX (2026-05-12): the create-KA call alone produces an empty KA
+    with no knowledge source — queries return generic answers. After
+    create we now attach a ``files`` knowledge source pointing at the UC
+    Volume that holds the uploaded ``ka_docs/`` (when ``volume_path`` is
+    provided) and trigger a sync. This mirrors the proven AECO /
+    AdTech pattern in ``scripts/deploy_agents_fevm.py`` phase 6.
+
+    NOTE: this script's separate VS-index path (the chunks Delta table +
+    delta-sync index built above) is orphan once the KA is wired to the
+    Volume — the KA owns embedding + indexing internally. The VS index
+    is preserved as a side artifact for ad-hoc retrieval-quality probing
+    against the same corpus, but it is NOT what production queries hit.
+    See ``scripts/yard_pro/RUNBOOK.md`` for the recommended flow.
     """
     host = ws.config.host.rstrip("/")
     headers = {**ws.config._header_factory(), "Content-Type": "application/json"}
@@ -419,12 +473,46 @@ def _ensure_ka_endpoint(ws, *, ka_endpoint_name: str,
               f"creation in the workspace UI.")
         return None
     data = resp.json()
+    tile_id = (
+        data.get("id")
+        or (data.get("name", "").split("/")[-1] if data.get("name") else None)
+    )
     endpoint_name = (
         data.get("endpoint_name")
         or data.get("knowledge_assistant", {}).get("endpoint_name")
-        or ka_endpoint_name
+        or (f"ka-{tile_id}-endpoint" if tile_id else ka_endpoint_name)
     )
-    print(f"  KA endpoint created: {endpoint_name}")
+    print(f"  KA endpoint created: {endpoint_name} (tile_id={tile_id})")
+
+    # Bug fix: attach a knowledge source so the KA is non-empty. Without
+    # this, queries return generic answers regardless of corpus quality.
+    if tile_id and volume_path:
+        src_body = {
+            "display_name": "Yard-Pro Gardening Corpus",
+            "description": "yard-pro plant_care + almanac + consumables + playbooks.",
+            "source_type": "files",
+            "files": {"path": volume_path},
+        }
+        src = requests.post(
+            f"{host}/api/2.1/knowledge-assistants/{tile_id}/knowledge-sources",
+            headers=headers, json=src_body,
+        )
+        if src.status_code in (200, 201):
+            print(f"  Knowledge source attached: {src.json().get('id', '?')}")
+            sync = requests.post(
+                f"{host}/api/2.1/knowledge-assistants/{tile_id}/knowledge-sources:sync",
+                headers=headers, json={},
+            )
+            print(f"  Sync triggered: HTTP {sync.status_code}")
+        else:
+            print(f"  Knowledge source attach FAILED (HTTP {src.status_code}): "
+                  f"{src.text[:300]} — KA exists but will return generic answers "
+                  f"until a source is attached via UI.")
+    elif tile_id and not volume_path:
+        print(f"  No volume_path passed — KA is empty. Upload ka_docs/ to "
+              f"a UC Volume and attach via the UI, or re-run with "
+              f"--upload-ka-docs.")
+
     return endpoint_name
 
 
@@ -456,6 +544,17 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dry-run", action="store_true",
         help="Just chunk locally and print a summary; no Databricks calls.",
+    )
+    parser.add_argument(
+        "--skip-upload", action="store_true",
+        help="Skip uploading ka_docs/ to the UC Volume (use when re-running "
+             "and files haven't changed — the sync below picks up the existing volume).",
+    )
+    parser.add_argument(
+        "--skip-vs", action="store_true",
+        help="Skip the orphan Vector Search index path (chunks Delta + VS endpoint + "
+             "VS index). The KA owns its own VS internally; this flag stops the "
+             "script from building a parallel index nothing reads. Recommended.",
     )
     return parser.parse_args()
 
@@ -492,6 +591,8 @@ def main() -> None:
     if not warehouse_id:
         raise RuntimeError("--warehouse-id or WAREHOUSE_ID env required")
 
+    volume_path = f"/Volumes/{args.catalog}/{args.schema}/{args.volume}"
+
     print("\n== Ensuring UC schema + volume ==")
     _ensure_schema_and_volume(
         ws,
@@ -501,52 +602,69 @@ def main() -> None:
         warehouse_id=warehouse_id,
     )
 
-    print("\n== Ensuring KB chunks Delta table ==")
-    _ensure_chunks_table(
-        ws,
-        catalog=args.catalog,
-        schema=args.schema,
-        table=args.chunks_table,
-        warehouse_id=warehouse_id,
-    )
+    if args.skip_upload:
+        print("\n== Skipping ka_docs upload (--skip-upload) ==")
+    else:
+        print(f"\n== Uploading ka_docs/ -> {volume_path} ==")
+        n = _upload_ka_docs_to_volume(
+            profile=args.profile,
+            catalog=args.catalog,
+            schema=args.schema,
+            volume=args.volume,
+        )
+        print(f"  Uploaded {n} files")
 
-    print("\n== Upserting chunks ==")
-    _upsert_chunks(
-        ws,
-        catalog=args.catalog,
-        schema=args.schema,
-        table=args.chunks_table,
-        chunks=chunks,
-        warehouse_id=warehouse_id,
-    )
+    if args.skip_vs:
+        print("\n== Skipping Vector Search index path (--skip-vs; recommended) ==")
+    else:
+        print("\n== Ensuring KB chunks Delta table ==")
+        _ensure_chunks_table(
+            ws,
+            catalog=args.catalog,
+            schema=args.schema,
+            table=args.chunks_table,
+            warehouse_id=warehouse_id,
+        )
 
-    print("\n== Ensuring Vector Search endpoint ==")
-    _ensure_vs_endpoint(ws, name=args.vs_endpoint)
+        print("\n== Upserting chunks ==")
+        _upsert_chunks(
+            ws,
+            catalog=args.catalog,
+            schema=args.schema,
+            table=args.chunks_table,
+            chunks=chunks,
+            warehouse_id=warehouse_id,
+        )
 
-    print("\n== Ensuring Vector Search index ==")
-    _ensure_vs_index(
-        ws,
-        catalog=args.catalog,
-        schema=args.schema,
-        source_table=args.chunks_table,
-        index_name=args.index_name,
-        endpoint=args.vs_endpoint,
-        embedding_model=args.embedding_model,
-    )
+        print("\n== Ensuring Vector Search endpoint ==")
+        _ensure_vs_endpoint(ws, name=args.vs_endpoint)
+
+        print("\n== Ensuring Vector Search index ==")
+        _ensure_vs_index(
+            ws,
+            catalog=args.catalog,
+            schema=args.schema,
+            source_table=args.chunks_table,
+            index_name=args.index_name,
+            endpoint=args.vs_endpoint,
+            embedding_model=args.embedding_model,
+        )
 
     print("\n== Ensuring Knowledge Assistant endpoint ==")
     ka_name = _ensure_ka_endpoint(
         ws,
         ka_endpoint_name=args.ka_endpoint,
         index_full_name=f"{args.catalog}.{args.schema}.{args.index_name}",
+        volume_path=volume_path,
     )
 
     print("\n== DONE ==")
     print(f"  Catalog:     {args.catalog}")
-    print(f"  Volume:      /Volumes/{args.catalog}/{args.schema}/{args.volume}")
-    print(f"  Chunks tbl:  {args.catalog}.{args.schema}.{args.chunks_table}")
-    print(f"  VS index:    {args.catalog}.{args.schema}.{args.index_name}")
-    print(f"  VS endpoint: {args.vs_endpoint}")
+    print(f"  Volume:      {volume_path}")
+    if not args.skip_vs:
+        print(f"  Chunks tbl:  {args.catalog}.{args.schema}.{args.chunks_table}")
+        print(f"  VS index:    {args.catalog}.{args.schema}.{args.index_name} (orphan; KA does its own VS)")
+        print(f"  VS endpoint: {args.vs_endpoint}")
     if ka_name:
         print(f"  KA endpoint: {ka_name}")
         print("\n  Set in app.yml / .env:")

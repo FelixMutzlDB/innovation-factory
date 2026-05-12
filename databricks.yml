@@ -76,6 +76,18 @@ resources:
           serving_endpoint:
             name: ka-23429ec7-endpoint
             permission: CAN_QUERY
+        # YARD_PRO resources. Endpoint names below are placeholders;
+        # operator replaces with real values after running
+        # scripts/yard_pro/deploy_ka.py and deploy_vision.py.
+        # See scripts/yard_pro/RUNBOOK.md.
+        - name: yard-pro-coach-ka
+          serving_endpoint:
+            name: yard-pro-coach-ka
+            permission: CAN_QUERY
+        - name: yard-pro-vision
+          serving_endpoint:
+            name: yard-pro-vision-v1
+            permission: CAN_QUERY
       config:
         command: ["uvicorn", "innovation_factory.backend.app:app", "--workers", "2"]
         env:
@@ -137,6 +149,24 @@ resources:
           - name: AECO_MAS_ENDPOINT_NAME
             value: mas-7a265c24-endpoint
           # AECO_AUTOGEN_END
+
+          # YARD_PRO_AUTOGEN_BEGIN: resource-ids
+          # Manually set after deploy_ka.py + deploy_vision.py succeed.
+          # Leave empty until then — cockpit renders 'not configured'
+          # (lessons §18). See scripts/yard_pro/RUNBOOK.md.
+          - name: YARD_PRO_UC_SCHEMA
+            value: yard_pro
+          - name: YARD_PRO_COACH_KA_ENDPOINT
+            value: yard-pro-coach-ka
+          - name: YARD_PRO_COACH_KA_TILE_ID
+            value: ""
+          - name: YARD_PRO_VISION_ENDPOINT
+            value: yard-pro-vision-v1
+          - name: YARD_PRO_DEALER_GENIE_SPACE_ID
+            value: ""
+          - name: YARD_PRO_PHOTOS_VOLUME_PATH
+            value: "/Volumes/felix_demo_catalog/yard_pro/photos"
+          # YARD_PRO_AUTOGEN_END
 
 targets:
   dev:
