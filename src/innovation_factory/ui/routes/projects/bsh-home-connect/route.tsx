@@ -52,7 +52,7 @@ function Layout() {
 
   return (
     <ProjectThemeScope slug="bsh-home-connect">
-      <SidebarLayout>
+      <SidebarLayout projectSlug="bsh-home-connect">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>

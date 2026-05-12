@@ -21,6 +21,10 @@
   --sidebar-accent-foreground: oklch(0.45 0.08 80);
   --sidebar-ring: oklch(0.23 0 0);
 
+  /* Chart palette (rooted in monochrome near-black + champagne accent):
+   *   1 = near-black primary          2 = champagne secondary
+   *   3 = deep bronze                 4 = light gray
+   *   5 = dark gray                                                   */
   --chart-1: oklch(0.23 0 0);
   --chart-2: oklch(0.62 0.08 80);
   --chart-3: oklch(0.50 0.05 80);
@@ -52,4 +56,11 @@
   --sidebar-accent: oklch(0.32 0.06 80);
   --sidebar-accent-foreground: oklch(0.96 0.04 80);
   --sidebar-ring: oklch(0.95 0 0);
+
+  /* Chart slots tuned for dark background — primary inverts to near-white. */
+  --chart-1: oklch(0.95 0 0);
+  --chart-2: oklch(0.70 0.08 80);
+  --chart-3: oklch(0.55 0.06 80);
+  --chart-4: oklch(0.45 0 0);
+  --chart-5: oklch(0.75 0 0);
 }

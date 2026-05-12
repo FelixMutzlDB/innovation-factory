@@ -21,6 +21,10 @@
   --sidebar-accent-foreground: oklch(0.42 0.14 232);
   --sidebar-ring: oklch(0.20 0 0);
 
+  /* Chart palette (rooted in Nemetschek charcoal + tech-blue):
+   *   1 = charcoal primary            2 = tech blue secondary
+   *   3 = mid blue analogue           4 = blue-gray neutral
+   *   5 = pale blue tint                                              */
   --chart-1: oklch(0.20 0 0);
   --chart-2: oklch(0.70 0.16 232);
   --chart-3: oklch(0.50 0.10 232);
@@ -45,4 +49,12 @@
   --sidebar-accent: oklch(0.38 0.12 232);
   --sidebar-accent-foreground: oklch(0.96 0.04 232);
   --sidebar-ring: oklch(0.95 0 0);
+
+  /* Chart slots tuned for dark background — primary inverts to near-white,
+   * accent blue stays load-bearing for visual continuity. */
+  --chart-1: oklch(0.95 0 0);
+  --chart-2: oklch(0.75 0.16 232);
+  --chart-3: oklch(0.60 0.12 232);
+  --chart-4: oklch(0.55 0.04 232);
+  --chart-5: oklch(0.82 0.10 232);
 }

@@ -22,6 +22,10 @@
   --sidebar-accent-foreground: oklch(0.45 0.18 35);
   --sidebar-ring: oklch(0.66 0.21 35);
 
+  /* Chart palette (5 slots, rooted in Vitorange + warm gray):
+   *   1 = primary (Vitorange)         2 = secondary (cool gray)
+   *   3 = analogue amber              4 = deep neutral
+   *   5 = blush highlight                                            */
   --chart-1: oklch(0.66 0.21 35);
   --chart-2: oklch(0.52 0.025 200);
   --chart-3: oklch(0.78 0.15 50);
@@ -46,4 +50,11 @@
   --sidebar-accent: oklch(0.28 0.08 35);
   --sidebar-accent-foreground: oklch(0.95 0.05 35);
   --sidebar-ring: oklch(0.72 0.22 35);
+
+  /* Chart slots tuned for dark background — see light block for slot roles. */
+  --chart-1: oklch(0.72 0.22 35);
+  --chart-2: oklch(0.65 0.04 200);
+  --chart-3: oklch(0.80 0.16 55);
+  --chart-4: oklch(0.55 0.05 200);
+  --chart-5: oklch(0.82 0.12 25);
 }
