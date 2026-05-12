@@ -469,12 +469,78 @@ class YpDiagnosisOut(BaseModel):
     advisory: bool = True
 
 
+class YpToolReadinessOut(BaseModel):
+    """Read-side projection of ``YpToolReadiness`` (UC4)."""
+
+    tool_id: int
+    battery_pct: Optional[float] = None
+    blade_hours_since_sharpening: Optional[float] = None
+    last_session_at: Optional[datetime] = None
+    last_event_type: Optional[YardProTelemetryEventType] = None
+    last_event_at: Optional[datetime] = None
+    payload: dict = {}
+    updated_at: datetime
+
+
+class YpNudgeOut(BaseModel):
+    """A tool-readiness nudge derived from ``YpToolReadiness`` (UC4).
+
+    Nudges are **notifications, not auto-actions** (plan §2 Art. 22
+    invariant). The frontend renders them in the cockpit; the user
+    optionally promotes a nudge to a confirmed action via the
+    ``<MarkAsDone>`` affordance — which writes ``yp_action_log`` with
+    ``source='telemetry_nudge' + human_confirmed_at``. The nudge itself
+    never writes the action_log row directly.
+    """
+
+    nudge_id: str
+    tool_id: int
+    title: str
+    body: str
+    severity: str  # "low" | "medium" | "high"
+    suggested_action_type: Optional[YardProActionType] = None
+    event_type: Optional[YardProTelemetryEventType] = None
+    created_at: datetime
+    dismissed_at: Optional[datetime] = None
+    # EU AI Act Art. 50: nudges are advisory like coach + diagnose.
+    advisory: bool = True
+
+
+class YpNudgeDismissal(SQLModel, table=True):
+    """Append-only soft-dismissal record for nudges (UC4).
+
+    The nudge itself is derived from ``YpToolReadiness`` (a snapshot),
+    not stored as a row. Dismissals are persisted here so the cockpit
+    can hide a dismissed nudge until the underlying readiness state
+    changes.
+    """
+
+    __tablename__ = "yp_nudge_dismissals"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    yard_id: int = Field(foreign_key="yp_yards.id", index=True)
+    nudge_id: str = Field(index=True)
+    dismissed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class YpSynthesisResult(BaseModel):
+    """Return value from the telemetry synthesizer."""
+
+    yard_id: int
+    tools_updated: int
+    events_emitted: dict[str, int]  # event_type → count
+    nudges_active: int
+
+
 class YpCockpitOut(BaseModel):
     """The UC1 anchor screen payload. One round-trip → first paint <1 s.
 
     Fields are intentionally flat — the cockpit's child cards (calendar /
     inventory / diagnose-result) each take a slice; the frontend does not
     fan out N fetches on cold load.
+
+    UC4 additions (``tool_readiness``, ``nudges``) default to empty lists
+    so existing clients keep working — additive only.
     """
 
     yard: YpYardOut
@@ -485,3 +551,5 @@ class YpCockpitOut(BaseModel):
     overdue_calendar: list[YpCalendarEntryOut]
     recent_actions: list[YpActionLogOut]
     recent_diagnoses: list[YpDiagnosisOut]
+    tool_readiness: list[YpToolReadinessOut] = []
+    nudges: list[YpNudgeOut] = []

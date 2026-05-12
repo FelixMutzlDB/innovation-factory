@@ -35,6 +35,12 @@ from .routers import coach, diagnose
 router.include_router(coach.router)
 router.include_router(diagnose.router)
 
+# UC4 (P1) — telemetry synthesizer + nudges surface. Notifications-only;
+# never writes into yp_action_log (Art. 22 invariant).
+from .routers import nudges
+
+router.include_router(nudges.router)
+
 
 class YardProDatabricksResourcesOut(BaseModel):
     workspace_url: str

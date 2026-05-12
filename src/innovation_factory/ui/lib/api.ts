@@ -2379,6 +2379,16 @@ export const YardProDiagnosisStatus = {
 
 export type YardProDiagnosisStatus = (typeof YardProDiagnosisStatus)[keyof typeof YardProDiagnosisStatus];
 
+export const YardProTelemetryEventType = {
+  battery_low: "battery_low",
+  maintenance_due: "maintenance_due",
+  stuck: "stuck",
+  session_started: "session_started",
+  session_ended: "session_ended",
+} as const;
+
+export type YardProTelemetryEventType = (typeof YardProTelemetryEventType)[keyof typeof YardProTelemetryEventType];
+
 export const YardProToolKind = {
   trimmer: "trimmer",
   hedge_cutter: "hedge_cutter",
@@ -2457,10 +2467,12 @@ export interface YpCoachSessionOut {
 
 export interface YpCockpitOut {
   consumables: YpConsumableOut[];
+  nudges?: YpNudgeOut[];
   overdue_calendar: YpCalendarEntryOut[];
   plants: YpPlantOut[];
   recent_actions: YpActionLogOut[];
   recent_diagnoses: YpDiagnosisOut[];
+  tool_readiness?: YpToolReadinessOut[];
   tools: YpToolOut[];
   upcoming_calendar: YpCalendarEntryOut[];
   yard: YpYardOut;
@@ -2524,6 +2536,19 @@ export interface YpDiagnosisOut {
   yard_id: number;
 }
 
+export interface YpNudgeOut {
+  advisory?: boolean;
+  body: string;
+  created_at: string;
+  dismissed_at?: string | null;
+  event_type?: YardProTelemetryEventType | null;
+  nudge_id: string;
+  severity: string;
+  suggested_action_type?: YardProActionType | null;
+  title: string;
+  tool_id: number;
+}
+
 export interface YpPlantCreate {
   notes?: string;
   planted_at?: string | null;
@@ -2537,6 +2562,13 @@ export interface YpPlantOut {
   planted_at: string | null;
   species: string;
   variety: string;
+  yard_id: number;
+}
+
+export interface YpSynthesisResult {
+  events_emitted: Record<string, number>;
+  nudges_active: number;
+  tools_updated: number;
   yard_id: number;
 }
 
@@ -2556,6 +2588,17 @@ export interface YpToolOut {
   last_serviced_at: string | null;
   model_year: number | null;
   yard_id: number;
+}
+
+export interface YpToolReadinessOut {
+  battery_pct?: number | null;
+  blade_hours_since_sharpening?: number | null;
+  last_event_at?: string | null;
+  last_event_type?: YardProTelemetryEventType | null;
+  last_session_at?: string | null;
+  payload?: Record<string, unknown>;
+  tool_id: number;
+  updated_at: string;
 }
 
 export interface YpYardOut {
@@ -3356,6 +3399,10 @@ export interface Yp_updateConsumableParams {
 
 export interface Yp_deleteConsumableParams {
   consumable_id: number;
+}
+
+export interface Yp_dismissNudgeParams {
+  nudge_id: string;
 }
 
 export interface Yp_updatePlantParams {
@@ -7624,6 +7671,59 @@ export const yp_deleteConsumable = async (params: Yp_deleteConsumableParams, opt
 
 export function useYp_deleteConsumable(options?: { mutation?: UseMutationOptions<{ data: Record<string, boolean> }, ApiError, { params: Yp_deleteConsumableParams }> }) {
   return useMutation({ mutationFn: (vars) => yp_deleteConsumable(vars.params), ...options?.mutation });
+}
+
+export const yp_listNudges = async (options?: RequestInit): Promise<{ data: YpNudgeOut[] }> => {
+  const res = await fetch("/api/projects/yard-pro/nudges", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listNudgesKey = () => {
+  return ["/api/projects/yard-pro/nudges"] as const;
+};
+
+export function useYp_listNudges<TData = { data: YpNudgeOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: YpNudgeOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listNudgesKey(), queryFn: () => yp_listNudges(), ...options?.query });
+}
+
+export function useYp_listNudgesSuspense<TData = { data: YpNudgeOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpNudgeOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listNudgesKey(), queryFn: () => yp_listNudges(), ...options?.query });
+}
+
+export const yp_synthesizeTelemetry = async (options?: RequestInit): Promise<{ data: YpSynthesisResult }> => {
+  const res = await fetch("/api/projects/yard-pro/nudges/synthesize", { ...options, method: "POST" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_synthesizeTelemetry(options?: { mutation?: UseMutationOptions<{ data: YpSynthesisResult }, ApiError, void> }) {
+  return useMutation({ mutationFn: () => yp_synthesizeTelemetry(), ...options?.mutation });
+}
+
+export const yp_dismissNudge = async (params: Yp_dismissNudgeParams, options?: RequestInit): Promise<{ data: Record<string, unknown> }> => {
+  const res = await fetch(`/api/projects/yard-pro/nudges/${params.nudge_id}/dismiss`, { ...options, method: "POST" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_dismissNudge(options?: { mutation?: UseMutationOptions<{ data: Record<string, unknown> }, ApiError, { params: Yp_dismissNudgeParams }> }) {
+  return useMutation({ mutationFn: (vars) => yp_dismissNudge(vars.params), ...options?.mutation });
 }
 
 export const yp_listPlants = async (options?: RequestInit): Promise<{ data: YpPlantOut[] }> => {

@@ -20,6 +20,10 @@ from sqlmodel import select
 
 from ....dependencies import SessionDep, get_obo_ws
 from ..services.gdpr_service import delete_yard_cascade
+from ..services.telemetry_service import (
+    list_nudges_for_yard,
+    list_readiness_for_yard,
+)
 from ..models import (
     YardProActionType,
     YardProCalendarStatus,
@@ -37,6 +41,7 @@ from ..models import (
     YpPlantOut,
     YpTool,
     YpToolOut,
+    YpToolReadinessOut,
     YpYard,
     YpYardOut,
 )
@@ -331,6 +336,20 @@ def get_cockpit(yard_id: int, request: Request, db: SessionDep) -> YpCockpitOut:
             )
             for d in recent_diagnoses
         ],
+        tool_readiness=[
+            YpToolReadinessOut(
+                tool_id=r.tool_id,
+                battery_pct=r.battery_pct,
+                blade_hours_since_sharpening=r.blade_hours_since_sharpening,
+                last_session_at=r.last_session_at,
+                last_event_type=r.last_event_type,
+                last_event_at=r.last_event_at,
+                payload=r.payload,
+                updated_at=r.updated_at,
+            )
+            for r in list_readiness_for_yard(db, yard.id or 0)
+        ],
+        nudges=list_nudges_for_yard(db, yard.id or 0),
     )
 
 
