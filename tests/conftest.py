@@ -42,6 +42,7 @@ def engine():
     import innovation_factory.backend.projects.adtech_intelligence.models  # noqa: F401
     import innovation_factory.backend.projects.mol_asm_cockpit.models  # noqa: F401
     import innovation_factory.backend.projects.aeco_hub.models  # noqa: F401
+    import innovation_factory.backend.projects.yard_pro.models  # noqa: F401
 
     SQLModel.metadata.create_all(engine)
     return engine

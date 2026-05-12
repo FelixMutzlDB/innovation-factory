@@ -19,6 +19,22 @@ from .databricks_config import (
 
 router = APIRouter(tags=["yard-pro"])
 
+# Stream B1 (foundation CRUD + Art. 22 rail) — keep this block to the five
+# imports/includes B1 owns; B2 adds coach.py + diagnose.py below.
+from .routers import actions, inventory, plants, tools, yards
+
+router.include_router(yards.router)
+router.include_router(plants.router)
+router.include_router(tools.router)
+router.include_router(inventory.router)
+router.include_router(actions.router)
+
+# Stream B2 (coach + diagnose + calendar regen) — owns these two includes only.
+from .routers import coach, diagnose
+
+router.include_router(coach.router)
+router.include_router(diagnose.router)
+
 
 class YardProDatabricksResourcesOut(BaseModel):
     workspace_url: str
