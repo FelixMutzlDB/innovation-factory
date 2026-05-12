@@ -64,7 +64,7 @@ function Layout() {
 
   return (
     <ProjectThemeScope slug="adtech-intelligence">
-      <SidebarLayout>
+      <SidebarLayout projectSlug="adtech-intelligence">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>

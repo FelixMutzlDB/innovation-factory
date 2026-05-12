@@ -72,7 +72,7 @@ function Layout() {
 
   return (
     <ProjectThemeScope slug="hb-product-center">
-      <SidebarLayout>
+      <SidebarLayout projectSlug="hb-product-center">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>

@@ -13,18 +13,32 @@ import {
 import SidebarUserFooter from "@/components/apx/sidebar-user-footer";
 import { ModeToggle } from "@/components/apx/mode-toggle";
 import Logo from "@/components/apx/logo";
+import { ProjectWordmark } from "@/components/apx/project-wordmark";
+import { BRAND_THEMES } from "@/lib/brand-themes";
 
 interface SidebarLayoutProps {
   children?: ReactNode;
+  /**
+   * When set, the sidebar header renders a per-project text wordmark
+   * (brand-adjacent font + primary color) in place of the global Logo.
+   * Unknown slugs fall back to the global Logo so partially-themed
+   * routes degrade gracefully.
+   */
+  projectSlug?: string;
 }
 
-function SidebarLayout({ children }: SidebarLayoutProps) {
+function SidebarLayout({ children, projectSlug }: SidebarLayoutProps) {
+  const showWordmark = projectSlug !== undefined && projectSlug in BRAND_THEMES;
   return (
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
           <div className="px-2 py-2">
-            <Logo />
+            {showWordmark ? (
+              <ProjectWordmark slug={projectSlug!} />
+            ) : (
+              <Logo />
+            )}
           </div>
         </SidebarHeader>
         <SidebarContent>{children}</SidebarContent>

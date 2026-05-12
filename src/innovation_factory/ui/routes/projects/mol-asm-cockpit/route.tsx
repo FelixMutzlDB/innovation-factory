@@ -62,7 +62,7 @@ function Layout() {
 
   return (
     <ProjectThemeScope slug="mol-asm-cockpit">
-      <SidebarLayout>
+      <SidebarLayout projectSlug="mol-asm-cockpit">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
