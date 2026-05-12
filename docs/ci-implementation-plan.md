@@ -341,26 +341,35 @@ tests/
 5. **MOL secondary green** — MOL uses both red and green prominently. Plan currently treats red as primary, green as accent; confirm.
 6. **HB editorial accent** — Use the optional champagne `#A8894D` for editorial flair, or stay strictly monochrome?
 
-## 10. Implementation ordering (P0 → P3)
+## 10. Implementation status (P0 → P3 shipped; P4 deferred)
 
-**P0 — must-have for first ship:**
-- `themes/` skeleton + `<ProjectThemeScope>` + ViDistrictOne pilot
-- Unit + integration test scaffold
-- This document + new-project.md update (already shipped 2026-05-11)
+**P0 — shipped 2026-05-11 ([PR #7](https://github.com/FelixMutzlDB/innovation-factory/pull/7), commit `2f3d48c`):**
+- `themes/` skeleton + `<ProjectThemeScope>` + ViDistrictOne pilot.
+- `BRAND_THEMES` registry at `src/innovation_factory/ui/lib/brand-themes.ts`.
+- This document + `docs/new-project.md` brand-themes section.
+- 27 regression tests scaffolded.
 
-**P1 — next pass:**
-- Remaining 5 projects' token overrides + route wrapping
-- Font loading
-- Visual regression baselines
+**P1 — shipped 2026-05-12 ([PR #9](https://github.com/FelixMutzlDB/innovation-factory/pull/9), commit `c654b16`; WCAG follow-up [PR #10](https://github.com/FelixMutzlDB/innovation-factory/pull/10)):**
+- Remaining 5 projects' token overrides (BSH, MOL, AdTech, HB, AECO) in both light + dark.
+- Google Fonts loaded in `index.html` with `display=swap` + preconnect.
+- 5 routes wrapped with `<ProjectThemeScope>`.
+- WCAG AA contrast suite (commit `d71df1a`): `tests/common/_wcag.py` + `tests/common/test_brand_theme_contrast.py` (48 parametrized cases). BSH primary moved from `oklch(0.71 0.20 35)` to `oklch(0.66 0.22 42)` for AA Large-Text 3:1.
 
-**P2 — polish:**
-- Per-project chart palette
-- Per-project wordmarks
-- Dark-mode hand-tuning per project
+**P2 — shipped 2026-05-12 ([PR #12](https://github.com/FelixMutzlDB/innovation-factory/pull/12)):**
+- `<ProjectWordmark slug>` — pure-text wordmark, brand-adjacent font, tinted `var(--primary)`. Mounted in `<SidebarLayout>` via optional `projectSlug` prop on all 6 routes.
+- Per-theme `--chart-1..--chart-5` in **both** light and dark blocks (dark blocks were silently inheriting the global zinc palette before this).
+- 5 new regression tests in `tests/common/test_brand_themes.py`.
 
-**P3 — deferred:**
-- Per-project illustration / hero imagery
-- Theme-toggle utility in dev for screenshot generation
+**P3 — shipped 2026-05-12 ([PR #13](https://github.com/FelixMutzlDB/innovation-factory/pull/13); baseline refresh [PR #15](https://github.com/FelixMutzlDB/innovation-factory/pull/15)):**
+- Playwright visual regression framework — `playwright.config.ts`, `tests/visual/brand-themes.spec.ts` (6 slugs × {light, dark} = 12 cases), pixelmatch comparison.
+- Baselines under `tests/visual/baselines/<slug>/<light|dark>.png`.
+- `pytest -m visual` wrapper; default `pytest` invocation skips it.
+- §6.3 documents the run/refresh workflow and tolerance rationale.
+- PR #15 refreshed baselines after P2 + added `PW_PORT` env override for sibling-worktree runs.
+
+**P4 — deferred (no committed delivery date):**
+- Per-project hero imagery on landing pages. Today the wordmark + theme tint evoke the brand; hero imagery needs aesthetic direction from product/design plus tooling (AI generation or licensed stock under §2). A placeholder component `<ProjectHeroPattern slug>` (SVG abstract pattern using `--primary` / `--secondary`) ships in `chore/brand-themes-followup` so routes can opt in without further design work if they want.
+- Global "cycle through themes" keyboard shortcut beyond the `/dev/themes` gallery added in `chore/brand-themes-followup`. The gallery already lets a designer compare all 6 brands at once; only worth building the cycler if real screenshot workflows need it.
 
 ## 11. Sources
 

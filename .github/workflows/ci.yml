@@ -145,6 +145,96 @@ jobs:
         run: uv run pytest -m "not integration" --tb=short -q
 
   # ---------------------------------------------------------------------------
+  # Visual regression — Playwright suite from `tests/visual/`. Needs a real
+  # built frontend + a running dev server, so it's heavier than `tests`.
+  # `needs: [lint, tests]` short-circuits if cheaper jobs fail. PR-only by
+  # default (skipped on bare pushes to master because the visual baselines
+  # in tree are the master state — running on master would be tautological).
+  # ---------------------------------------------------------------------------
+  visual:
+    name: Visual regression (Playwright)
+    needs: [lint, tests]
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python deps
+        run: uv sync --group dev
+
+      - name: Cache bun install
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Rewrite internal npm proxy → public npm in lockfile
+        run: sed -i 's|https://npm-proxy.dev.databricks.com/|https://registry.npmjs.org/|g' bun.lock
+
+      - name: Install frontend deps (apx-bundled bun)
+        run: uv run apx bun install
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Install Playwright chromium
+        run: uv run apx bun playwright install --with-deps chromium
+
+      - name: Build frontend (generates _metadata + __dist__)
+        run: uv run apx build
+
+      - name: Start dev server (daemonized by apx)
+        run: uv run apx dev start
+
+      - name: Wait for dev server and capture port
+        # apx allocates the first free port from 9001 down to 9000 (and below
+        # if more are taken). Probe both common ports and export the winner
+        # so playwright.config.ts (which reads PW_PORT) targets the right one.
+        run: |
+          for i in {1..60}; do
+            for port in 9001 9000; do
+              if curl -sf -o /dev/null "http://localhost:$port/projects/vi-home-one"; then
+                echo "Dev server ready on :$port"
+                echo "PW_PORT=$port" >> "$GITHUB_ENV"
+                exit 0
+              fi
+            done
+            sleep 2
+          done
+          echo "Dev server did not become ready within 120s"
+          uv run apx dev status || true
+          exit 1
+
+      - name: Run visual suite
+        run: uv run apx bun run test:visual
+
+      - name: Upload diffs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: |
+            test-results/
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
   # Build artifacts. Runs after lint + tests so build failures don't mask
   # earlier issues.
   # ---------------------------------------------------------------------------

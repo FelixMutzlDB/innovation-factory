@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './../routes/__root'
 import { Route as SidebarRouteRouteImport } from './../routes/_sidebar/route'
 import { Route as IndexRouteImport } from './../routes/index'
 import { Route as BuildIdeaIndexRouteImport } from './../routes/build-idea/index'
+import { Route as DevThemesRouteImport } from './../routes/dev.themes'
 import { Route as SidebarProfileRouteImport } from './../routes/_sidebar/profile'
 import { Route as SidebarDocumentationRouteImport } from './../routes/_sidebar/documentation'
 import { Route as ProjectsViHomeOneRouteRouteImport } from './../routes/projects/vi-home-one/route'
@@ -83,6 +84,11 @@ const IndexRoute = IndexRouteImport.update({
 const BuildIdeaIndexRoute = BuildIdeaIndexRouteImport.update({
   id: '/build-idea/',
   path: '/build-idea/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevThemesRoute = DevThemesRouteImport.update({
+  id: '/dev/themes',
+  path: '/dev/themes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SidebarProfileRoute = SidebarProfileRouteImport.update({
@@ -436,6 +442,7 @@ export interface FileRoutesByFullPath {
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
   '/documentation': typeof SidebarDocumentationRoute
   '/profile': typeof SidebarProfileRoute
+  '/dev/themes': typeof DevThemesRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
   '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
@@ -492,6 +499,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/documentation': typeof SidebarDocumentationRoute
   '/profile': typeof SidebarProfileRoute
+  '/dev/themes': typeof DevThemesRoute
   '/build-idea': typeof BuildIdeaIndexRoute
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
   '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
@@ -555,6 +563,7 @@ export interface FileRoutesById {
   '/projects/vi-home-one': typeof ProjectsViHomeOneRouteRouteWithChildren
   '/_sidebar/documentation': typeof SidebarDocumentationRoute
   '/_sidebar/profile': typeof SidebarProfileRoute
+  '/dev/themes': typeof DevThemesRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
   '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
@@ -619,6 +628,7 @@ export interface FileRouteTypes {
     | '/projects/vi-home-one'
     | '/documentation'
     | '/profile'
+    | '/dev/themes'
     | '/build-idea/'
     | '/projects/adtech-intelligence/dashboard'
     | '/projects/adtech-intelligence/issues'
@@ -675,6 +685,7 @@ export interface FileRouteTypes {
     | '/'
     | '/documentation'
     | '/profile'
+    | '/dev/themes'
     | '/build-idea'
     | '/projects/adtech-intelligence/dashboard'
     | '/projects/adtech-intelligence/issues'
@@ -737,6 +748,7 @@ export interface FileRouteTypes {
     | '/projects/vi-home-one'
     | '/_sidebar/documentation'
     | '/_sidebar/profile'
+    | '/dev/themes'
     | '/build-idea/'
     | '/projects/adtech-intelligence/dashboard'
     | '/projects/adtech-intelligence/issues'
@@ -799,6 +811,7 @@ export interface RootRouteChildren {
   ProjectsHbProductCenterRouteRoute: typeof ProjectsHbProductCenterRouteRouteWithChildren
   ProjectsMolAsmCockpitRouteRoute: typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   ProjectsViHomeOneRouteRoute: typeof ProjectsViHomeOneRouteRouteWithChildren
+  DevThemesRoute: typeof DevThemesRoute
   BuildIdeaIndexRoute: typeof BuildIdeaIndexRoute
 }
 
@@ -823,6 +836,13 @@ declare module '@tanstack/react-router' {
       path: '/build-idea'
       fullPath: '/build-idea/'
       preLoaderRoute: typeof BuildIdeaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev/themes': {
+      id: '/dev/themes'
+      path: '/dev/themes'
+      fullPath: '/dev/themes'
+      preLoaderRoute: typeof DevThemesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_sidebar/profile': {
@@ -1484,6 +1504,7 @@ const rootRouteChildren: RootRouteChildren = {
     ProjectsHbProductCenterRouteRouteWithChildren,
   ProjectsMolAsmCockpitRouteRoute: ProjectsMolAsmCockpitRouteRouteWithChildren,
   ProjectsViHomeOneRouteRoute: ProjectsViHomeOneRouteRouteWithChildren,
+  DevThemesRoute: DevThemesRoute,
   BuildIdeaIndexRoute: BuildIdeaIndexRoute,
 }
 export const routeTree = rootRouteImport
