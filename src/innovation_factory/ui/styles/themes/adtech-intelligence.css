@@ -1,10 +1,48 @@
 /*
- * adtech-intelligence — brand-adjacent theme (P1 stub).
+ * adtech-intelligence — brand-adjacent theme.
  * Reference customer: Ströer SE (navy + orange, OOH/DOOH).
  * Source: docs/ci-implementation-plan.md §3.4
+ *   Primary  ~ #000C36 (navy)
+ *   Accent   ~ #EB690B (orange)
  */
 
 [data-project-theme="adtech-intelligence"] {
-  /* P1: tokens go here */
+  --primary: oklch(0.25 0.10 268);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --accent: oklch(0.95 0.05 50);
+  --accent-foreground: oklch(0.45 0.16 50);
+
+  --ring: oklch(0.25 0.10 268);
+
+  --sidebar-primary: oklch(0.25 0.10 268);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.95 0.04 50);
+  --sidebar-accent-foreground: oklch(0.45 0.16 50);
+  --sidebar-ring: oklch(0.25 0.10 268);
+
+  --chart-1: oklch(0.25 0.10 268);
+  --chart-2: oklch(0.66 0.18 50);
+  --chart-3: oklch(0.50 0.14 240);
+  --chart-4: oklch(0.80 0.12 50);
+  --chart-5: oklch(0.40 0.08 268);
+
   font-family: var(--brand-font-family, "Space Grotesk"), system-ui, sans-serif;
+}
+
+.dark [data-project-theme="adtech-intelligence"],
+[data-project-theme="adtech-intelligence"].dark {
+  --primary: oklch(0.45 0.15 268);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --accent: oklch(0.38 0.12 50);
+  --accent-foreground: oklch(0.96 0.05 50);
+
+  --ring: oklch(0.45 0.15 268);
+
+  --sidebar-primary: oklch(0.45 0.15 268);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.36 0.12 50);
+  --sidebar-accent-foreground: oklch(0.96 0.05 50);
+  --sidebar-ring: oklch(0.45 0.15 268);
 }

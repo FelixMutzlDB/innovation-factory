@@ -1,10 +1,55 @@
 /*
- * hb-product-center — brand-adjacent theme (P1 stub).
- * Reference customer: HB (German premium-fashion brand) — monochrome with optional champagne accent.
+ * hb-product-center — brand-adjacent theme.
+ * Reference customer: HB (German premium-fashion brand) — monochrome with champagne editorial accent.
  * Source: docs/ci-implementation-plan.md §3.5
+ *   Primary  ~ #231F20 (near-black)
+ *   Accent   ~ #A8894D (champagne / muted gold)
  */
 
 [data-project-theme="hb-product-center"] {
-  /* P1: tokens go here */
+  --primary: oklch(0.23 0 0);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --accent: oklch(0.94 0.03 80);
+  --accent-foreground: oklch(0.45 0.08 80);
+
+  --ring: oklch(0.23 0 0);
+
+  --sidebar-primary: oklch(0.23 0 0);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.96 0.025 80);
+  --sidebar-accent-foreground: oklch(0.45 0.08 80);
+  --sidebar-ring: oklch(0.23 0 0);
+
+  --chart-1: oklch(0.23 0 0);
+  --chart-2: oklch(0.62 0.08 80);
+  --chart-3: oklch(0.50 0.05 80);
+  --chart-4: oklch(0.78 0 0);
+  --chart-5: oklch(0.40 0 0);
+
   font-family: var(--brand-font-family, "Inter"), system-ui, sans-serif;
+}
+
+[data-project-theme="hb-product-center"] h1,
+[data-project-theme="hb-product-center"] h2,
+[data-project-theme="hb-product-center"] h3 {
+  font-family: var(--brand-font-display, "Playfair Display"), Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+.dark [data-project-theme="hb-product-center"],
+[data-project-theme="hb-product-center"].dark {
+  --primary: oklch(0.95 0 0);
+  --primary-foreground: oklch(0.18 0 0);
+
+  --accent: oklch(0.35 0.06 80);
+  --accent-foreground: oklch(0.96 0.04 80);
+
+  --ring: oklch(0.95 0 0);
+
+  --sidebar-primary: oklch(0.95 0 0);
+  --sidebar-primary-foreground: oklch(0.18 0 0);
+  --sidebar-accent: oklch(0.32 0.06 80);
+  --sidebar-accent-foreground: oklch(0.96 0.04 80);
+  --sidebar-ring: oklch(0.95 0 0);
 }
