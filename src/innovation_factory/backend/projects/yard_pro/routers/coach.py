@@ -29,6 +29,8 @@ from ....rate_limit import limiter
 from ....services.streaming import create_chat_stream, streaming_endpoint
 from ..models import (
     YardProChatRole,
+    YardProCoachFeedbackSignal,
+    YpCoachFeedback,
     YpCoachMessage,
     YpCoachSession,
     YpYard,
@@ -75,6 +77,51 @@ class YpCoachMessageOut(BaseModel):
 class YpCoachChatIn(BaseModel):
     prompt: LongText
     idempotency_key: Optional[str] = None
+
+
+# Feedback loop (plan §8 AI security row — advisory feedback loop).
+# Activates the schema-only YpCoachFeedback table shipped in P0. The 5%
+# thumbs-down auto-flag rule lives in the stats endpoint below.
+
+
+class YpCoachFeedbackIn(BaseModel):
+    """Body for ``POST /coach/feedback``.
+
+    ``response_id`` is the assistant message id (string-encoded for the
+    public API; we look up by integer id server-side). The backend
+    resolves the message's ``model_version`` from the persisted row —
+    clients don't pass it.
+    """
+
+    response_id: str
+    signal: YardProCoachFeedbackSignal
+    notes: str = ""
+
+
+class YpCoachFeedbackOut(BaseModel):
+    id: int
+    yard_id: int
+    response_id: str
+    model_version: str
+    signal: YardProCoachFeedbackSignal
+    notes: str
+    created_at: str
+
+
+class YpCoachFeedbackStatsOut(BaseModel):
+    """Returned by ``GET /coach/feedback/stats?model_version=...``.
+
+    ``flagged`` is the §8 auto-flag boolean: ``total_count >= 100 AND
+    thumbs_down_rate > 0.05``. Below 100 turns we don't have enough
+    signal to flag — even if every single one is thumbs_down.
+    """
+
+    model_version: str
+    total_count: int
+    thumbs_down_count: int
+    thumbs_up_count: int
+    thumbs_down_rate: float
+    flagged: bool
 
 
 # ---------------------------------------------------------------------------
@@ -269,6 +316,134 @@ async def coach_chat(
     return await create_chat_stream(
         stream_response(response),
         headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
+    )
+
+
+# ---------------------------------------------------------------------------
+# Feedback (plan §8 — diagnostic-honesty advisory feedback loop)
+# ---------------------------------------------------------------------------
+
+
+_FLAG_MIN_COUNT = 100
+_FLAG_THRESHOLD = 0.05
+
+
+@router.post(
+    "/coach/feedback",
+    response_model=YpCoachFeedbackOut,
+    operation_id="yp_submitCoachFeedback",
+    status_code=201,
+)
+def submit_coach_feedback(
+    body: YpCoachFeedbackIn,
+    request: Request,
+    db: SessionDep,
+) -> YpCoachFeedbackOut:
+    """Record a thumbs-up / thumbs-down on a coach response.
+
+    **Upsert semantics**: a second POST with the same
+    ``(yard_id, response_id)`` updates the existing row's signal so a
+    user can flip thumbs_up → thumbs_down without two rows accumulating.
+
+    The endpoint does NOT write into ``yp_action_log`` — feedback is
+    audit signal, not a confirmed user action.
+    """
+    yard = _resolve_yard(db, request)
+
+    # Resolve the assistant message + its model_version + scope check:
+    # the message must belong to a session owned by the calling yard.
+    try:
+        message_id = int(body.response_id)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="response_id must be an integer")
+
+    msg = db.get(YpCoachMessage, message_id)
+    if msg is None:
+        raise HTTPException(status_code=404, detail="Response not found")
+    chat_session = db.get(YpCoachSession, msg.session_id)
+    if chat_session is None or chat_session.yard_id != yard.id:
+        raise HTTPException(status_code=404, detail="Response not found")
+    if msg.role != YardProChatRole.assistant:
+        raise HTTPException(
+            status_code=400,
+            detail="Feedback can only target assistant messages",
+        )
+
+    existing = db.exec(
+        select(YpCoachFeedback)
+        .where(YpCoachFeedback.yard_id == yard.id)
+        .where(YpCoachFeedback.response_id == body.response_id)
+    ).first()
+    if existing is not None:
+        existing.signal = body.signal
+        existing.notes = body.notes or existing.notes
+        # Keep model_version frozen to the first capture — the same
+        # response can't suddenly belong to a new model version.
+        db.add(existing)
+        db.commit()
+        db.refresh(existing)
+        row = existing
+    else:
+        row = YpCoachFeedback(
+            yard_id=yard.id or 0,
+            response_id=body.response_id,
+            model_version=msg.model_version,
+            signal=body.signal,
+            notes=body.notes,
+        )
+        db.add(row)
+        db.commit()
+        db.refresh(row)
+
+    return YpCoachFeedbackOut(
+        id=row.id or 0,
+        yard_id=row.yard_id,
+        response_id=row.response_id,
+        model_version=row.model_version,
+        signal=row.signal,
+        notes=row.notes,
+        created_at=row.created_at.isoformat(),
+    )
+
+
+@router.get(
+    "/coach/feedback/stats",
+    response_model=YpCoachFeedbackStatsOut,
+    operation_id="yp_getCoachFeedbackStats",
+)
+def get_coach_feedback_stats(
+    request: Request,
+    db: SessionDep,
+    model_version: str = Query(..., description="Model version to summarize"),
+) -> YpCoachFeedbackStatsOut:
+    """Return thumbs-up/down counts + the auto-flag boolean for one
+    ``model_version``, scoped to the calling yard.
+
+    Auto-flag rule (plan §8): ``total_count >= 100 AND thumbs_down_rate
+    > 0.05``. UI uses this to surface a "this coach version is being
+    reviewed" banner — that banner itself is a P2 surface; this endpoint
+    just exposes the boolean.
+    """
+    yard = _resolve_yard(db, request)
+    rows = list(
+        db.exec(
+            select(YpCoachFeedback)
+            .where(YpCoachFeedback.yard_id == yard.id)
+            .where(YpCoachFeedback.model_version == model_version)
+        ).all()
+    )
+    total = len(rows)
+    down = sum(1 for r in rows if r.signal == YardProCoachFeedbackSignal.thumbs_down)
+    up = sum(1 for r in rows if r.signal == YardProCoachFeedbackSignal.thumbs_up)
+    rate = (down / total) if total > 0 else 0.0
+    flagged = total >= _FLAG_MIN_COUNT and rate > _FLAG_THRESHOLD
+    return YpCoachFeedbackStatsOut(
+        model_version=model_version,
+        total_count=total,
+        thumbs_down_count=down,
+        thumbs_up_count=up,
+        thumbs_down_rate=rate,
+        flagged=flagged,
     )
 
 

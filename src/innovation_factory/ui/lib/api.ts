@@ -2344,6 +2344,13 @@ export const YardProCalendarStatus = {
 
 export type YardProCalendarStatus = (typeof YardProCalendarStatus)[keyof typeof YardProCalendarStatus];
 
+export const YardProCoachFeedbackSignal = {
+  thumbs_up: "thumbs_up",
+  thumbs_down: "thumbs_down",
+} as const;
+
+export type YardProCoachFeedbackSignal = (typeof YardProCoachFeedbackSignal)[keyof typeof YardProCoachFeedbackSignal];
+
 export const YardProConsumableKind = {
   fertilizer: "fertilizer",
   oil: "oil",
@@ -2439,6 +2446,31 @@ export interface YpCalendarEntryOut {
 export interface YpCoachChatIn {
   idempotency_key?: string | null;
   prompt: string;
+}
+
+export interface YpCoachFeedbackIn {
+  notes?: string;
+  response_id: string;
+  signal: YardProCoachFeedbackSignal;
+}
+
+export interface YpCoachFeedbackOut {
+  created_at: string;
+  id: number;
+  model_version: string;
+  notes: string;
+  response_id: string;
+  signal: YardProCoachFeedbackSignal;
+  yard_id: number;
+}
+
+export interface YpCoachFeedbackStatsOut {
+  flagged: boolean;
+  model_version: string;
+  thumbs_down_count: number;
+  thumbs_down_rate: number;
+  thumbs_up_count: number;
+  total_count: number;
 }
 
 export interface YpCoachMessageOut {
@@ -3365,6 +3397,10 @@ export interface Yp_confirmActionParams {
 export interface Yp_listCalendarParams {
   skip?: number;
   limit?: number;
+}
+
+export interface Yp_getCoachFeedbackStatsParams {
+  model_version: string;
 }
 
 export interface Yp_listCoachSessionsParams {
@@ -7434,6 +7470,48 @@ export function useYp_listCalendar<TData = { data: YpCalendarEntryOut[] }>(optio
 
 export function useYp_listCalendarSuspense<TData = { data: YpCalendarEntryOut[] }>(options?: { params?: Yp_listCalendarParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpCalendarEntryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: yp_listCalendarKey(options?.params), queryFn: () => yp_listCalendar(options?.params), ...options?.query });
+}
+
+export const yp_submitCoachFeedback = async (data: YpCoachFeedbackIn, options?: RequestInit): Promise<{ data: YpCoachFeedbackOut }> => {
+  const res = await fetch("/api/projects/yard-pro/coach/feedback", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_submitCoachFeedback(options?: { mutation?: UseMutationOptions<{ data: YpCoachFeedbackOut }, ApiError, YpCoachFeedbackIn> }) {
+  return useMutation({ mutationFn: (data) => yp_submitCoachFeedback(data), ...options?.mutation });
+}
+
+export const yp_getCoachFeedbackStats = async (params: Yp_getCoachFeedbackStatsParams, options?: RequestInit): Promise<{ data: YpCoachFeedbackStatsOut }> => {
+  const searchParams = new URLSearchParams();
+  if (params.model_version != null) searchParams.set("model_version", String(params.model_version));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/yard-pro/coach/feedback/stats?${queryString}` : `/api/projects/yard-pro/coach/feedback/stats`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_getCoachFeedbackStatsKey = (params?: Yp_getCoachFeedbackStatsParams) => {
+  return ["/api/projects/yard-pro/coach/feedback/stats", params] as const;
+};
+
+export function useYp_getCoachFeedbackStats<TData = { data: YpCoachFeedbackStatsOut }>(options: { params: Yp_getCoachFeedbackStatsParams; query?: Omit<UseQueryOptions<{ data: YpCoachFeedbackStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_getCoachFeedbackStatsKey(options.params), queryFn: () => yp_getCoachFeedbackStats(options.params), ...options?.query });
+}
+
+export function useYp_getCoachFeedbackStatsSuspense<TData = { data: YpCoachFeedbackStatsOut }>(options: { params: Yp_getCoachFeedbackStatsParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpCoachFeedbackStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_getCoachFeedbackStatsKey(options.params), queryFn: () => yp_getCoachFeedbackStats(options.params), ...options?.query });
 }
 
 export const yp_listCoachSessions = async (params?: Yp_listCoachSessionsParams, options?: RequestInit): Promise<{ data: YpCoachSessionOut[] }> => {

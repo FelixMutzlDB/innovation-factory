@@ -12,6 +12,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AdvisoryChip } from "@/components/yard-pro/advisory-chip";
+import { FeedbackButtons } from "@/components/yard-pro/feedback-buttons";
 
 export const Route = createFileRoute("/projects/yard-pro/coach")({
   component: () => <CoachPage />,
@@ -148,15 +150,22 @@ function CoachPage() {
 }
 
 function ChatMessages(_: { sessionId: number }) {
-  const messages = [
+  // Stub messages until B2 streaming is wired live. Each assistant
+  // message carries an id (string for the feedback API contract).
+  const messages: Array<{
+    id?: string;
+    role: "user" | "assistant";
+    content: string;
+  }> = [
     {
       role: "user",
       content: "What should I do this weekend?",
     },
     {
+      id: "stub-1",
       role: "assistant",
       content:
-        "Based on your yard and the local weather forecast, I recommend: (1) Prune the apple tree before the fruit sets — the window closes May 25th. (2) Apply fungicide for the leaf-spot issue if you haven't already. (3) Check the robotic mower's battery level. AI-generated, advisory only",
+        "Based on your yard and the local weather forecast, I recommend: (1) Prune the apple tree before the fruit sets — the window closes May 25th. (2) Apply fungicide for the leaf-spot issue if you haven't already. (3) Check the robotic mower's battery level.",
     },
   ];
 
@@ -166,19 +175,25 @@ function ChatMessages(_: { sessionId: number }) {
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`flex ${
-              msg.role === "user" ? "justify-end" : "justify-start"
+            className={`flex flex-col gap-1 ${
+              msg.role === "user" ? "items-end" : "items-start"
             }`}
           >
             <div
-              className={`max-w-xs p-3 rounded-lg text-sm ${
+              className={`max-w-md p-3 rounded-lg text-sm ${
                 msg.role === "user"
                   ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
+                  : "bg-muted text-foreground"
               }`}
             >
               {msg.content}
             </div>
+            {msg.role === "assistant" && msg.id ? (
+              <div className="flex items-center gap-2 pl-1">
+                <AdvisoryChip variant="inline" />
+                <FeedbackButtons responseId={msg.id} />
+              </div>
+            ) : null}
           </div>
         ))}
       </div>
