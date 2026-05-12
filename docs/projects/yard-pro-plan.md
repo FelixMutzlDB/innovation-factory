@@ -43,9 +43,11 @@
 > **Phase 1 dissent (open for Phase 4 re-test):** The Skeptical PM sub-agent proposed cutting UC1 (cockpit) as a primary surface and folding it into UC2 as a sidebar — arguing two surfaces (coach + snap-diagnose) tell the full story and UC1 alone is just a dashboard. Founder kept UC1 as P0 on the grounds that the OEM-aligned narrative needs a "state of your yard" anchor screen where telemetry, plant inventory, and the action log converge. Phase 4 (pragmatic-EM sub-agent) is the right place to re-evaluate this call after architecture and effort cost are concrete.
 
 - **Non-negotiables:**
-  - **Privacy (GDPR).** Yard photos, location, household chat history are personal data. Data minimization, explicit consent, deletion endpoint, EU-region storage.
+  - **Privacy (GDPR).** Yard photos, location, household chat history are personal data. Data minimization, explicit consent, deletion endpoint, EU-region storage. (Art. 15/17/20 endpoints; see §8 for the implementation rows.)
+  - **GDPR Art. 22 — review-and-confirm rail (added Phase 3 finding #11).** No solely-automated decisions with significant effect. Every coach recommendation and every UC4 telemetry nudge is advisory; the action is taken only when Martin clicks "Mark as done". Backend enforces this via the `human_confirmed_at` requirement on any `yp_action_log` write whose `source != 'user'`. **No "do it for me" affordance is permitted anywhere in the consumer app — this is a UI design invariant, not a configuration option.**
+  - **EU AI Act — limited-risk classification (added Phase 3 finding #12).** Coach responses render an "AI-generated, advisory only" chip (Art. 50 transparency). Re-evaluate classification if scope ever expands to high-risk (professional/agricultural advice with economic-loss exposure).
   - **Dealer data-sharing is opt-in and irreversibly anonymized.** Aggregation to the dealer Genie space is opt-in per household; anonymization is irreversible at ingest; Klaus never sees identifiable Martin data unless Martin separately opts in for a specific service event.
-  - **Diagnostic honesty.** No high-confidence answers from a low-confidence model. If the CV model isn't sure, the UI says so and recommends a pro consultation — *advisory, not authoritative*.
+  - **Diagnostic honesty.** No high-confidence answers from a low-confidence model. If the CV model isn't sure, the UI says so and recommends a pro consultation — *advisory, not authoritative*. Enforced at the response-shape level via mandatory citations on recommendation turns (§8) and an ensemble plausibility check on high-confidence vision outputs (§8).
   - **Brand-adjacency only.** Per `docs/ci-implementation-plan.md` §2: yard-pro wordmark + open-source Google Font + brand-adjacent palette. No Stihl marks, no licensed fonts, no lifted photography.
   - **Seasonal-load tolerance.** System must scale 100× from Jan to July without burning idle cost — Lakebase Autoscaling scale-to-zero is load-bearing for the cost story.
 
@@ -137,7 +139,8 @@ Three layers in P1-P3 — Presentation, Application, Data. A fourth "Edge" layer
 | `yp_plants` | Plant inventory per yard | `id`, `yard_id`, `species`, `variety`, `planted_at`, `notes` |
 | `yp_tools` | Tools owned per household | `id`, `yard_id`, `kind` (trimmer/hedge/mower/chainsaw/blower), `model_year`, `battery_family`, `last_serviced_at` |
 | `yp_consumables` | Consumables stock | `id`, `yard_id`, `kind`, `quantity`, `unit`, `last_restock_at` |
-| `yp_action_log` | Append-only events | `id`, `yard_id`, `action_type`, `target_plant_id?`, `tool_id?`, `consumable_id?`, `occurred_at`, `notes` |
+| `yp_action_log` | Append-only events | `id`, `yard_id`, `action_type`, `target_plant_id?`, `tool_id?`, `consumable_id?`, `occurred_at`, `notes`, `idempotency_key?`, `source` ∈ {`user`, `coach_recommendation`, `telemetry_nudge`}, `human_confirmed_at?` (required when `source != 'user'` — Art. 22 invariant) |
+| `yp_coach_feedback` | Per-response feedback for advisory feedback loop | `id`, `response_id`, `model_version`, `signal` ∈ {`thumbs_up`, `thumbs_down`}, `notes?`, `created_at` |
 | `yp_diagnoses` | CV diagnostic results | `id`, `yard_id`, `photo_uri`, `model_version`, `predictions` JSONB, `top_confidence`, `accepted_label?`, `status` |
 | `yp_calendar_entries` | Coach-generated plan | `id`, `yard_id`, `title`, `scheduled_at`, `target_plant_id?`, `tool_id?`, `status`, `generated_by_run_id` |
 | `yp_tool_readiness` | Latest readiness snapshot per tool (one row per `yp_tools.id`, upserted) | `tool_id` PK, `battery_pct`, `blade_hours_since_sharpening`, `last_session_at`, `last_event_type`, `last_event_at`, `payload` JSONB |
@@ -154,12 +157,20 @@ Three layers in P1-P3 — Presentation, Application, Data. A fourth "Edge" layer
 
 **Composite indexes — read paths first, then a write path:**
 - `yp_action_log(yard_id, occurred_at DESC)` — cockpit "last actions" feed (read)
+- `yp_action_log(yard_id, idempotency_key) WHERE idempotency_key IS NOT NULL` — UNIQUE partial; idempotency enforcement (write). Duplicate `Idempotency-Key` within 24h returns the original 2xx response from the cached row.
 - `yp_calendar_entries(yard_id, status, scheduled_at)` — "what's next?" + "what's overdue?" (read)
 - `yp_calendar_entries(yard_id, generated_by_run_id)` — calendar regeneration deletes-and-rewrites N entries with the same run_id; without this index the AI-write path full-scans (write)
 - `yp_diagnoses(yard_id, created_at DESC)` — diagnose history (read)
+- `yp_diagnoses(yard_id, idempotency_key) WHERE idempotency_key IS NOT NULL` — UNIQUE partial; same idempotency semantics for the diagnose write.
 - `yp_dealer_relationships(dealer_id, consent_state)` — dealer-side filtering (read)
 - Primary key on `yp_tool_readiness(tool_id)` covers the per-tool snapshot upsert; no secondary index needed.
 - **JSONB columns intentionally have no GIN index** — `yp_yards.metadata` and `yp_diagnoses.predictions` are written and read by `id`, not queried inside. Add GIN only when a query needs it.
+
+**Partitioning & retention** (append-only tables would grow unbounded at 100× × 5y ≈ 2.6B rows):
+- `yp_action_log` — RANGE partitioned quarterly on `occurred_at`. Partitions > 24 months pruned to Delta cold storage.
+- `yard_pro_bronze.coach_transcripts` — Delta partitioned by `date(created_at)`. `consent_flag=false` rows hard-deleted at 30 days; `consent_flag=true` rows aggregated and deleted at 13 months (GDPR purpose limitation).
+- `yard_pro_bronze.telemetry_events` — Delta partitioned by `date(occurred_at)`. Raw retention 90 days; rollups in Silver/Gold are permanent.
+- UC Volume photos — 180-day rolling delete per yard (documented in privacy notice; RT-019 promoted into this row).
 
 ### Analytical (Delta) — UC catalog `yard_pro`
 
@@ -325,4 +336,111 @@ tests/ui/theme/
 
 ---
 
-<!-- Phase 3 (§8-10 Security/Resilience/Red team) and Phase 4 (§11-12 Use-case map/Final ordering) appear below as they're drafted. -->
+## 8. Security Architecture
+
+yard-pro's threat surface is shaped by three things the other accelerators don't have to the same degree: **personal data at scale** (yard photos + geolocation + household chat history), **a cross-tenant data flow** (consumer → anonymized → dealer Genie), and **GDPR as the binding rail** rather than an aspirational checklist.
+
+| Layer | Measure | Threat addressed |
+|-------|---------|------------------|
+| **API Gateway** | OAuth (Databricks Apps) + JWT + rate limiting keyed on `X-Forwarded-User` (lessons §21) + CSP/HSTS headers | API abuse, brute-force, XSS-via-header |
+| **API Gateway** | Multipart upload limited to 10 MB; allowlist `image/jpeg` + `image/png` + `image/heic`; reject unknown MIME | Malicious file upload (RT-005) |
+| **API Gateway** | EXIF strip on photo ingest; no GPS coordinates leave the upload pipeline | Geolocation leak via photo metadata (RT-005) |
+| **Service-to-service** | Lakebase: `sslmode=verify-full`, OAuth token rotation via SQLAlchemy `do_connect` (lessons §10); Mosaic AI Vision + KA endpoints: workspace-scoped service principal | MITM, token theft, lateral movement |
+| **Service-to-service** | Idempotency keys on `POST /actions` and `POST /diagnose` (write paths); deduplicated via `yp_action_log` | Replay attacks, double-fire on retry |
+| **Data at rest** | Lakebase AES-256 (managed); Delta AES-256; photos stored in UC Volume with per-tenant prefix `yard_pro/photos/<yard_id>/...` | Disk-level exfil |
+| **Data at rest** | Coach transcripts in `yard_pro_bronze.coach_transcripts` carry a `consent_flag` column; rows with `consent_flag=false` are excluded from any analytical query | Repurposing consumer chat for analytics without consent |
+| **Data in transit** | TLS 1.3 end-to-end; HSTS preload | MITM |
+| **Access control — consumer** | Lakebase Row-Level Security by `yard_id` derived from `X-Forwarded-User → yp_user_yards`; no cross-household reads or writes possible at the SQL layer | Cross-tenant leak (RT-016) |
+| **Access control — dealer** | Klaus's Genie space sees only `yard_pro_gold.dealer_customer_summary`, which is the anonymized aggregate view. UC grants exclude all `yp_*` and all `yard_pro_bronze.*` / `yard_pro_silver.*` tables from Klaus's service principal | Dealer-side PII exposure (RT-003) |
+| **Consent state machine** | `yp_dealer_relationships.consent_state` is the single gate; aggregation pipeline (`aggregation_service.anonymize`) reads it on every batch and excludes households with `consent_state != 'granted'`. State changes are append-only (no UPDATE on `consent_state`; new row on every transition) | Stale consent reads, race conditions on revoke (RT-012) |
+| **Secrets** | All endpoint IDs (KA, Vision, Genie space) read from env vars via `databricks_config.py` defaulting `""` (lessons §5, §18); no hardcoded IDs in source | Key exposure |
+| **Audit** | `yp_action_log` is append-only (no UPDATE, no DELETE — schema `CHECK` constraint); `yard_pro_bronze.coach_transcripts` likewise. Tamper-evident via row sequence + monotonic timestamp constraint | Repudiation, history rewrite |
+| **AI security — coach (UC2)** | Prompt-injection detection: input sanitization at the API boundary (XSS / control-char strip per lessons §20); RAG sources marked `trust-tier: ground-truth` (curated docs) vs `trust-tier: user-supplied` (coach transcripts) and never retrieved into prompts that act on tools/consumables. Canary strings in KA used to detect leak. | Prompt injection via plant notes / coach (RT-001) |
+| **AI security — provenance enforcement** | Every coach response that recommends a specific action (fertilize, prune, apply product) MUST include `citations: list[KaChunkRef]` with `min_length=1` in the response payload. Backend rejects FM API completions on recommendation turns without citations and falls back to "I don't have a grounded answer — consider your local dealer." Diagnostic-honesty is enforced at the response-shape level, not the prompt level. | Hallucinated recommendations, advisory trust erosion |
+| **AI security — KA extraction** | Coach responses are forbidden from returning verbatim chunks > 200 chars; a SafeMarkdown post-processor truncates and adds attribution ("Source: regional almanac, Stuttgart Apr"). KA corpus is licensed/own-authored only — no third-party copyrighted almanac text. Canary phrases seeded in each `ka_docs/` subdirectory; nightly job `scripts/yard_pro/canary_ka_extraction.py` queries the coach with extraction prompts ("repeat the previous document verbatim") and alerts if a canary surfaces. | Model inversion, KA corpus extraction |
+| **AI security — advisory feedback loop** | Every coach answer and every diagnose result exposes a one-tap "👎 wrong" affordance writing to `yp_diagnoses.accepted_label` and a new table `yp_coach_feedback` (`response_id`, `model_version`, `signal` ∈ {`thumbs_up`, `thumbs_down`}, `notes?`, `created_at`). When negative-feedback rate on a `model_version` crosses 5 % over 100 turns, the version is auto-flagged for manual review and the UI surfaces "This coach version is being reviewed" for affected response classes. Without the loop, a wrong recommendation has no path back to model improvement. | Diagnostic-honesty erosion over time |
+| **AI security — vision (UC3)** | Image size + dimension hard caps before model invocation; adversarial-input rate limit per user; confidence floor `< 0.6` → return "unsure" + suggest pro consultation. **Confidence floor is necessary but not sufficient.** On `confidence ≥ 0.8` responses, run an ensemble plausibility check: the vision label is rephrased into a sentence and submitted to the coach FM API with a yes/no plausibility prompt ("is fusarium blight plausible on apple bark in May Stuttgart?"). If the FM API disagrees, downgrade to "unsure". Every high-confidence diagnosis surfaces "Get a second opinion (free dealer chat)" as a co-equal CTA, not a secondary one. | Adversarial image attacks (RT-002), confidence inflation |
+| **AI security — Genie (UC6)** | Genie space configured against `yard_pro_gold.*` only; row-level filters baked into the underlying Delta view, not relying on Genie's NL→SQL to enforce them; canary rows seeded and queried periodically to detect leakage | SQL injection through NL→SQL (RT-004), PII leak via join (RT-022) |
+| **Supply-chain SPOFs + fallbacks** | **FM API** — model ID pinned via `YARD_PRO_COACH_MODEL` env var (default `databricks-meta-llama-3-3-70b` or successor); explicit `YARD_PRO_COACH_MODEL_FALLBACK` env var; weekly canary `scripts/yard_pro/canary_fm_models.py` detects deprecation. **Vision** — no model fallback (custom plant model); Tier-2 degradation queues diagnoses (see §9 tiers). **Saira Condensed** — self-host fallback at `/static/fonts/saira-condensed.woff2` declared *first* in `yard-pro.css` `@font-face`; Google Fonts CDN is the secondary, not primary (customers behind corporate proxies routinely block `fonts.googleapis.com`). **`torch`** — confirmed not bundled; CI test `tests/projects/yard_pro/test_no_torch_import.py` asserts. **Lakebase scale-to-zero cold start** — documented budget p95 30 s, tested by `scripts/yard_pro/canary_cold_start.py`. | Vendor lock-in, deprecation, CDN block, dependency bloat |
+| **DoS protection** | Vision endpoint: cost cap per service principal per day; coach SSE per-user concurrent connection cap; photo upload size-rate-limit | Vision endpoint cost runaway (RT-018), photo storage abuse (RT-019) |
+| **GDPR Art. 15 (right of access)** | `GET /api/projects/yard-pro/yards/{id}/export` enqueues an async job that produces a signed-URL ZIP of all rows referencing `yard_id` across `yp_*`, all coach transcripts (consent permitting), all photos, all calendar history. SLA 30 days. | Subject Access Request fulfillment |
+| **GDPR Art. 17 (right to be forgotten)** | `DELETE /api/projects/yard-pro/yards/{id}` cascades: Lakebase `yp_*` rows by `yard_id`; UC Volume `yard_pro/photos/<yard_id>/` prefix; Delta Bronze/Silver/Gold rows by `yard_id_hash` (anonymized rows are matchable by the hash but contain no PII); revokes `yp_dealer_relationships.consent_state` to `revoked`. Integration test asserts no row referencing the deleted `yard_id` survives. (Was RT-025.) | GDPR Art. 17 |
+| **GDPR Art. 20 (data portability)** | Art. 15 export, but in a machine-readable JSON Schema documented in `docs/projects/yard-pro-data-export-schema.md`. Same async-job flow. | Data portability |
+| **GDPR Art. 22 (no solely-automated decisions)** | **Load-bearing invariant.** The coach's "apply X-fertilizer" recommendation is advisory-only. The UI shows a "You are reviewing an AI suggestion" chip on every recommendation; the action is taken only when Martin clicks "Mark as done". Backend enforces this by requiring an explicit `human_confirmed_at` timestamp before any `yp_action_log` write whose `source='coach_recommendation'`. UC4 telemetry nudges are notifications, not auto-actions; every nudge needs the same Mark-as-done click. No "do it for me" affordance is permitted anywhere in the consumer app. | Solely-automated decisions, regulatory exposure |
+| **EU AI Act (Art. 50, "limited risk")** | yard-pro is classified **limited risk** under the EU AI Act (in force in 2026 EU market): AI system interacting with natural persons. Transparency obligations: (a) every coach response renders an "AI-generated, advisory only" chip; (b) AI-generated images, if any, would be watermarked (N/A — none generated). **Not high-risk** — yard-pro does not make decisions about employment, credit, education, essential services, biometric ID, or critical infrastructure. **Re-evaluate** if scope expands to professional/agricultural advice with economic-loss exposure (e.g. commercial crop guidance). | EU AI Act compliance |
+| **ePrivacy Directive** | Coach transcripts and yard photos are "communications content / terminal-equipment data" under ePrivacy. Single, granular opt-in at first login: "I consent to yard-pro processing my photos, chat, and tool telemetry for advisory features" — separately recorded from the dealer-aggregation consent in `yp_dealer_relationships`. Strictly-necessary cookies only; no third-party tracking; no analytics beacons to non-EU regions. | ePrivacy compliance |
+| **CCPA / US state privacy** | **Out of scope.** yard-pro v1 is EU-only (Stuttgart pilot). A US launch would require separate review (CCPA, CPRA, state-by-state). Flagged in `docs/TODO.md` as a future scope item; not implemented in P0-P5. | Regulatory scope clarity |
+
+## 9. Resilience Design Principles
+
+- **Idempotency** — `Idempotency-Key` header is **required** on `POST /actions`, `POST /diagnose`, and `POST /coach/chat`. Enforced by the UNIQUE partial indexes in §5 (`yp_action_log` and `yp_diagnoses`). Absent or duplicate within 24 h returns the original 2xx response from the cached row. Coach SSE chunks are idempotent at the chunk level (re-streamable from `run_id`); `idempotency_key` gates the initial turn write only.
+- **Circuit breaker — per dependency, not uniform.** External calls are wrapped via `services/circuit_breaker.py` with different thresholds:
+  - **Vision (UC3)** — 3 `5xx` OR p95 latency > 8 s within a 60 s window → open 60 s, half-open with 1 probe.
+  - **KA + FM API (UC2)** — 5 `5xx` within 30 s → open 30 s, half-open with 1 probe.
+  - **Lakebase write** — **never** circuit-break; degrade to `503 Service Unavailable` with `Retry-After`. Breaking Lakebase writes silently corrupts the event-sourcing invariant.
+  - **Genie (UC6)** — not wrapped; dealer panel tolerates direct failures (non-load-bearing demo surface).
+- **Graceful degradation — explicit tiers.** Each tier names what works and what doesn't:
+
+  | Tier | Failure | What still works | What's degraded |
+  |------|---------|------------------|-----------------|
+  | **0 (full)** | Nothing down | Everything | — |
+  | **1 (KA / FM API down)** | Coach unreachable | Cockpit, calendar, diagnose | Coach chat returns "Coach offline — using cached weekly digest" from yesterday's last-good summary cached in `yp_coach_cache` |
+  | **2 (Vision down)** | Diagnose endpoint unreachable | Cockpit, calendar, coach | `/diagnose` accepts upload, queues to `yp_diagnoses` with `status='queued'`; UI says "Diagnosis pending — we'll notify when back" |
+  | **3 (Lakebase down)** | OLTP unreachable | Static cockpit from IndexedDB cache | All writes `503`; no AI features |
+  | **4 (everything down)** | Cloud unreachable | Static brand page | No API |
+
+  Dealer Genie space sits outside the tier table — its failure mode is "provisioning placeholder," never a `500`.
+- **CQRS** — consumer writes go to Lakebase (OLTP); analytical reads (dealer Genie, internal observability) go to Delta; unidirectional `Lakehouse Sync` keeps Delta up to date. Never read consumer-facing queries from Delta.
+- **Event sourcing** — `yp_action_log` is the audit + state-reconstruction source. Calendar regeneration reads it; coach context-builder reads it; dealer aggregation reads it. A new event always produces a new row; nothing is mutated in place.
+- **Optimistic concurrency** — `yp_calendar_entries` carries an `etag` column; the regenerate-on-write path runs `DELETE … WHERE etag = ?` and writes the new run atomically. Conflicting writes lose loudly (409 with explanation), not silently.
+- **Cold-path defenses** — KA reload is the cold-start risk (a several-second VS index warm-up on the first query of the day). Mitigation: a cron-warmed dummy query at 06:00 local time so Martin's Saturday-morning first query hits a warm index.
+
+## 10. Red Team Summary
+
+Findings below are intentional pre-build threat model; each cites the §8 row that mitigates it. "Open" entries are deliberately deferred to a later phase.
+
+| ID | Threat | Severity | Mitigation |
+|----|--------|----------|------------|
+| RT-001 | Prompt injection via plant notes (`yp_plants.notes` field rendered to coach prompt) | High | §8 "AI security — coach": trust-tiered retrieval, control-char strip at API boundary, canary detection. Regression test: `test_plant_note_with_injection_payload_does_not_leak_to_coach`. |
+| RT-002 | Adversarial image fooling the vision model into a high-confidence wrong diagnosis | **Critical** (re-rated 2026-05-12: confidence floor alone is insufficient — a 0.85-confidence wrong answer is the actual failure mode) | §8 "AI security — vision": confidence floor < 0.6 → "unsure"; **ensemble plausibility check on `confidence ≥ 0.8`** (vision label rephrased and sent to FM API for yes/no plausibility); per-user rate limit on diagnose endpoint; "Get a second opinion (free dealer chat)" surfaced as a co-equal CTA on every high-confidence diagnosis; advisory feedback loop (§8) closes the correction path. Diagnostic-honesty non-negotiable is the policy backstop. |
+| RT-003 | Klaus sees raw Martin data via dealer Genie space | **Critical** | §8 "Access control — dealer": UC grants exclude all `yp_*` and `yard_pro_bronze/silver` from dealer SP; only `yard_pro_gold.dealer_customer_summary` is queryable. Regression test: `test_klaus_cannot_see_revoked_household_data` + a P5 integration test that asserts a row deleted from Lakebase no longer appears in Klaus's Genie results within sync latency. |
+| RT-004 | SQL injection through Genie NL→SQL | High | §8 "AI security — Genie": row-level filter baked into the underlying Delta view; Genie's NL→SQL is sandboxed by UC permissions. |
+| RT-005 | Photo upload — malicious filetype, EXIF GPS leak, oversize DoS | Medium | §8 "API Gateway": 10 MB cap, MIME allowlist, EXIF strip on ingest. |
+| RT-006 | Rate limit bypass via header spoofing | Medium | §8 "API Gateway": `X-Forwarded-User` is set by the Databricks Apps proxy and not user-settable. Lessons §21 explicitly chose this over IP-based keying. |
+| RT-007 | Lakebase OAuth token theft via process dump | Medium | §8 "Service-to-service": token rotated hourly per lessons §10; short window of usefulness. |
+| RT-008 | Vision endpoint DoS via large image batch | Medium | §8 "DoS protection": cost cap per SP per day; per-user rate limit on `/diagnose`. |
+| RT-009 | KA corpus poisoning (attacker contributes malicious docs) | Low (today) | KA corpus is curated, single-author at P3; no user-contributed sources. Promotion to High when/if community-contributed plant guides are added. **Open — re-evaluate before any user-contributed corpus.** |
+| RT-010 | Calendar regen DoS via action-log spam | Medium | Per-user rate limit on `POST /actions`; regen is debounced (one regen per `yard_id` per 5 s). |
+| RT-011 | Telemetry replay (replay an old "stuck" event to trigger a false alert) | Low | Telemetry events carry monotonic `occurred_at` and `tool_id`-scoped sequence numbers; replays rejected at ingest. P4 concern. |
+| RT-012 | Stale dealer consent state — Klaus's query returns a household that revoked after query started | Medium | §8 "Consent state machine": append-only consent log; aggregation reads consent at every batch start; analytical query latency to revoke is bounded by sync interval (≤ 5 min documented SLA in the consent UI). |
+| RT-013 | `customerRef` "Stihl" leaks into rendered DOM | Medium | §7.5 implementation note + regression test `test_no_customer_ref_in_dom.tsx`. |
+| RT-014 | XSS in user-supplied notes rendered in coach output or cockpit | High | §8 "AI security — coach": SafeMarkdown (lessons §20); API-boundary sanitization for all user-supplied text fields. |
+| RT-015 | CSRF on `POST /actions/mark-done` | Medium | Databricks Apps OAuth flow + same-origin + `SameSite=Strict` cookie. |
+| RT-016 | Cross-tenant leak via `yard_id` from another household | **Critical** | §8 "Access control — consumer": Lakebase RLS by `yard_id` from `X-Forwarded-User`. Regression test `tests/projects/yard_pro/test_cross_household_isolation.py`: (a) seeds yard_A (user_A) and yard_B (user_B); (b) calls every `yp_*` endpoint with `X-Forwarded-User=user_A` AND `yard_id=yard_B` in path, body, and query — asserts `403` or empty result; (c) repeats for PATCH and DELETE; (d) attempts JSON-body `yard_id` override on `POST /actions` where the path doesn't include `yard_id` — asserts RLS wins over the body field. Lessons §9 SQL-injection allowlist pattern applies if any endpoint accepts `yard_id` as a literal in a constructed query. |
+| RT-017 | KA cold-start latency erodes the "5s coach answer" success criterion | Medium | §9 "Cold-path defenses": cron-warmed dummy query at 06:00 local. |
+| RT-018 | Vision endpoint cost runaway from one abusive user | Medium | §8 "DoS protection": cost cap per SP per day. |
+| RT-019 | Photo-storage cost runaway / volume abuse | Medium | UC Volume size-quota alert; per-yard photo retention policy (180-day rolling delete) documented in the privacy notice. |
+| RT-020 | Lakebase OAuth refresh failure cascade — all in-flight requests fail | Medium | Lessons §10 handles single-token rotation; additional retry-once on `do_connect` with exponential backoff. |
+| RT-021 | Edge synthesizer (P1-P3) feedback loop — telemetry triggers nudge triggers action triggers more telemetry | Low | Synthesizer is one-way; the action-log → telemetry path is explicitly absent. P3 acceptance gate: `scripts/yard_pro/check_no_telemetry_feedback.py` static-analysis grep asserts `action_log` writers are not invoked from `telemetry_service.py` code path. Test fails CI if a future change wires the loop. |
+| RT-022 | Genie SQL leaks PII through an unintended JOIN to a non-anonymized table | **Critical** | §8 "Access control — dealer": Klaus's SP has UC `SELECT` only on `yard_pro_gold.*`; cannot reach `yard_pro_bronze/silver` even if Genie's NL→SQL tried. |
+| RT-023 | Dealer brute-forces consent state by probing for which households appear | Medium | Anonymization at ingest means dealer never sees `yard_id` — only `yard_id_hash` (HMAC with rotating secret). Brute-force search of the hash space is computationally infeasible. |
+| RT-024 | Logs leak yard photos or coach transcripts | **Critical** (re-rated 2026-05-12: GDPR Art. 32 "security of processing" violation = up to €20M / 4 % global turnover; geotagged yard images = PII, coach transcripts may reveal health-of-household details) | Belt-and-suspenders: (a) name-based field exclusion in structured logger (`photo_uri`, `predictions`, `coach_transcript_chunk`, etc.); (b) regex post-filter on log emission for base64 image data, UUID-shaped photo refs, and multi-line text blocks >500 chars; (c) **log-pipeline assertion test** `tests/projects/yard_pro/test_log_pipeline_no_pii.py` runs the diagnose + coach happy paths and greps the emitted log stream for a known canary photo URI and a known canary transcript phrase — fails CI if either appears. |
+| RT-025 | GDPR delete endpoint misses a table — orphan rows survive | High | §8 "GDPR right-to-be-forgotten": integration test enumerates all tables in `scripts/uc_schema.py::TABLES` + Lakebase `yp_*` + UC Volume prefix; asserts zero rows referencing the deleted `yard_id` after the delete. Lessons §23 (canonical UC DDL) makes the enumeration tractable. |
+
+### Phase 3 scale assumptions
+
+- **Per-household, peak season:** ~50 coach turns/week, ~10 photos/week, ~30 calendar entries active, ~5 tools generating ~100 telemetry events/week (P4). At 1k households → 50k coach turns/wk, 10k photos/wk, ~300k telemetry events/wk.
+- **Dealer side:** 1 dealer queries ~10× per business day, mostly aggregate counts. Negligible.
+- **At 10× — Saturday-morning peak is the real stress test.** Sustained averages don't capture March-Oct, 09:00-11:00 local: coach turns spike **8-12× the weekly average → ~8-12 turns/sec sustained for 2 hours**. Each turn writes to `yp_action_log` (event-sourcing rail in §9) and into `yard_pro_bronze.coach_transcripts` via Lakehouse Sync. The UNIQUE partial index on `(yard_id, idempotency_key)` plus the `(yard_id, occurred_at DESC)` BTree must be benchmarked at **50 writes/sec/yard worst case** (concurrent diagnose + action + coach). Lakebase connection pool default of 10 per app instance is insufficient; size to `(max_concurrent_app_workers × 2)`. **Open question: does Lakebase scale-to-zero handle the 09:00 surge, or does the first user eat a 30-60 s wake?** P4 acceptance includes `scripts/yard_pro/canary_cold_start.py` and a synthetic-load test against the partial index.
+- **At 100× (100k households):** real-time vision economics break — ~$0.02/inference × 10k photos/hour at peak ≈ $200/hr. **This is a re-scope, not a free optimization.** Batched path: photos enqueue to `yard_pro_bronze.diagnose_queue`; vision inference runs every 60 s on batches of 32-128; latency budget shifts from <15 s (UC3 success criterion #3) to <2 min — **explicitly breaking UC3's success criterion**. Premium tier could keep real-time. Out of P0-P5 scope; flagged for the OEM business-model conversation, not the technical phase plan.
+
+### Edge cases explicitly enumerated
+
+- **Offline:** Consumer app caches the cockpit's last `/yards/{id}` payload in IndexedDB; coach degrades to "available offline soon" message; photo upload queues locally.
+- **Partial failure:** Vision endpoint down but KA up → `/diagnose` returns "diagnosis unavailable, here's a general care reminder from KA". Coach down but cockpit up → cockpit still loads; chat button shows "Coach is offline".
+- **Conflicting writes:** Two devices simultaneously mark the same calendar entry done → optimistic concurrency (§9) returns 409 to the loser; UI shows "Already marked done from another device".
+- **GDPR delete during analytical sync:** Delete may take up to one Lakehouse-Sync interval to propagate to Delta Bronze/Silver/Gold; documented in privacy notice. Dealer query result therefore lags real-time consent revoke by ≤ 5 min.
+
+---
+
+<!-- Phase 4 (§11-12 Use-case map/Final ordering) appears below as it's drafted. -->
