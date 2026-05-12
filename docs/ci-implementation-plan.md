@@ -215,10 +215,56 @@ Tests are designed up-front per the working-mode rule in `CLAUDE.md`.
 - Vitest + happy-dom (or `@testing-library/react` with a CSSStyleSheet polyfill).
 
 ### 6.3 Visual regression
-- Playwright screenshot per route on the home page (1280×800, light + dark).
-- Baselines committed to `tests/visual/baselines/`.
-- CI compares with `pixelmatch` at 0.1 % tolerance.
-- First-PR baselines reviewed manually.
+
+**Status:** shipped P3 (2026-05-12). Suite lives at `tests/visual/brand-themes.spec.ts`.
+
+- Playwright (chromium) screenshot per accelerator route on the home page (1280×800, light + dark = 12 captures).
+- Baselines committed to `tests/visual/baselines/<slug>/<light|dark>.png`.
+- CI compares with `pixelmatch`.
+  - **Long-term tolerance target:** 0.1 % (`maxDiffPixelRatio: 0.001`).
+  - **Effective tolerance for the first-pass baselines:** 0.5 % (`maxDiffPixelRatio: 0.005`). A few suspense-driven dashboard cards (notably `mol-asm-cockpit`) finish loading after the initial `networkidle`, which can push consecutive captures over 0.1 % without indicating any actual visual regression. The tolerance is documented inline in `tests/visual/brand-themes.spec.ts` and will tighten once routes expose a deterministic "fully settled" signal.
+- First-PR baselines reviewed manually before merge.
+
+#### How to run
+
+```bash
+# Boot the dev server (Playwright's webServer reuses it if already running).
+uv run apx dev start
+
+# Run the suite (pure-Playwright path):
+uv run apx bun run test:visual
+
+# Or via the pytest wrapper (opt-in via marker):
+uv run pytest -m visual
+```
+
+The default `uv run pytest` invocation skips the visual suite — it's slow and needs the dev server.
+
+#### How to refresh baselines
+
+Only after an *intentional* visual change. Reviewer must eyeball each diffed PNG before commit (e.g., open both `tests/visual/baselines/<slug>/<mode>.png` snapshots side-by-side in a viewer).
+
+```bash
+# Wipes every <slug>/ subdirectory under tests/visual/baselines/ and
+# re-captures fresh PNGs from the running dev server.
+uv run apx bun run test:visual:update
+```
+
+The README markers (`README.md`, `aeco-hub-portfolio.md`, `aeco-hub-tools.md`) live alongside the per-slug subdirectories — the refresh command only wipes directories, never files, so the chrome-devtools snapshot baselines are preserved.
+
+#### Suggested CI step
+
+A GitHub Actions job that:
+
+1. `uv sync` and `uv run apx bun install` to hydrate Python + JS deps.
+2. `uv run apx bun playwright install --with-deps chromium` for the browser.
+3. `uv run apx bun run test:visual` against a built preview (`uv run apx build` + a static server, or the dev server) using the same chromium revision as the baselines were captured with.
+
+#### Baseline-refresh discipline
+
+- Refresh only after an intentional visual change. **Do not** refresh to mask a real regression.
+- The PR that refreshes baselines must include "before" and "after" PNGs (the diff and the new baseline) in the description for reviewer triage.
+- Per-slug baseline location: `tests/visual/baselines/<slug>/<light|dark>.png`.
 
 ### 6.4 A11y / contrast
 - For each token pair (`--primary`/`--primary-foreground`, `--sidebar-primary`/`--sidebar-primary-foreground`), assert WCAG AA contrast ratio ≥ 4.5 for body text, ≥ 3 for large text.
