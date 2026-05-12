@@ -140,3 +140,111 @@ def test_project_plan_has_customer_inspiration_callout(
         f"Add the standard blockquote near the top — see "
         f"docs/ci-implementation-plan.md."
     )
+
+
+# --------------------------------------------------------------------------
+# P2 regression tests — wordmark, sidebar slot, chart palette
+# --------------------------------------------------------------------------
+
+WORDMARK_PATH = UI_ROOT / "components" / "apx" / "project-wordmark.tsx"
+SIDEBAR_LAYOUT_PATH = UI_ROOT / "components" / "apx" / "sidebar-layout.tsx"
+
+_RULE_RE = re.compile(r"(?P<selector>[^{}]+)\{(?P<body>[^{}]+)\}", re.MULTILINE)
+
+
+def _chart_vars_present(body: str) -> set[str]:
+    """Return the set of `--chart-N` variable names defined inside a CSS rule body."""
+    return set(re.findall(r"--chart-[1-5]", body))
+
+
+def _theme_chart_blocks(slug: str) -> dict[str, set[str]]:
+    """Aggregate `--chart-*` declarations across all light vs dark rules for a slug.
+
+    Mirrors the parser used by test_brand_theme_contrast.py: any rule whose
+    selector mentions the slug + `.dark` lands in `dark`; other slug-bearing
+    rules land in `light`. We aggregate the union across rules of the same
+    bucket so that themes that split tokens across multiple selectors still
+    pass.
+    """
+    css = (THEMES_DIR / f"{slug}.css").read_text(encoding="utf-8")
+    light: set[str] = set()
+    dark: set[str] = set()
+    for rule in _RULE_RE.finditer(css):
+        selector = rule.group("selector")
+        if slug not in selector:
+            continue
+        bucket = dark if ".dark" in selector else light
+        bucket |= _chart_vars_present(rule.group("body"))
+    return {"light": light, "dark": dark}
+
+
+_CHART_PAIRS = [(slug, mode) for slug in EXPECTED_SLUGS for mode in ("light", "dark")]
+
+
+@pytest.mark.parametrize(
+    "slug,mode",
+    _CHART_PAIRS,
+    ids=[f"{s}-{m}" for s, m in _CHART_PAIRS],
+)
+def test_every_theme_defines_5_chart_vars_in_light_and_dark(
+    slug: str, mode: str
+) -> None:
+    """Each theme must define --chart-1..--chart-5 in BOTH light and dark blocks.
+
+    Without dark-mode chart vars, charts in project routes fall back to the
+    global default palette in dark mode — defeating per-project theming.
+    """
+    expected = {f"--chart-{i}" for i in range(1, 6)}
+    found = _theme_chart_blocks(slug)[mode]
+    missing = expected - found
+    assert not missing, (
+        f"{slug}.css {mode} block is missing {sorted(missing)} — "
+        f"add full --chart-1..5 to the {mode} rule."
+    )
+
+
+def test_wordmark_component_file_exists_and_exports() -> None:
+    """ProjectWordmark must exist and export a component."""
+    assert WORDMARK_PATH.is_file(), (
+        f"Missing {WORDMARK_PATH.relative_to(REPO_ROOT)}. "
+        f"See docs/ci-implementation-plan.md §5 (P2)."
+    )
+    text = WORDMARK_PATH.read_text(encoding="utf-8")
+    assert re.search(r"export\s+function\s+ProjectWordmark\b", text), (
+        "project-wordmark.tsx must `export function ProjectWordmark`."
+    )
+    # Must read the brand registry — proves it's not a stubbed-out shell.
+    assert "BRAND_THEMES" in text, (
+        "project-wordmark.tsx must look up BRAND_THEMES so the displayName "
+        "and theming are slug-driven."
+    )
+    # Legal rail: no inline SVG / image element. Pure text only.
+    assert "<svg" not in text and "<img" not in text, (
+        "project-wordmark.tsx must be text-only. See legal rail §2 in "
+        "docs/ci-implementation-plan.md — no customer marks."
+    )
+
+
+def test_sidebar_layout_accepts_project_slug_prop() -> None:
+    """SidebarLayout must accept an optional projectSlug prop and render the wordmark."""
+    text = SIDEBAR_LAYOUT_PATH.read_text(encoding="utf-8")
+    assert "projectSlug" in text, (
+        "sidebar-layout.tsx must accept a `projectSlug` prop so project "
+        "routes can render the brand wordmark in the sidebar header."
+    )
+    assert "ProjectWordmark" in text, (
+        "sidebar-layout.tsx must render <ProjectWordmark /> when projectSlug "
+        "is set."
+    )
+
+
+@pytest.mark.parametrize("slug", EXPECTED_SLUGS)
+def test_every_project_route_passes_project_slug_to_sidebar(slug: str) -> None:
+    """Every project route must wire `projectSlug` into its <SidebarLayout>."""
+    route = (
+        UI_ROOT / "routes" / "projects" / slug / "route.tsx"
+    ).read_text(encoding="utf-8")
+    assert f'projectSlug="{slug}"' in route, (
+        f'{slug}/route.tsx must pass `projectSlug="{slug}"` to '
+        f"<SidebarLayout> so the brand wordmark renders in the sidebar."
+    )
