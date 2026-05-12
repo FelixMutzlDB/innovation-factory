@@ -62,7 +62,9 @@ deprecated = "ignore"
 testpaths = ["tests"]
 markers = [
     "integration: marks tests that require live Databricks connection",
+    "visual: visual regression suite (Playwright). Requires apx dev server on :9001 and a Chromium-capable browser; opt-in via `pytest -m visual`.",
 ]
+addopts = "-m 'not visual'"
 asyncio_mode = "auto"
 
 [build-system]
