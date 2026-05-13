@@ -215,10 +215,56 @@ Tests are designed up-front per the working-mode rule in `CLAUDE.md`.
 - Vitest + happy-dom (or `@testing-library/react` with a CSSStyleSheet polyfill).
 
 ### 6.3 Visual regression
-- Playwright screenshot per route on the home page (1280×800, light + dark).
-- Baselines committed to `tests/visual/baselines/`.
-- CI compares with `pixelmatch` at 0.1 % tolerance.
-- First-PR baselines reviewed manually.
+
+**Status:** shipped P3 (2026-05-12). Suite lives at `tests/visual/brand-themes.spec.ts`.
+
+- Playwright (chromium) screenshot per accelerator route on the home page (1280×800, light + dark = 12 captures).
+- Baselines committed to `tests/visual/baselines/<slug>/<light|dark>.png`.
+- CI compares with `pixelmatch`.
+  - **Long-term tolerance target:** 0.1 % (`maxDiffPixelRatio: 0.001`).
+  - **Effective tolerance for the first-pass baselines:** 0.5 % (`maxDiffPixelRatio: 0.005`). A few suspense-driven dashboard cards (notably `mol-asm-cockpit`) finish loading after the initial `networkidle`, which can push consecutive captures over 0.1 % without indicating any actual visual regression. The tolerance is documented inline in `tests/visual/brand-themes.spec.ts` and will tighten once routes expose a deterministic "fully settled" signal.
+- First-PR baselines reviewed manually before merge.
+
+#### How to run
+
+```bash
+# Boot the dev server (Playwright's webServer reuses it if already running).
+uv run apx dev start
+
+# Run the suite (pure-Playwright path):
+uv run apx bun run test:visual
+
+# Or via the pytest wrapper (opt-in via marker):
+uv run pytest -m visual
+```
+
+The default `uv run pytest` invocation skips the visual suite — it's slow and needs the dev server.
+
+#### How to refresh baselines
+
+Only after an *intentional* visual change. Reviewer must eyeball each diffed PNG before commit (e.g., open both `tests/visual/baselines/<slug>/<mode>.png` snapshots side-by-side in a viewer).
+
+```bash
+# Wipes every <slug>/ subdirectory under tests/visual/baselines/ and
+# re-captures fresh PNGs from the running dev server.
+uv run apx bun run test:visual:update
+```
+
+The README markers (`README.md`, `aeco-hub-portfolio.md`, `aeco-hub-tools.md`) live alongside the per-slug subdirectories — the refresh command only wipes directories, never files, so the chrome-devtools snapshot baselines are preserved.
+
+#### Suggested CI step
+
+A GitHub Actions job that:
+
+1. `uv sync` and `uv run apx bun install` to hydrate Python + JS deps.
+2. `uv run apx bun playwright install --with-deps chromium` for the browser.
+3. `uv run apx bun run test:visual` against a built preview (`uv run apx build` + a static server, or the dev server) using the same chromium revision as the baselines were captured with.
+
+#### Baseline-refresh discipline
+
+- Refresh only after an intentional visual change. **Do not** refresh to mask a real regression.
+- The PR that refreshes baselines must include "before" and "after" PNGs (the diff and the new baseline) in the description for reviewer triage.
+- Per-slug baseline location: `tests/visual/baselines/<slug>/<light|dark>.png`.
 
 ### 6.4 A11y / contrast
 - For each token pair (`--primary`/`--primary-foreground`, `--sidebar-primary`/`--sidebar-primary-foreground`), assert WCAG AA contrast ratio ≥ 4.5 for body text, ≥ 3 for large text.
@@ -295,26 +341,35 @@ tests/
 5. **MOL secondary green** — MOL uses both red and green prominently. Plan currently treats red as primary, green as accent; confirm.
 6. **HB editorial accent** — Use the optional champagne `#A8894D` for editorial flair, or stay strictly monochrome?
 
-## 10. Implementation ordering (P0 → P3)
+## 10. Implementation status (P0 → P3 shipped; P4 deferred)
 
-**P0 — must-have for first ship:**
-- `themes/` skeleton + `<ProjectThemeScope>` + ViDistrictOne pilot
-- Unit + integration test scaffold
-- This document + new-project.md update (already shipped 2026-05-11)
+**P0 — shipped 2026-05-11 ([PR #7](https://github.com/FelixMutzlDB/innovation-factory/pull/7), commit `2f3d48c`):**
+- `themes/` skeleton + `<ProjectThemeScope>` + ViDistrictOne pilot.
+- `BRAND_THEMES` registry at `src/innovation_factory/ui/lib/brand-themes.ts`.
+- This document + `docs/new-project.md` brand-themes section.
+- 27 regression tests scaffolded.
 
-**P1 — next pass:**
-- Remaining 5 projects' token overrides + route wrapping
-- Font loading
-- Visual regression baselines
+**P1 — shipped 2026-05-12 ([PR #9](https://github.com/FelixMutzlDB/innovation-factory/pull/9), commit `c654b16`; WCAG follow-up [PR #10](https://github.com/FelixMutzlDB/innovation-factory/pull/10)):**
+- Remaining 5 projects' token overrides (BSH, MOL, AdTech, HB, AECO) in both light + dark.
+- Google Fonts loaded in `index.html` with `display=swap` + preconnect.
+- 5 routes wrapped with `<ProjectThemeScope>`.
+- WCAG AA contrast suite (commit `d71df1a`): `tests/common/_wcag.py` + `tests/common/test_brand_theme_contrast.py` (48 parametrized cases). BSH primary moved from `oklch(0.71 0.20 35)` to `oklch(0.66 0.22 42)` for AA Large-Text 3:1.
 
-**P2 — polish:**
-- Per-project chart palette
-- Per-project wordmarks
-- Dark-mode hand-tuning per project
+**P2 — shipped 2026-05-12 ([PR #12](https://github.com/FelixMutzlDB/innovation-factory/pull/12)):**
+- `<ProjectWordmark slug>` — pure-text wordmark, brand-adjacent font, tinted `var(--primary)`. Mounted in `<SidebarLayout>` via optional `projectSlug` prop on all 6 routes.
+- Per-theme `--chart-1..--chart-5` in **both** light and dark blocks (dark blocks were silently inheriting the global zinc palette before this).
+- 5 new regression tests in `tests/common/test_brand_themes.py`.
 
-**P3 — deferred:**
-- Per-project illustration / hero imagery
-- Theme-toggle utility in dev for screenshot generation
+**P3 — shipped 2026-05-12 ([PR #13](https://github.com/FelixMutzlDB/innovation-factory/pull/13); baseline refresh [PR #15](https://github.com/FelixMutzlDB/innovation-factory/pull/15)):**
+- Playwright visual regression framework — `playwright.config.ts`, `tests/visual/brand-themes.spec.ts` (6 slugs × {light, dark} = 12 cases), pixelmatch comparison.
+- Baselines under `tests/visual/baselines/<slug>/<light|dark>.png`.
+- `pytest -m visual` wrapper; default `pytest` invocation skips it.
+- §6.3 documents the run/refresh workflow and tolerance rationale.
+- PR #15 refreshed baselines after P2 + added `PW_PORT` env override for sibling-worktree runs.
+
+**P4 — deferred (no committed delivery date):**
+- Per-project hero imagery on landing pages. Today the wordmark + theme tint evoke the brand; hero imagery needs aesthetic direction from product/design plus tooling (AI generation or licensed stock under §2). A placeholder component `<ProjectHeroPattern slug>` (SVG abstract pattern using `--primary` / `--secondary`) ships in `chore/brand-themes-followup` so routes can opt in without further design work if they want.
+- Global "cycle through themes" keyboard shortcut beyond the `/dev/themes` gallery added in `chore/brand-themes-followup`. The gallery already lets a designer compare all 6 brands at once; only worth building the cycler if real screenshot workflows need it.
 
 ## 11. Sources
 

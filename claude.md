@@ -5,17 +5,18 @@
 > Stage: 6 accelerators live, deployed to `fevm-felix-demo`
 > Tracking: [TODO.md](docs/TODO.md) | Refinement: [docs/tasks/refinement.md](docs/tasks/refinement.md) | Revision: [docs/revision-checklist.md](docs/revision-checklist.md)
 
-## Current State (2026-05-11)
+## Current State (2026-05-12)
 
 | Area | Status |
 |------|--------|
 | **Accelerators** | 6 live (ViDistrictOne, BSH Remote Assist, MOL ASM Cockpit, AdTech Intelligence, HB Product Center, AECO Hub) |
 | **AECO Hub plan** | [docs/projects/aeco-hub-plan.md](docs/projects/aeco-hub-plan.md) — Phases 1-6 shipped 2026-04-29 |
+| **Brand themes** | [docs/ci-implementation-plan.md](docs/ci-implementation-plan.md) — P0–P3 shipped 2026-05-11/12: `BRAND_THEMES` registry (`ui/lib/brand-themes.ts`), `<ProjectThemeScope>` + 6 theme CSS files, `<ProjectWordmark>` in sidebar, per-project light+dark chart palettes. WCAG AA contrast suite + Playwright visual regression at 0.5% effective tolerance gate the system. |
 | **Database** | Lakebase Autoscaling (production), PGlite (local dev) |
 | **Workspace** | `fevm-felix-demo` (migrated from `fe-sandbox-felix-demo-sandbox` → `fe-shared-demo`) |
 | **Security** | SQL injection (§9), XSS (§20), rate limiting (§21) all shipped; router-discipline lint added (D6) |
 | **Tests** | Security tests in place (input sanitize, markdown XSS policy, rate limit, streaming protocol, router discipline); broader coverage still thin |
-| **Branch** | `feature/aeco-hub` |
+| **Branch** | `feature/yard-pro` (7th accelerator in flight) |
 
 ## Codebase Tree
 

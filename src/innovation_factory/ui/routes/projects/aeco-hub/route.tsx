@@ -49,7 +49,7 @@ function Layout() {
 
   return (
     <ProjectThemeScope slug="aeco-hub">
-      <SidebarLayout>
+      <SidebarLayout projectSlug="aeco-hub">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>

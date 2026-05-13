@@ -52,7 +52,7 @@ function Layout() {
 
   return (
     <ProjectThemeScope slug="vi-home-one">
-      <SidebarLayout>
+      <SidebarLayout projectSlug="vi-home-one">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>

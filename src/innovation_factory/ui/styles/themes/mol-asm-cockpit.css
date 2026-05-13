@@ -21,6 +21,10 @@
   --sidebar-accent-foreground: oklch(0.40 0.16 135);
   --sidebar-ring: oklch(0.57 0.22 25);
 
+  /* Chart palette (rooted in MOL red + green — both load-bearing brand hues):
+   *   1 = red primary                 2 = green secondary
+   *   3 = amber bridge                4 = deep red
+   *   5 = deep green                                                 */
   --chart-1: oklch(0.57 0.22 25);
   --chart-2: oklch(0.71 0.18 135);
   --chart-3: oklch(0.78 0.15 65);
@@ -45,4 +49,11 @@
   --sidebar-accent: oklch(0.38 0.12 135);
   --sidebar-accent-foreground: oklch(0.96 0.04 135);
   --sidebar-ring: oklch(0.64 0.22 25);
+
+  /* Chart slots tuned for dark background — see light block for slot roles. */
+  --chart-1: oklch(0.64 0.22 25);
+  --chart-2: oklch(0.75 0.18 135);
+  --chart-3: oklch(0.82 0.16 65);
+  --chart-4: oklch(0.55 0.14 25);
+  --chart-5: oklch(0.60 0.16 135);
 }
