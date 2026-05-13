@@ -41,6 +41,16 @@ from .routers import nudges
 
 router.include_router(nudges.router)
 
+# UC6 (P2) — dealer panel: consumer-side consent state machine + Klaus's
+# anonymized customer view. Append-only consent transitions and HMAC-only
+# yard_id_hash exposure are enforced inside the router; this block owns
+# only the include. Plan §12 P2: "Dealer panel UI / Anonymization pipeline
+# production-grade / Consent state machine end-to-end / Genie space over
+# yard_pro_gold.dealer_customer_summary".
+from .routers import dealer
+
+router.include_router(dealer.router)
+
 
 class YardProDatabricksResourcesOut(BaseModel):
     workspace_url: str

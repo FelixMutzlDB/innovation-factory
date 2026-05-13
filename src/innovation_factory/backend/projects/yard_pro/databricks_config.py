@@ -40,5 +40,15 @@ VISION_ENDPOINT = _cfg.get("VISION_ENDPOINT")
 # Dealer panel (P5)
 DEALER_GENIE_SPACE_ID = _cfg.get("DEALER_GENIE_SPACE_ID")
 
+# Dealer-side anonymization secret (P5). HMAC key over ``yard_id`` to produce
+# the ``yard_id_hash`` shipped to ``yard_pro_gold.dealer_customer_summary``.
+# Rotates per the plan §8 "Consent state machine" + RT-023 invariant: brute-
+# force search of the hash space is computationally infeasible **only while
+# this secret is uncompromised**. Operationally rotated via the procedure in
+# ``scripts/yard_pro/RUNBOOK.md`` §12. Defaults to ``""`` so local dev boots
+# cleanly; aggregation_service refuses to emit hashes when the secret is empty
+# (irreversible-at-ingest rail can't downgrade to a known-plaintext hash).
+DEALER_HMAC_SECRET = _cfg.get("DEALER_HMAC_SECRET")
+
 # Photo storage — UC Volume prefix per yard: yard_pro/photos/<yard_id>/...
 PHOTOS_VOLUME_PATH = _cfg.get("PHOTOS_VOLUME_PATH")

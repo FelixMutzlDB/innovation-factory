@@ -529,7 +529,194 @@ is a known wart, tracked but not blocking P0.
 
 ---
 
-## 11. Last-resort: deploy without scripts
+## 11. Dealer Genie space (UC6, P5)
+
+The dealer panel (`/projects/yard-pro/dealer/*`) hangs off a single
+Genie space over the anonymized gold table
+`yard_pro_gold.dealer_customer_summary`. The space is created against
+the Klaus-side service principal whose UC grants are scoped narrowly
+per plan §8 and RT-003 / RT-022.
+
+### 11.1 Prerequisites
+
+- §2 has been run — `yard_pro_gold.dealer_customer_summary` exists and
+  has seeded rows. The deploy script refuses to proceed if the table
+  is missing.
+- A dealer service principal (Klaus's SP) has been provisioned in the
+  workspace. Recommended SP display name: `yard-pro-dealer-sp`.
+
+### 11.2 Run the deploy script
+
+```bash
+uv run python -m scripts.yard_pro.deploy_genie_space \
+  --catalog felix_demo_catalog \
+  --profile fevm-felix-demo \
+  --warehouse-id f7cdb11888c4799e
+```
+
+**Expected output (truncated):**
+
+```
+== yard-pro: Dealer Genie space deploy ==
+  Profile:     fevm-felix-demo
+  Catalog:     felix_demo_catalog
+  Warehouse:   f7cdb11888c4799e
+  Space name:  yard-pro-dealer-genie
+
+Step 1: verify gold table exists
+  felix_demo_catalog.yard_pro_gold.dealer_customer_summary: OK
+
+Step 2: check for row filter (warn-only)
+  WARN: no row filter visible on ... (or "Row filter detected: OK")
+
+Step 3: create Genie space
+  Creating Genie space: yard-pro-dealer-genie...
+    Created: 01ef1234-...
+    Added 6 sample questions
+
+== DONE ==
+  Space:    yard-pro-dealer-genie
+  ID:       01ef1234-...
+  Set in app.yml / databricks.yml / .env:
+    YARD_PRO_DEALER_GENIE_SPACE_ID=01ef1234-...
+```
+
+Idempotency: the script writes `scripts/yard_pro/genie_state.json`.
+Subsequent runs are no-ops unless `--force` is passed. The deploy
+mutates the workspace; never run with `--force` against production
+without operator approval.
+
+### 11.3 UC grants for Klaus's service principal
+
+Run these against `fevm-felix-demo` (replace `<KLAUS_SP_ID>` with the
+real SP's application ID). The narrow grant set + EXCLUDE-by-omission
+on every yp_*/bronze/silver path is the load-bearing RT-003 + RT-022
+mitigation.
+
+```sql
+-- Catalog + schema access (USE only — no CREATE / MODIFY)
+GRANT USE_CATALOG ON CATALOG felix_demo_catalog TO `<KLAUS_SP_ID>`;
+GRANT USE_SCHEMA  ON SCHEMA  felix_demo_catalog.yard_pro_gold TO `<KLAUS_SP_ID>`;
+
+-- The one table Klaus can SELECT
+GRANT SELECT ON TABLE felix_demo_catalog.yard_pro_gold.dealer_customer_summary
+  TO `<KLAUS_SP_ID>`;
+
+-- Explicitly REVOKE everything else (defense in depth — these grants
+-- shouldn't exist on the SP by default, but a misconfigured workspace
+-- can leak via inherited grants from a group).
+REVOKE ALL PRIVILEGES ON SCHEMA felix_demo_catalog.yard_pro_bronze FROM `<KLAUS_SP_ID>`;
+REVOKE ALL PRIVILEGES ON SCHEMA felix_demo_catalog.yard_pro_silver FROM `<KLAUS_SP_ID>`;
+-- yp_* lives in Lakebase, not UC — Klaus's SP has no Lakebase OAuth
+-- token, so this is closed at the connectivity layer.
+```
+
+**Row-level filter** — without this, every dealer SP sees every row.
+The Genie space deploy script (§11.2) WARNs if no filter is present.
+
+```sql
+-- A simple session-property filter; adjust for your dealer-SP mapping.
+CREATE OR REPLACE FUNCTION felix_demo_catalog.yard_pro_gold.dealer_scope_filter(d STRING)
+RETURNS BOOLEAN
+RETURN d = current_user();  -- or a session-property lookup function
+                            -- mapping SP→dealer_code.
+
+ALTER TABLE felix_demo_catalog.yard_pro_gold.dealer_customer_summary
+  SET ROW FILTER felix_demo_catalog.yard_pro_gold.dealer_scope_filter ON (dealer_code);
+```
+
+After applying the filter, re-run the deploy script with `--force` so
+Step 2 prints `Row filter detected: OK`.
+
+### 11.4 Wire the space ID into the app
+
+After §11.2 prints the space_id, paste into `app.yml` AND
+`databricks.yml` AND `.env`:
+
+```yaml
+- name: YARD_PRO_DEALER_GENIE_SPACE_ID
+  value: 01ef1234-...
+```
+
+Redeploy:
+
+```bash
+uv run apx build && databricks bundle deploy -t dev --profile fevm-felix-demo
+```
+
+Verify via `/api/projects/yard-pro/databricks-resources`:
+
+```json
+{
+  ...
+  "dealer_genie_space_id": "01ef1234-...",
+  "dealer_genie_configured": true,
+  ...
+}
+```
+
+The dealer panel UI (`/projects/yard-pro/dealer`) renders the embedded
+Genie iframe when `dealer_genie_configured: true`; otherwise it shows
+the "Genie not configured" empty state.
+
+---
+
+## 12. HMAC secret rotation (RT-023)
+
+`YARD_PRO_DEALER_HMAC_SECRET` is the HMAC key over `yard_id` that
+produces `yard_id_hash`. The irreversible-at-ingest rail per plan §2
+relies on this secret being held only by the workspace ingestion
+principal — Klaus never sees it.
+
+### 12.1 When to rotate
+
+- Annually as routine hygiene.
+- Immediately on any suspected compromise of the workspace storage
+  layer or the runtime principal.
+
+### 12.2 How to rotate
+
+1. Generate a new 32-byte secret:
+
+   ```bash
+   python -c "import secrets; print(secrets.token_urlsafe(32))"
+   ```
+
+2. Update the value in `app.yml`, `databricks.yml`, and operator's
+   `.env`. The aggregation_service refuses to emit hashes when the
+   secret is empty (`HmacSecretMissingError` → 503), so a partial
+   rollout fails closed.
+
+3. Redeploy:
+
+   ```bash
+   uv run apx build && databricks bundle deploy -t dev --profile fevm-felix-demo
+   ```
+
+4. **Important consequence — hash discontinuity.** Every yard's
+   `yard_id_hash` value changes when the secret rotates. Klaus's
+   Genie queries that compare hashes across time (e.g. "show me
+   customers I've seen for >2 seasons") will lose continuity until
+   the next gold-table re-seed. Document the rotation date in
+   `docs/projects/yard-pro-plan.md` §8 row.
+
+5. The previous-rotation rows in `yard_pro_gold.dealer_customer_summary`
+   become orphans — they're queryable but no household can be matched
+   back to them. Re-run §2 to re-seed the gold table with hashes
+   under the new secret.
+
+### 12.3 What rotation does NOT do
+
+- It does **not** invalidate consent state. `yp_dealer_relationships`
+  rows are unaffected — the append-only chain stays intact. A
+  granted household stays granted across rotation.
+- It does **not** alter the Genie space itself. The space's
+  `table_identifiers` list is unchanged; only the hash values
+  visible inside the table flip.
+
+---
+
+## 13. Last-resort: deploy without scripts
 
 If both deploy scripts are broken in some way these notes don't cover,
 the manual UI path works:
