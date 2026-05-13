@@ -82,7 +82,7 @@ resources:
         # See scripts/yard_pro/RUNBOOK.md.
         - name: yard-pro-coach-ka
           serving_endpoint:
-            name: yard-pro-coach-ka
+            name: ka-7598e04d-endpoint
             permission: CAN_QUERY
         - name: yard-pro-vision
           serving_endpoint:
@@ -157,9 +157,9 @@ resources:
           - name: YARD_PRO_UC_SCHEMA
             value: yard_pro
           - name: YARD_PRO_COACH_KA_ENDPOINT
-            value: yard-pro-coach-ka
+            value: ka-7598e04d-endpoint
           - name: YARD_PRO_COACH_KA_TILE_ID
-            value: ""
+            value: 7598e04d-f7dc-49b8-a41e-ee473648d645
           - name: YARD_PRO_VISION_ENDPOINT
             value: yard-pro-vision-v1
           - name: YARD_PRO_DEALER_GENIE_SPACE_ID
