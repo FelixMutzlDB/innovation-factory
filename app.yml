@@ -118,7 +118,11 @@ env:
   - name: YARD_PRO_COACH_KA_TILE_ID
     value: 7598e04d-f7dc-49b8-a41e-ee473648d645
   - name: YARD_PRO_VISION_ENDPOINT
-    value: yard-pro-vision-v1
+    # Temporarily empty — yard-pro-vision-v1 endpoint creation is being
+    # debugged in the workspace. With this empty, the diagnose modal
+    # renders the lessons §18 "not configured" card cleanly. Flip back
+    # to "yard-pro-vision-v1" once the endpoint reaches READY.
+    value: ""
   - name: YARD_PRO_DEALER_GENIE_SPACE_ID
     value: ""
   - name: YARD_PRO_PHOTOS_VOLUME_PATH
