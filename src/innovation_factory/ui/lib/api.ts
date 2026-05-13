@@ -2594,6 +2594,15 @@ export interface YpDiagnosePostOut {
   yard_id: number;
 }
 
+export interface YpDiagnoseQueueOut {
+  created_at: string;
+  diagnosis_id: number | null;
+  id: number;
+  reason: string;
+  status: string;
+  yard_id: number;
+}
+
 export interface YpDiagnosisOut {
   accepted_label: string | null;
   advisory?: boolean;
@@ -3509,6 +3518,12 @@ export interface Yp_listDiagnosesParams {
 
 export interface Yp_diagnoseParams {
   "Idempotency-Key"?: string | null;
+}
+
+export interface Yp_listDiagnoseQueueParams {
+  status?: string | null;
+  limit?: number;
+  offset?: number;
 }
 
 export interface Yp_getDiagnosisParams {
@@ -7845,6 +7860,35 @@ export const yp_diagnose = async (data: FormData, params?: Yp_diagnoseParams, op
 
 export function useYp_diagnose(options?: { mutation?: UseMutationOptions<{ data: YpDiagnosePostOut }, ApiError, { params: Yp_diagnoseParams; data: FormData }> }) {
   return useMutation({ mutationFn: (vars) => yp_diagnose(vars.data, vars.params), ...options?.mutation });
+}
+
+export const yp_listDiagnoseQueue = async (params?: Yp_listDiagnoseQueueParams, options?: RequestInit): Promise<{ data: YpDiagnoseQueueOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/yard-pro/diagnose-queue?${queryString}` : `/api/projects/yard-pro/diagnose-queue`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listDiagnoseQueueKey = (params?: Yp_listDiagnoseQueueParams) => {
+  return ["/api/projects/yard-pro/diagnose-queue", params] as const;
+};
+
+export function useYp_listDiagnoseQueue<TData = { data: YpDiagnoseQueueOut[] }>(options?: { params?: Yp_listDiagnoseQueueParams; query?: Omit<UseQueryOptions<{ data: YpDiagnoseQueueOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listDiagnoseQueueKey(options?.params), queryFn: () => yp_listDiagnoseQueue(options?.params), ...options?.query });
+}
+
+export function useYp_listDiagnoseQueueSuspense<TData = { data: YpDiagnoseQueueOut[] }>(options?: { params?: Yp_listDiagnoseQueueParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpDiagnoseQueueOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listDiagnoseQueueKey(options?.params), queryFn: () => yp_listDiagnoseQueue(options?.params), ...options?.query });
 }
 
 export const yp_getDiagnosis = async (params: Yp_getDiagnosisParams, options?: RequestInit): Promise<{ data: YpDiagnosisOut }> => {

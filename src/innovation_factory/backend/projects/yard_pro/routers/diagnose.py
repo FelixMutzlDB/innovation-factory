@@ -32,6 +32,8 @@ from ....dependencies import RuntimeDep, SessionDep
 from ....rate_limit import limiter
 from ..models import (
     YardProDiagnosisStatus,
+    YpDiagnoseQueue,
+    YpDiagnoseQueueOut,
     YpDiagnosis,
     YpDiagnosisOut,
     YpYard,
@@ -229,6 +231,24 @@ async def diagnose(
     db.commit()
     db.refresh(diagnosis)
 
+    # Tier-2 enqueue (plan §9 resilience): if the result is unsure
+    # (either by the confidence floor or by the ensemble plausibility
+    # downgrade), append a queue row so a human reviewer / batched
+    # second pass can revisit. Append-only; the actual review UI is P3.
+    if result.unsure:
+        db.add(
+            YpDiagnoseQueue(
+                yard_id=yard.id or 0,
+                diagnosis_id=diagnosis.id,
+                reason=(
+                    "Vision endpoint downgrade — top_label='unsure'. "
+                    f"model_version={result.model_version}."
+                ),
+                status="queued",
+            )
+        )
+        db.commit()
+
     return YpDiagnosePostOut(
         id=diagnosis.id or 0,
         yard_id=diagnosis.yard_id,
@@ -320,6 +340,47 @@ def list_diagnoses(
             status=r.status,
             created_at=r.created_at,
             advisory=True,
+        )
+        for r in rows
+    ]
+
+
+@router.get(
+    "/diagnose-queue",
+    response_model=list[YpDiagnoseQueueOut],
+    operation_id="yp_listDiagnoseQueue",
+)
+def list_diagnose_queue(
+    db: SessionDep,
+    request: Request,
+    status: Optional[str] = Query(default=None, description="Filter by status"),
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+) -> list[YpDiagnoseQueueOut]:
+    """List Tier-2 diagnose queue rows for the caller's yard.
+
+    Plan §9 resilience: vision-down + ensemble-downgrade + unsure-floor
+    results enqueue here for a manual / batched second pass. Ops surface
+    rather than a consumer one — the cockpit doesn't render this list
+    in P1.
+    """
+    yard = _resolve_yard(db, request)
+    stmt = select(YpDiagnoseQueue).where(YpDiagnoseQueue.yard_id == yard.id)
+    if status is not None:
+        stmt = stmt.where(YpDiagnoseQueue.status == status)
+    rows = db.exec(
+        stmt.order_by(YpDiagnoseQueue.created_at.desc())  # type: ignore[union-attr]
+        .offset(offset)
+        .limit(limit)
+    ).all()
+    return [
+        YpDiagnoseQueueOut(
+            id=r.id or 0,
+            yard_id=r.yard_id,
+            diagnosis_id=r.diagnosis_id,
+            reason=r.reason,
+            status=r.status,
+            created_at=r.created_at,
         )
         for r in rows
     ]

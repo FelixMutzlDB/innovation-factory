@@ -513,6 +513,31 @@ class YpNudgeOut(BaseModel):
     advisory: bool = True
 
 
+class YpDiagnoseQueue(SQLModel, table=True):
+    """Tier-2 diagnose queue (plan §9 resilience tiers + §12 P1).
+
+    When vision is down, returns "unsure", or the ensemble plausibility
+    check downgrades a high-confidence answer, the diagnose row may be
+    enqueued here for a manual / batched second pass. The "human review"
+    UI itself is P3 territory; in P1 the queue table + enqueue helper
+    ship so the operations side has a clear backlog signal.
+
+    Append-only. ``status`` advances ``queued → reviewing → resolved |
+    dismissed`` via subsequent rows (event-sourced — never UPDATE).
+    """
+
+    __tablename__ = "yp_diagnose_queue"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    yard_id: int = Field(foreign_key="yp_yards.id", index=True)
+    diagnosis_id: Optional[int] = Field(
+        default=None, foreign_key="yp_diagnoses.id", index=True
+    )
+    reason: str = Field(default="", sa_column=Column(Text))
+    status: str = Field(default="queued", index=True)  # queued | reviewing | resolved | dismissed
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
 class YpNudgeDismissal(SQLModel, table=True):
     """Append-only soft-dismissal record for nudges (UC4).
 
@@ -560,3 +585,14 @@ class YpCockpitOut(BaseModel):
     recent_diagnoses: list[YpDiagnosisOut]
     tool_readiness: list[YpToolReadinessOut] = []
     nudges: list[YpNudgeOut] = []
+
+
+class YpDiagnoseQueueOut(BaseModel):
+    """Read-side projection of ``YpDiagnoseQueue`` (plan §9 Tier-2)."""
+
+    id: int
+    yard_id: int
+    diagnosis_id: Optional[int]
+    reason: str
+    status: str
+    created_at: datetime

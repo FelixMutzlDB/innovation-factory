@@ -36,6 +36,7 @@ def seeded_yard_id(session):
         YpCoachSession,
         YpConsumable,
         YpDealerRelationship,
+        YpDiagnoseQueue,
         YpDiagnosis,
         YpNudgeDismissal,
         YpPlant,
@@ -46,6 +47,7 @@ def seeded_yard_id(session):
 
     for model in (
         YpNudgeDismissal,
+        YpDiagnoseQueue,
         YpCoachMessage,
         YpCoachSession,
         YpCoachFeedback,

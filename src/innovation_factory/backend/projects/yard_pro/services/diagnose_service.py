@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import logging
 import uuid
-from typing import Any, cast
+from typing import Any, Optional, cast
 
 from databricks.sdk import WorkspaceClient
 from pydantic import BaseModel, Field
@@ -117,7 +117,74 @@ def _apply_confidence_floor(predictions: list[DiagnosePrediction]) -> tuple[str,
     return top.name, float(top.confidence), False
 
 
-def classify(ws: WorkspaceClient, image_bytes: bytes) -> DiagnoseResult:
+#: Confidence at or above which the ensemble plausibility check fires
+#: (plan §8 RT-002: "On confidence ≥ 0.8 responses, run an ensemble
+#: plausibility check"). Below this we trust the vision endpoint's
+#: confidence; above it, we cross-check with the FM API.
+_ENSEMBLE_PLAUSIBILITY_THRESHOLD = 0.8
+
+
+def ensemble_plausibility_check(
+    fm_caller: Optional["FmPlausibilityCaller"],
+    label: str,
+    context_text: str,
+) -> Optional[bool]:
+    """Cross-check a high-confidence vision label with the FM API.
+
+    Plan §8 RT-002 (Critical re-rated 2026-05-12): "confidence floor
+    alone is insufficient — a 0.85-confidence wrong answer is the
+    actual failure mode." Mitigation: on top_confidence ≥ 0.8, rephrase
+    the label into a yes/no plausibility prompt ("is fusarium blight
+    plausible on apple bark in May Stuttgart?") and ask the coach FM
+    API. If FM disagrees, the vision result is downgraded to "unsure".
+
+    Returns:
+    - ``True`` if FM says the label is plausible
+    - ``False`` if FM says it's implausible
+    - ``None`` if ``fm_caller`` is unavailable (skip the check; we
+      trust the vision endpoint's confidence in that case rather than
+      hard-failing)
+    """
+    if fm_caller is None:
+        return None
+    prompt = (
+        f"Plausibility check. Vision model says: '{label}'. "
+        f"Yard context: {context_text}. "
+        f"Reply with one word — YES if this diagnosis is plausible for the "
+        f"given context, NO if it is not."
+    )
+    try:
+        reply = fm_caller(prompt)
+    except Exception as exc:
+        logger.warning(
+            "Plausibility check failed (%s: %s) — skipping",
+            type(exc).__name__,
+            exc,
+        )
+        return None
+    if not reply:
+        return None
+    head = reply.strip().split()[0].upper().rstrip(".,!?:;")
+    if head == "YES":
+        return True
+    if head == "NO":
+        return False
+    return None
+
+
+#: Type alias for the FM plausibility caller — any callable that takes a
+#: prompt and returns the model's reply. The diagnose router wires this
+#: to ``coach_service.synthesize`` (or a stub in tests).
+FmPlausibilityCaller = Any  # callable: (str) -> str
+
+
+def classify(
+    ws: WorkspaceClient,
+    image_bytes: bytes,
+    *,
+    fm_plausibility_caller: Optional[FmPlausibilityCaller] = None,
+    yard_context_text: str = "",
+) -> DiagnoseResult:
     """Run a vision classification against ``VISION_ENDPOINT``.
 
     Raises :class:`DiagnoseNotConfiguredError` when the endpoint is unset
@@ -125,6 +192,12 @@ def classify(ws: WorkspaceClient, image_bytes: bytes) -> DiagnoseResult:
     exception is logged and surfaces as an "unsure" result so the demo
     never sees a hard 500 — the second-opinion CTA is the user-visible
     safety rail.
+
+    Plan §8 RT-002: when the vision model returns ``top_confidence ≥
+    0.8``, the ensemble plausibility check runs (if ``fm_plausibility_
+    caller`` is provided) — FM-API yes/no on the label given the yard
+    context. If FM disagrees, the result is downgraded to "unsure"
+    with ``model_version`` annotated to surface the downgrade.
     """
     response_id = uuid.uuid4().hex
 
@@ -171,13 +244,37 @@ def classify(ws: WorkspaceClient, image_bytes: bytes) -> DiagnoseResult:
     predictions = _parse_predictions(raw)
     top_label, top_confidence, unsure = _apply_confidence_floor(predictions)
 
+    # Ensemble plausibility check on high-confidence answers (RT-002).
+    # Only fires when the vision model is already sure and a caller was
+    # provided. Disagreement → downgrade to "unsure" + annotate the
+    # model_version so the downgrade is visible to the cockpit.
+    model_version_out = VISION_ENDPOINT
+    if (
+        not unsure
+        and top_confidence >= _ENSEMBLE_PLAUSIBILITY_THRESHOLD
+    ):
+        plausibility = ensemble_plausibility_check(
+            fm_plausibility_caller, top_label, yard_context_text
+        )
+        if plausibility is False:
+            logger.info(
+                "Vision %s @ %.2f downgraded to 'unsure' by ensemble "
+                "plausibility check (response_id=%s)",
+                top_label,
+                top_confidence,
+                response_id,
+            )
+            top_label = _UNSURE_LABEL
+            unsure = True
+            model_version_out = f"{VISION_ENDPOINT}-plausibility-downgrade"
+
     return DiagnoseResult(
         predictions=predictions,
         top_label=top_label,
         top_confidence=top_confidence,
         unsure=unsure,
         second_opinion_cta=_SECOND_OPINION_CTA,
-        model_version=VISION_ENDPOINT,
+        model_version=model_version_out,
         response_id=response_id,
     )
 
