@@ -12,6 +12,28 @@
  *   #F5F2EC → oklch(0.96 0.01 90)
  */
 
+/* Self-host Saira Condensed (plan §8 supply-chain row). Declared FIRST
+ * so the local woff2 wins over the Google Fonts CDN <link> in index.html
+ * — customers behind corporate proxies that block fonts.googleapis.com
+ * still get the brand font. SIL OFL 1.1 (https://scripts.sil.org/OFL).
+ * Source files vendored at /fonts/saira-condensed-{600,700}.woff2 served
+ * from src/innovation_factory/ui/public/. */
+@font-face {
+  font-family: "Saira Condensed";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/saira-condensed-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Saira Condensed";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/saira-condensed-700.woff2") format("woff2");
+}
+
 [data-project-theme="yard-pro"] {
   --primary: oklch(0.53 0.19 35);
   --primary-foreground: oklch(0.98 0.01 0);
