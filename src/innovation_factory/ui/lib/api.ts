@@ -2351,6 +2351,15 @@ export const YardProCoachFeedbackSignal = {
 
 export type YardProCoachFeedbackSignal = (typeof YardProCoachFeedbackSignal)[keyof typeof YardProCoachFeedbackSignal];
 
+export const YardProConsentState = {
+  none: "none",
+  pending: "pending",
+  granted: "granted",
+  revoked: "revoked",
+} as const;
+
+export type YardProConsentState = (typeof YardProConsentState)[keyof typeof YardProConsentState];
+
 export const YardProConsumableKind = {
   fertilizer: "fertilizer",
   oil: "oil",
@@ -2525,6 +2534,35 @@ export interface YpConsumableOut {
   last_restock_at: string | null;
   quantity: number;
   unit: string;
+  yard_id: number;
+}
+
+export interface YpDealerConsentTransitionIn {
+  target_state: YardProConsentState;
+}
+
+export interface YpDealerCustomerSummaryOut {
+  consent_state: string;
+  dealer_id: string;
+  last_service_event_age_days: number;
+  region_bucket: string;
+  robotic_mower_age_years: number;
+  tool_inventory_hash: string;
+  yard_id_hash: string;
+  yard_size_bucket: string;
+}
+
+export interface YpDealerRelationshipCreate {
+  dealer_id: string;
+}
+
+export interface YpDealerRelationshipOut {
+  consent_at: string | null;
+  consent_state: YardProConsentState;
+  created_at: string;
+  dealer_id: string;
+  id: number;
+  revoked_at: string | null;
   yard_id: number;
 }
 
@@ -3416,6 +3454,14 @@ export interface Yp_listCoachMessagesParams {
   session_id: number;
 }
 
+export interface Yp_revokeDealerRelationshipParams {
+  relationship_id: number;
+}
+
+export interface Yp_setDealerConsentParams {
+  relationship_id: number;
+}
+
 export interface Yp_listDiagnosesParams {
   limit?: number;
   offset?: number;
@@ -3465,6 +3511,16 @@ export interface Yp_deleteYardParams {
 
 export interface Yp_getCockpitParams {
   yard_id: number;
+}
+
+export interface Yp_exportYardAccessParams {
+  yard_id: number;
+  "X-Forwarded-Access-Token"?: string | null;
+}
+
+export interface Yp_exportYardPortabilityParams {
+  yard_id: number;
+  "X-Forwarded-Access-Token"?: string | null;
 }
 
 export interface GetProjectParams {
@@ -7617,6 +7673,97 @@ export function useYp_getDatabricksResourcesSuspense<TData = { data: YardProData
   return useSuspenseQuery({ queryKey: yp_getDatabricksResourcesKey(), queryFn: () => yp_getDatabricksResources(), ...options?.query });
 }
 
+export const yp_listDealerCustomersAnonymized = async (options?: RequestInit): Promise<{ data: YpDealerCustomerSummaryOut[] }> => {
+  const res = await fetch("/api/projects/yard-pro/dealer/customers/anonymized", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listDealerCustomersAnonymizedKey = () => {
+  return ["/api/projects/yard-pro/dealer/customers/anonymized"] as const;
+};
+
+export function useYp_listDealerCustomersAnonymized<TData = { data: YpDealerCustomerSummaryOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: YpDealerCustomerSummaryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listDealerCustomersAnonymizedKey(), queryFn: () => yp_listDealerCustomersAnonymized(), ...options?.query });
+}
+
+export function useYp_listDealerCustomersAnonymizedSuspense<TData = { data: YpDealerCustomerSummaryOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpDealerCustomerSummaryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listDealerCustomersAnonymizedKey(), queryFn: () => yp_listDealerCustomersAnonymized(), ...options?.query });
+}
+
+export const yp_listDealerRelationships = async (options?: RequestInit): Promise<{ data: YpDealerRelationshipOut[] }> => {
+  const res = await fetch("/api/projects/yard-pro/dealer/relationships", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listDealerRelationshipsKey = () => {
+  return ["/api/projects/yard-pro/dealer/relationships"] as const;
+};
+
+export function useYp_listDealerRelationships<TData = { data: YpDealerRelationshipOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: YpDealerRelationshipOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listDealerRelationshipsKey(), queryFn: () => yp_listDealerRelationships(), ...options?.query });
+}
+
+export function useYp_listDealerRelationshipsSuspense<TData = { data: YpDealerRelationshipOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpDealerRelationshipOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listDealerRelationshipsKey(), queryFn: () => yp_listDealerRelationships(), ...options?.query });
+}
+
+export const yp_createDealerRelationship = async (data: YpDealerRelationshipCreate, options?: RequestInit): Promise<{ data: YpDealerRelationshipOut }> => {
+  const res = await fetch("/api/projects/yard-pro/dealer/relationships", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_createDealerRelationship(options?: { mutation?: UseMutationOptions<{ data: YpDealerRelationshipOut }, ApiError, YpDealerRelationshipCreate> }) {
+  return useMutation({ mutationFn: (data) => yp_createDealerRelationship(data), ...options?.mutation });
+}
+
+export const yp_revokeDealerRelationship = async (params: Yp_revokeDealerRelationshipParams, options?: RequestInit): Promise<{ data: YpDealerRelationshipOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/dealer/relationships/${params.relationship_id}`, { ...options, method: "DELETE" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_revokeDealerRelationship(options?: { mutation?: UseMutationOptions<{ data: YpDealerRelationshipOut }, ApiError, { params: Yp_revokeDealerRelationshipParams }> }) {
+  return useMutation({ mutationFn: (vars) => yp_revokeDealerRelationship(vars.params), ...options?.mutation });
+}
+
+export const yp_setDealerConsent = async (params: Yp_setDealerConsentParams, data: YpDealerConsentTransitionIn, options?: RequestInit): Promise<{ data: YpDealerRelationshipOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/dealer/relationships/${params.relationship_id}/consent`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_setDealerConsent(options?: { mutation?: UseMutationOptions<{ data: YpDealerRelationshipOut }, ApiError, { params: Yp_setDealerConsentParams; data: YpDealerConsentTransitionIn }> }) {
+  return useMutation({ mutationFn: (vars) => yp_setDealerConsent(vars.params, vars.data), ...options?.mutation });
+}
+
 export const yp_listDiagnoses = async (params?: Yp_listDiagnosesParams, options?: RequestInit): Promise<{ data: YpDiagnosisOut[] }> => {
   const searchParams = new URLSearchParams();
   if (params?.limit != null) searchParams.set("limit", String(params?.limit));
@@ -8003,6 +8150,52 @@ export function useYp_getCockpit<TData = { data: YpCockpitOut }>(options: { para
 
 export function useYp_getCockpitSuspense<TData = { data: YpCockpitOut }>(options: { params: Yp_getCockpitParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpCockpitOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: yp_getCockpitKey(options.params), queryFn: () => yp_getCockpit(options.params), ...options?.query });
+}
+
+export const yp_exportYardAccess = async (params: Yp_exportYardAccessParams, options?: RequestInit): Promise<{ data: Record<string, unknown> }> => {
+  const res = await fetch(`/api/projects/yard-pro/yards/${params.yard_id}/export/access`, { ...options, method: "GET", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_exportYardAccessKey = (params?: Yp_exportYardAccessParams) => {
+  return ["/api/projects/yard-pro/yards/{yard_id}/export/access", params] as const;
+};
+
+export function useYp_exportYardAccess<TData = { data: Record<string, unknown> }>(options: { params: Yp_exportYardAccessParams; query?: Omit<UseQueryOptions<{ data: Record<string, unknown> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_exportYardAccessKey(options.params), queryFn: () => yp_exportYardAccess(options.params), ...options?.query });
+}
+
+export function useYp_exportYardAccessSuspense<TData = { data: Record<string, unknown> }>(options: { params: Yp_exportYardAccessParams; query?: Omit<UseSuspenseQueryOptions<{ data: Record<string, unknown> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_exportYardAccessKey(options.params), queryFn: () => yp_exportYardAccess(options.params), ...options?.query });
+}
+
+export const yp_exportYardPortability = async (params: Yp_exportYardPortabilityParams, options?: RequestInit): Promise<{ data: Record<string, unknown> }> => {
+  const res = await fetch(`/api/projects/yard-pro/yards/${params.yard_id}/export/portability`, { ...options, method: "GET", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_exportYardPortabilityKey = (params?: Yp_exportYardPortabilityParams) => {
+  return ["/api/projects/yard-pro/yards/{yard_id}/export/portability", params] as const;
+};
+
+export function useYp_exportYardPortability<TData = { data: Record<string, unknown> }>(options: { params: Yp_exportYardPortabilityParams; query?: Omit<UseQueryOptions<{ data: Record<string, unknown> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_exportYardPortabilityKey(options.params), queryFn: () => yp_exportYardPortability(options.params), ...options?.query });
+}
+
+export function useYp_exportYardPortabilitySuspense<TData = { data: Record<string, unknown> }>(options: { params: Yp_exportYardPortabilityParams; query?: Omit<UseSuspenseQueryOptions<{ data: Record<string, unknown> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_exportYardPortabilityKey(options.params), queryFn: () => yp_exportYardPortability(options.params), ...options?.query });
 }
 
 export const getProject = async (params: GetProjectParams, options?: RequestInit): Promise<{ data: ProjectOut }> => {

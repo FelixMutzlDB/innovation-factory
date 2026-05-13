@@ -59,6 +59,7 @@ from sqlalchemy import delete, select as sa_select, update
 from sqlmodel import Session, SQLModel
 
 from ..databricks_config import PHOTOS_VOLUME_PATH
+from ..models import YpYard
 
 logger = logging.getLogger(__name__)
 
@@ -393,5 +394,227 @@ def delete_yard_cascade(
 
 __all__ = [
     "CascadeResult",
+    "DATA_EXPORT_SCHEMA_VERSION",
     "delete_yard_cascade",
+    "export_yard_access",
+    "export_yard_portability",
 ]
+
+
+# ---------------------------------------------------------------------------
+# Art. 15 (access) + Art. 20 (portability) exports
+# ---------------------------------------------------------------------------
+#
+# Read-side counterparts to the Art. 17 cascade. Both functions reuse the
+# same ``_yp_tables()`` + ``_INDIRECT_REFS`` enumeration so a future yp_*
+# table is auto-covered. Photos are referenced by URI; bytes never inline
+# (RT-024). Coach transcripts that live in Delta (yard_pro_bronze) are
+# referenced via a pointer block so the consumer SAR ZIP can fetch them
+# out-of-band via the consent-gated path.
+
+
+#: Stable schema version for the Art. 20 portability export.
+#: Bump on any breaking change to the shape; document the change in
+#: ``docs/projects/yard-pro-data-export-schema.md`` first.
+DATA_EXPORT_SCHEMA_VERSION = "1.0.0"
+
+
+def _row_to_dict(row: Any) -> dict[str, Any]:
+    """Serialize a SQLAlchemy row mapping to a plain JSON-friendly dict.
+
+    Datetimes → ISO 8601 strings, dates → ISO 8601 strings, enums →
+    string value, dicts/lists pass through, everything else stringified
+    only if not already JSON-safe.
+    """
+    from datetime import date, datetime
+    from enum import Enum
+
+    out: dict[str, Any] = {}
+    for key, value in dict(row._mapping).items():
+        if isinstance(value, (datetime, date)):
+            out[key] = value.isoformat()
+        elif isinstance(value, Enum):
+            out[key] = value.value
+        elif isinstance(value, (str, int, float, bool, type(None), list, dict)):
+            out[key] = value
+        else:
+            out[key] = str(value)
+    return out
+
+
+def _rows_for_table(session: Session, name: str, yard_id: int) -> list[dict]:
+    """Return JSON-serializable rows for one yp_* table scoped to a yard.
+
+    Handles both direct yard_id columns and the ``_INDIRECT_REFS`` map.
+    """
+    from sqlalchemy import select as sa_select
+
+    tbl = SQLModel.metadata.tables.get(name)
+    if tbl is None:
+        return []
+
+    # SQLModel's session.exec is typed for ORM `Select` only; Core selects
+    # against raw Table objects need session.execute() — same underlying
+    # call, different overload.
+    if "yard_id" in tbl.columns:
+        stmt = sa_select(tbl).where(tbl.c.yard_id == yard_id)
+        return [_row_to_dict(r) for r in session.execute(stmt).all()]
+
+    if name in _INDIRECT_REFS:
+        fk_col, parent_name, parent_pk = _INDIRECT_REFS[name]
+        parent = SQLModel.metadata.tables.get(parent_name)
+        if parent is None or "yard_id" not in parent.columns:
+            return []
+        parent_pk_col = parent.c[parent_pk]
+        parent_ids = [
+            row[0]
+            for row in session.execute(
+                sa_select(parent_pk_col).where(parent.c.yard_id == yard_id)
+            ).all()
+        ]
+        if not parent_ids:
+            return []
+        stmt = sa_select(tbl).where(tbl.c[fk_col].in_(parent_ids))
+        return [_row_to_dict(r) for r in session.execute(stmt).all()]
+
+    return []
+
+
+def _build_yard_snapshot(session: Session, yard_id: int) -> dict[str, Any]:
+    """Walk SQLModel.metadata and return ``{table_name: [rows…]}`` for
+    every yp_* table that references the yard (directly or indirectly)."""
+    from sqlmodel import select as smselect
+
+    yard_row = session.exec(smselect(YpYard).where(YpYard.id == yard_id)).first()
+    yards = [_row_to_dict_orm(yard_row)] if yard_row is not None else []
+
+    tables: dict[str, list[dict]] = {}
+    for name in _yp_tables():
+        if name == _ROOT_TABLE:
+            continue
+        tbl = SQLModel.metadata.tables[name]
+        if "yard_id" in tbl.columns or name in _INDIRECT_REFS:
+            tables[name] = _rows_for_table(session, name, yard_id)
+    return {"yards": yards, "tables": tables}
+
+
+def _row_to_dict_orm(row: Any) -> dict[str, Any]:
+    """Same as :func:`_row_to_dict` but for SQLModel ORM rows."""
+    from datetime import date, datetime
+    from enum import Enum
+
+    out: dict[str, Any] = {}
+    for key, value in row.model_dump().items() if hasattr(row, "model_dump") else vars(row).items():
+        if isinstance(value, (datetime, date)):
+            out[key] = value.isoformat()
+        elif isinstance(value, Enum):
+            out[key] = value.value
+        else:
+            out[key] = value
+    return out
+
+
+def _list_photo_uris(ws: Any, yard_id: int) -> list[str]:
+    """Best-effort enumeration of UC Volume photo URIs for the yard.
+
+    Returns ``[]`` when ``PHOTOS_VOLUME_PATH`` is empty (local dev) or
+    when the SDK doesn't expose ``files`` (older SDK builds). The
+    function never raises — photo bytes are NEVER inlined into the
+    export (RT-024 invariant).
+    """
+    if not PHOTOS_VOLUME_PATH or ws is None:
+        return []
+    prefix = f"{PHOTOS_VOLUME_PATH.rstrip('/')}/{yard_id}/"
+    try:
+        files = ws.files
+    except AttributeError:
+        return []
+    try:
+        entries = list(files.list_directory_contents(prefix))
+    except Exception:
+        return []
+    uris: list[str] = []
+    for entry in entries:
+        path = getattr(entry, "path", None)
+        if isinstance(path, str):
+            uris.append(path)
+    return uris
+
+
+def export_yard_access(
+    session: Session, ws: Any, yard_id: int
+) -> dict[str, Any]:
+    """GDPR Art. 15 (right of access) export.
+
+    Returns a structured dict with EVERY yp_* row referencing this yard,
+    plus a list of UC Volume photo URIs (URIs only — bytes never
+    inlined, RT-024), plus a pointer to the consent-gated Delta coach
+    transcript mirror. Stable top-level keys; see
+    ``docs/projects/yard-pro-data-export-schema.md``.
+    """
+    snapshot = _build_yard_snapshot(session, yard_id)
+    return {
+        "article": "GDPR Art. 15",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "yard_id": yard_id,
+        "yards": snapshot["yards"],
+        "tables": snapshot["tables"],
+        "photos": {
+            "volume_path": PHOTOS_VOLUME_PATH or "",
+            "uris": _list_photo_uris(ws, yard_id),
+        },
+        "coach_transcripts_external": {
+            "source": "yard_pro_bronze.coach_transcripts",
+            "consent_gated": True,
+            "retention_unconsented_days": 30,
+            "retention_consented_months": 13,
+            "note": (
+                "Coach transcripts mirrored to Delta carry a consent_flag. "
+                "Rows with consent_flag=false are hard-deleted at 30 days; "
+                "consent_flag=true rows are aggregated and deleted at 13 "
+                "months (GDPR purpose limitation, plan §5)."
+            ),
+        },
+    }
+
+
+def export_yard_portability(
+    session: Session, ws: Any, yard_id: int
+) -> dict[str, Any]:
+    """GDPR Art. 20 (right to data portability) export.
+
+    Same underlying data as Art. 15 but framed under a versioned JSON
+    Schema. The top-level envelope is intentionally narrow
+    (``schema_version`` / ``article`` / ``generated_at`` / ``yard``) so
+    a downstream provider can identify the schema and dive into the
+    yard payload. See ``docs/projects/yard-pro-data-export-schema.md``
+    v1.0.0.
+    """
+    snapshot = _build_yard_snapshot(session, yard_id)
+    return {
+        "schema_version": DATA_EXPORT_SCHEMA_VERSION,
+        "article": "GDPR Art. 20",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "yard": {
+            "yard_id": yard_id,
+            "yards": snapshot["yards"],
+            "tables": snapshot["tables"],
+            "photos": {
+                "volume_path": PHOTOS_VOLUME_PATH or "",
+                "uris": _list_photo_uris(ws, yard_id),
+            },
+            "coach_transcripts_external": {
+                "source": "yard_pro_bronze.coach_transcripts",
+                "consent_gated": True,
+                "retention_unconsented_days": 30,
+                "retention_consented_months": 13,
+                "note": (
+                    "Coach transcripts mirrored to Delta carry a "
+                    "consent_flag. Rows with consent_flag=false are "
+                    "hard-deleted at 30 days; consent_flag=true rows are "
+                    "aggregated and deleted at 13 months (GDPR purpose "
+                    "limitation, plan §5)."
+                ),
+            },
+        },
+    }

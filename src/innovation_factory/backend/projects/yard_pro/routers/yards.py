@@ -19,7 +19,11 @@ from pydantic import BaseModel
 from sqlmodel import select
 
 from ....dependencies import SessionDep, get_obo_ws
-from ..services.gdpr_service import delete_yard_cascade
+from ..services.gdpr_service import (
+    delete_yard_cascade,
+    export_yard_access,
+    export_yard_portability,
+)
 from ..services.telemetry_service import (
     list_nudges_for_yard,
     list_readiness_for_yard,
@@ -405,6 +409,111 @@ def delete_yard(
         consent_revocations=result.consent_revocations,
         dry_run=result.dry_run,
     )
+
+
+class YpYardCoachTranscriptsExternal(BaseModel):
+    """Pointer to the consent-gated Delta coach transcript mirror
+    (Art. 15 + Art. 20). The transcripts themselves live in
+    ``yard_pro_bronze.coach_transcripts`` — see plan §5 retention."""
+
+    source: str
+    consent_gated: bool
+    retention_unconsented_days: int
+    retention_consented_months: int
+    note: str
+
+
+class YpYardExportPhotos(BaseModel):
+    volume_path: str
+    uris: list[str]
+
+
+class YpYardPortabilityPayload(BaseModel):
+    yard_id: int
+    yards: list[dict]
+    tables: dict[str, list[dict]]
+    photos: YpYardExportPhotos
+    coach_transcripts_external: YpYardCoachTranscriptsExternal
+
+
+class YpYardPortabilityExportOut(BaseModel):
+    """Stable Art. 20 envelope. The bytes-level schema is documented in
+    ``docs/projects/yard-pro-data-export-schema.md``; this Pydantic
+    model is the in-process validator for third-party importers."""
+
+    schema_version: str
+    article: str
+    generated_at: str
+    yard: YpYardPortabilityPayload
+
+
+class YpYardAccessExportOut(BaseModel):
+    """Art. 15 envelope (stable top-level keys; flexible `tables` shape).
+
+    The dict-typed fields (``tables`` and the row lists) are intentional
+    — table coverage is derived from SQLModel.metadata at request time,
+    so a static Pydantic type would silently lag the source of truth.
+    Shape stability is enforced by
+    ``test_export_schema_keys_stable_regression``."""
+
+    article: str
+    generated_at: str
+    yard_id: int
+    yards: list[dict]
+    tables: dict[str, list[dict]]
+    photos: YpYardExportPhotos
+    coach_transcripts_external: YpYardCoachTranscriptsExternal
+
+
+@router.get(
+    "/yards/{yard_id}/export/access",
+    response_model=YpYardAccessExportOut,
+    operation_id="yp_exportYardAccess",
+)
+def export_yard_access_endpoint(
+    yard_id: int,
+    request: Request,
+    db: SessionDep,
+    ws: WorkspaceClient = Depends(get_obo_ws),
+) -> dict:
+    """GDPR Art. 15 (right of access) export.
+
+    Returns a structured snapshot of every ``yp_*`` row referencing the
+    yard, plus UC Volume photo URIs (URIs only — bytes never inlined,
+    RT-024), plus a pointer to the consent-gated Delta coach transcript
+    mirror. RLS enforced via :func:`assert_yard_owned_by_caller`.
+
+    No ``response_model`` because the snapshot shape includes free-form
+    ``tables`` keyed by SQLModel.metadata at request time — a Pydantic
+    static schema would drift from the source of truth. Shape stability
+    is regression-tested in
+    ``tests/projects/yard_pro/test_gdpr_art15_access_export.py``.
+    """
+    yard = assert_yard_owned_by_caller(request, db, yard_id)
+    assert yard.id is not None
+    return export_yard_access(db, ws, yard.id)
+
+
+@router.get(
+    "/yards/{yard_id}/export/portability",
+    response_model=YpYardPortabilityExportOut,
+    operation_id="yp_exportYardPortability",
+)
+def export_yard_portability_endpoint(
+    yard_id: int,
+    request: Request,
+    db: SessionDep,
+    ws: WorkspaceClient = Depends(get_obo_ws),
+) -> dict:
+    """GDPR Art. 20 (right to data portability) export.
+
+    Same underlying data as Art. 15 but framed under a versioned JSON
+    Schema (see ``docs/projects/yard-pro-data-export-schema.md``). RLS
+    same as the access export.
+    """
+    yard = assert_yard_owned_by_caller(request, db, yard_id)
+    assert yard.id is not None
+    return export_yard_portability(db, ws, yard.id)
 
 
 __all__ = [

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './../routes/__root'
 import { Route as SidebarRouteRouteImport } from './../routes/_sidebar/route'
 import { Route as IndexRouteImport } from './../routes/index'
 import { Route as BuildIdeaIndexRouteImport } from './../routes/build-idea/index'
+import { Route as DevThemesRouteImport } from './../routes/dev.themes'
 import { Route as SidebarProfileRouteImport } from './../routes/_sidebar/profile'
 import { Route as SidebarDocumentationRouteImport } from './../routes/_sidebar/documentation'
 import { Route as ProjectsYardProRouteRouteImport } from './../routes/projects/yard-pro/route'
@@ -46,6 +47,8 @@ import { Route as ProjectsAecoHubAgentRouteImport } from './../routes/projects/a
 import { Route as ProjectsAdtechIntelligenceProfileRouteImport } from './../routes/projects/adtech-intelligence/profile'
 import { Route as ProjectsAdtechIntelligenceIssuesRouteImport } from './../routes/projects/adtech-intelligence/issues'
 import { Route as ProjectsAdtechIntelligenceDashboardRouteImport } from './../routes/projects/adtech-intelligence/dashboard'
+import { Route as ProjectsYardProDealerRouteRouteImport } from './../routes/projects/yard-pro/dealer/route'
+import { Route as ProjectsYardProDealerIndexRouteImport } from './../routes/projects/yard-pro/dealer/index'
 import { Route as ProjectsViHomeOneSupportIndexRouteImport } from './../routes/projects/vi-home-one/support/index'
 import { Route as ProjectsViHomeOneNeighborhoodIndexRouteImport } from './../routes/projects/vi-home-one/neighborhood/index'
 import { Route as ProjectsViHomeOneHouseholdsIndexRouteImport } from './../routes/projects/vi-home-one/households/index'
@@ -86,6 +89,11 @@ const IndexRoute = IndexRouteImport.update({
 const BuildIdeaIndexRoute = BuildIdeaIndexRouteImport.update({
   id: '/build-idea/',
   path: '/build-idea/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevThemesRoute = DevThemesRouteImport.update({
+  id: '/dev/themes',
+  path: '/dev/themes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SidebarProfileRoute = SidebarProfileRouteImport.update({
@@ -281,6 +289,18 @@ const ProjectsAdtechIntelligenceDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => ProjectsAdtechIntelligenceRouteRoute,
   } as any)
+const ProjectsYardProDealerRouteRoute =
+  ProjectsYardProDealerRouteRouteImport.update({
+    id: '/dealer',
+    path: '/dealer',
+    getParentRoute: () => ProjectsYardProRouteRoute,
+  } as any)
+const ProjectsYardProDealerIndexRoute =
+  ProjectsYardProDealerIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ProjectsYardProDealerRouteRoute,
+  } as any)
 const ProjectsViHomeOneSupportIndexRoute =
   ProjectsViHomeOneSupportIndexRouteImport.update({
     id: '/support/',
@@ -455,7 +475,9 @@ export interface FileRoutesByFullPath {
   '/projects/yard-pro': typeof ProjectsYardProRouteRouteWithChildren
   '/documentation': typeof SidebarDocumentationRoute
   '/profile': typeof SidebarProfileRoute
+  '/dev/themes': typeof DevThemesRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
+  '/projects/yard-pro/dealer': typeof ProjectsYardProDealerRouteRouteWithChildren
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
   '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
   '/projects/adtech-intelligence/profile': typeof ProjectsAdtechIntelligenceProfileRoute
@@ -499,6 +521,7 @@ export interface FileRoutesByFullPath {
   '/projects/vi-home-one/households/': typeof ProjectsViHomeOneHouseholdsIndexRoute
   '/projects/vi-home-one/neighborhood/': typeof ProjectsViHomeOneNeighborhoodIndexRoute
   '/projects/vi-home-one/support/': typeof ProjectsViHomeOneSupportIndexRoute
+  '/projects/yard-pro/dealer/': typeof ProjectsYardProDealerIndexRoute
   '/projects/aeco-hub/projects/$projectId/build': typeof ProjectsAecoHubProjectsProjectIdBuildRoute
   '/projects/aeco-hub/projects/$projectId/design': typeof ProjectsAecoHubProjectsProjectIdDesignRoute
   '/projects/aeco-hub/projects/$projectId/documents': typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
@@ -513,6 +536,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/documentation': typeof SidebarDocumentationRoute
   '/profile': typeof SidebarProfileRoute
+  '/dev/themes': typeof DevThemesRoute
   '/build-idea': typeof BuildIdeaIndexRoute
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
   '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
@@ -556,6 +580,7 @@ export interface FileRoutesByTo {
   '/projects/vi-home-one/households': typeof ProjectsViHomeOneHouseholdsIndexRoute
   '/projects/vi-home-one/neighborhood': typeof ProjectsViHomeOneNeighborhoodIndexRoute
   '/projects/vi-home-one/support': typeof ProjectsViHomeOneSupportIndexRoute
+  '/projects/yard-pro/dealer': typeof ProjectsYardProDealerIndexRoute
   '/projects/aeco-hub/projects/$projectId/build': typeof ProjectsAecoHubProjectsProjectIdBuildRoute
   '/projects/aeco-hub/projects/$projectId/design': typeof ProjectsAecoHubProjectsProjectIdDesignRoute
   '/projects/aeco-hub/projects/$projectId/documents': typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
@@ -579,7 +604,9 @@ export interface FileRoutesById {
   '/projects/yard-pro': typeof ProjectsYardProRouteRouteWithChildren
   '/_sidebar/documentation': typeof SidebarDocumentationRoute
   '/_sidebar/profile': typeof SidebarProfileRoute
+  '/dev/themes': typeof DevThemesRoute
   '/build-idea/': typeof BuildIdeaIndexRoute
+  '/projects/yard-pro/dealer': typeof ProjectsYardProDealerRouteRouteWithChildren
   '/projects/adtech-intelligence/dashboard': typeof ProjectsAdtechIntelligenceDashboardRoute
   '/projects/adtech-intelligence/issues': typeof ProjectsAdtechIntelligenceIssuesRoute
   '/projects/adtech-intelligence/profile': typeof ProjectsAdtechIntelligenceProfileRoute
@@ -623,6 +650,7 @@ export interface FileRoutesById {
   '/projects/vi-home-one/households/': typeof ProjectsViHomeOneHouseholdsIndexRoute
   '/projects/vi-home-one/neighborhood/': typeof ProjectsViHomeOneNeighborhoodIndexRoute
   '/projects/vi-home-one/support/': typeof ProjectsViHomeOneSupportIndexRoute
+  '/projects/yard-pro/dealer/': typeof ProjectsYardProDealerIndexRoute
   '/projects/aeco-hub/projects/$projectId/build': typeof ProjectsAecoHubProjectsProjectIdBuildRoute
   '/projects/aeco-hub/projects/$projectId/design': typeof ProjectsAecoHubProjectsProjectIdDesignRoute
   '/projects/aeco-hub/projects/$projectId/documents': typeof ProjectsAecoHubProjectsProjectIdDocumentsRoute
@@ -646,7 +674,9 @@ export interface FileRouteTypes {
     | '/projects/yard-pro'
     | '/documentation'
     | '/profile'
+    | '/dev/themes'
     | '/build-idea/'
+    | '/projects/yard-pro/dealer'
     | '/projects/adtech-intelligence/dashboard'
     | '/projects/adtech-intelligence/issues'
     | '/projects/adtech-intelligence/profile'
@@ -690,6 +720,7 @@ export interface FileRouteTypes {
     | '/projects/vi-home-one/households/'
     | '/projects/vi-home-one/neighborhood/'
     | '/projects/vi-home-one/support/'
+    | '/projects/yard-pro/dealer/'
     | '/projects/aeco-hub/projects/$projectId/build'
     | '/projects/aeco-hub/projects/$projectId/design'
     | '/projects/aeco-hub/projects/$projectId/documents'
@@ -704,6 +735,7 @@ export interface FileRouteTypes {
     | '/'
     | '/documentation'
     | '/profile'
+    | '/dev/themes'
     | '/build-idea'
     | '/projects/adtech-intelligence/dashboard'
     | '/projects/adtech-intelligence/issues'
@@ -747,6 +779,7 @@ export interface FileRouteTypes {
     | '/projects/vi-home-one/households'
     | '/projects/vi-home-one/neighborhood'
     | '/projects/vi-home-one/support'
+    | '/projects/yard-pro/dealer'
     | '/projects/aeco-hub/projects/$projectId/build'
     | '/projects/aeco-hub/projects/$projectId/design'
     | '/projects/aeco-hub/projects/$projectId/documents'
@@ -769,7 +802,9 @@ export interface FileRouteTypes {
     | '/projects/yard-pro'
     | '/_sidebar/documentation'
     | '/_sidebar/profile'
+    | '/dev/themes'
     | '/build-idea/'
+    | '/projects/yard-pro/dealer'
     | '/projects/adtech-intelligence/dashboard'
     | '/projects/adtech-intelligence/issues'
     | '/projects/adtech-intelligence/profile'
@@ -813,6 +848,7 @@ export interface FileRouteTypes {
     | '/projects/vi-home-one/households/'
     | '/projects/vi-home-one/neighborhood/'
     | '/projects/vi-home-one/support/'
+    | '/projects/yard-pro/dealer/'
     | '/projects/aeco-hub/projects/$projectId/build'
     | '/projects/aeco-hub/projects/$projectId/design'
     | '/projects/aeco-hub/projects/$projectId/documents'
@@ -834,6 +870,7 @@ export interface RootRouteChildren {
   ProjectsMolAsmCockpitRouteRoute: typeof ProjectsMolAsmCockpitRouteRouteWithChildren
   ProjectsViHomeOneRouteRoute: typeof ProjectsViHomeOneRouteRouteWithChildren
   ProjectsYardProRouteRoute: typeof ProjectsYardProRouteRouteWithChildren
+  DevThemesRoute: typeof DevThemesRoute
   BuildIdeaIndexRoute: typeof BuildIdeaIndexRoute
 }
 
@@ -858,6 +895,13 @@ declare module '@tanstack/react-router' {
       path: '/build-idea'
       fullPath: '/build-idea/'
       preLoaderRoute: typeof BuildIdeaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev/themes': {
+      id: '/dev/themes'
+      path: '/dev/themes'
+      fullPath: '/dev/themes'
+      preLoaderRoute: typeof DevThemesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_sidebar/profile': {
@@ -1097,6 +1141,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/adtech-intelligence/dashboard'
       preLoaderRoute: typeof ProjectsAdtechIntelligenceDashboardRouteImport
       parentRoute: typeof ProjectsAdtechIntelligenceRouteRoute
+    }
+    '/projects/yard-pro/dealer': {
+      id: '/projects/yard-pro/dealer'
+      path: '/dealer'
+      fullPath: '/projects/yard-pro/dealer'
+      preLoaderRoute: typeof ProjectsYardProDealerRouteRouteImport
+      parentRoute: typeof ProjectsYardProRouteRoute
+    }
+    '/projects/yard-pro/dealer/': {
+      id: '/projects/yard-pro/dealer/'
+      path: '/'
+      fullPath: '/projects/yard-pro/dealer/'
+      preLoaderRoute: typeof ProjectsYardProDealerIndexRouteImport
+      parentRoute: typeof ProjectsYardProDealerRouteRoute
     }
     '/projects/vi-home-one/support/': {
       id: '/projects/vi-home-one/support/'
@@ -1528,12 +1586,28 @@ const ProjectsViHomeOneRouteRouteWithChildren =
     ProjectsViHomeOneRouteRouteChildren,
   )
 
+interface ProjectsYardProDealerRouteRouteChildren {
+  ProjectsYardProDealerIndexRoute: typeof ProjectsYardProDealerIndexRoute
+}
+
+const ProjectsYardProDealerRouteRouteChildren: ProjectsYardProDealerRouteRouteChildren =
+  {
+    ProjectsYardProDealerIndexRoute: ProjectsYardProDealerIndexRoute,
+  }
+
+const ProjectsYardProDealerRouteRouteWithChildren =
+  ProjectsYardProDealerRouteRoute._addFileChildren(
+    ProjectsYardProDealerRouteRouteChildren,
+  )
+
 interface ProjectsYardProRouteRouteChildren {
+  ProjectsYardProDealerRouteRoute: typeof ProjectsYardProDealerRouteRouteWithChildren
   ProjectsYardProCoachRoute: typeof ProjectsYardProCoachRoute
   ProjectsYardProIndexRoute: typeof ProjectsYardProIndexRoute
 }
 
 const ProjectsYardProRouteRouteChildren: ProjectsYardProRouteRouteChildren = {
+  ProjectsYardProDealerRouteRoute: ProjectsYardProDealerRouteRouteWithChildren,
   ProjectsYardProCoachRoute: ProjectsYardProCoachRoute,
   ProjectsYardProIndexRoute: ProjectsYardProIndexRoute,
 }
@@ -1554,6 +1628,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsMolAsmCockpitRouteRoute: ProjectsMolAsmCockpitRouteRouteWithChildren,
   ProjectsViHomeOneRouteRoute: ProjectsViHomeOneRouteRouteWithChildren,
   ProjectsYardProRouteRoute: ProjectsYardProRouteRouteWithChildren,
+  DevThemesRoute: DevThemesRoute,
   BuildIdeaIndexRoute: BuildIdeaIndexRoute,
 }
 export const routeTree = rootRouteImport
