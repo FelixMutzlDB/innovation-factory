@@ -142,6 +142,60 @@ All six phases from `docs/projects/aeco-hub-plan.md` complete:
 
 ---
 
+## New Accelerator — yard-pro (7th — Stihl-shaped AI gardening companion)
+
+Plan: [docs/projects/yard-pro-plan.md](projects/yard-pro-plan.md). Tracked in PR #14 on `feature/yard-pro`.
+
+### P0 — first customer-grade demo
+
+| ID | Task | Status | Done | Notes |
+|----|------|--------|------|-------|
+| Y1 | 4-phase plan via `/new-innovation-factory-project` | `[x]` | 2026-05-12 | Commits `0f41c80`-`4ad4758` (squash-merged to master as `e6af221`) |
+| Y2 | Phase A foundation: 12 yp_* tables + seed (Martin's Stuttgart yard) | `[x]` | 2026-05-12 | Commit `565c1c2` |
+| Y3 | Phase B1: CRUD routers + Art. 22 rail + RT-016 isolation | `[x]` | 2026-05-12 | Commit `0abd90c` — 39 regression tests |
+| Y4 | Phase B2: AI surfaces (coach SSE + diagnose + calendar regen + provenance) | `[x]` | 2026-05-12 | Commit `02ce50e` — citation-required fallback for ungrounded recs |
+| Y5 | Phase B3: cockpit + coach + Stihl-adjacent theme + AdvisoryChip + MarkAsDone | `[x]` | 2026-05-12 | Commit `6a576ff` — WCAG AA contrast pass for yard-pro |
+| Y6 | Phase B4: UC schema + 22-doc KA corpus + deploy scripts | `[x]` | 2026-05-12 | Commit `97a422b` |
+| Y7 | Deploy KA + Vision + UC tables to fevm-felix-demo | `[~]` | 2026-05-13 | KA `ka-7598e04d-endpoint` READY (retrieval verified on 3 sample prompts). UC tables seeded. Vision endpoint provisioning blocked — `YARD_PRO_VISION_ENDPOINT` temporarily blank so diagnose modal renders "not configured" card per lessons §18 |
+
+### P1 — next sprint (extends to plan-phase P4)
+
+| ID | Task | Status | Done | Notes |
+|----|------|--------|------|-------|
+| Y8 | Playwright browser smoke + first-paint timing | `[x]` | 2026-05-12 | Commit `bb88865` — FCP 224-248ms |
+| Y9 | Idempotency-Key 24h cache-replay on actions + diagnose | `[x]` | 2026-05-12 | Commit `22d122c` |
+| Y10 | GDPR Art. 17 happy-path delete cascade (RT-025 regression) | `[x]` | 2026-05-12 | Commit `adaf5ff` — full-metadata enumeration so future yp_* tables are auto-covered |
+| Y11 | Deployment runbook + app.yml/databricks.yml env wiring | `[x]` | 2026-05-12 | Commit `0267d9a` — `scripts/yard_pro/RUNBOOK.md` |
+| Y12 | UC4 telemetry synthesizer + nudges (notifications-only, Art. 22 compliant) | `[x]` | 2026-05-12 | Commit `c3d3244` |
+| Y13 | `yp_coach_feedback` UI + stats endpoint (5% auto-flag rule) | `[x]` | 2026-05-12 | Commit `e5536ff` |
+| Y14 | Consumables reorder hints (UC5 polish) | `[ ]` | — | P1 backlog — surface in cockpit + dealer panel |
+| Y15 | Ensemble plausibility check on `confidence ≥ 0.8` (RT-002 follow-on) | `[ ]` | — | FM-API yes/no sanity check on high-confidence vision results |
+| Y16 | Per-dependency circuit-breaker thresholds | `[ ]` | — | Tune once we have real failure latency data |
+| Y17 | Tier-2 diagnose-queue degradation path | `[ ]` | — | Vision-down queue; complements ensemble plausibility |
+| Y18 | Log-canary CI test (`test_log_pipeline_no_pii.py`) | `[ ]` | — | RT-024 production hardening |
+| Y19 | KA-extraction canary nightly job + verbatim cap (RT-008) | `[ ]` | — | Detect KA corpus exfiltration via extraction prompts |
+| Y20 | `canary_cold_start.py` Lakebase Saturday-surge benchmark | `[ ]` | — | Closes plan Q2 |
+
+### P2 — production hardening / dealer (extends to plan-phase P5)
+
+| ID | Task | Status | Done | Notes |
+|----|------|--------|------|-------|
+| Y21 | Dealer panel UI (`/projects/yard-pro/dealer/*`) — UC6 | `[ ]` | — | OEM B2B2C anchor; in-flight (Bundle 3) |
+| Y22 | Consent state machine (`yp_dealer_relationships`) end-to-end | `[ ]` | — | UC6; in-flight (Bundle 3) |
+| Y23 | Genie space over `yard_pro_gold.dealer_customer_summary` | `[ ]` | — | UC6; in-flight (Bundle 3) |
+| Y24 | Anonymization pipeline (Lakebase → Delta Silver → Gold) production-grade | `[ ]` | — | UC6; Bronze layer already seeded; in-flight (Bundle 3) |
+| Y25 | GDPR Art. 15 (access) + Art. 20 (portability) export endpoints | `[ ]` | — | Production-launch necessity; in-flight (Bundle 4) |
+| Y26 | Log PII regex post-filter + canary CI | `[ ]` | — | RT-024 production hardening; in-flight (Bundle 4) |
+| Y27 | Retention/partition jobs for `yp_action_log` + Delta tables | `[ ]` | — | Plan §5 retention rules; in-flight (Bundle 4) |
+| Y28 | Lakebase connection-pool sizing + `canary_cold_start.py` results applied | `[ ]` | — | Closes plan Q2 |
+| Y29 | Saira Condensed self-host fallback | `[ ]` | — | CDN works for demo; self-host is production-quality; in-flight (Bundle 1) |
+
+### P3 — deferred / depends on real customer
+
+`[ ]` Real Edge / Zerobus integration · `[ ]` Multi-user / household sharing · `[ ]` Voice-first · `[ ]` Direct dealer-network booking · `[ ]` Batched-inference path for 100× scale · `[ ]` US launch (CCPA / state privacy) · `[ ]` Premium-tier real-time vision at 100× · `[ ]` Photo retention user-override
+
+---
+
 ## Summary
 
 | Priority | Total | Done | Open / Partial |
@@ -154,4 +208,7 @@ All six phases from `docs/projects/aeco-hub-plan.md` complete:
 | P5 Documentation | 6 | 5 | 1 (D1 App Resources section) |
 | P6 Cleanup | 3 | 3 | 0 |
 | AECO Hub | 7 | 7 | 0 |
-| **Total** | **44** | **37** | **7** |
+| **yard-pro P0** | 7 | 6 | 1 (Y7 vision endpoint partial) |
+| **yard-pro P1** | 13 | 6 | 7 |
+| **yard-pro P2** | 9 | 0 | 9 |
+| **Total** | **73** | **49** | **24** |

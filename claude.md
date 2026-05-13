@@ -1,22 +1,23 @@
 # Innovation Factory
 
-> Last updated: 2026-05-11 | Owner: Felix Mutzl | FEIP: [FEIP-5472](https://databricks.atlassian.net/browse/FEIP-5472)
+> Last updated: 2026-05-13 | Owner: Felix Mutzl | FEIP: [FEIP-5472](https://databricks.atlassian.net/browse/FEIP-5472)
 > Platform: Multi-accelerator showcase for Databricks Apps (FastAPI + React)
-> Stage: 6 accelerators live, deployed to `fevm-felix-demo`
+> Stage: 7 accelerators live (yard-pro P0 + P1 partial shipped on `feature/yard-pro`)
 > Tracking: [TODO.md](docs/TODO.md) | Refinement: [docs/tasks/refinement.md](docs/tasks/refinement.md) | Revision: [docs/revision-checklist.md](docs/revision-checklist.md)
 
-## Current State (2026-05-12)
+## Current State (2026-05-13)
 
 | Area | Status |
 |------|--------|
-| **Accelerators** | 6 live (ViDistrictOne, BSH Remote Assist, MOL ASM Cockpit, AdTech Intelligence, HB Product Center, AECO Hub) |
+| **Accelerators** | 7 (ViDistrictOne, BSH Remote Assist, MOL ASM Cockpit, AdTech Intelligence, HB Product Center, AECO Hub, **yard-pro** — 7th, plan + P0 + most of P1 shipped on `feature/yard-pro`) |
 | **AECO Hub plan** | [docs/projects/aeco-hub-plan.md](docs/projects/aeco-hub-plan.md) — Phases 1-6 shipped 2026-04-29 |
-| **Brand themes** | [docs/ci-implementation-plan.md](docs/ci-implementation-plan.md) — P0–P3 shipped 2026-05-11/12: `BRAND_THEMES` registry (`ui/lib/brand-themes.ts`), `<ProjectThemeScope>` + 6 theme CSS files, `<ProjectWordmark>` in sidebar, per-project light+dark chart palettes. WCAG AA contrast suite + Playwright visual regression at 0.5% effective tolerance gate the system. |
+| **yard-pro plan** | [docs/projects/yard-pro-plan.md](docs/projects/yard-pro-plan.md) — P0 (foundation + AI surfaces + theme + Stihl-adjacent CI) shipped via PR #14 (commits `565c1c2`-`97a422b`). P1 partial: Playwright smoke, Idempotency 24h replay, GDPR Art. 17 cascade, deploy runbook + env wiring, UC4 telemetry + nudges, coach feedback UI + stats. KA endpoint `ka-7598e04d-endpoint` deployed to fevm-felix-demo 2026-05-13 (22 docs synced; retrieval verified on 3 sample prompts). Vision endpoint provisioning blocked (under investigation); `YARD_PRO_VISION_ENDPOINT` temporarily blank so diagnose modal renders "not configured" card cleanly. |
+| **Brand themes** | [docs/ci-implementation-plan.md](docs/ci-implementation-plan.md) — P0–P3 shipped 2026-05-11/12: `BRAND_THEMES` registry (`ui/lib/brand-themes.ts`), `<ProjectThemeScope>` + 7 theme CSS files (yard-pro included), `<ProjectWordmark>` in sidebar, per-project light+dark chart palettes. WCAG AA contrast suite + Playwright visual regression at 0.5% effective tolerance gate the system. |
 | **Database** | Lakebase Autoscaling (production), PGlite (local dev) |
 | **Workspace** | `fevm-felix-demo` (migrated from `fe-sandbox-felix-demo-sandbox` → `fe-shared-demo`) |
-| **Security** | SQL injection (§9), XSS (§20), rate limiting (§21) all shipped; router-discipline lint added (D6) |
-| **Tests** | Security tests in place (input sanitize, markdown XSS policy, rate limit, streaming protocol, router discipline); broader coverage still thin |
-| **Branch** | `feature/yard-pro` (7th accelerator in flight) |
+| **Security** | SQL injection (§9), XSS (§20), rate limiting (§21) shipped; router-discipline lint added (D6); yard-pro adds GDPR Art. 22 review-and-confirm rail + Art. 17 cascade delete + EU AI Act Art. 50 advisory chip + RT-016 cross-tenant regression test |
+| **Tests** | Security tests in place (input sanitize, markdown XSS policy, rate limit, streaming protocol, router discipline); yard-pro adds 144+ unit/integration tests + Playwright browser smoke; broader coverage on the 6 older accelerators still thin |
+| **Branch** | `feature/yard-pro` (P2 in flight — dealer panel + compliance + vision-resilience bundles) |
 
 ## Codebase Tree
 
@@ -43,6 +44,8 @@ src/innovation_factory/
       adtech_intelligence/          # Advertising (campaigns, Genie, MAS)
       hb_product_center/            # Fashion (CLIP recognition, quality, supply chain)
       aeco_hub/                     # AECO digital twin (BIM, IoT, energy, MAS, KA, graph)
+      yard_pro/                     # AI gardening companion (KA, vision, telemetry,
+                                    # Art. 22 review-and-confirm rail, dealer panel)
   ui/
     main.tsx                        # React entry (Router, QueryClient)
     routes/                         # TanStack Router file-based routes
