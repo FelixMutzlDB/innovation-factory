@@ -402,6 +402,13 @@ class YpConsumableOut(BaseModel):
     quantity: float
     unit: str
     last_restock_at: Optional[date]
+    # UC5 reorder hint (plan §12 P1 — "Consumables reorder hints").
+    # Derived in the router from a per-kind low-stock + last-restock-age
+    # heuristic; never persisted. Frontend renders a badge on rows where
+    # ``reorder_suggested=True`` and surfaces ``reorder_reason`` as the
+    # hint copy. ``None`` reason when not suggested.
+    reorder_suggested: bool = False
+    reorder_reason: Optional[str] = None
 
 
 class YpConsumableCreate(BaseModel):

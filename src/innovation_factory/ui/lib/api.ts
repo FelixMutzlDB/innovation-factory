@@ -2533,6 +2533,8 @@ export interface YpConsumableOut {
   kind: YardProConsumableKind;
   last_restock_at: string | null;
   quantity: number;
+  reorder_reason?: string | null;
+  reorder_suggested?: boolean;
   unit: string;
   yard_id: number;
 }
@@ -2671,6 +2673,29 @@ export interface YpToolReadinessOut {
   updated_at: string;
 }
 
+export interface YpYardAccessExportOut {
+  article: string;
+  coach_transcripts_external: YpYardCoachTranscriptsExternal;
+  generated_at: string;
+  photos: YpYardExportPhotos;
+  tables: Record<string, Record<string, unknown>[]>;
+  yard_id: number;
+  yards: Record<string, unknown>[];
+}
+
+export interface YpYardCoachTranscriptsExternal {
+  consent_gated: boolean;
+  note: string;
+  retention_consented_months: number;
+  retention_unconsented_days: number;
+  source: string;
+}
+
+export interface YpYardExportPhotos {
+  uris: string[];
+  volume_path: string;
+}
+
 export interface YpYardOut {
   display_name: string;
   id: number;
@@ -2679,6 +2704,21 @@ export interface YpYardOut {
   region_code: string;
   size_m2: number;
   yard_metadata: Record<string, unknown>;
+}
+
+export interface YpYardPortabilityExportOut {
+  article: string;
+  generated_at: string;
+  schema_version: string;
+  yard: YpYardPortabilityPayload;
+}
+
+export interface YpYardPortabilityPayload {
+  coach_transcripts_external: YpYardCoachTranscriptsExternal;
+  photos: YpYardExportPhotos;
+  tables: Record<string, Record<string, unknown>[]>;
+  yard_id: number;
+  yards: Record<string, unknown>[];
 }
 
 export const innovation_factory__backend__projects__bsh_home_connect__models__UserRole = {
@@ -8152,7 +8192,7 @@ export function useYp_getCockpitSuspense<TData = { data: YpCockpitOut }>(options
   return useSuspenseQuery({ queryKey: yp_getCockpitKey(options.params), queryFn: () => yp_getCockpit(options.params), ...options?.query });
 }
 
-export const yp_exportYardAccess = async (params: Yp_exportYardAccessParams, options?: RequestInit): Promise<{ data: Record<string, unknown> }> => {
+export const yp_exportYardAccess = async (params: Yp_exportYardAccessParams, options?: RequestInit): Promise<{ data: YpYardAccessExportOut }> => {
   const res = await fetch(`/api/projects/yard-pro/yards/${params.yard_id}/export/access`, { ...options, method: "GET", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
   if (!res.ok) {
     const body = await res.text();
@@ -8167,15 +8207,15 @@ export const yp_exportYardAccessKey = (params?: Yp_exportYardAccessParams) => {
   return ["/api/projects/yard-pro/yards/{yard_id}/export/access", params] as const;
 };
 
-export function useYp_exportYardAccess<TData = { data: Record<string, unknown> }>(options: { params: Yp_exportYardAccessParams; query?: Omit<UseQueryOptions<{ data: Record<string, unknown> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+export function useYp_exportYardAccess<TData = { data: YpYardAccessExportOut }>(options: { params: Yp_exportYardAccessParams; query?: Omit<UseQueryOptions<{ data: YpYardAccessExportOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useQuery({ queryKey: yp_exportYardAccessKey(options.params), queryFn: () => yp_exportYardAccess(options.params), ...options?.query });
 }
 
-export function useYp_exportYardAccessSuspense<TData = { data: Record<string, unknown> }>(options: { params: Yp_exportYardAccessParams; query?: Omit<UseSuspenseQueryOptions<{ data: Record<string, unknown> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+export function useYp_exportYardAccessSuspense<TData = { data: YpYardAccessExportOut }>(options: { params: Yp_exportYardAccessParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpYardAccessExportOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: yp_exportYardAccessKey(options.params), queryFn: () => yp_exportYardAccess(options.params), ...options?.query });
 }
 
-export const yp_exportYardPortability = async (params: Yp_exportYardPortabilityParams, options?: RequestInit): Promise<{ data: Record<string, unknown> }> => {
+export const yp_exportYardPortability = async (params: Yp_exportYardPortabilityParams, options?: RequestInit): Promise<{ data: YpYardPortabilityExportOut }> => {
   const res = await fetch(`/api/projects/yard-pro/yards/${params.yard_id}/export/portability`, { ...options, method: "GET", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
   if (!res.ok) {
     const body = await res.text();
@@ -8190,11 +8230,11 @@ export const yp_exportYardPortabilityKey = (params?: Yp_exportYardPortabilityPar
   return ["/api/projects/yard-pro/yards/{yard_id}/export/portability", params] as const;
 };
 
-export function useYp_exportYardPortability<TData = { data: Record<string, unknown> }>(options: { params: Yp_exportYardPortabilityParams; query?: Omit<UseQueryOptions<{ data: Record<string, unknown> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+export function useYp_exportYardPortability<TData = { data: YpYardPortabilityExportOut }>(options: { params: Yp_exportYardPortabilityParams; query?: Omit<UseQueryOptions<{ data: YpYardPortabilityExportOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useQuery({ queryKey: yp_exportYardPortabilityKey(options.params), queryFn: () => yp_exportYardPortability(options.params), ...options?.query });
 }
 
-export function useYp_exportYardPortabilitySuspense<TData = { data: Record<string, unknown> }>(options: { params: Yp_exportYardPortabilityParams; query?: Omit<UseSuspenseQueryOptions<{ data: Record<string, unknown> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+export function useYp_exportYardPortabilitySuspense<TData = { data: YpYardPortabilityExportOut }>(options: { params: Yp_exportYardPortabilityParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpYardPortabilityExportOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: yp_exportYardPortabilityKey(options.params), queryFn: () => yp_exportYardPortability(options.params), ...options?.query });
 }
 

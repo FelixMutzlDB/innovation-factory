@@ -14,6 +14,10 @@ interface Consumable {
   quantity: number;
   unit: string;
   last_restock_at?: string;
+  /** UC5 reorder hint — derived server-side; see services/reorder_service.py. */
+  reorder_suggested?: boolean;
+  /** Human-readable hint copy, present iff reorder_suggested is true. */
+  reorder_reason?: string | null;
 }
 
 interface InventoryCardProps {
@@ -74,12 +78,26 @@ export function InventoryCard({
             {consumables.map((consumable) => (
               <div
                 key={consumable.id}
-                className="flex items-center justify-between p-2 bg-muted rounded text-sm"
+                className="flex flex-col gap-1 p-2 bg-muted rounded text-sm"
               >
-                <div className="font-medium">{consumable.kind}</div>
-                <div className="text-xs">
-                  {consumable.quantity} {consumable.unit}
+                <div className="flex items-center justify-between">
+                  <div className="font-medium flex items-center gap-2">
+                    {consumable.kind}
+                    {consumable.reorder_suggested && (
+                      <Badge variant="destructive" className="text-[10px] uppercase">
+                        Reorder
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="text-xs">
+                    {consumable.quantity} {consumable.unit}
+                  </div>
                 </div>
+                {consumable.reorder_suggested && consumable.reorder_reason && (
+                  <p className="text-xs text-muted-foreground" title={consumable.reorder_reason}>
+                    {consumable.reorder_reason}
+                  </p>
+                )}
               </div>
             ))}
           </div>

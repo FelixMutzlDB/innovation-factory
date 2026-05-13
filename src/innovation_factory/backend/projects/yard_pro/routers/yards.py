@@ -24,6 +24,7 @@ from ..services.gdpr_service import (
     export_yard_access,
     export_yard_portability,
 )
+from ..services.reorder_service import suggest_reorder
 from ..services.telemetry_service import (
     list_nudges_for_yard,
     list_readiness_for_yard,
@@ -161,6 +162,24 @@ def get_my_yard(request: Request, db: SessionDep) -> YpYardOut:
     )
 
 
+def _consumable_to_out(c: YpConsumable) -> YpConsumableOut:
+    """Project a YpConsumable to YpConsumableOut with the UC5 reorder
+    hint applied. Shared between the cockpit and the inventory router so
+    the two surfaces show the same advice."""
+    suggested, reason = suggest_reorder(c)
+    return YpConsumableOut(
+        id=c.id or 0,
+        yard_id=c.yard_id,
+        kind=c.kind,
+        display_name=c.display_name,
+        quantity=c.quantity,
+        unit=c.unit,
+        last_restock_at=c.last_restock_at,
+        reorder_suggested=suggested,
+        reorder_reason=reason,
+    )
+
+
 @router.get(
     "/yards/{yard_id}/cockpit",
     response_model=YpCockpitOut,
@@ -273,16 +292,7 @@ def get_cockpit(yard_id: int, request: Request, db: SessionDep) -> YpCockpitOut:
             for t in tools
         ],
         consumables=[
-            YpConsumableOut(
-                id=c.id or 0,
-                yard_id=c.yard_id,
-                kind=c.kind,
-                display_name=c.display_name,
-                quantity=c.quantity,
-                unit=c.unit,
-                last_restock_at=c.last_restock_at,
-            )
-            for c in consumables
+            _consumable_to_out(c) for c in consumables
         ],
         upcoming_calendar=[
             YpCalendarEntryOut(

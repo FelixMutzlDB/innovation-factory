@@ -13,6 +13,7 @@ from sqlmodel import select
 from ....dependencies import SessionDep
 from ....input_sanitize import sanitize_text
 from ..models import YpConsumable, YpConsumableCreate, YpConsumableOut
+from ..services.reorder_service import suggest_reorder
 from .yards import get_caller_yard
 
 router = APIRouter(tags=["yard-pro"])
@@ -25,6 +26,7 @@ def _safe(text: str) -> str:
 
 
 def _to_out(c: YpConsumable) -> YpConsumableOut:
+    suggested, reason = suggest_reorder(c)
     return YpConsumableOut(
         id=c.id or 0,
         yard_id=c.yard_id,
@@ -33,6 +35,8 @@ def _to_out(c: YpConsumable) -> YpConsumableOut:
         quantity=c.quantity,
         unit=c.unit,
         last_restock_at=c.last_restock_at,
+        reorder_suggested=suggested,
+        reorder_reason=reason,
     )
 
 
