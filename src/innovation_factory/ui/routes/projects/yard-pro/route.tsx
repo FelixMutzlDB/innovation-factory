@@ -36,7 +36,7 @@ function Layout() {
 
   return (
     <ProjectThemeScope slug="yard-pro">
-      <SidebarLayout>
+      <SidebarLayout projectSlug="yard-pro">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
