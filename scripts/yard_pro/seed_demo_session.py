@@ -90,6 +90,19 @@ DEMO_CALENDAR = {
     "status": "planned",
 }
 
+# Dealer relationship — Martin's yard opts in to share anonymized data
+# with the local Stihl dealer. The dealer panel's "Anonymized customers"
+# table reads from yp_dealer_relationships (Lakebase) joined with the
+# anonymized aggregates from yard_pro_gold.dealer_customer_summary (UC).
+# Without this row, Klaus's view is empty.
+#
+# dealer_id matches _LOCAL_DEV_FALLBACK_DEALER_ID in dealer.py since the
+# Apps proxy doesn't set X-Forwarded-Dealer in the demo path.
+DEMO_DEALER_RELATIONSHIP = {
+    "dealer_id": "dealer_stuttgart_nord",
+    "consent_state": "granted",
+}
+
 
 def _run_json(cmd: list[str]) -> dict:
     res = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
@@ -257,6 +270,52 @@ def main() -> None:
         )
         new_id = cur.fetchone()[0]
         print(f"Inserted yp_calendar_entries id={new_id}")
+
+    # 4. Insert a granted dealer relationship so Klaus's view in the
+    #    dealer panel actually shows a customer row. Idempotent on
+    #    (yard_id, dealer_id).
+    cur.execute(
+        """
+        SELECT id, consent_state FROM yp_dealer_relationships
+        WHERE yard_id = %s AND dealer_id = %s
+        """,
+        (yard_id, DEMO_DEALER_RELATIONSHIP["dealer_id"]),
+    )
+    existing_rel = cur.fetchone()
+    if existing_rel:
+        if existing_rel[1] != DEMO_DEALER_RELATIONSHIP["consent_state"]:
+            cur.execute(
+                """
+                UPDATE yp_dealer_relationships
+                   SET consent_state = %s, consent_at = NOW()
+                 WHERE id = %s
+                """,
+                (DEMO_DEALER_RELATIONSHIP["consent_state"], existing_rel[0]),
+            )
+            print(
+                f"Updated yp_dealer_relationships id={existing_rel[0]} "
+                f"consent_state -> {DEMO_DEALER_RELATIONSHIP['consent_state']}"
+            )
+        else:
+            print(
+                f"Dealer relationship already granted (id={existing_rel[0]}) — skipping."
+            )
+    else:
+        cur.execute(
+            """
+            INSERT INTO yp_dealer_relationships
+                (yard_id, dealer_id, consent_state, consent_at, created_at)
+            VALUES (%s, %s, %s, NOW(), NOW())
+            RETURNING id
+            """,
+            (
+                yard_id,
+                DEMO_DEALER_RELATIONSHIP["dealer_id"],
+                DEMO_DEALER_RELATIONSHIP["consent_state"],
+            ),
+        )
+        new_id = cur.fetchone()[0]
+        print(f"Inserted yp_dealer_relationships id={new_id} (granted)")
 
     conn.commit()
     cur.close()

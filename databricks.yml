@@ -160,14 +160,13 @@ resources:
             value: ka-7598e04d-endpoint
           - name: YARD_PRO_COACH_KA_TILE_ID
             value: 7598e04d-f7dc-49b8-a41e-ee473648d645
-          # YARD_PRO_VISION_ENDPOINT and YARD_PRO_DEALER_GENIE_SPACE_ID are
-          # intentionally omitted while their underlying resources are being
-          # provisioned. Databricks Apps rejects env vars with empty
-          # `value: ""`, so absence is the right way to express "not
-          # configured." `databricks_config.py` defaults missing env vars
-          # to "" and routers use `bool(VISION_ENDPOINT)` to render the
-          # lessons §18 "not configured" card. Add them back with the real
-          # endpoint name / Genie space ID once those exist.
+          # YARD_PRO_VISION_ENDPOINT is intentionally omitted while
+          # yard-pro-vision-v1 is in DEPLOYMENT_FAILED. The diagnose modal
+          # renders the lessons §18 "not configured" card when absent.
+          - name: YARD_PRO_DEALER_HMAC_SECRET
+            value: "demo-hmac-secret-fevm-felix-demo-2026-05"
+          - name: YARD_PRO_DEALER_GENIE_SPACE_ID
+            value: "01f152e6ba76129887a955cf08dd5c92"
           - name: YARD_PRO_PHOTOS_VOLUME_PATH
             value: "/Volumes/felix_demo_catalog/yard_pro/photos"
           # YARD_PRO_AUTOGEN_END

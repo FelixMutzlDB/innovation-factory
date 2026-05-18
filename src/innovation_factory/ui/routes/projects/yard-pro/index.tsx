@@ -312,22 +312,145 @@ function DiagnosesCardContent() {
 }
 
 function DiagnoseModalStub({ onClose }: { onClose: () => void }) {
+  // Demo mode: skip the file picker and show the most-recent diagnosis
+  // alongside the photo it was run against. Lets the presenter walk the
+  // audience through the snap-and-diagnose flow without the vision endpoint
+  // having to be up (yard-pro-vision-v1 is currently DEPLOYMENT_FAILED).
+  const { data: diagnoses } = useYp_listDiagnosesSuspense({
+    params: { limit: 1 },
+    ...selector(),
+  });
+  const latest = diagnoses[0];
+
+  if (!latest) {
+    return (
+      <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Snap a Photo</CardTitle>
+            <CardDescription>No prior diagnoses yet.</CardDescription>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Run the demo seed script to populate a session.
+          </CardContent>
+          <div className="px-6 py-4 border-t flex justify-end">
+            <Button onClick={onClose}>Close</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  const labels =
+    (latest.predictions as { labels?: { name: string; confidence: number }[] })
+      ?.labels ?? [];
+  const created = new Date(latest.created_at);
+  const photoSrc = "/yard-pro/demo-yard-2026-05-17.jpeg";
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <Card className="w-full max-w-md">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <Card className="w-full max-w-3xl my-auto">
         <CardHeader>
-          <CardTitle>Snap a Photo</CardTitle>
-          <CardDescription>Upload a yard photo for diagnosis</CardDescription>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Camera size={18} />
+                Diagnose result
+              </CardTitle>
+              <CardDescription>
+                {latest.model_version} · {created.toLocaleString()}
+              </CardDescription>
+            </div>
+            <Badge variant="outline" className="gap-1">
+              <AlertTriangle size={12} />
+              advisory — review before acting
+            </Badge>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <input type="file" accept="image/jpeg,image/png,image/heic" />
-          <p className="text-sm text-muted-foreground">Max 10MB</p>
+          <div className="rounded-lg overflow-hidden border bg-muted">
+            <img
+              src={photoSrc}
+              alt="Martin's yard, 2026-05-17 morning"
+              className="w-full h-auto max-h-[420px] object-cover"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-baseline justify-between gap-2">
+              <h3 className="font-medium">Predictions</h3>
+              <span className="text-xs text-muted-foreground">
+                Vision endpoint: {latest.model_version}
+              </span>
+            </div>
+            {labels.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No predictions on this diagnosis.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {labels.map((p, idx) => {
+                  const pct = Math.round(p.confidence * 100);
+                  const isTop = idx === 0;
+                  return (
+                    <div
+                      key={p.name}
+                      className={`p-3 rounded border ${
+                        isTop ? "border-primary/40 bg-primary/5" : "bg-muted"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <Sprout
+                            size={14}
+                            className={isTop ? "text-primary" : "text-muted-foreground"}
+                          />
+                          <span className={`text-sm ${isTop ? "font-semibold" : ""}`}>
+                            {p.name.replace(/_/g, " ")}
+                          </span>
+                          {isTop && (
+                            <Badge variant="secondary" className="text-[10px]">
+                              top label
+                            </Badge>
+                          )}
+                        </div>
+                        <span className="text-sm font-mono">{pct}%</span>
+                      </div>
+                      <div className="h-1.5 bg-background rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${
+                            isTop ? "bg-primary" : "bg-muted-foreground/40"
+                          }`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-lg border bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50 p-3 text-sm">
+            <p className="font-medium text-amber-900 dark:text-amber-200">
+              GDPR Art. 22 review-and-confirm
+            </p>
+            <p className="text-amber-800 dark:text-amber-300/90 mt-0.5 text-xs">
+              Status: <span className="font-mono">{latest.status}</span>. No
+              irrigation, fertilization, or service-call action runs until you
+              accept the top label. EU AI Act Art. 50 advisory chip stays
+              visible above.
+            </p>
+          </div>
         </CardContent>
         <div className="px-6 py-4 border-t flex gap-2 justify-end">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            Dismiss
           </Button>
-          <Button onClick={onClose}>Upload & Diagnose</Button>
+          <Button onClick={onClose} className="gap-2">
+            <CheckCircle2 size={14} />
+            Accept &amp; schedule action
+          </Button>
         </div>
       </Card>
     </div>
