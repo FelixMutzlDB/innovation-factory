@@ -11,8 +11,14 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Camera } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Camera, Sprout, AlertTriangle, CheckCircle2, Clock } from "lucide-react";
 import { useState } from "react";
+import {
+  useYp_listDiagnosesSuspense,
+  useYp_listCalendarSuspense,
+} from "@/lib/api";
+import selector from "@/lib/selector";
 
 export const Route = createFileRoute("/projects/yard-pro/")({
   component: () => <CockpitPage />,
@@ -181,18 +187,52 @@ function CockpitPage() {
  */
 
 function CalendarCardContent() {
-  // Load-bearing demo string: "Apple tree fungus check overdue 4 days"
-  // This row is the anchor for Phase 1 success criterion #1 (plan §2).
-  // When seeded at 2026-05-08, it should render as overdue on 2026-05-12.
+  const { data: entries } = useYp_listCalendarSuspense({
+    params: { limit: 6 },
+    ...selector(),
+  });
+  if (entries.length === 0) {
+    return (
+      <div className="text-sm text-muted-foreground">
+        No upcoming tasks yet. The seasonal coach will populate this.
+      </div>
+    );
+  }
+  const now = new Date();
   return (
     <div className="space-y-2 text-sm">
-      <div className="p-2 bg-muted rounded">
-        <div className="font-medium">Apple tree fungus check</div>
-        <div className="text-destructive text-xs">Overdue 4 days</div>
-      </div>
-      <div className="text-muted-foreground">
-        Upcoming tasks...
-      </div>
+      {entries.slice(0, 5).map((entry) => {
+        const scheduled = new Date(entry.scheduled_at);
+        const overdue = entry.status === "planned" && scheduled < now;
+        const daysDiff = Math.round(
+          (scheduled.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+        );
+        return (
+          <div
+            key={entry.id}
+            className={`p-2 rounded border ${
+              overdue ? "border-destructive/50 bg-destructive/5" : "bg-muted"
+            }`}
+          >
+            <div className="font-medium">{entry.title}</div>
+            <div
+              className={`text-xs ${
+                overdue ? "text-destructive" : "text-muted-foreground"
+              }`}
+            >
+              {overdue
+                ? `Overdue ${Math.abs(daysDiff)} day${
+                    Math.abs(daysDiff) === 1 ? "" : "s"
+                  }`
+                : daysDiff === 0
+                  ? "Today"
+                  : daysDiff === 1
+                    ? "Tomorrow"
+                    : `In ${daysDiff} days`}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -213,9 +253,60 @@ function InventoryCardContent() {
 }
 
 function DiagnosesCardContent() {
+  const { data: diagnoses } = useYp_listDiagnosesSuspense({
+    params: { limit: 5 },
+    ...selector(),
+  });
+  if (diagnoses.length === 0) {
+    return (
+      <div className="text-sm text-muted-foreground">
+        No diagnoses yet. Snap a photo to get started.
+      </div>
+    );
+  }
   return (
-    <div className="text-sm text-muted-foreground">
-      No diagnoses yet. Snap a photo to get started.
+    <div className="space-y-2 text-sm">
+      {diagnoses.slice(0, 4).map((d) => {
+        const created = new Date(d.created_at);
+        const daysAgo = Math.round(
+          (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24),
+        );
+        const confidencePct = Math.round(d.top_confidence * 100);
+        const StatusIcon =
+          d.status === "pending"
+            ? Clock
+            : d.status === "acted_upon"
+              ? CheckCircle2
+              : AlertTriangle;
+        const statusColor =
+          d.status === "acted_upon"
+            ? "text-emerald-600 dark:text-emerald-400"
+            : d.status === "pending"
+              ? "text-amber-600 dark:text-amber-400"
+              : "text-muted-foreground";
+        return (
+          <div key={d.id} className="p-2 bg-muted rounded space-y-1">
+            <div className="flex items-start justify-between gap-2">
+              <div className="font-medium flex items-center gap-1.5">
+                <Sprout size={14} className="text-primary shrink-0" />
+                {d.top_label.replace(/_/g, " ")}
+              </div>
+              <Badge variant="outline" className="shrink-0 text-[10px]">
+                {confidencePct}%
+              </Badge>
+            </div>
+            <div className={`text-xs flex items-center gap-1 ${statusColor}`}>
+              <StatusIcon size={11} />
+              {d.status.replace(/_/g, " ")} ·{" "}
+              {daysAgo === 0
+                ? "today"
+                : daysAgo === 1
+                  ? "yesterday"
+                  : `${daysAgo} days ago`}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
