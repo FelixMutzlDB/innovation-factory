@@ -144,7 +144,7 @@
               "frame": {"title": "Customers by region", "showTitle": true}
             }
           },
-          "position": {"x": 0, "y": 4, "width": 6, "height": 5}
+          "position": {"x": 0, "y": 4, "width": 6, "height": 4}
         },
         {
           "widget": {
@@ -170,7 +170,7 @@
               "frame": {"title": "Yard size distribution", "showTitle": true}
             }
           },
-          "position": {"x": 6, "y": 4, "width": 6, "height": 5}
+          "position": {"x": 6, "y": 4, "width": 6, "height": 4}
         },
 
         {
@@ -197,7 +197,7 @@
               "frame": {"title": "Robotic mower age distribution", "showTitle": true}
             }
           },
-          "position": {"x": 0, "y": 9, "width": 6, "height": 5}
+          "position": {"x": 0, "y": 8, "width": 6, "height": 4}
         },
         {
           "widget": {
@@ -223,7 +223,7 @@
               "frame": {"title": "Last service recency", "showTitle": true}
             }
           },
-          "position": {"x": 6, "y": 9, "width": 6, "height": 5}
+          "position": {"x": 6, "y": 8, "width": 6, "height": 4}
         },
 
         {
@@ -262,7 +262,7 @@
               "frame": {"title": "Anonymized customer fleet (yard_id_hash only)", "showTitle": true}
             }
           },
-          "position": {"x": 0, "y": 14, "width": 12, "height": 6}
+          "position": {"x": 0, "y": 12, "width": 12, "height": 5}
         }
       ]
     }

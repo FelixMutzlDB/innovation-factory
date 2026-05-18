@@ -2379,6 +2379,9 @@ export interface YardProDatabricksResourcesOut {
   coach_model: string;
   coach_model_fallback: string;
   configured?: boolean;
+  dealer_dashboard_configured?: boolean;
+  dealer_dashboard_embed_url: string;
+  dealer_dashboard_id: string;
   dealer_genie_configured?: boolean;
   dealer_genie_space_id: string;
   vision_configured?: boolean;

@@ -1,7 +1,7 @@
 # Innovation Factory — Outstanding Work
 
 > FEIP: [FEIP-5472](https://databricks.atlassian.net/browse/FEIP-5472)
-> Last reviewed: 2026-05-11
+> Last reviewed: 2026-05-18
 > Source: [docs/tasks/refinement.md](tasks/refinement.md) (full audit details)
 > Batch plan (now shipped): [docs/cleanup-and-improvement-plan.md](cleanup-and-improvement-plan.md)
 
@@ -168,27 +168,29 @@ Plan: [docs/projects/yard-pro-plan.md](projects/yard-pro-plan.md). Tracked in PR
 | Y11 | Deployment runbook + app.yml/databricks.yml env wiring | `[x]` | 2026-05-12 | Commit `0267d9a` — `scripts/yard_pro/RUNBOOK.md` |
 | Y12 | UC4 telemetry synthesizer + nudges (notifications-only, Art. 22 compliant) | `[x]` | 2026-05-12 | Commit `c3d3244` |
 | Y13 | `yp_coach_feedback` UI + stats endpoint (5% auto-flag rule) | `[x]` | 2026-05-12 | Commit `e5536ff` |
-| Y14 | Consumables reorder hints (UC5 polish) | `[ ]` | — | P1 backlog — surface in cockpit + dealer panel |
-| Y15 | Ensemble plausibility check on `confidence ≥ 0.8` (RT-002 follow-on) | `[ ]` | — | FM-API yes/no sanity check on high-confidence vision results |
+| Y14 | Consumables reorder hints (UC5 polish) | `[x]` | 2026-05-13 | Commit `dca1009` |
+| Y15 | Ensemble plausibility check on `confidence ≥ 0.8` (RT-002 follow-on) | `[x]` | 2026-05-13 | Commit `1b52cd5` (vision-resilience bundle) |
 | Y16 | Per-dependency circuit-breaker thresholds | `[ ]` | — | Tune once we have real failure latency data |
-| Y17 | Tier-2 diagnose-queue degradation path | `[ ]` | — | Vision-down queue; complements ensemble plausibility |
+| Y17 | Tier-2 diagnose-queue degradation path | `[x]` | 2026-05-13 | Commit `1b52cd5` (vision-resilience bundle) |
 | Y18 | Log-canary CI test (`test_log_pipeline_no_pii.py`) | `[ ]` | — | RT-024 production hardening |
-| Y19 | KA-extraction canary nightly job + verbatim cap (RT-008) | `[ ]` | — | Detect KA corpus exfiltration via extraction prompts |
+| Y19 | KA-extraction canary nightly job + verbatim cap (RT-008) | `[x]` | 2026-05-13 | Commit `01f60d9` — canary script + tests; nightly job-scheduler wiring still open |
 | Y20 | `canary_cold_start.py` Lakebase Saturday-surge benchmark | `[ ]` | — | Closes plan Q2 |
 
 ### P2 — production hardening / dealer (extends to plan-phase P5)
 
 | ID | Task | Status | Done | Notes |
 |----|------|--------|------|-------|
-| Y21 | Dealer panel UI (`/projects/yard-pro/dealer/*`) — UC6 | `[ ]` | — | OEM B2B2C anchor; in-flight (Bundle 3) |
-| Y22 | Consent state machine (`yp_dealer_relationships`) end-to-end | `[ ]` | — | UC6; in-flight (Bundle 3) |
-| Y23 | Genie space over `yard_pro_gold.dealer_customer_summary` | `[ ]` | — | UC6; in-flight (Bundle 3) |
-| Y24 | Anonymization pipeline (Lakebase → Delta Silver → Gold) production-grade | `[ ]` | — | UC6; Bronze layer already seeded; in-flight (Bundle 3) |
-| Y25 | GDPR Art. 15 (access) + Art. 20 (portability) export endpoints | `[ ]` | — | Production-launch necessity; in-flight (Bundle 4) |
-| Y26 | Log PII regex post-filter + canary CI | `[ ]` | — | RT-024 production hardening; in-flight (Bundle 4) |
-| Y27 | Retention/partition jobs for `yp_action_log` + Delta tables | `[ ]` | — | Plan §5 retention rules; in-flight (Bundle 4) |
+| Y21 | Dealer panel UI (`/projects/yard-pro/dealer/*`) — UC6 | `[x]` | 2026-05-18 | Commits `90aa079` (initial) + `ef39152` (curated Genie questions) + `a9bd101` (dashboard embed) |
+| Y22 | Consent state machine (`yp_dealer_relationships`) end-to-end | `[x]` | 2026-05-13 | Commit `90aa079` — endpoints + tests; live demo seed `3c93608` exercises pending→granted on Felix's yard |
+| Y23 | Genie space over `yard_pro_gold.dealer_customer_summary` | `[x]` | 2026-05-18 | Commit `508906a` — space `01f152e6ba76129887a955cf08dd5c92` deployed via `scripts/yard_pro/deploy_genie_space.py` with 6 curated sample questions |
+| Y24 | Anonymization pipeline (Lakebase → Delta Silver → Gold) production-grade | `[~]` | 2026-05-13 | Commit `90aa079` — aggregation_service + HMAC ingest wired; production-grade Spark job (replace in-process aggregation) still open |
+| Y25 | GDPR Art. 15 (access) + Art. 20 (portability) export endpoints | `[x]` | 2026-05-13 | Commit `b9a0bfd` |
+| Y26 | Log PII regex post-filter + canary CI | `[x]` | 2026-05-13 | Commit `b9a0bfd` — runtime filter shipped; canary CI test still pending (covers Y18) |
+| Y27 | Retention/partition jobs for `yp_action_log` + Delta tables | `[x]` | 2026-05-13 | Commit `b9a0bfd` — `scripts/yard_pro/retention_jobs.py` |
 | Y28 | Lakebase connection-pool sizing + `canary_cold_start.py` results applied | `[ ]` | — | Closes plan Q2 |
-| Y29 | Saira Condensed self-host fallback | `[ ]` | — | CDN works for demo; self-host is production-quality; in-flight (Bundle 1) |
+| Y29 | Saira Condensed self-host fallback | `[x]` | 2026-05-13 | Commit `1dd53bb` |
+| Y30 | AI/BI dealer dashboard + Genie link + embed in dealer panel | `[x]` | 2026-05-18 | Commit `a9bd101` — `dashboard_dealer.json` published with `embed_credentials=true`; ID `01f152f10628135caf9d41eed16c8b50`; 48 anonymized rows in gold table for chart density |
+| Y31 | UC row-level filter on `dealer_customer_summary` (RT-022 enforcement) | `[ ]` | — | Genie + dashboard still show all rows. Runbook §11 covers the `dealer_code = current_user_dealer()` filter; ship before exposing to a second dealer |
 
 ### P3 — deferred / depends on real customer
 
@@ -209,6 +211,6 @@ Plan: [docs/projects/yard-pro-plan.md](projects/yard-pro-plan.md). Tracked in PR
 | P6 Cleanup | 3 | 3 | 0 |
 | AECO Hub | 7 | 7 | 0 |
 | **yard-pro P0** | 7 | 6 | 1 (Y7 vision endpoint partial) |
-| **yard-pro P1** | 13 | 6 | 7 |
-| **yard-pro P2** | 9 | 0 | 9 |
-| **Total** | **73** | **49** | **24** |
+| **yard-pro P1** | 13 | 10 | 3 |
+| **yard-pro P2** | 11 | 8 | 2 open + 1 partial |
+| **Total** | **75** | **61** | **14** |

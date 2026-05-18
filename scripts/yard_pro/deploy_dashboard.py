@@ -72,28 +72,37 @@ def main() -> None:
         sys.exit(f"template not found: {TEMPLATE}")
 
     state = _load_state()
-    if state.get("dashboard_id") and not args.force:
-        print(f"Already deployed: {state['dashboard_id']}")
-        print("Pass --force to recreate.")
-        return
-
     serialized = TEMPLATE.read_text().replace("{{CATALOG}}", args.catalog)
 
-    print(f"Creating dashboard: {args.display_name}")
     body = {
         "display_name": args.display_name,
         "warehouse_id": args.warehouse_id,
         "serialized_dashboard": serialized,
     }
-    resp = _api("post", "/api/2.0/lakeview/dashboards", body, args.profile)
-    dashboard_id = resp.get("dashboard_id")
-    if not dashboard_id:
-        sys.exit(f"create failed: {resp}")
-    print(f"  Created: {dashboard_id}")
 
-    state["dashboard_id"] = dashboard_id
-    state["display_name"] = args.display_name
-    _save_state(state)
+    if state.get("dashboard_id") and not args.force:
+        # Update existing dashboard in place (preserves the ID so env
+        # vars and the running app keep pointing at the right thing).
+        dashboard_id = state["dashboard_id"]
+        print(f"Updating existing dashboard: {dashboard_id}")
+        _api(
+            "patch",
+            f"/api/2.0/lakeview/dashboards/{dashboard_id}",
+            body,
+            args.profile,
+        )
+        print("  Patched")
+    else:
+        print(f"Creating dashboard: {args.display_name}")
+        resp = _api("post", "/api/2.0/lakeview/dashboards", body, args.profile)
+        dashboard_id = resp.get("dashboard_id")
+        if not dashboard_id:
+            sys.exit(f"create failed: {resp}")
+        print(f"  Created: {dashboard_id}")
+
+        state["dashboard_id"] = dashboard_id
+        state["display_name"] = args.display_name
+        _save_state(state)
 
     print("Publishing with embed_credentials=true")
     pub = _api(
