@@ -25,7 +25,21 @@ import {
   Bot,
   Store,
   Info,
+  MessageCircleQuestion,
 } from "lucide-react";
+import { useState } from "react";
+
+// Curated questions mirror the SAMPLE_QUESTIONS list in
+// scripts/yard_pro/deploy_genie_space.py — kept in sync by convention.
+// The first one is the plan §2 success-criterion #6 headline question.
+const GENIE_SAMPLE_QUESTIONS = [
+  "Which customers have a robotic mower 4+ years old that hasn't been serviced in the last 90 days?",
+  "How many anonymized customers do I have in each region bucket?",
+  "What is the distribution of yard sizes among my consented customers?",
+  "Which tool inventory hashes appear most often in my customer base?",
+  "How many of my customers have a robotic mower at all?",
+  "Show me customers whose last service event was more than 6 months ago.",
+];
 
 /**
  * Dealer panel index page (UC6, P5).
@@ -196,6 +210,8 @@ function GenieEmbedCard({
   workspaceUrl,
   spaceId,
 }: GenieEmbedCardProps) {
+  const [showInline, setShowInline] = useState(false);
+
   if (!configured || !workspaceUrl || !spaceId) {
     return (
       <Card>
@@ -224,37 +240,97 @@ function GenieEmbedCard({
     );
   }
 
+  // Open the Genie space directly in the workspace. We don't try to
+  // prefill the question via query string — Databricks doesn't publicly
+  // document a stable `?q=` parameter for Genie, so the user clicks
+  // through and the curated suggestions are already pinned inside the
+  // space by deploy_genie_space.py.
   const genieUrl = `https://${workspaceUrl}/genie/rooms/${spaceId}`;
+  const embedUrl = `${genieUrl}?embed=true`;
+
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <div>
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 gap-4">
+        <div className="flex-1">
           <CardTitle className="flex items-center gap-2">
             <Sparkles size={18} />
-            Genie space
+            Talk to your data — Genie
           </CardTitle>
-          <CardDescription>
-            Ask natural-language questions over your anonymized customer view.
+          <CardDescription className="mt-1">
+            Ask natural-language questions over the anonymized customer view.
+            Genie translates each question to SQL against{" "}
+            <code className="text-xs bg-muted px-1 py-0.5 rounded">
+              yard_pro_gold.dealer_customer_summary
+            </code>{" "}
+            and inherits your UC row-level filter.
           </CardDescription>
         </div>
         <a href={genieUrl} target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" size="sm">
+          <Button size="sm" className="gap-1.5 whitespace-nowrap">
             Open in Databricks
-            <ExternalLink className="h-3 w-3 ml-2" />
+            <ExternalLink className="h-3 w-3" />
           </Button>
         </a>
       </CardHeader>
-      <CardContent>
-        <div
-          className="rounded-lg border overflow-hidden bg-white"
-          style={{ height: "60vh" }}
-        >
-          <iframe
-            src={genieUrl}
-            className="w-full h-full border-0"
-            title="yard-pro dealer Genie space"
-            allow="fullscreen"
-          />
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+            <MessageCircleQuestion size={12} />
+            Try asking
+          </div>
+          <div className="grid gap-2 md:grid-cols-2">
+            {GENIE_SAMPLE_QUESTIONS.map((q, idx) => (
+              <a
+                key={idx}
+                href={genieUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block"
+              >
+                <div className="p-3 rounded-lg border bg-muted/40 hover:bg-muted hover:border-primary/40 transition-colors text-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-foreground">{q}</span>
+                    <ExternalLink className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground group-hover:text-primary" />
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t pt-4">
+          <button
+            type="button"
+            onClick={() => setShowInline((v) => !v)}
+            className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2"
+          >
+            {showInline ? "Hide inline Genie" : "Show inline Genie (beta)"}
+          </button>
+          {showInline && (
+            <>
+              <div
+                className="rounded-lg border overflow-hidden bg-white mt-3"
+                style={{ height: "60vh" }}
+              >
+                <iframe
+                  src={embedUrl}
+                  className="w-full h-full border-0"
+                  title="yard-pro dealer Genie space"
+                  allow="clipboard-write; fullscreen"
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Inline embed requires the workspace admin to allowlist this
+                Databricks Apps host under{" "}
+                <span className="font-medium">
+                  Settings → Security → External access → Embed dashboards
+                </span>
+                . If you see an auth loop or blank panel, click{" "}
+                <span className="font-medium">Open in Databricks</span> above.
+              </p>
+            </>
+          )}
         </div>
       </CardContent>
     </Card>
