@@ -12,6 +12,7 @@ from .databricks_config import (
     COACH_KA_ENDPOINT,
     COACH_MODEL,
     COACH_MODEL_FALLBACK,
+    DEALER_DASHBOARD_ID,
     DEALER_GENIE_SPACE_ID,
     VISION_ENDPOINT,
     WORKSPACE_URL,
@@ -62,6 +63,9 @@ class YardProDatabricksResourcesOut(BaseModel):
     vision_configured: bool = False
     dealer_genie_space_id: str
     dealer_genie_configured: bool = False
+    dealer_dashboard_id: str
+    dealer_dashboard_configured: bool = False
+    dealer_dashboard_embed_url: str
     configured: bool = False
 
 
@@ -87,6 +91,7 @@ async def get_databricks_resources(request: Request) -> YardProDatabricksResourc
     surface vs the "not configured" card (lessons §18).
     """
     ws_url = _resolve_workspace_url(request)
+    dashboard_ready = bool(ws_url and DEALER_DASHBOARD_ID)
     return YardProDatabricksResourcesOut(
         workspace_url=ws_url,
         coach_model=COACH_MODEL,
@@ -97,5 +102,12 @@ async def get_databricks_resources(request: Request) -> YardProDatabricksResourc
         vision_configured=bool(VISION_ENDPOINT),
         dealer_genie_space_id=DEALER_GENIE_SPACE_ID,
         dealer_genie_configured=bool(DEALER_GENIE_SPACE_ID),
+        dealer_dashboard_id=DEALER_DASHBOARD_ID,
+        dealer_dashboard_configured=dashboard_ready,
+        dealer_dashboard_embed_url=(
+            f"https://{ws_url}/embed/dashboardsv3/{DEALER_DASHBOARD_ID}?embed"
+            if dashboard_ready
+            else ""
+        ),
         configured=bool(ws_url),
     )

@@ -1,0 +1,270 @@
+{
+  "datasets": [
+    {
+      "name": "ds_dealer",
+      "displayName": "Anonymized customer fleet",
+      "queryLines": [
+        "SELECT summary_id, yard_id_hash, dealer_code, region_bucket, yard_size_bucket, ",
+        "tool_inventory_hash, robotic_mower_age_years, last_service_event_age_days, ",
+        "consent_state, updated_at, ",
+        "CASE ",
+        "  WHEN last_service_event_age_days < 90 THEN '0-90 days' ",
+        "  WHEN last_service_event_age_days < 180 THEN '90-180 days' ",
+        "  WHEN last_service_event_age_days < 365 THEN '180-365 days' ",
+        "  ELSE '365+ days' ",
+        "END AS service_recency_bucket, ",
+        "CASE ",
+        "  WHEN robotic_mower_age_years <= 1 THEN '0-1 yr' ",
+        "  WHEN robotic_mower_age_years <= 3 THEN '2-3 yr' ",
+        "  WHEN robotic_mower_age_years <= 5 THEN '4-5 yr' ",
+        "  ELSE '6+ yr' ",
+        "END AS mower_age_bucket ",
+        "FROM {{CATALOG}}.yard_pro_gold.dealer_customer_summary"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "dealer_cockpit",
+      "displayName": "Dealer Cockpit",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1",
+      "layout": [
+        {
+          "widget": {
+            "name": "title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Stihl Stuttgart — Dealer Cockpit",
+                "Anonymized customer fleet. Each row is a household whose latest consent transition is `granted` and whose data has been hashed at ingest. Ask Genie about the fleet via the linked space."
+              ]
+            }
+          },
+          "position": {"x": 0, "y": 0, "width": 12, "height": 1}
+        },
+
+        {
+          "widget": {
+            "name": "kpi-total",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_dealer",
+                "fields": [{"name": "count(yard_id_hash)", "expression": "COUNT(`yard_id_hash`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "count(yard_id_hash)", "displayName": "Total customers"}}
+            }
+          },
+          "position": {"x": 0, "y": 1, "width": 3, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-granted",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_dealer",
+                "fields": [{"name": "sum(is_granted)", "expression": "SUM(CASE WHEN `consent_state` = 'granted' THEN 1 ELSE 0 END)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "sum(is_granted)", "displayName": "Granted consent"}}
+            }
+          },
+          "position": {"x": 3, "y": 1, "width": 3, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-aged-mowers",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_dealer",
+                "fields": [{"name": "sum(aged)", "expression": "SUM(CASE WHEN `robotic_mower_age_years` >= 4 THEN 1 ELSE 0 END)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "sum(aged)", "displayName": "Mowers 4+ yrs"}}
+            }
+          },
+          "position": {"x": 6, "y": 1, "width": 3, "height": 3}
+        },
+        {
+          "widget": {
+            "name": "kpi-avg-service",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_dealer",
+                "fields": [{"name": "avg(last_service_event_age_days)", "expression": "AVG(`last_service_event_age_days`)"}],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {"value": {"fieldName": "avg(last_service_event_age_days)", "displayName": "Avg last-service (days)"}}
+            }
+          },
+          "position": {"x": 9, "y": 1, "width": 3, "height": 3}
+        },
+
+        {
+          "widget": {
+            "name": "bar-region",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_dealer",
+                "fields": [
+                  {"name": "region_bucket", "expression": "`region_bucket`"},
+                  {"name": "count(yard_id_hash)", "expression": "COUNT(`yard_id_hash`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "region_bucket", "scale": {"type": "categorical"}, "displayName": "Region"},
+                "y": {"fieldName": "count(yard_id_hash)", "scale": {"type": "quantitative"}, "displayName": "Customers"}
+              },
+              "frame": {"title": "Customers by region", "showTitle": true}
+            }
+          },
+          "position": {"x": 0, "y": 4, "width": 6, "height": 5}
+        },
+        {
+          "widget": {
+            "name": "donut-size",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_dealer",
+                "fields": [
+                  {"name": "yard_size_bucket", "expression": "`yard_size_bucket`"},
+                  {"name": "count(yard_id_hash)", "expression": "COUNT(`yard_id_hash`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {"fieldName": "count(yard_id_hash)", "scale": {"type": "quantitative"}, "displayName": "Customers"},
+                "color": {"fieldName": "yard_size_bucket", "scale": {"type": "categorical"}, "displayName": "Yard size"}
+              },
+              "frame": {"title": "Yard size distribution", "showTitle": true}
+            }
+          },
+          "position": {"x": 6, "y": 4, "width": 6, "height": 5}
+        },
+
+        {
+          "widget": {
+            "name": "bar-mower-age",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_dealer",
+                "fields": [
+                  {"name": "mower_age_bucket", "expression": "`mower_age_bucket`"},
+                  {"name": "count(yard_id_hash)", "expression": "COUNT(`yard_id_hash`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "mower_age_bucket", "scale": {"type": "categorical", "sort": {"by": "x-reversed"}}, "displayName": "Mower age"},
+                "y": {"fieldName": "count(yard_id_hash)", "scale": {"type": "quantitative"}, "displayName": "Customers"}
+              },
+              "frame": {"title": "Robotic mower age distribution", "showTitle": true}
+            }
+          },
+          "position": {"x": 0, "y": 9, "width": 6, "height": 5}
+        },
+        {
+          "widget": {
+            "name": "bar-service-recency",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_dealer",
+                "fields": [
+                  {"name": "service_recency_bucket", "expression": "`service_recency_bucket`"},
+                  {"name": "count(yard_id_hash)", "expression": "COUNT(`yard_id_hash`)"}
+                ],
+                "disaggregated": false
+              }
+            }],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {"fieldName": "service_recency_bucket", "scale": {"type": "categorical", "sort": {"by": "x-reversed"}}, "displayName": "Last service age"},
+                "y": {"fieldName": "count(yard_id_hash)", "scale": {"type": "quantitative"}, "displayName": "Customers"}
+              },
+              "frame": {"title": "Last service recency", "showTitle": true}
+            }
+          },
+          "position": {"x": 6, "y": 9, "width": 6, "height": 5}
+        },
+
+        {
+          "widget": {
+            "name": "tbl-customers",
+            "queries": [{
+              "name": "main_query",
+              "query": {
+                "datasetName": "ds_dealer",
+                "fields": [
+                  {"name": "yard_id_hash", "expression": "`yard_id_hash`"},
+                  {"name": "region_bucket", "expression": "`region_bucket`"},
+                  {"name": "yard_size_bucket", "expression": "`yard_size_bucket`"},
+                  {"name": "tool_inventory_hash", "expression": "`tool_inventory_hash`"},
+                  {"name": "robotic_mower_age_years", "expression": "`robotic_mower_age_years`"},
+                  {"name": "last_service_event_age_days", "expression": "`last_service_event_age_days`"},
+                  {"name": "consent_state", "expression": "`consent_state`"}
+                ],
+                "disaggregated": true
+              }
+            }],
+            "spec": {
+              "version": 1,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {"fieldName": "yard_id_hash", "displayName": "yard_id_hash"},
+                  {"fieldName": "region_bucket", "displayName": "Region"},
+                  {"fieldName": "yard_size_bucket", "displayName": "Yard size"},
+                  {"fieldName": "tool_inventory_hash", "displayName": "Tool inventory hash"},
+                  {"fieldName": "robotic_mower_age_years", "displayName": "Mower age (yr)"},
+                  {"fieldName": "last_service_event_age_days", "displayName": "Last service (d)"},
+                  {"fieldName": "consent_state", "displayName": "Consent"}
+                ]
+              },
+              "frame": {"title": "Anonymized customer fleet (yard_id_hash only)", "showTitle": true}
+            }
+          },
+          "position": {"x": 0, "y": 14, "width": 12, "height": 6}
+        }
+      ]
+    }
+  ]
+}

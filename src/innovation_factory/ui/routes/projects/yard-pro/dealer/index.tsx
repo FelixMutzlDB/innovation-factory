@@ -26,6 +26,7 @@ import {
   Store,
   Info,
   MessageCircleQuestion,
+  BarChart3,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -166,6 +167,15 @@ function DealerPanelContent() {
         />
       </div>
 
+      <DashboardEmbedCard
+        configured={resources.dealer_dashboard_configured ?? false}
+        embedUrl={resources.dealer_dashboard_embed_url ?? ""}
+        workspaceUrl={resources.workspace_url}
+        dashboardId={resources.dealer_dashboard_id ?? ""}
+        genieSpaceId={resources.dealer_genie_space_id}
+        genieConfigured={resources.dealer_genie_configured ?? false}
+      />
+
       <GenieEmbedCard
         configured={resources.dealer_genie_configured ?? false}
         workspaceUrl={resources.workspace_url}
@@ -194,6 +204,113 @@ function CountCard({ icon, label, value, hint }: CountCardProps) {
         </div>
         <div className="text-3xl font-bold tracking-tight">{value}</div>
         <div className="text-xs text-muted-foreground">{hint}</div>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface DashboardEmbedCardProps {
+  configured: boolean;
+  embedUrl: string;
+  workspaceUrl: string;
+  dashboardId: string;
+  genieSpaceId: string;
+  genieConfigured: boolean;
+}
+
+function DashboardEmbedCard({
+  configured,
+  embedUrl,
+  workspaceUrl,
+  dashboardId,
+  genieSpaceId,
+  genieConfigured,
+}: DashboardEmbedCardProps) {
+  if (!configured || !embedUrl) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 size={18} />
+            Dealer dashboard
+          </CardTitle>
+          <CardDescription>
+            Anonymized fleet KPIs and breakdowns.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">
+              Dashboard not configured.
+            </p>
+            <p className="mt-1">
+              Run{" "}
+              <code className="text-xs bg-muted px-1 py-0.5 rounded">
+                uv run python scripts/yard_pro/deploy_dashboard.py
+              </code>{" "}
+              and set{" "}
+              <code className="text-xs bg-muted px-1 py-0.5 rounded">
+                YARD_PRO_DEALER_DASHBOARD_ID
+              </code>{" "}
+              in <code className="text-xs">app.yml</code>.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const dashboardOpenUrl = `https://${workspaceUrl}/dashboardsv3/${dashboardId}/published`;
+  const genieOpenUrl = genieConfigured
+    ? `https://${workspaceUrl}/genie/rooms/${genieSpaceId}`
+    : "";
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 gap-4">
+        <div className="flex-1">
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 size={18} />
+            Dealer dashboard
+          </CardTitle>
+          <CardDescription className="mt-1">
+            Anonymized fleet KPIs and breakdowns over{" "}
+            <code className="text-xs bg-muted px-1 py-0.5 rounded">
+              yard_pro_gold.dealer_customer_summary
+            </code>
+            . Published with embed credentials — UC row-level filter still
+            applies per dealer SP.
+          </CardDescription>
+        </div>
+        <div className="flex gap-2 shrink-0">
+          {genieOpenUrl && (
+            <a href={genieOpenUrl} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Sparkles className="h-3 w-3" />
+                Ask Genie
+              </Button>
+            </a>
+          )}
+          <a href={dashboardOpenUrl} target="_blank" rel="noopener noreferrer">
+            <Button size="sm" className="gap-1.5">
+              Open dashboard
+              <ExternalLink className="h-3 w-3" />
+            </Button>
+          </a>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div
+          className="rounded-lg border overflow-hidden bg-white"
+          style={{ height: "70vh" }}
+        >
+          <iframe
+            src={embedUrl}
+            className="w-full h-full border-0"
+            title="yard-pro dealer dashboard"
+            allow="clipboard-write; fullscreen"
+          />
+        </div>
       </CardContent>
     </Card>
   );

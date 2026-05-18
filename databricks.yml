@@ -167,6 +167,8 @@ resources:
             value: "demo-hmac-secret-fevm-felix-demo-2026-05"
           - name: YARD_PRO_DEALER_GENIE_SPACE_ID
             value: "01f152e6ba76129887a955cf08dd5c92"
+          - name: YARD_PRO_DEALER_DASHBOARD_ID
+            value: "01f152f10628135caf9d41eed16c8b50"
           - name: YARD_PRO_PHOTOS_VOLUME_PATH
             value: "/Volumes/felix_demo_catalog/yard_pro/photos"
           # YARD_PRO_AUTOGEN_END

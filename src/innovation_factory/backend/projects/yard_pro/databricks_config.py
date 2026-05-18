@@ -40,6 +40,14 @@ VISION_ENDPOINT = _cfg.get("VISION_ENDPOINT")
 # Dealer panel (P5)
 DEALER_GENIE_SPACE_ID = _cfg.get("DEALER_GENIE_SPACE_ID")
 
+# Lakeview/AI-BI dashboard for the dealer panel (UC6 surface). Published
+# with embed_credentials=true by scripts/yard_pro/deploy_dashboard.py so
+# the iframe in the dealer panel renders without per-user SSO. The
+# linked Genie space (DEALER_GENIE_SPACE_ID) is exposed to dashboard
+# viewers through the workspace's data-room association — same backing
+# table, same UC row-level filter.
+DEALER_DASHBOARD_ID = _cfg.get("DEALER_DASHBOARD_ID")
+
 # Dealer-side anonymization secret (P5). HMAC key over ``yard_id`` to produce
 # the ``yard_id_hash`` shipped to ``yard_pro_gold.dealer_customer_summary``.
 # Rotates per the plan §8 "Consent state machine" + RT-023 invariant: brute-
