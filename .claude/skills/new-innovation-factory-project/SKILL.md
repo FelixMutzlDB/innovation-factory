@@ -151,6 +151,17 @@ When Phase 4 closes:
    - Then start implementation work following the `CLAUDE.md` working mode
 3. Save a memory entry (project-type) noting that the accelerator exists and
    when the plan was finalized, so future sessions can find it.
+4. **Surface the overview-page registration checklist** from
+   `docs/new-project.md` § "Hand-off to implementation". Both AECO Hub
+   (2026-04) and yard-pro (2026-05) shipped commits where the backend was
+   live but the gallery tile at `/` silently didn't render — root causes
+   were the master seed rolling back the platform Project row on a per-project
+   seed failure (fixed by `_safe_seed` in `backend/seed.py`) and the brand
+   icon missing from the frontend `iconMap`. The checklist names the four
+   wires every new accelerator needs (platform Project row, per-project
+   seed registration, `iconMap` entry, brand theme + CSS). Repeat it
+   verbatim from `docs/new-project.md` so the implementer doesn't have
+   to hunt for it.
 
 ## What this skill does NOT do
 

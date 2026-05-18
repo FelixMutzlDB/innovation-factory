@@ -424,6 +424,43 @@ When all four phases are complete and `plan.md` clears every checklist:
 - Implementation work follows the **working mode** in `CLAUDE.md`:
   Investigate → Plan → Implement → Test → Iterate.
 
+### Overview-page registration checklist (don't ship without these)
+
+A new accelerator only renders on `/` (the gallery) when **all** of these wires
+are in place. AECO Hub Phase 6 and yard-pro both shipped commits where the
+backend was live but the project tile silently didn't appear — the root causes
+were (a) the `seed_<slug>_data` raising and rolling back the platform Project
+row in a single big transaction (fixed by `_safe_seed` in `backend/seed.py`,
+do **not** revert), and (b) the brand icon missing from the frontend `iconMap`
+so the tile fell back to a generic Box.
+
+Before declaring "deployed":
+
+1. **Platform Project row** — add an entry to `_seed_projects.projects_data`
+   in `src/innovation_factory/backend/seed.py` with `slug`, `name`,
+   `description`, `company`, `icon`, `color`.
+2. **Per-project seed** — add `(label, seed_<slug>_data)` to `_PROJECT_SEEDS`
+   in the same file. Each seed is wrapped by `_safe_seed`, so a data-seed
+   failure no longer rolls back the platform row — but the project's own
+   data still won't appear until the seed succeeds.
+3. **Icon registration** — the `icon` string you set in step 1 must exist in
+   `src/innovation_factory/ui/routes/index.tsx`'s `iconMap`. Import the
+   lucide-react icon and add it to the map. Without this the tile renders
+   with a fallback Box icon (functional but visually wrong).
+4. **Brand theme** — register the slug in `src/innovation_factory/ui/lib/brand-themes.ts`
+   and create `src/innovation_factory/ui/styles/themes/<slug>.css` so the
+   `<ProjectThemeScope>` wrapper applies the right CSS variables on the
+   project's own routes. The gallery tile picks up the `color` from the DB
+   row directly, but the project's sub-pages need the theme registered.
+5. **Idempotency** — re-run `uv run apx dev start` against a clean PGlite
+   and confirm the seed is a no-op the second time. Master seed runs on
+   every app start; non-idempotent seeds will silently slow startup or
+   raise.
+6. **Smoke** — after `databricks bundle deploy`, hit
+   `GET /api/projects` on the deployed app and confirm the new slug is in
+   the response. If not, check the app logs for `Seed for <label> failed`
+   from `_safe_seed`'s exception handler.
+
 ## When to skip a phase
 
 - **Skip Phase 1** if you're extending an existing accelerator with a known

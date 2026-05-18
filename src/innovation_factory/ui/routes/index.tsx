@@ -26,6 +26,8 @@ import {
   Grid,
   Radio,
   ScanSearch,
+  Sprout,
+  Building2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -50,6 +52,8 @@ const iconMap: Record<string, LucideIcon> = {
   Plus,
   Radio,
   ScanSearch,
+  Sprout,
+  Building2,
 };
 
 function GalleryContent() {
