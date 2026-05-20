@@ -36,6 +36,7 @@ SLUGS = (
     "adtech-intelligence",
     "hb-product-center",
     "aeco-hub",
+    "yard-pro",
 )
 
 AA_NORMAL_TEXT = 4.5

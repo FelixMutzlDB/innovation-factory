@@ -510,6 +510,10 @@ export interface Body_vh_upload_ticket_media {
   file: string;
 }
 
+export interface Body_yp_diagnose {
+  file: string;
+}
+
 export interface BshChatHistoryOut {
   ended_at?: string | null;
   messages: BshChatMessageOut[];
@@ -2302,6 +2306,433 @@ export interface VhTicketUpdate {
   status?: VhTicketStatus | null;
 }
 
+export const YardProActionSource = {
+  user: "user",
+  coach_recommendation: "coach_recommendation",
+  telemetry_nudge: "telemetry_nudge",
+} as const;
+
+export type YardProActionSource = (typeof YardProActionSource)[keyof typeof YardProActionSource];
+
+export const YardProActionType = {
+  mow: "mow",
+  fertilize: "fertilize",
+  prune: "prune",
+  water: "water",
+  spray: "spray",
+  plant: "plant",
+  diagnose: "diagnose",
+  other: "other",
+} as const;
+
+export type YardProActionType = (typeof YardProActionType)[keyof typeof YardProActionType];
+
+export const YardProBatteryFamily = {
+  ap: "ap",
+  asa: "asa",
+  none: "none",
+} as const;
+
+export type YardProBatteryFamily = (typeof YardProBatteryFamily)[keyof typeof YardProBatteryFamily];
+
+export const YardProCalendarStatus = {
+  planned: "planned",
+  done: "done",
+  snoozed: "snoozed",
+  skipped: "skipped",
+} as const;
+
+export type YardProCalendarStatus = (typeof YardProCalendarStatus)[keyof typeof YardProCalendarStatus];
+
+export const YardProCoachFeedbackSignal = {
+  thumbs_up: "thumbs_up",
+  thumbs_down: "thumbs_down",
+} as const;
+
+export type YardProCoachFeedbackSignal = (typeof YardProCoachFeedbackSignal)[keyof typeof YardProCoachFeedbackSignal];
+
+export const YardProConsentState = {
+  none: "none",
+  pending: "pending",
+  granted: "granted",
+  revoked: "revoked",
+} as const;
+
+export type YardProConsentState = (typeof YardProConsentState)[keyof typeof YardProConsentState];
+
+export const YardProConsumableKind = {
+  fertilizer: "fertilizer",
+  oil: "oil",
+  lubricant: "lubricant",
+  blade: "blade",
+  fuel: "fuel",
+  spray: "spray",
+  seed: "seed",
+  other: "other",
+} as const;
+
+export type YardProConsumableKind = (typeof YardProConsumableKind)[keyof typeof YardProConsumableKind];
+
+export interface YardProDatabricksResourcesOut {
+  coach_ka_configured?: boolean;
+  coach_ka_endpoint: string;
+  coach_model: string;
+  coach_model_fallback: string;
+  configured?: boolean;
+  dealer_dashboard_configured?: boolean;
+  dealer_dashboard_embed_url: string;
+  dealer_dashboard_id: string;
+  dealer_genie_configured?: boolean;
+  dealer_genie_space_id: string;
+  vision_configured?: boolean;
+  vision_endpoint: string;
+  workspace_url: string;
+}
+
+export const YardProDiagnosisStatus = {
+  pending: "pending",
+  reviewed: "reviewed",
+  acted_upon: "acted_upon",
+  dismissed: "dismissed",
+} as const;
+
+export type YardProDiagnosisStatus = (typeof YardProDiagnosisStatus)[keyof typeof YardProDiagnosisStatus];
+
+export const YardProTelemetryEventType = {
+  battery_low: "battery_low",
+  maintenance_due: "maintenance_due",
+  stuck: "stuck",
+  session_started: "session_started",
+  session_ended: "session_ended",
+} as const;
+
+export type YardProTelemetryEventType = (typeof YardProTelemetryEventType)[keyof typeof YardProTelemetryEventType];
+
+export const YardProToolKind = {
+  trimmer: "trimmer",
+  hedge_cutter: "hedge_cutter",
+  robotic_mower: "robotic_mower",
+  chainsaw: "chainsaw",
+  blower: "blower",
+  other: "other",
+} as const;
+
+export type YardProToolKind = (typeof YardProToolKind)[keyof typeof YardProToolKind];
+
+export interface YpActionLogCreate {
+  action_type: YardProActionType;
+  consumable_id?: number | null;
+  human_confirmed_at?: string | null;
+  idempotency_key?: string | null;
+  notes?: string;
+  occurred_at?: string | null;
+  source?: YardProActionSource;
+  target_plant_id?: number | null;
+  tool_id?: number | null;
+}
+
+export interface YpActionLogOut {
+  action_type: YardProActionType;
+  consumable_id: number | null;
+  human_confirmed_at: string | null;
+  id: number;
+  notes: string;
+  occurred_at: string;
+  source: YardProActionSource;
+  target_plant_id: number | null;
+  tool_id: number | null;
+  yard_id: number;
+}
+
+export interface YpCalendarEntryOut {
+  description: string;
+  id: number;
+  scheduled_at: string;
+  status: YardProCalendarStatus;
+  target_plant_id: number | null;
+  title: string;
+  tool_id: number | null;
+  yard_id: number;
+}
+
+export interface YpCoachChatIn {
+  idempotency_key?: string | null;
+  prompt: string;
+}
+
+export interface YpCoachFeedbackIn {
+  notes?: string;
+  response_id: string;
+  signal: YardProCoachFeedbackSignal;
+}
+
+export interface YpCoachFeedbackOut {
+  created_at: string;
+  id: number;
+  model_version: string;
+  notes: string;
+  response_id: string;
+  signal: YardProCoachFeedbackSignal;
+  yard_id: number;
+}
+
+export interface YpCoachFeedbackStatsOut {
+  flagged: boolean;
+  model_version: string;
+  thumbs_down_count: number;
+  thumbs_down_rate: number;
+  thumbs_up_count: number;
+  total_count: number;
+}
+
+export interface YpCoachMessageOut {
+  advisory: boolean;
+  citations?: Record<string, unknown>[];
+  content: string;
+  created_at: string;
+  id: number;
+  is_recommendation: boolean;
+  model_version: string;
+  role: string;
+  session_id: number;
+}
+
+export interface YpCoachSessionCreate {
+  title?: string;
+  yard_id: number;
+}
+
+export interface YpCoachSessionOut {
+  created_at: string;
+  id: number;
+  title: string;
+  yard_id: number;
+}
+
+export interface YpCockpitOut {
+  consumables: YpConsumableOut[];
+  nudges?: YpNudgeOut[];
+  overdue_calendar: YpCalendarEntryOut[];
+  plants: YpPlantOut[];
+  recent_actions: YpActionLogOut[];
+  recent_diagnoses: YpDiagnosisOut[];
+  tool_readiness?: YpToolReadinessOut[];
+  tools: YpToolOut[];
+  upcoming_calendar: YpCalendarEntryOut[];
+  yard: YpYardOut;
+}
+
+export interface YpConsumableCreate {
+  display_name: string;
+  kind: YardProConsumableKind;
+  last_restock_at?: string | null;
+  quantity?: number;
+  unit?: string;
+}
+
+export interface YpConsumableOut {
+  display_name: string;
+  id: number;
+  kind: YardProConsumableKind;
+  last_restock_at: string | null;
+  quantity: number;
+  reorder_reason?: string | null;
+  reorder_suggested?: boolean;
+  unit: string;
+  yard_id: number;
+}
+
+export interface YpDealerConsentTransitionIn {
+  target_state: YardProConsentState;
+}
+
+export interface YpDealerCustomerSummaryOut {
+  consent_state: string;
+  dealer_id: string;
+  last_service_event_age_days: number;
+  region_bucket: string;
+  robotic_mower_age_years: number;
+  tool_inventory_hash: string;
+  yard_id_hash: string;
+  yard_size_bucket: string;
+}
+
+export interface YpDealerRelationshipCreate {
+  dealer_id: string;
+}
+
+export interface YpDealerRelationshipOut {
+  consent_at: string | null;
+  consent_state: YardProConsentState;
+  created_at: string;
+  dealer_id: string;
+  id: number;
+  revoked_at: string | null;
+  yard_id: number;
+}
+
+export interface YpDeleteYardOut {
+  consent_revocations: number;
+  deleted: boolean;
+  dry_run: boolean;
+  photos_purged: number;
+  tables_purged: Record<string, number>;
+  yard_id: number;
+}
+
+export interface YpDiagnosePostOut {
+  accepted_label: string | null;
+  advisory?: boolean;
+  created_at: string;
+  id: number;
+  model_version: string;
+  photo_uri: string;
+  predictions: Record<string, unknown>;
+  response_id: string;
+  second_opinion_cta: string;
+  status: YardProDiagnosisStatus;
+  top_confidence: number;
+  top_label: string;
+  unsure: boolean;
+  yard_id: number;
+}
+
+export interface YpDiagnoseQueueOut {
+  created_at: string;
+  diagnosis_id: number | null;
+  id: number;
+  reason: string;
+  status: string;
+  yard_id: number;
+}
+
+export interface YpDiagnosisOut {
+  accepted_label: string | null;
+  advisory?: boolean;
+  created_at: string;
+  id: number;
+  model_version: string;
+  photo_uri: string;
+  predictions: Record<string, unknown>;
+  status: YardProDiagnosisStatus;
+  top_confidence: number;
+  top_label: string;
+  yard_id: number;
+}
+
+export interface YpNudgeOut {
+  advisory?: boolean;
+  body: string;
+  created_at: string;
+  dismissed_at?: string | null;
+  event_type?: YardProTelemetryEventType | null;
+  nudge_id: string;
+  severity: string;
+  suggested_action_type?: YardProActionType | null;
+  title: string;
+  tool_id: number;
+}
+
+export interface YpPlantCreate {
+  notes?: string;
+  planted_at?: string | null;
+  species: string;
+  variety?: string;
+}
+
+export interface YpPlantOut {
+  id: number;
+  notes: string;
+  planted_at: string | null;
+  species: string;
+  variety: string;
+  yard_id: number;
+}
+
+export interface YpSynthesisResult {
+  events_emitted: Record<string, number>;
+  nudges_active: number;
+  tools_updated: number;
+  yard_id: number;
+}
+
+export interface YpToolCreate {
+  battery_family?: YardProBatteryFamily;
+  display_name: string;
+  kind: YardProToolKind;
+  last_serviced_at?: string | null;
+  model_year?: number | null;
+}
+
+export interface YpToolOut {
+  battery_family: YardProBatteryFamily;
+  display_name: string;
+  id: number;
+  kind: YardProToolKind;
+  last_serviced_at: string | null;
+  model_year: number | null;
+  yard_id: number;
+}
+
+export interface YpToolReadinessOut {
+  battery_pct?: number | null;
+  blade_hours_since_sharpening?: number | null;
+  last_event_at?: string | null;
+  last_event_type?: YardProTelemetryEventType | null;
+  last_session_at?: string | null;
+  payload?: Record<string, unknown>;
+  tool_id: number;
+  updated_at: string;
+}
+
+export interface YpYardAccessExportOut {
+  article: string;
+  coach_transcripts_external: YpYardCoachTranscriptsExternal;
+  generated_at: string;
+  photos: YpYardExportPhotos;
+  tables: Record<string, Record<string, unknown>[]>;
+  yard_id: number;
+  yards: Record<string, unknown>[];
+}
+
+export interface YpYardCoachTranscriptsExternal {
+  consent_gated: boolean;
+  note: string;
+  retention_consented_months: number;
+  retention_unconsented_days: number;
+  source: string;
+}
+
+export interface YpYardExportPhotos {
+  uris: string[];
+  volume_path: string;
+}
+
+export interface YpYardOut {
+  display_name: string;
+  id: number;
+  lat: number;
+  lng: number;
+  region_code: string;
+  size_m2: number;
+  yard_metadata: Record<string, unknown>;
+}
+
+export interface YpYardPortabilityExportOut {
+  article: string;
+  generated_at: string;
+  schema_version: string;
+  yard: YpYardPortabilityPayload;
+}
+
+export interface YpYardPortabilityPayload {
+  coach_transcripts_external: YpYardCoachTranscriptsExternal;
+  photos: YpYardExportPhotos;
+  tables: Record<string, Record<string, unknown>[]>;
+  yard_id: number;
+  yards: Record<string, unknown>[];
+}
+
 export const innovation_factory__backend__projects__bsh_home_connect__models__UserRole = {
   customer: "customer",
   technician: "technician",
@@ -3040,6 +3471,116 @@ export interface Vh_upload_ticket_mediaParams {
   ticket_id: number;
 }
 
+export interface Yp_listActionsParams {
+  skip?: number;
+  limit?: number;
+}
+
+export interface Yp_logActionParams {
+  "Idempotency-Key"?: string | null;
+}
+
+export interface Yp_confirmActionParams {
+  action_id: number;
+}
+
+export interface Yp_listCalendarParams {
+  skip?: number;
+  limit?: number;
+}
+
+export interface Yp_getCoachFeedbackStatsParams {
+  model_version: string;
+}
+
+export interface Yp_listCoachSessionsParams {
+  limit?: number;
+}
+
+export interface Yp_coachChatParams {
+  session_id: number;
+  "Idempotency-Key"?: string | null;
+}
+
+export interface Yp_listCoachMessagesParams {
+  session_id: number;
+}
+
+export interface Yp_revokeDealerRelationshipParams {
+  relationship_id: number;
+}
+
+export interface Yp_setDealerConsentParams {
+  relationship_id: number;
+}
+
+export interface Yp_listDiagnosesParams {
+  limit?: number;
+  offset?: number;
+}
+
+export interface Yp_diagnoseParams {
+  "Idempotency-Key"?: string | null;
+}
+
+export interface Yp_listDiagnoseQueueParams {
+  status?: string | null;
+  limit?: number;
+  offset?: number;
+}
+
+export interface Yp_getDiagnosisParams {
+  diagnosis_id: number;
+}
+
+export interface Yp_updateConsumableParams {
+  consumable_id: number;
+}
+
+export interface Yp_deleteConsumableParams {
+  consumable_id: number;
+}
+
+export interface Yp_dismissNudgeParams {
+  nudge_id: string;
+}
+
+export interface Yp_updatePlantParams {
+  plant_id: number;
+}
+
+export interface Yp_deletePlantParams {
+  plant_id: number;
+}
+
+export interface Yp_updateToolParams {
+  tool_id: number;
+}
+
+export interface Yp_deleteToolParams {
+  tool_id: number;
+}
+
+export interface Yp_deleteYardParams {
+  yard_id: number;
+  dry_run?: boolean;
+  "X-Forwarded-Access-Token"?: string | null;
+}
+
+export interface Yp_getCockpitParams {
+  yard_id: number;
+}
+
+export interface Yp_exportYardAccessParams {
+  yard_id: number;
+  "X-Forwarded-Access-Token"?: string | null;
+}
+
+export interface Yp_exportYardPortabilityParams {
+  yard_id: number;
+  "X-Forwarded-Access-Token"?: string | null;
+}
+
 export interface GetProjectParams {
   slug: string;
 }
@@ -3188,7 +3729,7 @@ export function useGetIdeaSessionSuspense<TData = { data: IdeaSessionOut }>(opti
   return useSuspenseQuery({ queryKey: getIdeaSessionKey(options.params), queryFn: () => getIdeaSession(options.params), ...options?.query });
 }
 
-export const sendIdeaMessage = async (params: SendIdeaMessageParams, data: IdeaMessageIn, options?: RequestInit): Promise<{ data: unknown }> => {
+export const sendIdeaMessage = async (params: SendIdeaMessageParams, data: IdeaMessageIn, options?: RequestInit): Promise<{ data: Record<string, unknown> }> => {
   const res = await fetch(`/api/ideas/sessions/${params.session_id}/chat`, { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
   if (!res.ok) {
     const body = await res.text();
@@ -3199,7 +3740,7 @@ export const sendIdeaMessage = async (params: SendIdeaMessageParams, data: IdeaM
   return { data: await res.json() };
 };
 
-export function useSendIdeaMessage(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: SendIdeaMessageParams; data: IdeaMessageIn }> }) {
+export function useSendIdeaMessage(options?: { mutation?: UseMutationOptions<{ data: Record<string, unknown> }, ApiError, { params: SendIdeaMessageParams; data: IdeaMessageIn }> }) {
   return useMutation({ mutationFn: (vars) => sendIdeaMessage(vars.params, vars.data), ...options?.mutation });
 }
 
@@ -3304,7 +3845,7 @@ export function useAt_listAnomaliesSuspense<TData = { data: AtAnomalyOut[] }>(op
   return useSuspenseQuery({ queryKey: at_listAnomaliesKey(options?.params), queryFn: () => at_listAnomalies(options?.params), ...options?.query });
 }
 
-export const at_getAnomalyCounts = async (options?: RequestInit): Promise<{ data: unknown }> => {
+export const at_getAnomalyCounts = async (options?: RequestInit): Promise<{ data: Record<string, number> }> => {
   const res = await fetch("/api/projects/adtech-intelligence/anomalies/counts", { ...options, method: "GET" });
   if (!res.ok) {
     const body = await res.text();
@@ -3319,11 +3860,11 @@ export const at_getAnomalyCountsKey = () => {
   return ["/api/projects/adtech-intelligence/anomalies/counts"] as const;
 };
 
-export function useAt_getAnomalyCounts<TData = { data: unknown }>(options?: { query?: Omit<UseQueryOptions<{ data: unknown }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+export function useAt_getAnomalyCounts<TData = { data: Record<string, number> }>(options?: { query?: Omit<UseQueryOptions<{ data: Record<string, number> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useQuery({ queryKey: at_getAnomalyCountsKey(), queryFn: () => at_getAnomalyCounts(), ...options?.query });
 }
 
-export function useAt_getAnomalyCountsSuspense<TData = { data: unknown }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: unknown }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+export function useAt_getAnomalyCountsSuspense<TData = { data: Record<string, number> }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: Record<string, number> }, ApiError, TData>, "queryKey" | "queryFn"> }) {
   return useSuspenseQuery({ queryKey: at_getAnomalyCountsKey(), queryFn: () => at_getAnomalyCounts(), ...options?.query });
 }
 
@@ -5340,7 +5881,7 @@ export function useBsh_getChatHistorySuspense<TData = { data: BshChatHistoryOut 
   return useSuspenseQuery({ queryKey: bsh_getChatHistoryKey(options.params), queryFn: () => bsh_getChatHistory(options.params), ...options?.query });
 }
 
-export const bsh_uploadTicketMedia = async (params: Bsh_uploadTicketMediaParams, data: FormData, options?: RequestInit): Promise<{ data: unknown }> => {
+export const bsh_uploadTicketMedia = async (params: Bsh_uploadTicketMediaParams, data: FormData, options?: RequestInit): Promise<{ data: Record<string, string> }> => {
   const res = await fetch(`/api/projects/bsh-home-connect/tickets/${params.ticket_id}/media`, { ...options, method: "POST", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers }, body: data });
   if (!res.ok) {
     const body = await res.text();
@@ -5351,7 +5892,7 @@ export const bsh_uploadTicketMedia = async (params: Bsh_uploadTicketMediaParams,
   return { data: await res.json() };
 };
 
-export function useBsh_uploadTicketMedia(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: Bsh_uploadTicketMediaParams; data: FormData }> }) {
+export function useBsh_uploadTicketMedia(options?: { mutation?: UseMutationOptions<{ data: Record<string, string> }, ApiError, { params: Bsh_uploadTicketMediaParams; data: FormData }> }) {
   return useMutation({ mutationFn: (vars) => bsh_uploadTicketMedia(vars.params, vars.data), ...options?.mutation });
 }
 
@@ -5393,7 +5934,7 @@ export function useBsh_addTicketNote(options?: { mutation?: UseMutationOptions<{
   return useMutation({ mutationFn: (vars) => bsh_addTicketNote(vars.params, vars.data), ...options?.mutation });
 }
 
-export const bsh_generateShippingLabel = async (params: Bsh_generateShippingLabelParams, options?: RequestInit): Promise<{ data: unknown }> => {
+export const bsh_generateShippingLabel = async (params: Bsh_generateShippingLabelParams, options?: RequestInit): Promise<{ data: Record<string, string> }> => {
   const res = await fetch(`/api/projects/bsh-home-connect/tickets/${params.ticket_id}/shipping-label`, { ...options, method: "POST", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
   if (!res.ok) {
     const body = await res.text();
@@ -5404,7 +5945,7 @@ export const bsh_generateShippingLabel = async (params: Bsh_generateShippingLabe
   return { data: await res.json() };
 };
 
-export function useBsh_generateShippingLabel(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: Bsh_generateShippingLabelParams }> }) {
+export function useBsh_generateShippingLabel(options?: { mutation?: UseMutationOptions<{ data: Record<string, string> }, ApiError, { params: Bsh_generateShippingLabelParams }> }) {
   return useMutation({ mutationFn: (vars) => bsh_generateShippingLabel(vars.params), ...options?.mutation });
 }
 
@@ -6944,7 +7485,7 @@ export function useVh_update_ticket(options?: { mutation?: UseMutationOptions<{ 
   return useMutation({ mutationFn: (vars) => vh_update_ticket(vars.params, vars.data), ...options?.mutation });
 }
 
-export const vh_upload_ticket_media = async (params: Vh_upload_ticket_mediaParams, data: FormData, options?: RequestInit): Promise<{ data: unknown }> => {
+export const vh_upload_ticket_media = async (params: Vh_upload_ticket_mediaParams, data: FormData, options?: RequestInit): Promise<{ data: Record<string, unknown> }> => {
   const res = await fetch(`/api/projects/vi-home-one/tickets/${params.ticket_id}/media`, { ...options, method: "POST", headers: { ...options?.headers }, body: data });
   if (!res.ok) {
     const body = await res.text();
@@ -6955,8 +7496,793 @@ export const vh_upload_ticket_media = async (params: Vh_upload_ticket_mediaParam
   return { data: await res.json() };
 };
 
-export function useVh_upload_ticket_media(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: Vh_upload_ticket_mediaParams; data: FormData }> }) {
+export function useVh_upload_ticket_media(options?: { mutation?: UseMutationOptions<{ data: Record<string, unknown> }, ApiError, { params: Vh_upload_ticket_mediaParams; data: FormData }> }) {
   return useMutation({ mutationFn: (vars) => vh_upload_ticket_media(vars.params, vars.data), ...options?.mutation });
+}
+
+export const yp_listActions = async (params?: Yp_listActionsParams, options?: RequestInit): Promise<{ data: YpActionLogOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/yard-pro/actions?${queryString}` : `/api/projects/yard-pro/actions`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listActionsKey = (params?: Yp_listActionsParams) => {
+  return ["/api/projects/yard-pro/actions", params] as const;
+};
+
+export function useYp_listActions<TData = { data: YpActionLogOut[] }>(options?: { params?: Yp_listActionsParams; query?: Omit<UseQueryOptions<{ data: YpActionLogOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listActionsKey(options?.params), queryFn: () => yp_listActions(options?.params), ...options?.query });
+}
+
+export function useYp_listActionsSuspense<TData = { data: YpActionLogOut[] }>(options?: { params?: Yp_listActionsParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpActionLogOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listActionsKey(options?.params), queryFn: () => yp_listActions(options?.params), ...options?.query });
+}
+
+export const yp_logAction = async (data: YpActionLogCreate, params?: Yp_logActionParams, options?: RequestInit): Promise<{ data: YpActionLogOut }> => {
+  const res = await fetch("/api/projects/yard-pro/actions", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...(params?.["Idempotency-Key"] != null && { "Idempotency-Key": params["Idempotency-Key"] }), ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_logAction(options?: { mutation?: UseMutationOptions<{ data: YpActionLogOut }, ApiError, { params: Yp_logActionParams; data: YpActionLogCreate }> }) {
+  return useMutation({ mutationFn: (vars) => yp_logAction(vars.data, vars.params), ...options?.mutation });
+}
+
+export const yp_confirmAction = async (params: Yp_confirmActionParams, options?: RequestInit): Promise<{ data: YpActionLogOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/actions/${params.action_id}/confirm`, { ...options, method: "PATCH" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_confirmAction(options?: { mutation?: UseMutationOptions<{ data: YpActionLogOut }, ApiError, { params: Yp_confirmActionParams }> }) {
+  return useMutation({ mutationFn: (vars) => yp_confirmAction(vars.params), ...options?.mutation });
+}
+
+export const yp_listCalendar = async (params?: Yp_listCalendarParams, options?: RequestInit): Promise<{ data: YpCalendarEntryOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.skip != null) searchParams.set("skip", String(params?.skip));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/yard-pro/calendar?${queryString}` : `/api/projects/yard-pro/calendar`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listCalendarKey = (params?: Yp_listCalendarParams) => {
+  return ["/api/projects/yard-pro/calendar", params] as const;
+};
+
+export function useYp_listCalendar<TData = { data: YpCalendarEntryOut[] }>(options?: { params?: Yp_listCalendarParams; query?: Omit<UseQueryOptions<{ data: YpCalendarEntryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listCalendarKey(options?.params), queryFn: () => yp_listCalendar(options?.params), ...options?.query });
+}
+
+export function useYp_listCalendarSuspense<TData = { data: YpCalendarEntryOut[] }>(options?: { params?: Yp_listCalendarParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpCalendarEntryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listCalendarKey(options?.params), queryFn: () => yp_listCalendar(options?.params), ...options?.query });
+}
+
+export const yp_submitCoachFeedback = async (data: YpCoachFeedbackIn, options?: RequestInit): Promise<{ data: YpCoachFeedbackOut }> => {
+  const res = await fetch("/api/projects/yard-pro/coach/feedback", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_submitCoachFeedback(options?: { mutation?: UseMutationOptions<{ data: YpCoachFeedbackOut }, ApiError, YpCoachFeedbackIn> }) {
+  return useMutation({ mutationFn: (data) => yp_submitCoachFeedback(data), ...options?.mutation });
+}
+
+export const yp_getCoachFeedbackStats = async (params: Yp_getCoachFeedbackStatsParams, options?: RequestInit): Promise<{ data: YpCoachFeedbackStatsOut }> => {
+  const searchParams = new URLSearchParams();
+  if (params.model_version != null) searchParams.set("model_version", String(params.model_version));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/yard-pro/coach/feedback/stats?${queryString}` : `/api/projects/yard-pro/coach/feedback/stats`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_getCoachFeedbackStatsKey = (params?: Yp_getCoachFeedbackStatsParams) => {
+  return ["/api/projects/yard-pro/coach/feedback/stats", params] as const;
+};
+
+export function useYp_getCoachFeedbackStats<TData = { data: YpCoachFeedbackStatsOut }>(options: { params: Yp_getCoachFeedbackStatsParams; query?: Omit<UseQueryOptions<{ data: YpCoachFeedbackStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_getCoachFeedbackStatsKey(options.params), queryFn: () => yp_getCoachFeedbackStats(options.params), ...options?.query });
+}
+
+export function useYp_getCoachFeedbackStatsSuspense<TData = { data: YpCoachFeedbackStatsOut }>(options: { params: Yp_getCoachFeedbackStatsParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpCoachFeedbackStatsOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_getCoachFeedbackStatsKey(options.params), queryFn: () => yp_getCoachFeedbackStats(options.params), ...options?.query });
+}
+
+export const yp_listCoachSessions = async (params?: Yp_listCoachSessionsParams, options?: RequestInit): Promise<{ data: YpCoachSessionOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/yard-pro/coach/sessions?${queryString}` : `/api/projects/yard-pro/coach/sessions`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listCoachSessionsKey = (params?: Yp_listCoachSessionsParams) => {
+  return ["/api/projects/yard-pro/coach/sessions", params] as const;
+};
+
+export function useYp_listCoachSessions<TData = { data: YpCoachSessionOut[] }>(options?: { params?: Yp_listCoachSessionsParams; query?: Omit<UseQueryOptions<{ data: YpCoachSessionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listCoachSessionsKey(options?.params), queryFn: () => yp_listCoachSessions(options?.params), ...options?.query });
+}
+
+export function useYp_listCoachSessionsSuspense<TData = { data: YpCoachSessionOut[] }>(options?: { params?: Yp_listCoachSessionsParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpCoachSessionOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listCoachSessionsKey(options?.params), queryFn: () => yp_listCoachSessions(options?.params), ...options?.query });
+}
+
+export const yp_createCoachSession = async (data: YpCoachSessionCreate, options?: RequestInit): Promise<{ data: YpCoachSessionOut }> => {
+  const res = await fetch("/api/projects/yard-pro/coach/sessions", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_createCoachSession(options?: { mutation?: UseMutationOptions<{ data: YpCoachSessionOut }, ApiError, YpCoachSessionCreate> }) {
+  return useMutation({ mutationFn: (data) => yp_createCoachSession(data), ...options?.mutation });
+}
+
+export const yp_coachChat = async (params: Yp_coachChatParams, data: YpCoachChatIn, options?: RequestInit): Promise<{ data: unknown }> => {
+  const res = await fetch(`/api/projects/yard-pro/coach/sessions/${params.session_id}/chat`, { ...options, method: "POST", headers: { "Content-Type": "application/json", ...(params?.["Idempotency-Key"] != null && { "Idempotency-Key": params["Idempotency-Key"] }), ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_coachChat(options?: { mutation?: UseMutationOptions<{ data: unknown }, ApiError, { params: Yp_coachChatParams; data: YpCoachChatIn }> }) {
+  return useMutation({ mutationFn: (vars) => yp_coachChat(vars.params, vars.data), ...options?.mutation });
+}
+
+export const yp_listCoachMessages = async (params: Yp_listCoachMessagesParams, options?: RequestInit): Promise<{ data: YpCoachMessageOut[] }> => {
+  const res = await fetch(`/api/projects/yard-pro/coach/sessions/${params.session_id}/messages`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listCoachMessagesKey = (params?: Yp_listCoachMessagesParams) => {
+  return ["/api/projects/yard-pro/coach/sessions/{session_id}/messages", params] as const;
+};
+
+export function useYp_listCoachMessages<TData = { data: YpCoachMessageOut[] }>(options: { params: Yp_listCoachMessagesParams; query?: Omit<UseQueryOptions<{ data: YpCoachMessageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listCoachMessagesKey(options.params), queryFn: () => yp_listCoachMessages(options.params), ...options?.query });
+}
+
+export function useYp_listCoachMessagesSuspense<TData = { data: YpCoachMessageOut[] }>(options: { params: Yp_listCoachMessagesParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpCoachMessageOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listCoachMessagesKey(options.params), queryFn: () => yp_listCoachMessages(options.params), ...options?.query });
+}
+
+export const yp_getDatabricksResources = async (options?: RequestInit): Promise<{ data: YardProDatabricksResourcesOut }> => {
+  const res = await fetch("/api/projects/yard-pro/databricks-resources", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_getDatabricksResourcesKey = () => {
+  return ["/api/projects/yard-pro/databricks-resources"] as const;
+};
+
+export function useYp_getDatabricksResources<TData = { data: YardProDatabricksResourcesOut }>(options?: { query?: Omit<UseQueryOptions<{ data: YardProDatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_getDatabricksResourcesKey(), queryFn: () => yp_getDatabricksResources(), ...options?.query });
+}
+
+export function useYp_getDatabricksResourcesSuspense<TData = { data: YardProDatabricksResourcesOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YardProDatabricksResourcesOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_getDatabricksResourcesKey(), queryFn: () => yp_getDatabricksResources(), ...options?.query });
+}
+
+export const yp_listDealerCustomersAnonymized = async (options?: RequestInit): Promise<{ data: YpDealerCustomerSummaryOut[] }> => {
+  const res = await fetch("/api/projects/yard-pro/dealer/customers/anonymized", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listDealerCustomersAnonymizedKey = () => {
+  return ["/api/projects/yard-pro/dealer/customers/anonymized"] as const;
+};
+
+export function useYp_listDealerCustomersAnonymized<TData = { data: YpDealerCustomerSummaryOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: YpDealerCustomerSummaryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listDealerCustomersAnonymizedKey(), queryFn: () => yp_listDealerCustomersAnonymized(), ...options?.query });
+}
+
+export function useYp_listDealerCustomersAnonymizedSuspense<TData = { data: YpDealerCustomerSummaryOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpDealerCustomerSummaryOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listDealerCustomersAnonymizedKey(), queryFn: () => yp_listDealerCustomersAnonymized(), ...options?.query });
+}
+
+export const yp_listDealerRelationships = async (options?: RequestInit): Promise<{ data: YpDealerRelationshipOut[] }> => {
+  const res = await fetch("/api/projects/yard-pro/dealer/relationships", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listDealerRelationshipsKey = () => {
+  return ["/api/projects/yard-pro/dealer/relationships"] as const;
+};
+
+export function useYp_listDealerRelationships<TData = { data: YpDealerRelationshipOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: YpDealerRelationshipOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listDealerRelationshipsKey(), queryFn: () => yp_listDealerRelationships(), ...options?.query });
+}
+
+export function useYp_listDealerRelationshipsSuspense<TData = { data: YpDealerRelationshipOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpDealerRelationshipOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listDealerRelationshipsKey(), queryFn: () => yp_listDealerRelationships(), ...options?.query });
+}
+
+export const yp_createDealerRelationship = async (data: YpDealerRelationshipCreate, options?: RequestInit): Promise<{ data: YpDealerRelationshipOut }> => {
+  const res = await fetch("/api/projects/yard-pro/dealer/relationships", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_createDealerRelationship(options?: { mutation?: UseMutationOptions<{ data: YpDealerRelationshipOut }, ApiError, YpDealerRelationshipCreate> }) {
+  return useMutation({ mutationFn: (data) => yp_createDealerRelationship(data), ...options?.mutation });
+}
+
+export const yp_revokeDealerRelationship = async (params: Yp_revokeDealerRelationshipParams, options?: RequestInit): Promise<{ data: YpDealerRelationshipOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/dealer/relationships/${params.relationship_id}`, { ...options, method: "DELETE" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_revokeDealerRelationship(options?: { mutation?: UseMutationOptions<{ data: YpDealerRelationshipOut }, ApiError, { params: Yp_revokeDealerRelationshipParams }> }) {
+  return useMutation({ mutationFn: (vars) => yp_revokeDealerRelationship(vars.params), ...options?.mutation });
+}
+
+export const yp_setDealerConsent = async (params: Yp_setDealerConsentParams, data: YpDealerConsentTransitionIn, options?: RequestInit): Promise<{ data: YpDealerRelationshipOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/dealer/relationships/${params.relationship_id}/consent`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_setDealerConsent(options?: { mutation?: UseMutationOptions<{ data: YpDealerRelationshipOut }, ApiError, { params: Yp_setDealerConsentParams; data: YpDealerConsentTransitionIn }> }) {
+  return useMutation({ mutationFn: (vars) => yp_setDealerConsent(vars.params, vars.data), ...options?.mutation });
+}
+
+export const yp_listDiagnoses = async (params?: Yp_listDiagnosesParams, options?: RequestInit): Promise<{ data: YpDiagnosisOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/yard-pro/diagnose?${queryString}` : `/api/projects/yard-pro/diagnose`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listDiagnosesKey = (params?: Yp_listDiagnosesParams) => {
+  return ["/api/projects/yard-pro/diagnose", params] as const;
+};
+
+export function useYp_listDiagnoses<TData = { data: YpDiagnosisOut[] }>(options?: { params?: Yp_listDiagnosesParams; query?: Omit<UseQueryOptions<{ data: YpDiagnosisOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listDiagnosesKey(options?.params), queryFn: () => yp_listDiagnoses(options?.params), ...options?.query });
+}
+
+export function useYp_listDiagnosesSuspense<TData = { data: YpDiagnosisOut[] }>(options?: { params?: Yp_listDiagnosesParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpDiagnosisOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listDiagnosesKey(options?.params), queryFn: () => yp_listDiagnoses(options?.params), ...options?.query });
+}
+
+export const yp_diagnose = async (data: FormData, params?: Yp_diagnoseParams, options?: RequestInit): Promise<{ data: YpDiagnosePostOut }> => {
+  const res = await fetch("/api/projects/yard-pro/diagnose", { ...options, method: "POST", headers: { ...(params?.["Idempotency-Key"] != null && { "Idempotency-Key": params["Idempotency-Key"] }), ...options?.headers }, body: data });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_diagnose(options?: { mutation?: UseMutationOptions<{ data: YpDiagnosePostOut }, ApiError, { params: Yp_diagnoseParams; data: FormData }> }) {
+  return useMutation({ mutationFn: (vars) => yp_diagnose(vars.data, vars.params), ...options?.mutation });
+}
+
+export const yp_listDiagnoseQueue = async (params?: Yp_listDiagnoseQueueParams, options?: RequestInit): Promise<{ data: YpDiagnoseQueueOut[] }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.status != null) searchParams.set("status", String(params?.status));
+  if (params?.limit != null) searchParams.set("limit", String(params?.limit));
+  if (params?.offset != null) searchParams.set("offset", String(params?.offset));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/yard-pro/diagnose-queue?${queryString}` : `/api/projects/yard-pro/diagnose-queue`;
+  const res = await fetch(url, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listDiagnoseQueueKey = (params?: Yp_listDiagnoseQueueParams) => {
+  return ["/api/projects/yard-pro/diagnose-queue", params] as const;
+};
+
+export function useYp_listDiagnoseQueue<TData = { data: YpDiagnoseQueueOut[] }>(options?: { params?: Yp_listDiagnoseQueueParams; query?: Omit<UseQueryOptions<{ data: YpDiagnoseQueueOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listDiagnoseQueueKey(options?.params), queryFn: () => yp_listDiagnoseQueue(options?.params), ...options?.query });
+}
+
+export function useYp_listDiagnoseQueueSuspense<TData = { data: YpDiagnoseQueueOut[] }>(options?: { params?: Yp_listDiagnoseQueueParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpDiagnoseQueueOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listDiagnoseQueueKey(options?.params), queryFn: () => yp_listDiagnoseQueue(options?.params), ...options?.query });
+}
+
+export const yp_getDiagnosis = async (params: Yp_getDiagnosisParams, options?: RequestInit): Promise<{ data: YpDiagnosisOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/diagnose/${params.diagnosis_id}`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_getDiagnosisKey = (params?: Yp_getDiagnosisParams) => {
+  return ["/api/projects/yard-pro/diagnose/{diagnosis_id}", params] as const;
+};
+
+export function useYp_getDiagnosis<TData = { data: YpDiagnosisOut }>(options: { params: Yp_getDiagnosisParams; query?: Omit<UseQueryOptions<{ data: YpDiagnosisOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_getDiagnosisKey(options.params), queryFn: () => yp_getDiagnosis(options.params), ...options?.query });
+}
+
+export function useYp_getDiagnosisSuspense<TData = { data: YpDiagnosisOut }>(options: { params: Yp_getDiagnosisParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpDiagnosisOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_getDiagnosisKey(options.params), queryFn: () => yp_getDiagnosis(options.params), ...options?.query });
+}
+
+export const yp_listConsumables = async (options?: RequestInit): Promise<{ data: YpConsumableOut[] }> => {
+  const res = await fetch("/api/projects/yard-pro/inventory", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listConsumablesKey = () => {
+  return ["/api/projects/yard-pro/inventory"] as const;
+};
+
+export function useYp_listConsumables<TData = { data: YpConsumableOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: YpConsumableOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listConsumablesKey(), queryFn: () => yp_listConsumables(), ...options?.query });
+}
+
+export function useYp_listConsumablesSuspense<TData = { data: YpConsumableOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpConsumableOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listConsumablesKey(), queryFn: () => yp_listConsumables(), ...options?.query });
+}
+
+export const yp_createConsumable = async (data: YpConsumableCreate, options?: RequestInit): Promise<{ data: YpConsumableOut }> => {
+  const res = await fetch("/api/projects/yard-pro/inventory", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_createConsumable(options?: { mutation?: UseMutationOptions<{ data: YpConsumableOut }, ApiError, YpConsumableCreate> }) {
+  return useMutation({ mutationFn: (data) => yp_createConsumable(data), ...options?.mutation });
+}
+
+export const yp_updateConsumable = async (params: Yp_updateConsumableParams, data: YpConsumableCreate, options?: RequestInit): Promise<{ data: YpConsumableOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/inventory/${params.consumable_id}`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_updateConsumable(options?: { mutation?: UseMutationOptions<{ data: YpConsumableOut }, ApiError, { params: Yp_updateConsumableParams; data: YpConsumableCreate }> }) {
+  return useMutation({ mutationFn: (vars) => yp_updateConsumable(vars.params, vars.data), ...options?.mutation });
+}
+
+export const yp_deleteConsumable = async (params: Yp_deleteConsumableParams, options?: RequestInit): Promise<{ data: Record<string, boolean> }> => {
+  const res = await fetch(`/api/projects/yard-pro/inventory/${params.consumable_id}`, { ...options, method: "DELETE" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_deleteConsumable(options?: { mutation?: UseMutationOptions<{ data: Record<string, boolean> }, ApiError, { params: Yp_deleteConsumableParams }> }) {
+  return useMutation({ mutationFn: (vars) => yp_deleteConsumable(vars.params), ...options?.mutation });
+}
+
+export const yp_listNudges = async (options?: RequestInit): Promise<{ data: YpNudgeOut[] }> => {
+  const res = await fetch("/api/projects/yard-pro/nudges", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listNudgesKey = () => {
+  return ["/api/projects/yard-pro/nudges"] as const;
+};
+
+export function useYp_listNudges<TData = { data: YpNudgeOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: YpNudgeOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listNudgesKey(), queryFn: () => yp_listNudges(), ...options?.query });
+}
+
+export function useYp_listNudgesSuspense<TData = { data: YpNudgeOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpNudgeOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listNudgesKey(), queryFn: () => yp_listNudges(), ...options?.query });
+}
+
+export const yp_synthesizeTelemetry = async (options?: RequestInit): Promise<{ data: YpSynthesisResult }> => {
+  const res = await fetch("/api/projects/yard-pro/nudges/synthesize", { ...options, method: "POST" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_synthesizeTelemetry(options?: { mutation?: UseMutationOptions<{ data: YpSynthesisResult }, ApiError, void> }) {
+  return useMutation({ mutationFn: () => yp_synthesizeTelemetry(), ...options?.mutation });
+}
+
+export const yp_dismissNudge = async (params: Yp_dismissNudgeParams, options?: RequestInit): Promise<{ data: Record<string, unknown> }> => {
+  const res = await fetch(`/api/projects/yard-pro/nudges/${params.nudge_id}/dismiss`, { ...options, method: "POST" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_dismissNudge(options?: { mutation?: UseMutationOptions<{ data: Record<string, unknown> }, ApiError, { params: Yp_dismissNudgeParams }> }) {
+  return useMutation({ mutationFn: (vars) => yp_dismissNudge(vars.params), ...options?.mutation });
+}
+
+export const yp_listPlants = async (options?: RequestInit): Promise<{ data: YpPlantOut[] }> => {
+  const res = await fetch("/api/projects/yard-pro/plants", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listPlantsKey = () => {
+  return ["/api/projects/yard-pro/plants"] as const;
+};
+
+export function useYp_listPlants<TData = { data: YpPlantOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: YpPlantOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listPlantsKey(), queryFn: () => yp_listPlants(), ...options?.query });
+}
+
+export function useYp_listPlantsSuspense<TData = { data: YpPlantOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpPlantOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listPlantsKey(), queryFn: () => yp_listPlants(), ...options?.query });
+}
+
+export const yp_createPlant = async (data: YpPlantCreate, options?: RequestInit): Promise<{ data: YpPlantOut }> => {
+  const res = await fetch("/api/projects/yard-pro/plants", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_createPlant(options?: { mutation?: UseMutationOptions<{ data: YpPlantOut }, ApiError, YpPlantCreate> }) {
+  return useMutation({ mutationFn: (data) => yp_createPlant(data), ...options?.mutation });
+}
+
+export const yp_updatePlant = async (params: Yp_updatePlantParams, data: YpPlantCreate, options?: RequestInit): Promise<{ data: YpPlantOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/plants/${params.plant_id}`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_updatePlant(options?: { mutation?: UseMutationOptions<{ data: YpPlantOut }, ApiError, { params: Yp_updatePlantParams; data: YpPlantCreate }> }) {
+  return useMutation({ mutationFn: (vars) => yp_updatePlant(vars.params, vars.data), ...options?.mutation });
+}
+
+export const yp_deletePlant = async (params: Yp_deletePlantParams, options?: RequestInit): Promise<{ data: Record<string, boolean> }> => {
+  const res = await fetch(`/api/projects/yard-pro/plants/${params.plant_id}`, { ...options, method: "DELETE" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_deletePlant(options?: { mutation?: UseMutationOptions<{ data: Record<string, boolean> }, ApiError, { params: Yp_deletePlantParams }> }) {
+  return useMutation({ mutationFn: (vars) => yp_deletePlant(vars.params), ...options?.mutation });
+}
+
+export const yp_listTools = async (options?: RequestInit): Promise<{ data: YpToolOut[] }> => {
+  const res = await fetch("/api/projects/yard-pro/tools", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_listToolsKey = () => {
+  return ["/api/projects/yard-pro/tools"] as const;
+};
+
+export function useYp_listTools<TData = { data: YpToolOut[] }>(options?: { query?: Omit<UseQueryOptions<{ data: YpToolOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_listToolsKey(), queryFn: () => yp_listTools(), ...options?.query });
+}
+
+export function useYp_listToolsSuspense<TData = { data: YpToolOut[] }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpToolOut[] }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_listToolsKey(), queryFn: () => yp_listTools(), ...options?.query });
+}
+
+export const yp_createTool = async (data: YpToolCreate, options?: RequestInit): Promise<{ data: YpToolOut }> => {
+  const res = await fetch("/api/projects/yard-pro/tools", { ...options, method: "POST", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_createTool(options?: { mutation?: UseMutationOptions<{ data: YpToolOut }, ApiError, YpToolCreate> }) {
+  return useMutation({ mutationFn: (data) => yp_createTool(data), ...options?.mutation });
+}
+
+export const yp_updateTool = async (params: Yp_updateToolParams, data: YpToolCreate, options?: RequestInit): Promise<{ data: YpToolOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/tools/${params.tool_id}`, { ...options, method: "PATCH", headers: { "Content-Type": "application/json", ...options?.headers }, body: JSON.stringify(data) });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_updateTool(options?: { mutation?: UseMutationOptions<{ data: YpToolOut }, ApiError, { params: Yp_updateToolParams; data: YpToolCreate }> }) {
+  return useMutation({ mutationFn: (vars) => yp_updateTool(vars.params, vars.data), ...options?.mutation });
+}
+
+export const yp_deleteTool = async (params: Yp_deleteToolParams, options?: RequestInit): Promise<{ data: Record<string, boolean> }> => {
+  const res = await fetch(`/api/projects/yard-pro/tools/${params.tool_id}`, { ...options, method: "DELETE" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_deleteTool(options?: { mutation?: UseMutationOptions<{ data: Record<string, boolean> }, ApiError, { params: Yp_deleteToolParams }> }) {
+  return useMutation({ mutationFn: (vars) => yp_deleteTool(vars.params), ...options?.mutation });
+}
+
+export const yp_getMyYard = async (options?: RequestInit): Promise<{ data: YpYardOut }> => {
+  const res = await fetch("/api/projects/yard-pro/yards/me", { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_getMyYardKey = () => {
+  return ["/api/projects/yard-pro/yards/me"] as const;
+};
+
+export function useYp_getMyYard<TData = { data: YpYardOut }>(options?: { query?: Omit<UseQueryOptions<{ data: YpYardOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_getMyYardKey(), queryFn: () => yp_getMyYard(), ...options?.query });
+}
+
+export function useYp_getMyYardSuspense<TData = { data: YpYardOut }>(options?: { query?: Omit<UseSuspenseQueryOptions<{ data: YpYardOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_getMyYardKey(), queryFn: () => yp_getMyYard(), ...options?.query });
+}
+
+export const yp_deleteYard = async (params: Yp_deleteYardParams, options?: RequestInit): Promise<{ data: YpDeleteYardOut }> => {
+  const searchParams = new URLSearchParams();
+  if (params?.dry_run != null) searchParams.set("dry_run", String(params?.dry_run));
+  const queryString = searchParams.toString();
+  const url = queryString ? `/api/projects/yard-pro/yards/${params.yard_id}?${queryString}` : `/api/projects/yard-pro/yards/${params.yard_id}`;
+  const res = await fetch(url, { ...options, method: "DELETE", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export function useYp_deleteYard(options?: { mutation?: UseMutationOptions<{ data: YpDeleteYardOut }, ApiError, { params: Yp_deleteYardParams }> }) {
+  return useMutation({ mutationFn: (vars) => yp_deleteYard(vars.params), ...options?.mutation });
+}
+
+export const yp_getCockpit = async (params: Yp_getCockpitParams, options?: RequestInit): Promise<{ data: YpCockpitOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/yards/${params.yard_id}/cockpit`, { ...options, method: "GET" });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_getCockpitKey = (params?: Yp_getCockpitParams) => {
+  return ["/api/projects/yard-pro/yards/{yard_id}/cockpit", params] as const;
+};
+
+export function useYp_getCockpit<TData = { data: YpCockpitOut }>(options: { params: Yp_getCockpitParams; query?: Omit<UseQueryOptions<{ data: YpCockpitOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_getCockpitKey(options.params), queryFn: () => yp_getCockpit(options.params), ...options?.query });
+}
+
+export function useYp_getCockpitSuspense<TData = { data: YpCockpitOut }>(options: { params: Yp_getCockpitParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpCockpitOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_getCockpitKey(options.params), queryFn: () => yp_getCockpit(options.params), ...options?.query });
+}
+
+export const yp_exportYardAccess = async (params: Yp_exportYardAccessParams, options?: RequestInit): Promise<{ data: YpYardAccessExportOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/yards/${params.yard_id}/export/access`, { ...options, method: "GET", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_exportYardAccessKey = (params?: Yp_exportYardAccessParams) => {
+  return ["/api/projects/yard-pro/yards/{yard_id}/export/access", params] as const;
+};
+
+export function useYp_exportYardAccess<TData = { data: YpYardAccessExportOut }>(options: { params: Yp_exportYardAccessParams; query?: Omit<UseQueryOptions<{ data: YpYardAccessExportOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_exportYardAccessKey(options.params), queryFn: () => yp_exportYardAccess(options.params), ...options?.query });
+}
+
+export function useYp_exportYardAccessSuspense<TData = { data: YpYardAccessExportOut }>(options: { params: Yp_exportYardAccessParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpYardAccessExportOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_exportYardAccessKey(options.params), queryFn: () => yp_exportYardAccess(options.params), ...options?.query });
+}
+
+export const yp_exportYardPortability = async (params: Yp_exportYardPortabilityParams, options?: RequestInit): Promise<{ data: YpYardPortabilityExportOut }> => {
+  const res = await fetch(`/api/projects/yard-pro/yards/${params.yard_id}/export/portability`, { ...options, method: "GET", headers: { ...(params?.["X-Forwarded-Access-Token"] != null && { "X-Forwarded-Access-Token": params["X-Forwarded-Access-Token"] }), ...options?.headers } });
+  if (!res.ok) {
+    const body = await res.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); } catch { parsed = body; }
+    throw new ApiError(res.status, res.statusText, parsed);
+  }
+  return { data: await res.json() };
+};
+
+export const yp_exportYardPortabilityKey = (params?: Yp_exportYardPortabilityParams) => {
+  return ["/api/projects/yard-pro/yards/{yard_id}/export/portability", params] as const;
+};
+
+export function useYp_exportYardPortability<TData = { data: YpYardPortabilityExportOut }>(options: { params: Yp_exportYardPortabilityParams; query?: Omit<UseQueryOptions<{ data: YpYardPortabilityExportOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useQuery({ queryKey: yp_exportYardPortabilityKey(options.params), queryFn: () => yp_exportYardPortability(options.params), ...options?.query });
+}
+
+export function useYp_exportYardPortabilitySuspense<TData = { data: YpYardPortabilityExportOut }>(options: { params: Yp_exportYardPortabilityParams; query?: Omit<UseSuspenseQueryOptions<{ data: YpYardPortabilityExportOut }, ApiError, TData>, "queryKey" | "queryFn"> }) {
+  return useSuspenseQuery({ queryKey: yp_exportYardPortabilityKey(options.params), queryFn: () => yp_exportYardPortability(options.params), ...options?.query });
 }
 
 export const getProject = async (params: GetProjectParams, options?: RequestInit): Promise<{ data: ProjectOut }> => {

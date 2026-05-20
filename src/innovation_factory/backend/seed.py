@@ -22,6 +22,7 @@ from .projects.bsh_home_connect.seed import seed_bsh_data
 from .projects.hb_product_center.seed import seed_hb_data
 from .projects.mol_asm_cockpit.seed import seed_mac_data
 from .projects.vi_home_one.seed import seed_vh_data
+from .projects.yard_pro.seed import seed_yp_data
 from .runtime import Runtime
 
 
@@ -35,6 +36,7 @@ _PROJECT_SEEDS: list[tuple[str, Callable[[Session], None]]] = [
     ("AdTech Intelligence", seed_at_data),
     ("HB Product Center", seed_hb_data),
     ("AECO Hub", seed_aeco_data),
+    ("yard-pro", seed_yp_data),
 ]
 
 
@@ -129,6 +131,14 @@ def _seed_projects(session: Session):
             "company": "AECO",
             "icon": "Building2",
             "color": "#F59E0B",
+        },
+        {
+            "slug": "yard-pro",
+            "name": "yard-pro",
+            "description": "AI gardening companion that turns connected-tool telemetry and yard imagery into a season-by-season care plan. KA-grounded seasonal coach + snap-and-diagnose vision + personalized calendar.",
+            "company": "Outdoor Power Equipment",
+            "icon": "Sprout",
+            "color": "#D9541F",
         },
     ]
 

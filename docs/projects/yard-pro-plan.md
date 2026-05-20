@@ -572,3 +572,33 @@ The Phase 4 EM sub-agent reclassified the original 9 questions; most were decisi
 6. *(optional, if P5 is live)* Switch to the dealer panel. Klaus types "which customers have a robotic mower 4+ years old and no service this season?" Genie returns **≥ 3 anonymized rows in < 10 s**. No `yard_id` visible; only `yard_id_hash`.
 
 Anything that isn't in that demo script and isn't blocking a non-negotiable is a candidate for cut before P0 lands.
+
+---
+
+## 13. Retrospective (2026-05-13)
+
+**Plan finalized 2026-05-12; P0 shipped same day; P1 + deploy on 2026-05-13.** Plan-to-PR was about 30 hours including auto-fan-out via the 6-stream parallel agent pattern.
+
+**What landed (PR #14, 17 commits on `feature/yard-pro`):**
+
+- All 7 P0 items from §12.
+- 6/13 P1 items (Playwright smoke, Idempotency replay, GDPR Art. 17 cascade, deploy runbook + env wiring, UC4 telemetry + nudges, coach feedback UI + stats).
+- KA endpoint `ka-7598e04d-endpoint` deployed to `fevm-felix-demo` against the 22-doc corpus. Retrieval verified on the three sample prompts ("apple scab", "Stuttgart May almanac", "copper fungicide timing") — all returned grounded answers with `sources_used: true`.
+- UC tables `yard_pro_bronze/silver/gold` seeded with 10k telemetry rows + 40 transcripts + rollups + 10 dealer-summary rows.
+
+**What's still open (carried into the next PRs):**
+
+- §12 P1 remaining 7 items: UC5 reorder hints, ensemble plausibility, per-dependency circuit breakers, tier-2 diagnose queue, log-canary CI, KA-extraction canary, cold-start benchmark.
+- §12 P2 entire list: dealer panel UC6 trio (UI + consent state machine + Genie space + anonymization), GDPR Art. 15 + Art. 20 exports, log PII regex post-filter, retention/partition jobs, Lakebase connection-pool tuning, Saira self-host.
+
+**Two delivery deviations vs. the plan:**
+
+1. **Vision endpoint provisioning blocked.** The runbook's deploy_vision.py path was followed (stub-classifier shortcut per plan §12 best-effort); UC model `felix_demo_catalog.yard_pro.vision v3` registered cleanly, but the `yard-pro-vision-v1` serving endpoint stuck at `config_update: IN_PROGRESS` and is being debugged in the workspace. Mitigation per lessons §18: `YARD_PRO_VISION_ENDPOINT` env var blanked → diagnose modal renders "not configured" card cleanly until the endpoint reaches READY.
+
+2. **Q3 KA corpus retrieval is conservative.** First query "what should I do this weekend in Stuttgart?" returned `sources_used: false` (the `kbqa_agent` chose not to invoke retrieval). Retrieval fires reliably on more-specific prompts ("apple scab", "Stuttgart almanac"). May want to tune the coach prompt or surface a "be specific" hint — tracked as a coach-quality follow-up rather than a deploy blocker.
+
+**Methodology lessons:**
+
+- The 6-stream parallel agent fan-out (P0 Phase B + P1 bundles) was high-throughput but 3 of the agents hit Edit/Bash permission denials on existing-file modifications. Pure new-file streams (Playwright, GDPR delete, deploy runbook, KA + telemetry) succeeded; existing-file streams (idempotency replay, telemetry-cockpit extension, feedback UI) required orchestrator takeover. Briefs that frame work as *additive* (new file + new test) are more agent-friendly than briefs that frame work as *editing*.
+- Squash-merged plan PRs created rebase-skip work later: the 4 plan-phase commits (`0f41c80`-`4ad4758`) were squashed to `e6af221` on master, so `git rebase master` had to skip them. Plain `git merge master` was the clean recovery.
+- Cherry-picking the WCAG contrast helper + the BSH primary tune from a sibling branch ahead of merge was the right call — it let the new yard-pro theme prove itself against the same regression test that gates the other 6 themes from day one.

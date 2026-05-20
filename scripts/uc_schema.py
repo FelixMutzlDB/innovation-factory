@@ -528,6 +528,110 @@ TABLES: dict[str, dict] = {
         ],
         "comment": "Daily occupancy / utilization per space.",
     },
+
+    # =========================================================================
+    # yard-pro Bronze (schema: yard_pro_bronze)
+    # =========================================================================
+    # Raw analytical tier. Lakehouse Sync (Lakebase yp_* → Delta) lands here in
+    # P4; in P0 we seed ~10k synthetic rows server-side via
+    # ``INSERT … SELECT FROM range(N)`` (lessons §27) so the demo's
+    # "analytical-pipeline tour" is visible. PII-bearing tables
+    # (``coach_transcripts``) carry a ``consent_flag`` column; rows with
+    # ``consent_flag=false`` are excluded from any analytical query (plan §8).
+    "yard_pro_bronze.telemetry_events": {
+        "columns": [
+            ("event_id", "BIGINT GENERATED ALWAYS AS IDENTITY"),
+            ("tool_id", "BIGINT"),
+            ("yard_id", "BIGINT"),
+            ("event_type", "STRING"),
+            ("occurred_at", "TIMESTAMP"),
+            ("payload_json", "STRING"),
+            ("ingested_at", "TIMESTAMP"),
+        ],
+        "comment": "Raw connected-tool telemetry events (battery/blade/usage). Delta partitioned by date(occurred_at); 90-day raw retention per plan §5.",
+    },
+    "yard_pro_bronze.diagnoses_raw": {
+        "columns": [
+            ("diagnosis_id", "BIGINT GENERATED ALWAYS AS IDENTITY"),
+            ("yard_id", "BIGINT"),
+            ("photo_uri", "STRING"),
+            ("model_version", "STRING"),
+            ("top_label", "STRING"),
+            ("top_confidence", "DOUBLE"),
+            ("predictions_json", "STRING"),
+            ("created_at", "TIMESTAMP"),
+        ],
+        "comment": "Snap-and-diagnose vision predictions (UC3) mirrored from Lakebase yp_diagnoses for analytics. Photos themselves live in UC Volume yard_pro/photos/<yard_id>/.",
+    },
+    "yard_pro_bronze.coach_transcripts": {
+        "columns": [
+            ("transcript_id", "BIGINT GENERATED ALWAYS AS IDENTITY"),
+            ("session_id", "BIGINT"),
+            ("yard_id", "BIGINT"),
+            ("role", "STRING"),
+            ("content", "STRING"),
+            ("model_version", "STRING"),
+            ("is_recommendation", "BOOLEAN"),
+            ("consent_flag", "BOOLEAN"),
+            ("created_at", "TIMESTAMP"),
+        ],
+        "comment": "Coach chat transcripts (UC2). PII-bearing; consent_flag=false rows hard-deleted at 30d, consent_flag=true rows aggregated and deleted at 13mo (GDPR purpose limitation).",
+    },
+
+    # =========================================================================
+    # yard-pro Silver (schema: yard_pro_silver)
+    # =========================================================================
+    # Per-tool / per-yard rollups derived from Bronze. Seeded from Bronze via a
+    # single INSERT … SELECT aggregate in P0; Lakeflow declarative pipelines
+    # take over in P4.
+    "yard_pro_silver.tool_health": {
+        "columns": [
+            ("tool_id", "BIGINT"),
+            ("rollup_date", "DATE"),
+            ("session_count", "INT"),
+            ("battery_low_events", "INT"),
+            ("maintenance_due_events", "INT"),
+            ("stuck_events", "INT"),
+            ("last_event_at", "TIMESTAMP"),
+            ("updated_at", "TIMESTAMP"),
+        ],
+        "comment": "Per-tool daily telemetry KPIs rolled up from yard_pro_bronze.telemetry_events.",
+    },
+    "yard_pro_silver.yard_state": {
+        "columns": [
+            ("yard_id", "BIGINT"),
+            ("snapshot_date", "DATE"),
+            ("plant_count", "INT"),
+            ("tool_count", "INT"),
+            ("action_count_30d", "INT"),
+            ("diagnosis_count_30d", "INT"),
+            ("updated_at", "TIMESTAMP"),
+        ],
+        "comment": "Per-yard daily state snapshot (plant / tool / activity counts) for cockpit summaries.",
+    },
+
+    # =========================================================================
+    # yard-pro Gold (schema: yard_pro_gold)
+    # =========================================================================
+    # Dealer-facing, anonymized aggregate view. UC grants exclude all yp_* and
+    # yard_pro_bronze.* / yard_pro_silver.* tables from the dealer SP. Genie
+    # space in P5 reads from here only. No raw lat/lng or names — see plan §8
+    # access-control row "Klaus only sees yard_pro_gold.*".
+    "yard_pro_gold.dealer_customer_summary": {
+        "columns": [
+            ("summary_id", "BIGINT GENERATED ALWAYS AS IDENTITY"),
+            ("yard_id_hash", "STRING"),
+            ("dealer_code", "STRING"),
+            ("region_bucket", "STRING"),
+            ("yard_size_bucket", "STRING"),
+            ("tool_inventory_hash", "STRING"),
+            ("robotic_mower_age_years", "INT"),
+            ("last_service_event_age_days", "INT"),
+            ("consent_state", "STRING"),
+            ("updated_at", "TIMESTAMP"),
+        ],
+        "comment": "Anonymized per-household summary for the dealer Genie space (UC6, P5). Never carries raw PII; yard_id_hash is the only join key.",
+    },
 }
 
 

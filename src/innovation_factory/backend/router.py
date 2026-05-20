@@ -116,6 +116,7 @@ from .projects.mol_asm_cockpit.router import router as mac_router
 from .projects.adtech_intelligence.router import router as at_router
 from .projects.hb_product_center.router import router as hb_router
 from .projects.aeco_hub.router import router as aeco_router
+from .projects.yard_pro.router import router as yard_pro_router
 
 api.include_router(vh_router, prefix="/projects/vi-home-one")
 api.include_router(bsh_router, prefix="/projects/bsh-home-connect")
@@ -123,6 +124,7 @@ api.include_router(mac_router, prefix="/projects/mol-asm-cockpit")
 api.include_router(at_router, prefix="/projects/adtech-intelligence")
 api.include_router(hb_router, prefix="/projects/hb-product-center")
 api.include_router(aeco_router, prefix="/projects/aeco-hub")
+api.include_router(yard_pro_router, prefix="/projects/yard-pro")
 
 
 # ---------------------------------------------------------------------------
@@ -175,6 +177,7 @@ async def health_summary(request: Request) -> HealthSummaryOut:
             for table_name in (
                 "vh_neighborhoods", "bsh_devices", "mac_stations",
                 "at_advertisers", "hb_products", "dt_projects",
+                "yp_yards",
             ):
                 try:
                     n = session.exec(text(f"SELECT COUNT(*) FROM {table_name}")).one()  # type: ignore[invalid-argument-type]

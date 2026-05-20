@@ -32,6 +32,9 @@ class TestSchemaSurface:
             "hb_product_center",
             "mac",
             "aeco_hub",
+            "yard_pro_bronze",
+            "yard_pro_silver",
+            "yard_pro_gold",
         }
 
     def test_every_table_has_columns_and_at_least_one_id_or_pk_like(self):
@@ -46,6 +49,9 @@ class TestSchemaSurface:
                 "id", "station_id", "product_id", "campaign_id",
                 "inspection_id", "verification_id", "advertiser_id",
                 "inventory_id", "reading_id",
+                # yard_pro identifiers (lessons §23: every table has an id)
+                "event_id", "diagnosis_id", "transcript_id",
+                "tool_id", "yard_id", "summary_id",
             }, f"{name} has no identifier column"
 
     def test_column_names_are_safe_identifiers(self):
