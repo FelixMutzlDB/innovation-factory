@@ -9,6 +9,24 @@ Legend: `[ ]` open | `[x]` done | `[~]` partial | `[-]` won't do
 
 ---
 
+## Current State snapshot (2026-05-18)
+
+> Relocated here from `CLAUDE.md` so it doesn't bloat the always-loaded file. Refresh the date when you update it.
+
+| Area | Status |
+|------|--------|
+| **Accelerators** | 7 (ViDistrictOne, BSH Remote Assist, MOL ASM Cockpit, AdTech Intelligence, HB Product Center, AECO Hub, **yard-pro** — 7th, P0 + most of P1 + most of P2 shipped on `feature/yard-pro`) |
+| **AECO Hub plan** | [projects/aeco-hub-plan.md](projects/aeco-hub-plan.md) — Phases 1-6 shipped 2026-04-29 |
+| **yard-pro plan** | [projects/yard-pro-plan.md](projects/yard-pro-plan.md) — P0 + P1 + P2 dealer/compliance bundles shipped. Live on fevm-felix-demo at `innovation-factory-7474658643170817.aws.databricksapps.com`. Coach KA endpoint `ka-7598e04d-endpoint` + dealer Genie `01f152e6ba76129887a955cf08dd5c92` + dealer Lakeview dashboard `01f152f10628135caf9d41eed16c8b50` (published with `embed_credentials=true`) all live. Vision endpoint `yard-pro-vision-v1` still DEPLOYMENT_FAILED; `YARD_PRO_VISION_ENDPOINT` omitted from app config so diagnose modal renders the lessons §18 "not configured" card (pre-recorded session is served from the seeded `yp_diagnoses` rows for the demo). |
+| **Brand themes** | [ci-implementation-plan.md](ci-implementation-plan.md) — P0–P3 shipped 2026-05-11/12: `BRAND_THEMES` registry (`ui/lib/brand-themes.ts`), `<ProjectThemeScope>` + 7 theme CSS files (yard-pro included), `<ProjectWordmark>` in sidebar, per-project light+dark chart palettes. WCAG AA contrast suite + Playwright visual regression at 0.5% effective tolerance gate the system. |
+| **Database** | Lakebase Autoscaling (production), PGlite (local dev) |
+| **Workspace** | `fevm-felix-demo` (migrated from `fe-sandbox-felix-demo-sandbox` → `fe-shared-demo`) |
+| **Security** | SQL injection (§9), XSS (§20), rate limiting (§21) shipped; router-discipline lint added (D6); yard-pro adds GDPR Art. 22 review-and-confirm rail + Art. 17 cascade delete + EU AI Act Art. 50 advisory chip + RT-016 cross-tenant regression test |
+| **Tests** | Security tests in place (input sanitize, markdown XSS policy, rate limit, streaming protocol, router discipline); yard-pro adds 144+ unit/integration tests + Playwright browser smoke; broader coverage on the 6 older accelerators still thin |
+| **Branch** | `feature/yard-pro` (P2 mostly shipped — dealer panel UI + dashboard + Genie space + compliance; remaining: UC row-level filter for multi-dealer scope, Y28 cold-start benchmark, vision endpoint provisioning) |
+
+---
+
 ## Batch status (2026-04-24)
 
 | Batch | Scope | Status |
