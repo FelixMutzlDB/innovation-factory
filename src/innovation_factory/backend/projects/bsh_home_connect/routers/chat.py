@@ -74,5 +74,5 @@ def get_chat_history(
         ticket_id=ticket_id,
         session_type=session_type,
         started_at=messages[0].created_at if messages else datetime.now(timezone.utc),
-        messages=[BshChatMessageOut.model_validate(msg) for msg in messages],
+        messages=[BshChatMessageOut.model_validate(msg.model_dump()) for msg in messages],
     )

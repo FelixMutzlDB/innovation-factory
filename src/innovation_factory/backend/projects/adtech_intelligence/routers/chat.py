@@ -103,7 +103,7 @@ def list_chat_sessions(
                 session_type=s.session_type,
                 started_at=s.started_at,
                 ended_at=s.ended_at,
-                messages=[AtChatMessageOut.model_validate(m) for m in messages],
+                messages=[AtChatMessageOut.model_validate(m.model_dump()) for m in messages],
             )
         )
     return result
@@ -136,5 +136,5 @@ def get_chat_session(
         session_type=session.session_type,
         started_at=session.started_at,
         ended_at=session.ended_at,
-        messages=[AtChatMessageOut.model_validate(m) for m in messages],
+        messages=[AtChatMessageOut.model_validate(m.model_dump()) for m in messages],
     )
