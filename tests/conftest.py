@@ -49,6 +49,25 @@ def engine():
     return engine
 
 
+@pytest.fixture(autouse=True)
+def _clean_tables(engine):
+    """Delete all rows after each test so state never leaks between tests.
+
+    The `engine` fixture is session-scoped with a single StaticPool
+    connection, so anything the app or a seed helper `commit()`s persists
+    for the whole run — the `session` fixture's trailing rollback() is a
+    no-op after an explicit commit. Without this teardown, seeded rows
+    accumulate and leak across tests, which is order-dependent flakiness
+    waiting to happen the moment a test asserts an absolute count or an
+    empty-state total. Deleting in reverse dependency order respects the
+    foreign-key PRAGMA.
+    """
+    yield
+    with engine.begin() as conn:
+        for table in reversed(SQLModel.metadata.sorted_tables):
+            conn.execute(table.delete())
+
+
 @pytest.fixture
 def session(engine):
     """Create a fresh database session for each test."""
