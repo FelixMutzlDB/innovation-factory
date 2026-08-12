@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run apx *)",
+      "Bash(uv run python -m apx *)",
+      "Bash(uv run pytest *)",
+      "Bash(uv run python -m pytest *)",
+      "Bash(pytest *)",
+      "Bash(uv run apx bun *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/apx-check-stop.sh\"",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}

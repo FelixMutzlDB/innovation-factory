@@ -10,7 +10,7 @@ from ...input_sanitize import LongText
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlmodel import Column, Field, JSON, Relationship, SQLModel, Text
 
 
@@ -606,6 +606,10 @@ class AtChatMessageIn(BaseModel):
 
 
 class AtChatMessageOut(BaseModel):
+    # Validated directly from ORM instances (model_validate(m)); without
+    # this, Pydantic v2 raises on a SQLModel row -> 500 on chat history.
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     session_id: int
     role: AtChatRole

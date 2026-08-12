@@ -43,9 +43,29 @@ def engine():
     import innovation_factory.backend.projects.mol_asm_cockpit.models  # noqa: F401
     import innovation_factory.backend.projects.aeco_hub.models  # noqa: F401
     import innovation_factory.backend.projects.yard_pro.models  # noqa: F401
+    import innovation_factory.backend.projects.hb_product_center.models  # noqa: F401
 
     SQLModel.metadata.create_all(engine)
     return engine
+
+
+@pytest.fixture(autouse=True)
+def _clean_tables(engine):
+    """Delete all rows after each test so state never leaks between tests.
+
+    The `engine` fixture is session-scoped with a single StaticPool
+    connection, so anything the app or a seed helper `commit()`s persists
+    for the whole run — the `session` fixture's trailing rollback() is a
+    no-op after an explicit commit. Without this teardown, seeded rows
+    accumulate and leak across tests, which is order-dependent flakiness
+    waiting to happen the moment a test asserts an absolute count or an
+    empty-state total. Deleting in reverse dependency order respects the
+    foreign-key PRAGMA.
+    """
+    yield
+    with engine.begin() as conn:
+        for table in reversed(SQLModel.metadata.sorted_tables):
+            conn.execute(table.delete())
 
 
 @pytest.fixture

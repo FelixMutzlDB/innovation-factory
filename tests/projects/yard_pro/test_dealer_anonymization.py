@@ -289,8 +289,15 @@ class TestAnonymizedRecordShape:
             "AnonymizedRecord exposes raw yard_id — irreversible-at-"
             "ingest rail violated"
         )
-        # And the str form must not contain the raw integer either.
-        assert str(yard_with_tools.id) not in record.yard_id_hash
+        # And the hash must be the opaque HMAC token, never a plaintext
+        # encoding of the raw id. A substring check on the hex digest is
+        # meaningless — hex always contains decimal digits, so `str(id)`
+        # lands in the digest by coincidence (flaky for low ids) — so we
+        # assert the real leak modes instead: the token is not the raw id,
+        # nor a `yh_<id>` passthrough, and is a proper `yh_`-prefixed digest.
+        assert record.yard_id_hash != str(yard_with_tools.id)
+        assert record.yard_id_hash != f"yh_{yard_with_tools.id}"
+        assert record.yard_id_hash.startswith("yh_")
 
     def test_yard_id_hash_is_deterministic_given_fixed_secret(
         self, session, yard_with_tools, fixed_hmac_secret

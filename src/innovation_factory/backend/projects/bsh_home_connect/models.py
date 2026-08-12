@@ -3,7 +3,7 @@ from ...input_sanitize import LongText
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlmodel import Column, Field, JSON, Relationship, SQLModel, Text
 
 
@@ -398,6 +398,10 @@ class BshChatMessageIn(BaseModel):
 
 
 class BshChatMessageOut(BaseModel):
+    # Validated directly from ORM instances (model_validate(msg)); without
+    # this, Pydantic v2 raises on a SQLModel row -> 500 on chat history.
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     session_id: int
     role: BshChatRole
@@ -417,6 +421,11 @@ class BshChatHistoryOut(BaseModel):
 
 
 class BshKnowledgeArticleOut(BaseModel):
+    # Validated directly from ORM instances; attribute-mode validation reads
+    # only the fields declared here, so the `embedding` vector on the source
+    # row is never materialized (no `exclude` needed).
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     device_id: Optional[int] = None
     title: str
@@ -431,6 +440,11 @@ class BshKnowledgeArticleOut(BaseModel):
 
 
 class BshDocumentOut(BaseModel):
+    # Validated directly from ORM instances; attribute-mode validation reads
+    # only the fields declared here, so the `embedding` vector on the source
+    # row is never materialized (no `exclude` needed).
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     device_id: int
     title: str
