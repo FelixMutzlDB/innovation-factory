@@ -83,5 +83,5 @@ def get_chat_history(session_id: int, session: SessionDep):
         session_type=chat_session.session_type,
         started_at=chat_session.started_at,
         ended_at=chat_session.ended_at,
-        messages=[MacChatMessageOut.model_validate(m.model_dump()) for m in messages],
+        messages=[MacChatMessageOut.model_validate(m) for m in messages],
     )
