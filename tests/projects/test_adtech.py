@@ -58,10 +58,19 @@ class TestAdTechAPI:
         resp = client.get("/api/projects/adtech-intelligence/anomalies/counts")
         assert resp.status_code == 200
 
-    def test_databricks_resources_unset_returns_empty_and_unconfigured(self, client):
-        # Mirror the AECO-hub test pattern: without env vars set, the endpoint
-        # must respond 200 with empty values and `configured=False` — not
-        # raise, not 500, not synthesize bogus URLs.
+    def test_databricks_resources_unset_returns_empty_and_unconfigured(self, client, monkeypatch):
+        # When nothing is configured, the endpoint must respond 200 with empty
+        # values and `configured=False` — not raise, not 500, not synthesize
+        # bogus URLs. Simulate the unconfigured state explicitly rather than
+        # relying on a clean ambient env: CI (and any dev machine with a
+        # Databricks profile) sets DATABRICKS_HOST + ADTECH_* which would
+        # otherwise leak through the module bindings and the runtime host
+        # fallback. Patch the resolver + id bindings to empty, mirroring the
+        # embed-composition test's monkeypatch style.
+        router_mod = "innovation_factory.backend.projects.adtech_intelligence.router"
+        monkeypatch.setattr(f"{router_mod}._resolve_workspace_url", lambda request: "")
+        monkeypatch.setattr(f"{router_mod}.DASHBOARD_ID", "")
+        monkeypatch.setattr(f"{router_mod}.GENIE_SPACE_ID", "")
         resp = client.get("/api/projects/adtech-intelligence/databricks-resources")
         assert resp.status_code == 200
         data = resp.json()
