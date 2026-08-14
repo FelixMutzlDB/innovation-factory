@@ -167,6 +167,12 @@ jobs:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    # Freeze vi-home-one's reference clock so its seeded energy curves and the
+    # trailing-window read queries anchor to the same fixed instant — the
+    # households page (visual-snapshotted) is otherwise non-deterministic
+    # (now-relative data). The committed baseline was captured at this instant.
+    env:
+      VH_REFERENCE_NOW: "2026-05-12T12:00:00+00:00"
 
     steps:
       - uses: actions/checkout@v4

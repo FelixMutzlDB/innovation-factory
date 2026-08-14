@@ -1,9 +1,10 @@
 """Seed script for vi-home-one project data."""
 import math
 import random
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 from sqlmodel import Session, select
 
+from .clock import reference_now
 from .models import (
     VhNeighborhood,
     VhHousehold,
@@ -17,6 +18,11 @@ from .models import (
     OptimizationMode,
 )
 
+# Fixed RNG seed so the generated energy curves are deterministic — the
+# vi-home-one households page is visual-regression tested, and unseeded
+# random() previously made its charts differ on every run.
+_RNG_SEED = 0x56484F31  # "VHO1"
+
 
 def seed_vh_data(session: Session):
     """Seed all vi-home-one data."""
@@ -25,14 +31,23 @@ def seed_vh_data(session: Session):
         return
 
     print("  Seeding vi-home-one data...")
-    neighborhood = _seed_neighborhood(session)
-    households = _seed_households(session, neighborhood.id)  # type: ignore[invalid-argument-type]
-    _seed_energy_devices(session, households)
-    _seed_energy_readings(session, households)
-    _seed_energy_providers(session)
-    _seed_maintenance_alerts(session, households)
-    _seed_knowledge_base(session)
-    session.commit()
+    # Pin the RNG so the energy curves (and thus the visual-regression
+    # snapshot of the households page) are identical every run. Save and
+    # restore the global state around this so it doesn't perturb sibling
+    # project seeds that run later in the same process.
+    _rng_state = random.getstate()
+    random.seed(_RNG_SEED)
+    try:
+        neighborhood = _seed_neighborhood(session)
+        households = _seed_households(session, neighborhood.id)  # type: ignore[invalid-argument-type]
+        _seed_energy_devices(session, households)
+        _seed_energy_readings(session, households)
+        _seed_energy_providers(session)
+        _seed_maintenance_alerts(session, households)
+        _seed_knowledge_base(session)
+        session.commit()
+    finally:
+        random.setstate(_rng_state)
     print("  vi-home-one data seeded.")
 
 
@@ -125,7 +140,7 @@ def _calc_ev(hour: int, has_ev: bool) -> float:
 
 
 def _seed_energy_readings(session: Session, households: list[VhHousehold]):
-    start_date = datetime.now() - timedelta(days=1)
+    start_date = reference_now() - timedelta(days=1)
     configs = [
         {"base_load": 0.5, "mult": 1.0},
         {"base_load": 0.6, "mult": 1.5},
@@ -209,14 +224,14 @@ def _seed_maintenance_alerts(session: Session, households: list[VhHousehold]):
                     device_id=device.id, alert_type="filter_cleaning",
                     severity=AlertSeverity.medium,
                     message="Heat pump filter requires cleaning.",
-                    predicted_date=date.today() + timedelta(days=14),
+                    predicted_date=reference_now().date() + timedelta(days=14),
                 ))
             elif device.device_type == DeviceType.pv_system:
                 session.add(VhMaintenanceAlert(
                     device_id=device.id, alert_type="panel_cleaning",
                     severity=AlertSeverity.low,
                     message="PV panels show 5% efficiency drop. Cleaning recommended.",
-                    predicted_date=date.today() + timedelta(days=30),
+                    predicted_date=reference_now().date() + timedelta(days=30),
                 ))
 
 
