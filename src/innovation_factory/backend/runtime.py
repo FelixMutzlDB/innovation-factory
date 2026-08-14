@@ -1,4 +1,5 @@
 import os
+import time
 from functools import cached_property
 from urllib.parse import quote
 
@@ -100,6 +101,25 @@ class Runtime:
         credential = self.ws.postgres.generate_database_credential(endpoint=endpoint_name)
         cparams["password"] = credential.token
 
+    def _pglite_connect_with_retry(self, dialect, conn_rec, cargs, cparams):
+        """Retry PGlite connects that the single-connection server drops.
+
+        PGlite (local dev) serves one connection at a time; the burst of
+        concurrent queries a page load fires makes new connects intermittently
+        fail with "server closed the connection unexpectedly". Retry with short
+        backoff so the request rides out the contention instead of 500-ing or
+        hanging. Returning a connection overrides SQLAlchemy's default connect.
+        """
+        last_exc: Exception | None = None
+        for attempt in range(6):
+            try:
+                return dialect.connect(*cargs, **cparams)
+            except Exception as exc:  # psycopg.OperationalError and friends
+                last_exc = exc
+                time.sleep(0.1 * (attempt + 1))
+        assert last_exc is not None
+        raise last_exc
+
     @cached_property
     def _is_local_dev(self) -> bool:
         """True only when using PGlite (no DATABASE_URL or PGHOST override)."""
@@ -148,6 +168,8 @@ class Runtime:
                 # local-dev seed workload.
                 connect_args={"prepare_threshold": None},
             )
+            # Ride out PGlite's single-connection contention (see method doc).
+            event.listens_for(engine, "do_connect")(self._pglite_connect_with_retry)
         else:
             engine = create_engine(
                 self.engine_url,

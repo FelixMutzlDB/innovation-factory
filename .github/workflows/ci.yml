@@ -250,6 +250,16 @@ jobs:
             test-results/
           retention-days: 7
 
+      # TEMP (baseline refresh): capture the freshly-written Linux baselines so
+      # they can be committed. Remove once the Linux baselines are in the repo.
+      - name: Upload regenerated baselines (temp)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regenerated-baselines
+          path: tests/visual/baselines/
+          retention-days: 3
+
   # ---------------------------------------------------------------------------
   # Build artifacts. Runs after lint + tests so build failures don't mask
   # earlier issues.
