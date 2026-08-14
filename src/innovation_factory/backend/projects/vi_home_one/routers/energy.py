@@ -1,10 +1,11 @@
 """API router for energy readings endpoints."""
 from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import select
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 
 from ....dependencies import SessionDep
 from ....pagination import Pagination
+from ..clock import reference_now
 from ..models import VhEnergyReading, VhEnergyReadingOut
 
 router = APIRouter(prefix="/energy", tags=["vh-energy"])
@@ -24,7 +25,7 @@ def get_energy_readings(
     (from Pagination) bound the page size so a 720-hour request still
     returns a sane payload.
     """
-    start_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+    start_time = reference_now() - timedelta(hours=hours)
 
     statement = (
         select(VhEnergyReading)

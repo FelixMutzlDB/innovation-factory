@@ -4,6 +4,7 @@ from sqlmodel import select
 from datetime import datetime, timedelta, timezone
 
 from ....dependencies import SessionDep
+from ..clock import reference_now
 from ..models import (
     VhHousehold,
     VhEnergyDevice,
@@ -91,7 +92,7 @@ def get_household_cockpit(household_id: int, db: SessionDep):
         energy_sources.grid_import_kw
     )
 
-    one_day_ago = datetime.now(timezone.utc) - timedelta(hours=24)
+    one_day_ago = reference_now() - timedelta(hours=24)
     recent_readings_query = select(VhEnergyReading).where(
         VhEnergyReading.household_id == household_id,
         VhEnergyReading.timestamp >= one_day_ago
@@ -115,7 +116,7 @@ def get_household_cockpit(household_id: int, db: SessionDep):
     cost_today = 0.0
     cost_this_month = 0.0
 
-    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_start = reference_now().replace(hour=0, minute=0, second=0, microsecond=0)
     today_readings = db.exec(select(VhEnergyReading).where(
         VhEnergyReading.household_id == household_id,
         VhEnergyReading.timestamp >= today_start
@@ -125,7 +126,7 @@ def get_household_cockpit(household_id: int, db: SessionDep):
         cost_today += reading.grid_import_kwh * 0.32
         cost_today -= reading.grid_export_kwh * 0.082
 
-    month_start = datetime.now(timezone.utc).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    month_start = reference_now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     month_readings = db.exec(select(VhEnergyReading).where(
         VhEnergyReading.household_id == household_id,
         VhEnergyReading.timestamp >= month_start

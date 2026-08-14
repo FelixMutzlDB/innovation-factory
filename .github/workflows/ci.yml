@@ -82,7 +82,10 @@ jobs:
     name: Pytest (${{ matrix.python }}, ${{ matrix.extras }})
     needs: lint
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # xdist brings the suite to ~11-13 min on a 2-core runner; 20 gives
+    # headroom as the suite grows (the deeper cost is per-`client` full-DB
+    # re-seeding). Bump this before revisiting seeding if it creeps up again.
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -154,16 +157,29 @@ jobs:
   # ---------------------------------------------------------------------------
   # Visual regression — Playwright suite from `tests/visual/`. Needs a real
   # built frontend + a running dev server, so it's heavier than `tests`.
-  # `needs: [lint, tests]` short-circuits if cheaper jobs fail. PR-only by
-  # default (skipped on bare pushes to master because the visual baselines
-  # in tree are the master state — running on master would be tautological).
+  # `needs: [lint, tests]` short-circuits if cheaper jobs fail.
+  #
+  # QUARANTINED from PR runs (workflow_dispatch only): the suite is currently
+  # unreliable in CI because the dev server's local PGlite DB is
+  # single-connection and drops connects under a page load's concurrent query
+  # burst — pages hang on `networkidle` and the job times out. It also needs
+  # Linux-native baselines (the committed ones were captured on macOS, which
+  # diffs ~1% on CI's renderer). Both are tracked for a follow-up that runs the
+  # visual job against a real Postgres service instead of PGlite; until then it
+  # runs on-demand via workflow_dispatch and does not gate PRs.
   # ---------------------------------------------------------------------------
   visual:
     name: Visual regression (Playwright)
     needs: [lint, tests]
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    # Freeze vi-home-one's reference clock so its seeded energy curves and the
+    # trailing-window read queries anchor to the same fixed instant — the
+    # households page (visual-snapshotted) is otherwise non-deterministic
+    # (now-relative data). The committed baseline was captured at this instant.
+    env:
+      VH_REFERENCE_NOW: "2026-05-12T12:00:00+00:00"
 
     steps:
       - uses: actions/checkout@v4

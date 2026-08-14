@@ -10,11 +10,22 @@ back when ``seed_aeco_data`` raised on the missing ``dt_projects`` table.
 Each individual seed function is idempotent (it checks for existing rows
 before inserting), so re-running the master seed is safe.
 """
+import time
 from typing import Callable
 
+from sqlalchemy.exc import InterfaceError, OperationalError
 from sqlmodel import Session, select
 
 from .logger import logger
+
+# Transient DB connection errors worth retrying. The local-dev PGlite server
+# occasionally drops a fresh connection mid-seed ("server closed the
+# connection unexpectedly") — every seed opens a new NullPool connection, and
+# a few in the startup burst lose the race with PGlite settling. Observed in
+# CI: 2 of 7 project seeds failed this way while the other 5 (and the DDL)
+# succeeded on the same server, leaving those pages dataless. Prod Lakebase
+# connections are stable, so these retries effectively never fire there.
+_TRANSIENT_DB_ERRORS = (OperationalError, InterfaceError)
 from .models import Project
 from .projects.adtech_intelligence.seed import seed_at_data
 from .projects.aeco_hub.seed import seed_aeco_data
@@ -40,23 +51,50 @@ _PROJECT_SEEDS: list[tuple[str, Callable[[Session], None]]] = [
 ]
 
 
-def _safe_seed(label: str, fn: Callable[[Session], None], session: Session) -> bool:
+def _safe_seed(
+    label: str,
+    fn: Callable[[Session], None],
+    session: Session,
+    *,
+    max_attempts: int = 4,
+) -> bool:
     """Run a seed function and commit its transaction independently.
 
     Returns ``True`` on success, ``False`` on failure (already rolled back).
-    Captures any exception so subsequent seeds in the master loop continue.
+    Transient DB connection errors are retried with backoff (seeds are
+    idempotent, so re-running is safe); any other exception fails fast so a
+    genuine seed bug isn't silently retried. Either way the exception is
+    captured so subsequent seeds in the master loop continue.
     """
-    try:
-        fn(session)
-        session.commit()
-        return True
-    except Exception as e:
-        # Rollback the broken transaction so the next seed gets a fresh
-        # transaction state — without this, subsequent .exec() calls
-        # raise InFailedSqlTransaction on the same session.
-        session.rollback()
-        logger.error(f"Seed for {label} failed (continuing with others): {e}")
-        return False
+    for attempt in range(1, max_attempts + 1):
+        try:
+            fn(session)
+            session.commit()
+            return True
+        except _TRANSIENT_DB_ERRORS as e:
+            # Rollback the broken transaction so the retry (or the next seed)
+            # gets fresh transaction state — without this, subsequent .exec()
+            # calls raise InFailedSqlTransaction on the same session.
+            session.rollback()
+            if attempt < max_attempts:
+                backoff = 0.25 * (2 ** (attempt - 1))  # 0.25s, 0.5s, 1s
+                logger.warning(
+                    f"Seed for {label} hit a transient DB error "
+                    f"(attempt {attempt}/{max_attempts}), retrying in "
+                    f"{backoff:.2f}s: {e}"
+                )
+                time.sleep(backoff)
+                continue
+            logger.error(
+                f"Seed for {label} failed after {max_attempts} attempts "
+                f"(continuing with others): {e}"
+            )
+            return False
+        except Exception as e:
+            session.rollback()
+            logger.error(f"Seed for {label} failed (continuing with others): {e}")
+            return False
+    return False
 
 
 def check_and_seed_if_empty(runtime: Runtime):
