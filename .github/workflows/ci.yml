@@ -157,14 +157,21 @@ jobs:
   # ---------------------------------------------------------------------------
   # Visual regression — Playwright suite from `tests/visual/`. Needs a real
   # built frontend + a running dev server, so it's heavier than `tests`.
-  # `needs: [lint, tests]` short-circuits if cheaper jobs fail. PR-only by
-  # default (skipped on bare pushes to master because the visual baselines
-  # in tree are the master state — running on master would be tautological).
+  # `needs: [lint, tests]` short-circuits if cheaper jobs fail.
+  #
+  # QUARANTINED from PR runs (workflow_dispatch only): the suite is currently
+  # unreliable in CI because the dev server's local PGlite DB is
+  # single-connection and drops connects under a page load's concurrent query
+  # burst — pages hang on `networkidle` and the job times out. It also needs
+  # Linux-native baselines (the committed ones were captured on macOS, which
+  # diffs ~1% on CI's renderer). Both are tracked for a follow-up that runs the
+  # visual job against a real Postgres service instead of PGlite; until then it
+  # runs on-demand via workflow_dispatch and does not gate PRs.
   # ---------------------------------------------------------------------------
   visual:
     name: Visual regression (Playwright)
     needs: [lint, tests]
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     # Freeze vi-home-one's reference clock so its seeded energy curves and the
@@ -249,16 +256,6 @@ jobs:
           path: |
             test-results/
           retention-days: 7
-
-      # TEMP (baseline refresh): capture the freshly-written Linux baselines so
-      # they can be committed. Remove once the Linux baselines are in the repo.
-      - name: Upload regenerated baselines (temp)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: regenerated-baselines
-          path: tests/visual/baselines/
-          retention-days: 3
 
   # ---------------------------------------------------------------------------
   # Build artifacts. Runs after lint + tests so build failures don't mask

@@ -12,12 +12,7 @@ export default defineConfig({
   testMatch: /.*\.spec\.ts$/,
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  // The dev server is backed by PGlite, which under CI load occasionally
-  // drops a connection mid-request; a page can then stall on `networkidle`.
-  // Retry the whole test (fresh page load → fresh connections) in CI, and
-  // give slow data-bound dashboards more than the 30s default to settle.
-  retries: process.env.CI ? 2 : 0,
-  timeout: 60_000,
+  retries: 0,
   workers: 1,
   reporter: [["list"]],
   expect: {
