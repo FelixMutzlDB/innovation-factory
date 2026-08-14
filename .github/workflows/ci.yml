@@ -82,7 +82,10 @@ jobs:
     name: Pytest (${{ matrix.python }}, ${{ matrix.extras }})
     needs: lint
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # xdist brings the suite to ~11-13 min on a 2-core runner; 20 gives
+    # headroom as the suite grows (the deeper cost is per-`client` full-DB
+    # re-seeding). Bump this before revisiting seeding if it creeps up again.
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
