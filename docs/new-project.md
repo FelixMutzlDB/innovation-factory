@@ -162,6 +162,56 @@ ui/routes/projects/<slug>/
 Reference table: which sections of `docs/lessons-learned.md` we'll lean on
 (e.g. §2 MAS endpoints, §5 Lakebase OAuth rotation, §10 idempotency).
 
+### 7.1 Solution architecture artifact (required for Databricks projects)
+
+Use the `fe-databricks-architecture@fe-vibe` marketplace skill to turn §4 into a
+technically credible, customer-readable diagram. Choose the diagram kind first;
+for solution flows show named sources → correct ingestion ports → Lakeflow and
+medallion data products → governed lakehouse/Lakebase → Agent Bricks, models or
+Genie → dashboard/App → user, inside the Databricks Platform and Unified
+Governance framing. Keep editable HTML under `architectures/`, render a PNG, and
+inspect it for accurate wiring, readable labels and current product terminology.
+For multiple use cases, use a shared platform view plus domain-specific views
+where sources, intelligence or apps differ materially.
+
+### 7.2 Public customer proof via Reffy (required for external proposals)
+
+Use **Reffy** (`go/reffy` or
+`https://reffy-2548836972759138.18.azure.databricksapps.com/`) to discover relevant
+customer stories by industry, workload, product and business outcome. Reffy is a
+discovery source—not publication permission. A named proof may enter an external
+artifact only when its canonical public URL works without employee authentication
+and the customer, use case and every metric used appear on that page. Cite the
+public page, never Reffy. Do not expose reference contacts, NDA/internal notes,
+unpublished metrics or willingness-to-reference status. Record customer/story,
+relevance, public URL, supported claim, verification date/method and analogy caveat
+in the concept/evidence appendix. Recheck immediately before delivery; omit
+anything whose publication status is uncertain.
+
+### 7.3 Customer one-pager package (required when proposals are in scope)
+
+Generate one page per proposal from
+`docs/templates/one-pager-template.html`. It is a derived artifact: concept and
+evidence appendices remain authoritative, and the page cannot introduce scope,
+numbers, commitments or claims. Preserve the packaged 1600×900 tile layout:
+
+- outcome-led header and approved logos;
+- all three value-category tiles, with applicable categories highlighted;
+- challenge, decision, value and required support on the left;
+- proposed solution, screenshot/mockup, rendered architecture and shallow
+  four-step timeline in the center;
+- one or two §7.2-verified public proofs, stakeholders/controls and why-now on the
+  right;
+- shared Data + AI Platform foundation with the five platform pillars or
+  **Context · Control · Cost · Choice**.
+
+Use Barlow, dark teal `#1B3037`, light-gray surfaces and restrained Databricks red
+`#FF3621`; red signals emphasis/action, not timeline risk. Keep paragraph sizes
+consistent, cut copy before shrinking type, and label placeholder screenshots.
+Keep value targets, investments and sponsorship as `TBD / validate` until approved.
+Render every page, inspect at 100% for overflow/type/logo/architecture quality, and
+commit editable HTML; PNG/PDF exports are optional review artifacts.
+
 ## 7.5 Customer CI Research (required)
 
 Innovation Factory accelerators are obfuscated proxies for real customers. Phase 2
@@ -202,13 +252,16 @@ duplicating.
 
 ### Phase 2 checklist
 
-- [ ] Architecture diagram exists (ASCII is fine) and labels every layer
+- [ ] Logical architecture labels every layer and responsibility
+- [ ] Databricks architecture has editable HTML and a visually inspected PNG with accurate end-to-end wiring
+- [ ] Reffy/public proof register contains only anonymous-access public pages and page-supported claims
+- [ ] Proposal one-pagers use the packaged tile layout, include solution + architecture visuals, and pass 100% render inspection
 - [ ] Each layer's components have one-line responsibilities
 - [ ] Lakebase schema enumerated with prefix convention chosen
 - [ ] Enum-prefix decided (lessons-learned §13)
 - [ ] At least one composite index per primary query pattern
 - [ ] Phase breakdown has clear demoable milestones (P1 alone is interesting)
-- [ ] File layout mirrors the standard accelerator layout in `CLAUDE.md`
+- [ ] File layout mirrors the standard accelerator layout in `AGENTS.md`
 - [ ] Lessons-applied table cites ≥ 5 specific lessons from `lessons-learned.md`
 - [ ] **Customer CI Spec (§7.5) filled in** — palette, fonts, sources cited; obfuscation rails read and accepted
 
@@ -421,7 +474,7 @@ When all four phases are complete and `plan.md` clears every checklist:
 - Open a feature branch `feature/<slug>` from `master`.
 - The first commit on the branch is just the plan, so the implementation history
   starts from a planned baseline.
-- Implementation work follows the **working mode** in `CLAUDE.md`:
+- Implementation work follows the **working mode** in `AGENTS.md`:
   Investigate → Plan → Implement → Test → Iterate.
 
 ### Overview-page registration checklist (don't ship without these)
