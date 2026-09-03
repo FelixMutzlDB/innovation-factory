@@ -422,6 +422,13 @@ Explicit deferred list with reason. No silent omissions.
 - [ ] Open questions are *decisions*, not platitudes ("Foundation Model API
       choice" not "AI strategy")
 - [ ] The plan would survive being handed to a fresh engineer without you
+- [ ] **Bidirectional phase/test traceability:** every mandatory test ID is implemented in its assigned phase, and every test is assigned only where the exercised behavior exists
+- [ ] Synchronous fixture phases test populated rendering and deterministic logic; loading/empty/error/stale tests begin in the first phase with an asynchronous or fallible adapter (the plan states that phase explicitly)
+- [ ] UI formulas/rationales call the same domain function or consume the same factor trace as stored decisions; presentation code does not duplicate scoring logic
+- [ ] Runtime dependencies use reviewed exact versions for deployable builds and a committed lockfile; never use `latest` in a handed-off scaffold
+- [ ] `.env.example` exists before the first workspace integration, documents every resource variable, and uses empty defaults—no selected profile or resource ID is committed
+- [ ] Hash purpose is explicit: lightweight checksums may test fixture determinism, but audit/input/output integrity uses SHA-256 or stronger canonical-content hashing
+- [ ] Tuned demo constants (weights, penalties, thresholds) have a named rationale, bounds and regression test; they are not represented as customer-validated parameters
 
 ### Phase 4 sub-agent — Pragmatic engineering manager
 
